@@ -1,0 +1,31 @@
+# POETRY CONFIG
+
+[build-system]
+requires = ["poetry>=1.0"]
+build-backend = "poetry.masonry.api"
+
+[tool.poetry]
+name = "easyDiffractionLib"
+version = "0.0.1"
+description = 'Making diffraction data analysis and modelling easy.'
+license = "GPL-3.0-only"
+authors = ["Andrew Sazonov", "Simon Ward"]
+readme = "README.md"
+homepage = "https://github.com/easyScience/easyDiffractionLib"
+documentation = "https://github.com/easyScience/easyDiffractionLib"
+include = ["CHANGELOG.md"]
+packages = [ { include = "easyDiffractionLib" } ]
+
+[tool.poetry.dependencies]
+#python = "^3.8, <3.9"
+python = "^3.6, >=3.6.1"
+matplotlib = "^3.3"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+CFML_api = { path = '../CFML_api/' }
+
+[tool.poetry.scripts]
+easyDiffractionLib = "easyDiffractionLib.main:main"
+
+# CUSTOM CONFIG

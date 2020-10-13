@@ -39,6 +39,13 @@ jobs:
     - name: Set up python packages manager
       uses: Gr1N/setup-poetry@v2
 
+    - name: Set up some env variables
+      shell: bash
+      run: |
+        echo "PYTHONPATH=${pythonLocation}" >> $GITHUB_ENV
+        echo $pythonLocation
+        echo $PYTHONPATH
+
     - name: Disable automatic creation of virtualenvs
       run: poetry config virtualenvs.create false
 

@@ -57,11 +57,14 @@ jobs:
         which python
         poetry run which python
         poetry env info
-        ls /Library
+        echo ""
         ls /Library/Frameworks
-        ls /Library/Frameworks/Python.framework
-        ls /Library/Frameworks/Python.framework/Versions
-        ls /Library/Frameworks/Python.framework/Versions/3.7
+        echo ""
+        ls /Users/runner/hostedtoolcache/Python
+        echo ""
+        ls /Users/runner/hostedtoolcache/Python/3.7.9
+        echo ""
+        ls /Users/runner/hostedtoolcache/Python/3.7.9/x64
 
     - name: Run main.py
       run: poetry run easyDiffractionLib

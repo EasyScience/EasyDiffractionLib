@@ -42,5 +42,11 @@ jobs:
     - name: Create venv and install dependences
       run: poetry install
 
+    - name: Print some debug info
+      run: |
+        which python
+        poetry run which python
+        poetry env info
+
     - name: Run main.py
       run: poetry run easyDiffractionLib

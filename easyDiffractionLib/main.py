@@ -4,7 +4,7 @@ import CFML_api
 
 
 def main():
-    print("without CFML_api")
+    print("with CFML_api")
     #exit()
 
     simulation_conditions = CFML_api.PowderPatternSimulationConditions()

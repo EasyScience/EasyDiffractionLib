@@ -19,7 +19,7 @@ packages = [ { include = "easyDiffractionLib" } ]
 [tool.poetry.dependencies]
 python = "^3.7, <3.8"
 matplotlib = "^3.3"
-#CFML_api = { git = 'ssh://git@github.com/easyScience/CFML_api.git', rev = 'main' }
+CFML_api = { git = 'ssh://git@github.com/easyScience/CFML_api.git', rev = 'main' }
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

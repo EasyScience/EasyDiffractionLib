@@ -31,10 +31,10 @@ jobs:
       with:
           python-version: 3.7
 
-    #- name: Set up access to private repos
-    #  uses: webfactory/ssh-agent@v0.4.1
-    #  with:
-    #    ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+    - name: Set up access to private repos
+      uses: webfactory/ssh-agent@v0.4.1
+      with:
+        ssh-private-key: ${{ secrets.GH_WEBFACTORY_KEY }}
 
     - name: Set up python packages manager
       uses: Gr1N/setup-poetry@v2

@@ -39,11 +39,11 @@ jobs:
     - name: Set up python packages manager
       uses: Gr1N/setup-poetry@v2
 
-    - name: Create venv and install dependences
-      run: poetry install
-
     - name: Disable automatic creation of virtualenvs
       run: poetry config virtualenvs.create false
+
+    - name: Create venv and install dependences
+      run: poetry install
 
     - name: Print some debug info
       run: |

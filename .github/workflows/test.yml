@@ -46,8 +46,8 @@ jobs:
         echo $pythonLocation
         echo $PYTHONPATH
 
-    - name: Disable automatic creation of virtualenvs
-      run: poetry config virtualenvs.create false
+    #- name: Disable automatic creation of virtualenvs
+    #  run: poetry config virtualenvs.create false
 
     - name: Create venv and install dependences
       run: poetry install
@@ -57,6 +57,11 @@ jobs:
         which python
         poetry run which python
         poetry env info
+        ls /Library
+        ls /Library/Frameworks
+        ls /Library/Frameworks/Python.framework
+        ls /Library/Frameworks/Python.framework/Versions
+        ls /Library/Frameworks/Python.framework/Versions/3.7
 
     - name: Run main.py
       run: poetry run easyDiffractionLib

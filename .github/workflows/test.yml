@@ -58,13 +58,13 @@ jobs:
         poetry run which python
         poetry env info
         echo ""
-        ls /Library/Frameworks
+        ls -l /Library/Frameworks
         echo ""
-        ls /Users/runner/hostedtoolcache/Python
+        ls -l /Users/runner/hostedtoolcache/Python
         echo ""
-        ls /Users/runner/hostedtoolcache/Python/3.7.9
+        ls -l /Users/runner/hostedtoolcache/Python/3.7.9
         echo ""
-        ls /Users/runner/hostedtoolcache/Python/3.7.9/x64
+        ls -l /Users/runner/hostedtoolcache/Python/3.7.9/x64
 
     - name: Run main.py
       run: poetry run easyDiffractionLib

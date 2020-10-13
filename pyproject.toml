@@ -17,13 +17,13 @@ include = ["CHANGELOG.md"]
 packages = [ { include = "easyDiffractionLib" } ]
 
 [tool.poetry.dependencies]
-#python = "^3.8, <3.9"
-python = "^3.6, >=3.6.1"
+python = "^3.7, <3.8"
 matplotlib = "^3.3"
+CFML_api = { git = 'ssh://git@github.com/easyScience/CFML_api.git', rev = 'main' }
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
-CFML_api = { path = '../CFML_api/' }
+#CFML_api = { path = '../CFML_api/' }
 
 [tool.poetry.scripts]
 easyDiffractionLib = "easyDiffractionLib.main:main"

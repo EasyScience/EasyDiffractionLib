@@ -32,14 +32,15 @@ python-versions = "*"
 name = "cfml-api"
 version = "0.0.1"
 description = ""
-category = "dev"
+category = "main"
 optional = false
-python-versions = "^3.7"
-develop = false
+python-versions = ">=3.7,<3.8"
 
 [package.source]
-type = "directory"
-url = "../CFML_api"
+type = "git"
+url = 'ssh://git@github.com/easyScience/CFML_api.git'
+reference = 'main'
+resolved_reference = "0e47d12c6157d5518f09b50ed5451ec4e7035b60"
 
 [[package]]
 name = "colorama"
@@ -230,8 +231,8 @@ testing = ["pytest (>=3.5,<3.7.3 || >3.7.3)", "pytest-checkdocs (>=1.2.3)", "pyt
 
 [metadata]
 lock-version = "1.1"
-python-versions = "^3.7"
-content-hash = "dd1f47ec0b8f96de4c0b53ebb6beabb9ff94c08584717f83f78f57ca369a5f18"
+python-versions = "^3.7, <3.8"
+content-hash = "005b35284888e1eac3168de98b46cbca25ed35a9f0a583a49f702e7711d6c6fa"
 
 [metadata.files]
 atomicwrites = [

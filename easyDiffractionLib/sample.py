@@ -38,8 +38,8 @@ class Sample:
     def parameters(self):
         return self._parameters
 
-    @phase.setter
-    def phase(self, value):
+    @parameters.setter
+    def parameters(self, value):
         if not isinstance(value, Pattern):
             raise ValueError
         self._parameters = value

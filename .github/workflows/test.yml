@@ -27,20 +27,48 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Set up Python environment
-      uses: actions/setup-python@v2
-      with:
-          python-version: 3.7
+      #uses: actions/setup-python@v2
+      #with:
+      #    python-version: 3.7
+      run: |
+        mkdir -p .ci/download
+        curl -o .ci/download/python-3.7.9-macosx10.9.pkg https://www.python.org/ftp/python/3.7.9/python-3.7.9-macosx10.9.pkg
+        sudo installer -store -pkg .ci/download/python-3.7.9-macosx10.9.pkg -target /
 
-    #- name: Set up access to private repos
-    #  uses: webfactory/ssh-agent@v0.4.1
-    #  with:
-    #    ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+    - name: Set up access to private repos
+      uses: webfactory/ssh-agent@v0.4.1
+      with:
+        ssh-private-key: ${{ secrets.GH_WEBFACTORY_KEY }}
 
     - name: Set up python packages manager
       uses: Gr1N/setup-poetry@v2
 
+    - name: Set up some env variables
+      shell: bash
+      run: |
+        echo "PYTHONPATH=${pythonLocation}" >> $GITHUB_ENV
+        echo $pythonLocation
+        echo $PYTHONPATH
+
+    #- name: Disable automatic creation of virtualenvs
+    #  run: poetry config virtualenvs.create false
+
     - name: Create venv and install dependences
       run: poetry install
+
+    - name: Print some debug info
+      run: |
+        which python
+        poetry run which python
+        poetry env info
+        echo ""
+        ls -l /Library/Frameworks
+        echo ""
+        ls -l /Users/runner/hostedtoolcache/Python
+        echo ""
+        ls -l /Users/runner/hostedtoolcache/Python/3.7.9
+        echo ""
+        ls -l /Users/runner/hostedtoolcache/Python/3.7.9/x64
 
     - name: Run main.py
       run: poetry run easyDiffractionLib

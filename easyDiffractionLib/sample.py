@@ -21,6 +21,7 @@ class Sample:
         self._parameters = parameters
         self.interface = interface
         self.filename = './temp.cif'
+        self.output_index = None
         self._updateInterface()
 
     def _updateInterface(self):

@@ -11,7 +11,7 @@ from easyDiffractionLib.Calculators.CFML import CFML as CFML_calc
 
 class CFML(InterfaceTemplate):
     """
-    A simple example interface using Calculator1
+    A simple example interface using CFML
     """
 
     _sample_link = {

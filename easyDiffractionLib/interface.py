@@ -104,7 +104,7 @@ class InterfaceFactory(InterfaceFactoryTemplate):
         """
 
         def inner(value):
-            holder.phase.cif.to_file(holder.filename)
+            holder.phases.cif.to_file(holder.filename)
             # obj().set_value(key, value)
         return inner
 

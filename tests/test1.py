@@ -15,11 +15,10 @@ i = InterfaceFactory()
 
 c = Crystal.from_cif_file('tests/SrTiO3.cif')
 
-S = Sample(phase=c, parameters=Pattern(), interface=i)
+S = Sample(phases=c, parameters=Pattern(), interface=i)
 # S.phase.cell.length_a = 5
 # S.parameters.wavelength = 1.25
 # print(S)
-
 x_data = np.linspace(5, 150, 100)
 y_data = i.fit_func(x_data)
 
@@ -31,7 +30,29 @@ y_data = i.fit_func(x_data)
 plt.plot(x_data, y_data, label="CFL")
 plt.show()
 
-S.phase.cell.length_a = 10
+S.phases[0].cell.length_a = 10
+y_data = i.fit_func(x_data)
+plt.plot(x_data, y_data, label="CFL")
+plt.show()
+
+i.switch('Cryspy')
+S._updateInterface()
+
+# S.phase.cell.length_a = 5
+# S.parameters.wavelength = 1.25
+# print(S)
+x_data = np.linspace(5, 150, 100)
+y_data = i.fit_func(x_data)
+
+plt.plot(x_data, y_data, label="CFL")
+plt.show()
+
+S.parameters.wavelength = 2.5
+y_data = i.fit_func(x_data)
+plt.plot(x_data, y_data, label="CFL")
+plt.show()
+
+S.phases[0].cell.length_a = 10
 y_data = i.fit_func(x_data)
 plt.plot(x_data, y_data, label="CFL")
 plt.show()

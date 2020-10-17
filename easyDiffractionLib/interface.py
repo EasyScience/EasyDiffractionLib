@@ -104,7 +104,12 @@ class InterfaceFactory(InterfaceFactoryTemplate):
         """
 
         def inner(value):
-            holder.phases.cif.to_file(holder.filename, holder.output_index)
+            # !!! THIS IS NOT THE WAY TO DO IT !!!
+            # !!!       FOR TESTING ONLY      !!!!
+            if obj.current_interface_name == 'Cryspy':
+                obj().set_value(key, holder.phases.cif.__str__(holder.output_index))
+            else:
+                holder.phases.cif.to_file(holder.filename, holder.output_index)
             # obj().set_value(key, value)
         return inner
 

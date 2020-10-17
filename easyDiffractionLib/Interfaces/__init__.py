@@ -6,5 +6,11 @@ try:
 except ImportError:
     # TODO make this a proper message (use logging?)
     print('CFML is not installed')
+try:
+    from easyDiffractionLib.Interfaces.cryspy import Cryspy  # noqa: F401
+except ImportError:
+    # TODO make this a proper message (use logging?)
+    print('Cryspy is not installed')
+
 
 from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate

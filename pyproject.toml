@@ -23,6 +23,7 @@ easyCore = { git = 'https://github.com/easyScience/easyCore.git', rev = 'STAR_io
 CFML_api = { git = 'ssh://git@github.com/easyScience/CFML_api.git', rev = 'main' }
 
 monty = "^4.0.2"
+cryspy = "^0.4.11"
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
 #CFML_api = { path = '../CFML_api/' }

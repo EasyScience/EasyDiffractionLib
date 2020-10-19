@@ -46,6 +46,7 @@ class Sample(BaseObj):
             self._phases.append(value)
         elif isinstance(value, Crystals):
             self._phases = value
+            self._borg.map.add_edge(self, value)
         else:
             raise ValueError
         self._updateInterface()

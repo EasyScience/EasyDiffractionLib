@@ -1,24 +1,29 @@
 __author__ = 'github.com/wardsimon'
 __version__ = '0.0.1'
 
+from typing import Union
+
+from easyCore.Objects.Base import BaseObj
 from easyDiffractionLib import Crystal, Crystals
 from easyDiffractionLib.Elements.Instruments.Instrument import Pattern
 from easyDiffractionLib.Elements.Backgrounds.Linear import Line
-from tempfile import NamedTemporaryFile
 
 
-class Sample:
-    def __init__(self, phases=None, parameters=None, interface=None):
+class Sample(BaseObj):
+    def __init__(self, name: str = '', phases: Union[Crystal, Crystals] = None, parameters=None, interface=None):
         if isinstance(phases, Crystal):
             phases = Crystals('Generated', phases)
         elif phases is None:
             phases = Crystals('Generated')
 
+        if not name:
+            name = 'easySample'
+
         if not isinstance(phases, Crystals):
             raise AttributeError('`phases` must be a Crystal or Crystals')
-        self._phases = phases
+        
+        super(Sample, self).__init__(name, _phases=phases, _parameters=parameters)
         self.background = Line()
-        self._parameters = parameters
         self.interface = interface
         self.filename = './temp.cif'
         self.output_index = None
@@ -58,13 +63,6 @@ class Sample:
             raise ValueError
         self._parameters = value
         self._updateInterface()
-
-    @property
-    def name(self):
-        name = ''
-        if isinstance(self.phase, Crystal):
-            name = self.phase.name
-        return name
 
     def update_bindings(self):
         self._updateInterface()

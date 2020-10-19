@@ -10,14 +10,11 @@ from easyDiffractionLib.Elements.Backgrounds.Linear import Line
 
 
 class Sample(BaseObj):
-    def __init__(self, name: str = '', phases: Union[Crystal, Crystals] = None, parameters=None, interface=None):
+    def __init__(self, phases: Union[Crystal, Crystals] = None, parameters=None, interface=None, name: str = 'easySample'):
         if isinstance(phases, Crystal):
-            phases = Crystals('Generated', phases)
+            phases = Crystals('Phases', phases)
         elif phases is None:
-            phases = Crystals('Generated')
-
-        if not name:
-            name = 'easySample'
+            phases = Crystals('Phases')
 
         if not isinstance(phases, Crystals):
             raise AttributeError('`phases` must be a Crystal or Crystals')

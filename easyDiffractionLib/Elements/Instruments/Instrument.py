@@ -8,7 +8,7 @@ _decoder = MontyDecoder()
 
 
 class Pattern(BaseObj):
-    _name = 'instrument'
+    _name = 'Instrument'
     _defaults = [
         {
             '@module':  'easyCore.Objects.Base',
@@ -52,7 +52,3 @@ class Pattern(BaseObj):
         super().__init__(self.__class__.__name__, *[_decoder.process_decoded(default) for default in self._defaults])
         self.name = self._name
         self.interface = interface
-
-    def __repr__(self):
-        return f'{self.__class__.__name__}: x_shift={self.zero_point}, ' \
-               f'y_shift={self.background} '

@@ -2,6 +2,7 @@ __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
 from easyCore import np
+from easyCore import borg
 from CFML_api import PowderPatternSimulation as CFML_api
 
 
@@ -23,6 +24,16 @@ class CFML:
         if self.filename is None:
             raise AttributeError
 
+        if borg.debug:
+            print('CALLING FROM CrysFML\n----------------------')
+            print({'wavelength': self.conditions.lamb,
+                   'u': self.conditions.u_resolution,
+                   'v': self.conditions.v_resolution,
+                   'w': self.conditions.w_resolution,
+                   'x': self.conditions.x_resolution})
+            with open(self.filename, 'r') as r:
+                print(r.read())
+
         x0 = x_array[0]
         xF = x_array[-1]
         nX = np.prod(x_array.shape)
@@ -32,4 +43,5 @@ class CFML:
         self.conditions.theta_step = (xF-x0)/(nX - 1)
 
         self.simulator.compute(self.filename, simulation_conditions=self.conditions)
+
         return self.simulator.y

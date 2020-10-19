@@ -2,6 +2,7 @@ __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
 from easyCore import np
+from easyCore import borg
 import cryspy
 
 
@@ -32,6 +33,11 @@ class Cryspy:
         if not self.cif_str:
             raise AttributeError
 
+        if borg.debug:
+            print('CALLING FROM Cryspy\n----------------------')
+            print(self.conditions)
+            print(self.cif_str)
+
         crystal = cryspy.Crystal.from_cif(self.cif_str)
         phase_list = cryspy.PhaseL()
         phase = cryspy.Phase(label=crystal.data_name, scale=1, igsize=0)
@@ -41,4 +47,5 @@ class Cryspy:
         resolution = cryspy.PdInstrResolution(**self.conditions['resolution'])
         pd = cryspy.Pd(setup=setup, resolution=resolution, phase=phase_list, background=background)
         profile = pd.calc_profile(x_array, [crystal], True, False)
+
         return profile.intensity_total

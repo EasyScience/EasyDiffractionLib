@@ -48,4 +48,4 @@ class Cryspy:
         pd = cryspy.Pd(setup=setup, resolution=resolution, phase=phase_list, background=background)
         profile = pd.calc_profile(x_array, [crystal], True, False)
 
-        return profile.intensity_total
+        return np.array(profile.intensity_total)

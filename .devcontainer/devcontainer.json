@@ -39,7 +39,7 @@
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "pip3 install --user -r requirements.txt",
-  "postCreateCommand": "curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 && export PATH=$PATH:$HOME/.poetry/bin",
+	"postCreateCommand": "curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 && export PATH=$PATH:$HOME/.poetry/bin",
 	// Uncomment to connect as a non-root user. See https://aka.ms/vscode-remote/containers/non-root.
 	// "remoteUser": "vscode"
 }

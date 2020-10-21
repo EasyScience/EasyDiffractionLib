@@ -5,6 +5,8 @@ from easyCore import np
 from easyCore import borg
 import cryspy
 
+import warnings
+warnings.filterwarnings('ignore')
 
 class Cryspy:
 

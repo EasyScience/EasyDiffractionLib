@@ -43,12 +43,11 @@ class Sample(BaseObj):
     @phases.setter
     def phases(self, value):
         if isinstance(value, Crystal):
-            self._phases.append(value)
-        elif isinstance(value, Crystals):
-            self._phases = value
-            self._borg.map.add_edge(self, value)
-        else:
+            value = Crystals('Phases', value)
+        if not isinstance(value, Crystals):
             raise ValueError
+        self._phases = value
+        self._borg.map.add_edge(self, value)
         self._updateInterface()
 
     @property

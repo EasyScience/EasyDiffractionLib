@@ -16,28 +16,35 @@ class Pattern(BaseObj):
             '@class':   'Parameter',
             '@version': '0.0.1',
             'name':     'u_resolution',
-            'value':    0.0002
+            'value':    0.0002,
+            'fixed': True
         },
         'v_resolution': {
             '@module':  'easyCore.Objects.Base',
             '@class':   'Parameter',
             '@version': '0.0.1',
             'name':     'v_resolution',
-            'value':    -0.0002
+            'value':    -0.0002,
+            'fixed': True
+
         },
         'w_resolution': {
             '@module':  'easyCore.Objects.Base',
             '@class':   'Parameter',
             '@version': '0.0.1',
             'name':     'w_resolution',
-            'value':    0.012
+            'value':    0.012,
+            'fixed': True
+
         },
         'x_resolution': {
             '@module':  'easyCore.Objects.Base',
             '@class':   'Parameter',
             '@version': '0.0.1',
             'name':     'x_resolution',
-            'value':    0.012
+            'value':    0.012,
+            'fixed': True
+
         },
         'wavelength':   {
             '@module':  'easyCore.Objects.Base',
@@ -45,7 +52,9 @@ class Pattern(BaseObj):
             '@version': '0.0.1',
             'name':     'wavelength',
             'units':    'angstrom',
-            'value':    1.54056
+            'value':    1.54056,
+            'fixed': True
+
         }
     }
 

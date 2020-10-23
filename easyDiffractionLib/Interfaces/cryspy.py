@@ -25,7 +25,7 @@ class Cryspy(InterfaceTemplate):
         'wavelength': 'wavelength'
     }
 
-    name = 'Cryspy'
+    name = 'CrysPy'
 
     def __init__(self):
         self.calculator = Cryspy_calc()

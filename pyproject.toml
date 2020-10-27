@@ -21,11 +21,13 @@ python = "^3.7, <3.8"
 matplotlib = "^3.3"
 cryspy = "^0.4.11"
 CFML_api = { git = 'ssh://git@github.com/easyScience/CFML_api.git', rev = 'main' }
+GSASII = { git = 'ssh://git@github.com/easyScience/GSASII.git', rev = 'main' }
 easyCore = { git = 'https://github.com/easyScience/easyCore.git', rev = 'STAR_io' }
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
 #CFML_api = { path = '../CFML_api/' }
+#GSASII = { path = '../GSASII/' }
 
 [tool.poetry.scripts]
 easyDiffractionLib = "easyDiffractionLib.main:main"

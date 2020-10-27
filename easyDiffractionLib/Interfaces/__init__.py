@@ -19,13 +19,13 @@ except ImportError:
 try:
     import GSASII
     sys.path.insert(0, GSASII.__path__[0])
-    if 'darwin' in platform:
+    if 'darwin' in sys.platform:
         import somacos
         sys.path.insert(0, os.path.join(somacos.__path__[0], "GSASII"))
-    elif 'linux' in platform:
+    elif 'linux' in sys.platform:
         import solinux
         sys.path.insert(0, os.path.join(solinux.__path__[0], "GSASII"))
-    elif 'win32' in platform:
+    elif 'win32' in sys.platform:
         import sowindows
         sys.path.insert(0, os.path.join(sowindows.__path__[0], "GSASII"))
     from easyDiffractionLib.Interfaces.GSASII import GSASII  # noqa: F401

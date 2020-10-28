@@ -10,6 +10,8 @@ except ImportError:
     # TODO make this a proper message (use logging?)
     print('CrysPy is not installed')
 
+from easyDiffractionLib.Interfaces.CFML import CFML  # noqa: F401
+
 try:
     from easyDiffractionLib.Interfaces.CFML import CFML  # noqa: F401
 except ImportError:
@@ -20,14 +22,14 @@ try:
     import GSASII
     sys.path.insert(0, GSASII.__path__[0])
     if 'darwin' in sys.platform:
-        import somacos
-        sys.path.insert(0, os.path.join(somacos.__path__[0], "GSASII"))
+        import libsDarwin
+        sys.path.insert(0, os.path.join(libsDarwin.__path__[0], "GSASII"))
     elif 'linux' in sys.platform:
-        import solinux
-        sys.path.insert(0, os.path.join(solinux.__path__[0], "GSASII"))
+        import libsLinux
+        sys.path.insert(0, os.path.join(libsLinux.__path__[0], "GSASII"))
     elif 'win32' in sys.platform:
-        import sowindows
-        sys.path.insert(0, os.path.join(sowindows.__path__[0], "GSASII"))
+        import libsWin32
+        sys.path.insert(0, os.path.join(libsWin32.__path__[0], "GSASII"))
     from easyDiffractionLib.Interfaces.GSASII import GSASII  # noqa: F401
 except ImportError:
     # TODO make this a proper message (use logging?)

@@ -5,16 +5,16 @@ __version__ = '0.0.1'
 import os, sys
 
 try:
-    from easyDiffractionLib.Interfaces.CFML import CFML  # noqa: F401
-except ImportError:
-    # TODO make this a proper message (use logging?)
-    print('CFML is not installed')
-
-try:
     from easyDiffractionLib.Interfaces.cryspy import Cryspy  # noqa: F401
 except ImportError:
     # TODO make this a proper message (use logging?)
     print('CrysPy is not installed')
+
+try:
+    from easyDiffractionLib.Interfaces.CFML import CFML  # noqa: F401
+except ImportError:
+    # TODO make this a proper message (use logging?)
+    print('CFML is not installed')
 
 try:
     import GSASII

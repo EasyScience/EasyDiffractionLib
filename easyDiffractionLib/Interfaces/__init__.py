@@ -10,11 +10,9 @@ except ImportError:
     # TODO make this a proper message (use logging?)
     print('CrysPy is not installed')
 
-from easyDiffractionLib.Interfaces.CFML import CFML  # noqa: F401
-
 try:
     from easyDiffractionLib.Interfaces.CFML import CFML  # noqa: F401
-except ImportError:
+except (ImportError, Exception):
     # TODO make this a proper message (use logging?)
     print('CFML is not installed')
 
@@ -31,7 +29,7 @@ try:
         import libsWin32
         sys.path.insert(0, os.path.join(libsWin32.__path__[0], "GSASII"))
     from easyDiffractionLib.Interfaces.GSASII import GSASII  # noqa: F401
-except ImportError:
+except (ImportError, Exception):
     # TODO make this a proper message (use logging?)
     print('GSAS-II is not installed')
 

@@ -11,7 +11,7 @@ from easyCore import np
 class GSASII:
 
     def __init__(self, filename: str = None):
-        self.prm_file_name = 'temp.prm'
+        self.prm_file_name = 'easydiffraction_temp.prm'
         self.prm_file_path = ""
         self.prm_dir_path = ""
         self.conditions = {
@@ -43,7 +43,7 @@ INS  1PRCF2     2    6      0.01
 INS  1PRCF21   0.354031E+03  -0.760404E+03   0.651592E+03   0.000000E+00        
 INS  1PRCF22   0.000000E+00   0.000000E+00                                              
         """
-        self.prm_dir_path = os.path.dirname(os.path.abspath(self.filename))
+        self.prm_dir_path = os.path.dirname(self.filename)
         self.prm_file_path = os.path.join(self.prm_dir_path, self.prm_file_name)
         with open(self.prm_file_path, 'w') as f:
             f.write(prm_base)
@@ -51,7 +51,7 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
     def calculate(self, x_array: np.ndarray) -> np.ndarray:
         self.create_temp_prm()
 
-        gpx = G2sc.G2Project(newgpx=os.path.join(self.prm_dir_path, 'temp.gpx'))  # create a project
+        gpx = G2sc.G2Project(newgpx=os.path.join(self.prm_dir_path, 'easydiffraction_temp.gpx'))  # create a project
 
         # step 1, setup: add a phase to the project
         cif_file = self.filename
@@ -98,8 +98,7 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
             raise ArithmeticError
         finally:
             # Clean up
-            pathlib.Path(os.path.join(self.prm_dir_path, 'temp.lst')).unlink()
-            pathlib.Path(os.path.join(self.prm_dir_path, 'temp.gpx')).unlink()
-            pathlib.Path(os.path.join(self.prm_dir_path, 'temp.bak0.gpx')).unlink()
+            for p in pathlib.Path(os.path.dirname(self.filename)).glob("easydiffraction_temp*"):
+                p.unlink()
 
         return ycalc

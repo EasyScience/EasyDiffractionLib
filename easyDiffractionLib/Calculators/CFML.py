@@ -1,6 +1,8 @@
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
+import os, pathlib
+
 from easyCore import np
 from easyCore import borg
 from CFML_api import PowderPatternSimulation as CFML_api
@@ -42,6 +44,13 @@ class CFML:
         self.conditions.theta_max = xF
         self.conditions.theta_step = (xF-x0)/(nX - 1)
 
-        self.simulator.compute(self.filename, simulation_conditions=self.conditions)
+        try:
+            self.simulator.compute(self.filename, simulation_conditions=self.conditions)
+        except:
+            raise ArithmeticError
+        finally:
+            # Clean up
+            for p in pathlib.Path(os.path.dirname(self.filename)).glob("easydiffraction_temp*"):
+                p.unlink()
 
         return self.simulator.y

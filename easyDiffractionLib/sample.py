@@ -1,6 +1,7 @@
 __author__ = 'github.com/wardsimon'
 __version__ = '0.0.1'
 
+import os, tempfile
 from typing import Union
 
 from easyCore.Objects.Base import BaseObj
@@ -22,7 +23,8 @@ class Sample(BaseObj):
         super(Sample, self).__init__(name, _phases=phases, _parameters=parameters)
         self.background = Line()
         self.interface = interface
-        self.filename = './temp.cif'
+        self.filename = os.path.join(tempfile.gettempdir(), 'easydiffraction_temp.cif')
+        print("Temp CIF:", self.filename)
         self.output_index = None
         self._updateInterface()
 

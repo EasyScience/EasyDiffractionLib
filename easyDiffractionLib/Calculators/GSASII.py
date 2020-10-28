@@ -59,29 +59,30 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
         gpx.add_phase(cif_file, phasename=phase_name, fmthint='CIF')
 
         # step 2, setup: add a simulated histogram and link it to the previous phase(s)
-        x0 = x_array[0]
-        xF = x_array[-1]
-        nX = np.prod(x_array.shape)
-        x_step = (xF-x0)/(nX - 1)
-        hist1 = gpx.add_simulated_powder_histogram(f"{phase_name} simulation",
-                                                   self.prm_file_path,
-                                                   x0, xF, x_step,
-                                                   phases=gpx.phases())
+        x_min = x_array[0]
+        x_max = x_array[-1]
+        n_points = np.prod(x_array.shape)
+        x_step = (x_max-x_min)/(n_points - 1)
+        gpx.add_simulated_powder_histogram(f"{phase_name} simulation",
+                                           self.prm_file_path,
+                                           x_min, x_max, Tstep=x_step,
+                                           phases=gpx.phases())
 
         # Set instrumental parameters
-        multiplier = 1000
-        wl = self.conditions["wavelength"]
-        u = self.conditions["resolution"]["u"] * multiplier
-        v = self.conditions["resolution"]["v"] * multiplier
-        w = self.conditions["resolution"]["w"] * multiplier
-        x = self.conditions["resolution"]["x"] * multiplier
-        y = self.conditions["resolution"]["y"] * multiplier
-        gpx.data[f'PWDR {phase_name} simulation']['Instrument Parameters'][0]['Lam'] = [wl,wl,0]
+        resolution_multiplier = 1000
+        u = self.conditions["resolution"]["u"] * resolution_multiplier
+        v = self.conditions["resolution"]["v"] * resolution_multiplier
+        w = self.conditions["resolution"]["w"] * resolution_multiplier
+        x = self.conditions["resolution"]["x"] * resolution_multiplier
+        y = self.conditions["resolution"]["y"] * resolution_multiplier
         gpx.data[f'PWDR {phase_name} simulation']['Instrument Parameters'][0]['U'] = [u,u,0]
         gpx.data[f'PWDR {phase_name} simulation']['Instrument Parameters'][0]['V'] = [v,v,0]
         gpx.data[f'PWDR {phase_name} simulation']['Instrument Parameters'][0]['W'] = [w,w,0]
         gpx.data[f'PWDR {phase_name} simulation']['Instrument Parameters'][0]['X'] = [x,x,0]
         gpx.data[f'PWDR {phase_name} simulation']['Instrument Parameters'][0]['Y'] = [y,y,0]
+
+        wl = self.conditions["wavelength"]
+        gpx.data[f'PWDR {phase_name} simulation']['Instrument Parameters'][0]['Lam'] = [wl,wl,0]
 
         # Step 3: Set the scale factor to adjust the y scale
         #hist1.SampleParameters['Scale'][0] = 1000000.

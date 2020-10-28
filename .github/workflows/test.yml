@@ -54,7 +54,7 @@ jobs:
     #  run: poetry config virtualenvs.create false
 
     - name: Create venv and install dependences
-      run: poetry install
+      run: poetry update
 
     - name: Print some debug info
       run: |

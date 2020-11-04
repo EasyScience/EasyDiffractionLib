@@ -32,7 +32,6 @@ jobs:
           python-version: 3.7
 
     - name: Set up some env variables
-      shell: bash
       run: |
         which python
         echo "PYTHONPATH=${pythonLocation}" >> $GITHUB_ENV
@@ -61,7 +60,8 @@ jobs:
 
     - name: Relink CrysFML from default Python dylib  
       run: |
-        install_name_tool -change /Library/Frameworks/Python.framework/Versions/3.7/Python /Users/runner/hostedtoolcache/Python/3.7.9/x64/lib/libpython3.7m.dylib /Users/runner/Library/Caches/pypoetry/virtualenvs/easydiffractionlib-X6dFDTaL-py3.7/src/libsdarwin/libsDarwin/CFML/powder_generation.so
+        install_name_tool -change /Library/Frameworks/Python.framework/Versions/3.7/Python /Users/runner/hostedtoolcache/Python/3.7.9/x64/lib/libpython3.7m.dylib /Users/runner/Library/Caches/pypoetry/virtualenvs/easydiffractionlib-X6dFDTaL-py3.7/src/libsdarwin/libsDarwin/CFML/powder_generation.so        
+        install_name_tool -change /Library/Frameworks/Python.framework/Versions/3.7/Python /Users/runner/hostedtoolcache/Python/3.7.9/x64/lib/libpython3.7m.dylib /Users/runner/Library/Caches/pypoetry/virtualenvs/easydiffractionlib-X6dFDTaL-py3.7/lib/python3.7/site-packages/libsDarwin/CFML/powder_generation.so
         
     - name: Run main.py
       run: poetry run easyDiffractionLib

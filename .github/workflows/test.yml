@@ -18,7 +18,7 @@ jobs:
     # Build matrix for different platforms
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -48,7 +48,6 @@ jobs:
         echo "PYTHON_DYLIB: $PYTHON_DYLIB"
         echo "CRYSFML_PYTHON_DYLIB: $CRYSFML_PYTHON_DYLIB"
         echo "CRYSFML_SO: $CRYSFML_SO"
-        otool -L /Users/runner/hostedtoolcache/Python/3.7.9/x64/bin/python
 
     - name: Set up access to private repos
       uses: webfactory/ssh-agent@v0.4.1
@@ -61,9 +60,13 @@ jobs:
     - name: Create venv and install dependences
       run: poetry update
 
-    - name: Relink CrysFML from default Python dylib  
-      run: |
-        install_name_tool -change /Library/Frameworks/Python.framework/Versions/3.7/Python /Users/runner/hostedtoolcache/Python/3.7.9/x64/lib/libpython3.7m.dylib /Users/runner/Library/Caches/pypoetry/virtualenvs/easydiffractionlib-X6dFDTaL-py3.7/lib/python3.7/site-packages/libsDarwin/CFML/powder_generation.so
-        
+    - name: Relink CrysFML from default Python dylib (macOS)
+      if: matrix.os == 'ubuntu-latest'
+      run: install_name_tool -change /Library/Frameworks/Python.framework/Versions/3.7/Python /Users/runner/hostedtoolcache/Python/3.7.9/x64/lib/libpython3.7m.dylib /Users/runner/Library/Caches/pypoetry/virtualenvs/easydiffractionlib-X6dFDTaL-py3.7/lib/python3.7/site-packages/libsDarwin/CFML/powder_generation.so
+
+    - name: Relink CrysFML from default Python dylib (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: patchelf --replace-needed libpython3.7m.so.1.0 /Users/runner/hostedtoolcache/Python/3.7.9/x64/lib/libpython3.7m.so.1.0 /Users/runner/Library/Caches/pypoetry/virtualenvs/easydiffractionlib-X6dFDTaL-py3.7/lib/python3.7/site-packages/libsLinux/CFML/powder_generation.so
+
     - name: Run main.py
       run: poetry run easyDiffractionLib

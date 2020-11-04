@@ -61,7 +61,7 @@ jobs:
       run: poetry update
 
     - name: Relink CrysFML from default Python dylib (macOS)
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == 'macos-latest'
       run: install_name_tool -change /Library/Frameworks/Python.framework/Versions/3.7/Python /Users/runner/hostedtoolcache/Python/3.7.9/x64/lib/libpython3.7m.dylib /Users/runner/Library/Caches/pypoetry/virtualenvs/easydiffractionlib-X6dFDTaL-py3.7/lib/python3.7/site-packages/libsDarwin/CFML/powder_generation.so
 
     - name: Relink CrysFML from default Python dylib (Linux)

@@ -66,7 +66,7 @@ jobs:
 
     - name: Relink CrysFML from default Python dylib (Linux)
       if: matrix.os == 'ubuntu-latest'
-      run: patchelf --replace-needed libpython3.7m.so.1.0 /Users/runner/hostedtoolcache/Python/3.7.9/x64/lib/libpython3.7m.so.1.0 /Users/runner/Library/Caches/pypoetry/virtualenvs/easydiffractionlib-l-ltHCsT-py3.7/lib/python3.7/site-packages/libsLinux/CFML/powder_generation.so
+      run: patchelf --replace-needed libpython3.7m.so.1.0 /opt/hostedtoolcache/Python/3.7.9/x64/lib/libpython3.7m.so.1.0 /home/runner/.cache/pypoetry/virtualenvs/easydiffractionlib-l-ltHCsT-py3.7/lib/python3.7/site-packages/libsLinux/CFML/powder_generation.so
 
     - name: Run main.py
       run: poetry run easyDiffractionLib

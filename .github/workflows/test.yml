@@ -35,6 +35,22 @@ jobs:
       #  curl -o .ci/download/python-3.7.9-macosx10.9.pkg https://www.python.org/ftp/python/3.7.9/python-3.7.9-macosx10.9.pkg
       #  sudo installer -store -pkg .ci/download/python-3.7.9-macosx10.9.pkg -target /
 
+    - name: Print some debug info
+      run: |
+        which python
+        poetry run which python
+        poetry env info
+        echo ""
+        ls -l /Library/Frameworks
+        echo ""
+        ls -l /Users/runner/hostedtoolcache/Python
+        echo ""
+        ls -l /Users/runner/hostedtoolcache/Python/3.7.9
+        echo ""
+        ls -l /Users/runner/hostedtoolcache/Python/3.7.9/x64
+        echo ""
+        otool -L /Users/runner/hostedtoolcache/Python/3.7.9/x64/bin/python
+        
     - name: Set up access to private repos
       uses: webfactory/ssh-agent@v0.4.1
       with:
@@ -55,22 +71,6 @@ jobs:
 
     - name: Create venv and install dependences
       run: poetry update
-
-    - name: Print some debug info
-      run: |
-        which python
-        poetry run which python
-        poetry env info
-        echo ""
-        ls -l /Library/Frameworks
-        echo ""
-        ls -l /Users/runner/hostedtoolcache/Python
-        echo ""
-        ls -l /Users/runner/hostedtoolcache/Python/3.7.9
-        echo ""
-        ls -l /Users/runner/hostedtoolcache/Python/3.7.9/x64
-        echo ""
-        otool -L /Users/runner/hostedtoolcache/Python/3.7.9/x64/bin/python
 
     - name: Run main.py
       run: poetry run easyDiffractionLib

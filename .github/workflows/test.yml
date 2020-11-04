@@ -38,8 +38,6 @@ jobs:
     - name: Print some debug info
       run: |
         which python
-#        poetry run which python
-#        poetry env info
         echo ""
         ls -l /Library/Frameworks
         echo ""

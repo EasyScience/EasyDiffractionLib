@@ -47,7 +47,6 @@ jobs:
         echo "CRYSFML_PYTHON_DYLIB: $CRYSFML_PYTHON_DYLIB"
         echo "CRYSFML_SO: $CRYSFML_SO"
         otool -L /Users/runner/hostedtoolcache/Python/3.7.9/x64/bin/python
-        otool -L $PYTHON_BIN
 
     - name: Set up access to private repos
       uses: webfactory/ssh-agent@v0.4.1
@@ -57,13 +56,12 @@ jobs:
     - name: Set up python packages manager
       uses: Gr1N/setup-poetry@v2
 
-
     - name: Create venv and install dependences
       run: poetry update
 
     - name: Relink CrysFML from default Python dylib  
       run: |
-        install_name_tool -change ${CRYSFML_PYTHON_DYLIB} ${PYTHON_DYLIB} ${CRYSFML_SO}
+        install_name_tool -change /Library/Frameworks/Python.framework/Versions/3.7/Python /Users/runner/hostedtoolcache/Python/3.7.9/x64/lib/libpython3.7m.dylib /Users/runner/Library/Caches/pypoetry/virtualenvs/easydiffractionlib-X6dFDTaL-py3.7/src/libsdarwin/libsDarwin/CFML/powder_generation.so
         
     - name: Run main.py
       run: poetry run easyDiffractionLib

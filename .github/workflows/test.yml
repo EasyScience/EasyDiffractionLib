@@ -69,6 +69,8 @@ jobs:
         ls -l /Users/runner/hostedtoolcache/Python/3.7.9
         echo ""
         ls -l /Users/runner/hostedtoolcache/Python/3.7.9/x64
+        echo ""
+        otool -L /Users/runner/hostedtoolcache/Python/3.7.9/x64/bin/python
 
     - name: Run main.py
       run: poetry run easyDiffractionLib

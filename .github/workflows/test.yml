@@ -30,25 +30,7 @@ jobs:
       uses: actions/setup-python@v2
       with:
           python-version: 3.7
-      #run: |
-      #  mkdir -p .ci/download
-      #  curl -o .ci/download/python-3.7.9-macosx10.9.pkg https://www.python.org/ftp/python/3.7.9/python-3.7.9-macosx10.9.pkg
-      #  sudo installer -store -pkg .ci/download/python-3.7.9-macosx10.9.pkg -target /
-
-    - name: Print some debug info
-      run: |
-        which python
-        echo ""
-        ls -l /Library/Frameworks
-        echo ""
-        ls -l /Users/runner/hostedtoolcache/Python
-        echo ""
-        ls -l /Users/runner/hostedtoolcache/Python/3.7.9
-        echo ""
-        ls -l /Users/runner/hostedtoolcache/Python/3.7.9/x64
-        echo ""
-        otool -L /Users/runner/hostedtoolcache/Python/3.7.9/x64/bin/python
-        
+       
     - name: Set up access to private repos
       uses: webfactory/ssh-agent@v0.4.1
       with:
@@ -64,11 +46,18 @@ jobs:
         echo $pythonLocation
         echo $PYTHONPATH
 
-    #- name: Disable automatic creation of virtualenvs
-    #  run: poetry config virtualenvs.create false
-
     - name: Create venv and install dependences
       run: poetry update
 
+    - name: Relink CrysFML from default Python dylib  
+      run: |
+        which python
+        echo "PYTHON_BIN=/Users/runner/hostedtoolcache/Python/3.7.9/x64/bin/python" >> $GITHUB_ENV
+        echo "PYTHON_DYLIB=/Users/runner/hostedtoolcache/Python/3.7.9/x64/lib/libpython3.7m.dylib" >> $GITHUB_ENV
+        echo "CRYSFML_PYTHON_DYLIB=/Library/Frameworks/Python.framework/Versions/3.7/Python" >> $GITHUB_ENV
+        echo "CRYSFML_SO=/Users/runner/Library/Caches/pypoetry/virtualenvs/easydiffractionlib-X6dFDTaL-py3.7/src/libsdarwin/libsDarwin/CFML/powder_generation.so" >> $GITHUB_ENV
+        otool -L ${PYTHON_BIN}
+        install_name_tool -change ${CRYSFML_PYTHON_DYLIB} ${PYTHON_DYLIB} ${CRYSFML_SO}
+        
     - name: Run main.py
       run: poetry run easyDiffractionLib

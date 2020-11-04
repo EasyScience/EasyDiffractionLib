@@ -18,7 +18,7 @@ jobs:
     # Build matrix for different platforms
     strategy:
       matrix:
-        os: [macos-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -32,13 +32,16 @@ jobs:
           python-version: 3.7
 
     - name: Set up some env variables
+      shell: bash
       run: |
         which python
+        ls -l $pythonLocation
+        ls -l $pythonLocation/lib
         echo "PYTHONPATH=${pythonLocation}" >> $GITHUB_ENV
         echo "PYTHON_BIN=/Users/runner/hostedtoolcache/Python/3.7.9/x64/bin/python" >> $GITHUB_ENV
         echo "PYTHON_DYLIB=/Users/runner/hostedtoolcache/Python/3.7.9/x64/lib/libpython3.7m.dylib" >> $GITHUB_ENV
         echo "CRYSFML_PYTHON_DYLIB=/Library/Frameworks/Python.framework/Versions/3.7/Python" >> $GITHUB_ENV
-        echo "CRYSFML_SO=/Users/runner/Library/Caches/pypoetry/virtualenvs/easydiffractionlib-X6dFDTaL-py3.7/src/libsdarwin/libsDarwin/CFML/powder_generation.so" >> $GITHUB_ENV
+        echo "CRYSFML_SO=/Users/runner/Library/Caches/pypoetry/virtualenvs/easydiffractionlib-X6dFDTaL-py3.7/lib/python3.7/site-packages/libsDarwin/CFML/powder_generation.so" >> $GITHUB_ENV
         echo "pythonLocation: $pythonLocation"
         echo "PYTHONPATH: $PYTHONPATH"
         echo "PYTHON_BIN: $PYTHON_BIN"
@@ -60,7 +63,6 @@ jobs:
 
     - name: Relink CrysFML from default Python dylib  
       run: |
-        install_name_tool -change /Library/Frameworks/Python.framework/Versions/3.7/Python /Users/runner/hostedtoolcache/Python/3.7.9/x64/lib/libpython3.7m.dylib /Users/runner/Library/Caches/pypoetry/virtualenvs/easydiffractionlib-X6dFDTaL-py3.7/src/libsdarwin/libsDarwin/CFML/powder_generation.so        
         install_name_tool -change /Library/Frameworks/Python.framework/Versions/3.7/Python /Users/runner/hostedtoolcache/Python/3.7.9/x64/lib/libpython3.7m.dylib /Users/runner/Library/Caches/pypoetry/virtualenvs/easydiffractionlib-X6dFDTaL-py3.7/lib/python3.7/site-packages/libsDarwin/CFML/powder_generation.so
         
     - name: Run main.py

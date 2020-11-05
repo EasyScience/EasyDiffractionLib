@@ -24,7 +24,7 @@ class Sample(BaseObj):
         self.background = Line()
         self.interface = interface
         self.filename = os.path.join(tempfile.gettempdir(), 'easydiffraction_temp.cif')
-        print("Temp CIF:", self.filename)
+        print(f"Temp CIF: {self.filename}")
         self.output_index = None
         self._updateInterface()
 

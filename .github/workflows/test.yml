@@ -18,7 +18,7 @@ jobs:
     # Build matrix for different platforms
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [windows-latest]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:

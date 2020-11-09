@@ -24,16 +24,12 @@ matplotlib = "^3.2, <3.3"
 libsDarwin = { git = 'ssh://git@github.com/easyScience/libsDarwin.git', rev = 'main', platform = 'darwin' }
 libsLinux = { git = 'ssh://git@github.com/easyScience/libsLinux.git', rev = 'main', platform = 'linux' }
 libsWin32 = { git = 'ssh://git@github.com/easyScience/libsWin32.git', rev = 'main', platform = 'win32' }
-GSASII = { git = 'ssh://git@github.com/easyScience/GSASII.git', rev = 'main' }
 easyCore = { git = 'https://github.com/easyScience/easyCore.git', rev = 'STAR_io' }
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
 toml = "^0.10"
 requests = '^2.24'
-# easyScience
-#CFML_api = { path = '../CFML_api/' }
-#GSASII = { path = '../GSASII/' }
 
 [tool.poetry.scripts]
 easyDiffractionLib = "easyDiffractionLib.main:main"

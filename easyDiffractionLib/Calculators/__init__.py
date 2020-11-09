@@ -1,7 +1,7 @@
 __author__ = 'github.com/wardsimon'
 __version__ = '0.0.1'
 
-import sys
+import os, sys
 
 if 'darwin' in sys.platform:
     import libsDarwin
@@ -15,4 +15,7 @@ elif 'win32' in sys.platform:
 else:
     raise NotImplementedError(f"Platform '{sys.platform}' is not supported")
 
+gsasii_path = os.path.join(libs_path, "GSASII")
+
 sys.path.append(libs_path)
+sys.path.append(gsasii_path)

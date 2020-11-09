@@ -3,10 +3,10 @@ __version__ = "0.0.1"
 
 import os, pathlib
 
+import CFML_api
+
 from easyCore import np
 from easyCore import borg
-
-import CFML_api
 
 
 class CFML:

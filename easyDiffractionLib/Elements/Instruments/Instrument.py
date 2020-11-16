@@ -11,6 +11,24 @@ _decoder = MontyDecoder()
 class Pattern(BaseObj):
     _name = 'Instrument'
     _defaults = {
+        'zero_shift': {
+            '@module': 'easyCore.Objects.Base',
+            '@class': 'Parameter',
+            '@version': '0.0.1',
+            'name': 'zero_shift',
+            'units': 'degree',
+            'value': 0.0,
+            'fixed': True
+        },
+        'wavelength':   {
+            '@module':  'easyCore.Objects.Base',
+            '@class':   'Parameter',
+            '@version': '0.0.1',
+            'name':     'wavelength',
+            'units':    'angstrom',
+            'value':    1.54056,
+            'fixed': True
+        },
         'u_resolution': {
             '@module':  'easyCore.Objects.Base',
             '@class':   'Parameter',
@@ -44,37 +62,33 @@ class Pattern(BaseObj):
             'name':     'x_resolution',
             'value':    0.012,
             'fixed': True
-
-        },
-        'wavelength':   {
-            '@module':  'easyCore.Objects.Base',
-            '@class':   'Parameter',
-            '@version': '0.0.1',
-            'name':     'wavelength',
-            'units':    'angstrom',
-            'value':    1.54056,
-            'fixed': True
-
         }
     }
 
     def __init__(self,
+                 zero_shift: Parameter, wavelength: Parameter,
                  u_resolution: Parameter, v_resolution: Parameter, w_resolution: Parameter, x_resolution: Parameter,
-                 wavelength: Parameter, interface=None):
+                 interface=None):
         super().__init__(self.__class__.__name__,
+                         zero_shift=zero_shift, wavelength=wavelength,
                          u_resolution=u_resolution, v_resolution=v_resolution,
-                         w_resolution=w_resolution, x_resolution=x_resolution, wavelength=wavelength)
+                         w_resolution=w_resolution, x_resolution=x_resolution)
         self.name = self._name
         self.interface = interface
 
     @classmethod
     def from_pars(cls,
+                  zero_shift: float = _defaults['zero_shift']['value'],
+                  wavelength: float = _defaults['wavelength']['value'],
                   u_resolution: float = _defaults['u_resolution']['value'],
                   v_resolution: float = _defaults['v_resolution']['value'],
                   w_resolution: float = _defaults['w_resolution']['value'],
-                  x_resolution: float = _defaults['x_resolution']['value'],
-                  wavelength: float = _defaults['wavelength']['value']):
+                  x_resolution: float = _defaults['x_resolution']['value']):
         defaults = deepcopy(cls._defaults)
+        defaults['zero_shift']['value'] = zero_shift
+        zero_shift = _decoder.process_decoded(defaults['zero_shift'])
+        defaults['wavelength']['value'] = wavelength
+        wavelength = _decoder.process_decoded(defaults['wavelength'])
         defaults['u_resolution']['value'] = u_resolution
         u_resolution = _decoder.process_decoded(defaults['u_resolution'])
         defaults['v_resolution']['value'] = v_resolution
@@ -83,18 +97,17 @@ class Pattern(BaseObj):
         w_resolution = _decoder.process_decoded(defaults['w_resolution'])
         defaults['x_resolution']['value'] = x_resolution
         x_resolution = _decoder.process_decoded(defaults['x_resolution'])
-        defaults['wavelength']['value'] = wavelength
-        wavelength = _decoder.process_decoded(defaults['wavelength'])
-        return cls(u_resolution=u_resolution, v_resolution=v_resolution,
-                   w_resolution=w_resolution, x_resolution=x_resolution, wavelength=wavelength)
+        return cls(zero_shift=zero_shift, wavelength=wavelength, u_resolution=u_resolution,
+                   v_resolution=v_resolution, w_resolution=w_resolution, x_resolution=x_resolution)
 
     @classmethod
     def default(cls):
         defaults = deepcopy(cls._defaults)
+        zero_shift = _decoder.process_decoded(defaults['zero_shift'])
+        wavelength = _decoder.process_decoded(defaults['wavelength'])
         u_resolution = _decoder.process_decoded(defaults['u_resolution'])
         v_resolution = _decoder.process_decoded(defaults['v_resolution'])
         w_resolution = _decoder.process_decoded(defaults['w_resolution'])
         x_resolution = _decoder.process_decoded(defaults['x_resolution'])
-        wavelength = _decoder.process_decoded(defaults['wavelength'])
-        return cls(u_resolution=u_resolution, v_resolution=v_resolution,
-                   w_resolution=w_resolution, x_resolution=x_resolution, wavelength=wavelength)
+        return cls(zero_shift=zero_shift, wavelength=wavelength, u_resolution=u_resolution,
+                   v_resolution=v_resolution, w_resolution=w_resolution, x_resolution=x_resolution)

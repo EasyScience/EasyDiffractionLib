@@ -18,10 +18,11 @@ class Cryspy(InterfaceTemplate):
         'cif_str': 'cif_str'}
 
     _instrument_link = {
-        'u_resolution': 'u',
-        'v_resolution': 'v',
-        'w_resolution': 'w',
-        'x_resolution': 'x',
+        'resolution_u': 'u',
+        'resolution_v': 'v',
+        'resolution_w': 'w',
+        'resolution_x': 'x',
+        'resolution_y': 'y',
         'wavelength': 'wavelength'
     }
 

@@ -18,10 +18,11 @@ class CFML(InterfaceTemplate):
         'filename': 'filename'}
 
     _instrument_link = {
-        'u_resolution': 'u_resolution',
-        'v_resolution': 'v_resolution',
-        'w_resolution': 'w_resolution',
-        'x_resolution': 'x_resolution',
+        'resolution_u': 'u_resolution',
+        'resolution_v': 'v_resolution',
+        'resolution_w': 'w_resolution',
+        'resolution_x': 'x_resolution',
+        'resolution_y': 'y_resolution',
         'wavelength': 'lamb'
     }
 

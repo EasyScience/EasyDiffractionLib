@@ -53,7 +53,7 @@ class PointBackground(Background):
         y_points = self.y_sorted_points
 
         for point, intensity in zip(x_points, y_points):
-            idx = (reduced_x >= low_x) & (reduced_x < point)
+            idx = (reduced_x > low_x) & (reduced_x <= point)
             if np.any(idx):
                 y[idx] = np.interp(reduced_x[idx], [low_x, point], [low_y, intensity])
             low_x = point

@@ -42,7 +42,7 @@ class Sample(BaseObj):
                     self.interface is not None and \
                     (interface_call is None or interface_call == 'background'):
                 # TODO: At the moment we're only going to support 1 BG as there are no experiments yet.
-                self.interface.generate_binding(self._backgrounds, self._backgrounds[0], ifun=self.interface.generate_background_bindings)
+                self.interface.generate_bindings(self._backgrounds, self._backgrounds[0], ifun=self.interface.generate_background_binding)
 
     def get_phase(self, phase_index):
         return self._phases[phase_index]
@@ -55,8 +55,8 @@ class Sample(BaseObj):
         self._updateInterface(interface_call='background')
 
     def remove_background(self, background):
-        if background.linked_experiment in self._backgrounds.linked_experiments:
-            del self._backgrounds[background.linked_experiment]
+        if background.linked_experiment.raw_value in self._backgrounds.linked_experiments:
+            del self._backgrounds[background.linked_experiment.raw_value]
             self._updateInterface(interface_call='background')
         else:
             raise ValueError

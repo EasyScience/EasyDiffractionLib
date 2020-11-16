@@ -96,10 +96,10 @@ class CFML(InterfaceTemplate):
         :rtype: float
         """
         self.calculator.background = background
-        if value_label <= len(self.calculator.background):
-            return self.calculator.background[value_label]
-        else:
-            raise IndexError
+        # if value_label <= len(self.calculator.background):
+        #     return self.calculator.background[value_label]
+        # else:
+        #     raise IndexError
 
     def set_background_value(self, background, value_label: int, value: float):
         """
@@ -112,10 +112,10 @@ class CFML(InterfaceTemplate):
         :rtype: noneType
         """
         self.calculator.background = background
-        if value_label <= len(self.calculator.background):
-            self.calculator.background[value_label].set(value)
-        else:
-            raise IndexError
+        # if value_label <= len(self.calculator.background):
+        #     self.calculator.background[value_label].set(value)
+        # else:
+        #     raise IndexError
 
     def bulk_update(self, value_label_list: List[str], value_list: List[float], external: bool):
         """

@@ -43,7 +43,7 @@ class InterfaceFactory(InterfaceFactoryTemplate):
         :return: binding property
         :rtype: property
         """
-        return property(fget=self.__get_background_item(self, background, name),
+        return property(fget=None,
                         fset=self.__set_background_item(self, background, name))
 
     def generate_binding(self, name, *args, **kwargs) -> property:

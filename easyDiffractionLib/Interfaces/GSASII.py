@@ -68,10 +68,10 @@ class GSASII(InterfaceTemplate):
         :rtype: float
         """
         self.calculator.background = background
-        if value_label <= len(self.calculator.background):
-            return self.calculator.background[value_label]
-        else:
-            raise IndexError
+        # if value_label <= len(self.calculator.background):
+        #     return self.calculator.background[value_label]
+        # else:
+        #     raise IndexError
 
     def set_background_value(self, background, value_label: int, value: float):
         """
@@ -84,10 +84,10 @@ class GSASII(InterfaceTemplate):
         :rtype: noneType
         """
         self.calculator.background = background
-        if value_label <= len(self.calculator.background):
-            self.calculator.background[value_label].set(value)
-        else:
-            raise IndexError
+        # if value_label <= len(self.calculator.background):
+        #     self.calculator.background[value_label].set(value)
+        # else:
+        #     raise IndexError
 
     def get_instrument_value(self, value_label: str) -> float:
         """

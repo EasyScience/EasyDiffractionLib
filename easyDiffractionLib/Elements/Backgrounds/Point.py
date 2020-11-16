@@ -12,15 +12,15 @@ from .Background import Background
 class BackgroundPoint(BaseObj):
     def __init__(self, x: Descriptor, y: Parameter):
         x._callback = property(fget=None,
-                               fset=lambda obj, x_value: self._modify_x_label(obj, x_value),
+                               fset=lambda x_value: self._modify_x_label(x_value),
                                fdel=None)
-        super(BackgroundPoint, self).__init__('background_point', x=x, y=y)
+        super(BackgroundPoint, self).__init__('{:.1f}_deg'.format(x.raw_value).replace(".", ","), x=x, y=y)
 
 
     @classmethod
     def from_pars(cls, x: float, y: float):
-        x = Descriptor('{:.1f}'.format(x), x)
-        y = Parameter('y', y, fixed=True)
+        x = Descriptor('x', x)
+        y = Parameter('intensity', y, fixed=True)
         return cls(x, y)
 
     @classmethod
@@ -30,9 +30,9 @@ class BackgroundPoint(BaseObj):
     def set(self, value):
         self.y = value
 
-    @staticmethod
-    def _modify_x_label(obj: Descriptor, value: float):
-        obj.name = '{:.1f}'.format(value)
+
+    def _modify_x_label(self, value: float):
+        self.name = '{:.1f}_deg'.format(value).replace(".", ",")
 
 
 class PointBackground(Background):

@@ -26,6 +26,11 @@ class CFML(InterfaceTemplate):
         'wavelength': 'lamb'
     }
 
+    _pattern_link = {
+        'scale': 'scale',
+        'x_offset': 'x_offset'
+    }
+
     name = 'CrysFML'
 
     def __init__(self):
@@ -117,6 +122,18 @@ class CFML(InterfaceTemplate):
         #     self.calculator.background[value_label].set(value)
         # else:
         #     raise IndexError
+
+    def set_pattern_value(self, pattern, value_label: int, value: float):
+        """
+        Method to set a value from the calculator
+        :param value_label: parameter name to get
+        :type value_label: str
+        :param value: new numeric value
+        :type value: float
+        :return: None
+        :rtype: noneType
+        """
+        self.calculator.pattern = pattern
 
     def bulk_update(self, value_label_list: List[str], value_list: List[float], external: bool):
         """

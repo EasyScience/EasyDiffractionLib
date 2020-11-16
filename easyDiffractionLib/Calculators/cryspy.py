@@ -6,7 +6,9 @@ from easyCore import borg
 import cryspy
 
 import warnings
+
 warnings.filterwarnings('ignore')
+
 
 class Cryspy:
 
@@ -24,6 +26,7 @@ class Cryspy:
 
         }
         self.background = None
+        self.pattern = None
 
     def calculate(self, x_array: np.ndarray) -> np.ndarray:
         """
@@ -35,6 +38,15 @@ class Cryspy:
         """
         if not self.cif_str:
             raise AttributeError
+
+        if self.pattern is None:
+            scale = 1.0
+            offset = 0
+        else:
+            scale = self.pattern.scale.raw_value
+            offset = self.pattern.zero_shift.raw_value
+
+        this_x_array = x_array.copy() + offset
 
         if borg.debug:
             print('CALLING FROM Cryspy\n----------------------')
@@ -49,11 +61,11 @@ class Cryspy:
         background = cryspy.PdBackgroundL()
         resolution = cryspy.PdInstrResolution(**self.conditions['resolution'])
         pd = cryspy.Pd(setup=setup, resolution=resolution, phase=phase_list, background=background)
-        profile = pd.calc_profile(x_array, [crystal], True, False)
+        profile = pd.calc_profile(this_x_array, [crystal], True, False)
 
         if self.background is None:
-            bg = np.zeros_like(x_array)
+            bg = np.zeros_like(this_x_array)
         else:
-            bg = self.background.calculate(x_array)
+            bg = self.background.calculate(this_x_array)
 
-        return np.array(profile.intensity_total)  + bg
+        return scale * np.array(profile.intensity_total) + bg

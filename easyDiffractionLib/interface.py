@@ -46,6 +46,17 @@ class InterfaceFactory(InterfaceFactoryTemplate):
         return property(fget=None,
                         fset=self.__set_background_item(self, background, name))
 
+    def generate_pattern_binding(self, name, pattern) -> property:
+        """
+        Automatically bind a `Parameter` to the corresponding interface.
+        :param name: parameter name
+        :type name: str
+        :return: binding property
+        :rtype: property
+        """
+        return property(fget=None,
+                        fset=self.__set_pattern_item(self, pattern, name))
+
     def generate_binding(self, name, *args, **kwargs) -> property:
         """
         Automatically bind a `Parameter` to the corresponding interface.
@@ -182,4 +193,20 @@ class InterfaceFactory(InterfaceFactoryTemplate):
 
         def inner(value):
             obj().set_background_value(background, index, value)
+        return inner
+
+    @staticmethod
+    def __set_pattern_item(obj, pattern, index) -> Callable:
+        """
+        Set the value of a key by a callable object
+        :param obj: object to be created from
+        :type obj: InterfaceFactory
+        :param key: name of parameter to be set
+        :type key: str
+        :return: function to set key
+        :rtype: Callable
+        """
+
+        def inner(value):
+            obj().set_pattern_value(pattern, index, value)
         return inner

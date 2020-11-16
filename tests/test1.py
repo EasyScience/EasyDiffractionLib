@@ -6,7 +6,7 @@ from easyCore import np
 from easyDiffractionLib.sample import Sample
 from easyDiffractionLib import Crystal
 from easyDiffractionLib.interface import InterfaceFactory
-from easyDiffractionLib.Elements.Instruments.Instrument import Pattern
+from easyDiffractionLib.Elements.Experiments.Experiment import Pars1D
 
 import matplotlib.pyplot as plt
 
@@ -15,7 +15,7 @@ i = InterfaceFactory()
 
 c = Crystal.from_cif_file('tests/SrTiO3.cif')
 
-S = Sample(phases=c, parameters=Pattern(), interface=i)
+S = Sample(phases=c, parameters=Pars1D(), interface=i)
 # S.phase.cell.length_a = 5
 # S.parameters.wavelength = 1.25
 # print(S)

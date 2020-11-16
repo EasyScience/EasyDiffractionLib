@@ -17,6 +17,7 @@ class CFML:
         self.conditions = CFML_api.PowderPatternSimulationConditions()
         self.conditions.bkg = 0.0
         self.background = None
+        self.pattern = None
 
     def calculate(self, x_array: np.ndarray) -> np.ndarray:
         """
@@ -31,6 +32,14 @@ class CFML:
 
         print("self.filename", self.filename )
 
+        if self.pattern is None:
+            scale = 1.0
+            offset = 0
+        else:
+            scale = self.pattern.scale.raw_value
+            offset = self.pattern.zero_shift.raw_value
+
+        this_x_array = x_array.copy() + offset
 
         # Sample parameters
         cif_file = CFML_api.CIFFile(self.filename)
@@ -43,8 +52,8 @@ class CFML:
         #atom_list.print_description()
 
         # Experiment/Instrumnet/Simulation parameters
-        x_min = x_array[0]
-        x_max = x_array[-1]
+        x_min = this_x_array[0]
+        x_max = this_x_array[-1]
         num_points = np.prod(x_array.shape)
         self.conditions.theta_min = x_min
         self.conditions.theta_max = x_max
@@ -68,8 +77,8 @@ class CFML:
                 p.unlink()
 
         if self.background is None:
-            bg = np.zeros_like(x_array)
+            bg = np.zeros_like(this_x_array)
         else:
-            bg = self.background.calculate(x_array)
+            bg = self.background.calculate(this_x_array)
 
-        return diffraction_pattern.y + bg
+        return scale*diffraction_pattern.y + bg

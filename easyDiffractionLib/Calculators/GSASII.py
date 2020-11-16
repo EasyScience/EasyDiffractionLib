@@ -26,6 +26,8 @@ class GSASII:
         }
         self.filename = filename
         self.background = None
+        self.pattern = None
+
 
     def create_temp_prm(self):
         if self.filename is None:
@@ -52,6 +54,15 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
     def calculate(self, x_array: np.ndarray) -> np.ndarray:
         self.create_temp_prm()
 
+        if self.pattern is None:
+            scale = 1.0
+            offset = 0
+        else:
+            scale = self.pattern.scale.raw_value
+            offset = self.pattern.zero_shift.raw_value
+
+        this_x_array = x_array.copy() + offset
+
         gpx = G2sc.G2Project(newgpx=os.path.join(self.prm_dir_path, 'easydiffraction_temp.gpx'))  # create a project
 
         # step 1, setup: add a phase to the project
@@ -60,8 +71,8 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
         gpx.add_phase(cif_file, phasename=phase_name, fmthint='CIF')
 
         # step 2, setup: add a simulated histogram and link it to the previous phase(s)
-        x_min = x_array[0]
-        x_max = x_array[-1]
+        x_min = this_x_array[0]
+        x_max = this_x_array[-1]
         n_points = np.prod(x_array.shape)
         x_step = (x_max-x_min)/(n_points - 1)
         gpx.add_simulated_powder_histogram(f"{phase_name} simulation",
@@ -103,8 +114,8 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
                 p.unlink()
 
         if self.background is None:
-            bg = np.zeros_like(x_array)
+            bg = np.zeros_like(this_x_array)
         else:
-            bg = self.background.calculate(x_array)
+            bg = self.background.calculate(this_x_array)
 
-        return ycalc + bg
+        return scale*ycalc + bg

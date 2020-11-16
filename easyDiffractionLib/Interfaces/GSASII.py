@@ -74,6 +74,18 @@ class GSASII(InterfaceTemplate):
         # else:
         #     raise IndexError
 
+    def set_pattern_value(self, pattern, value_label: int, value: float):
+        """
+        Method to set a value from the calculator
+        :param value_label: parameter name to get
+        :type value_label: str
+        :param value: new numeric value
+        :type value: float
+        :return: None
+        :rtype: noneType
+        """
+        self.calculator.pattern = pattern
+
     def set_background_value(self, background, value_label: int, value: float):
         """
         Method to set a value from the calculator

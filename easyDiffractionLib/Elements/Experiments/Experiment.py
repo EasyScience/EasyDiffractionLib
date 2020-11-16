@@ -8,18 +8,9 @@ from easyCore.Utils.json import MontyDecoder
 _decoder = MontyDecoder()
 
 
-class Pattern(BaseObj):
+class Pars1D(BaseObj):
     _name = 'Instrument'
     _defaults = {
-        'zero_shift': {
-            '@module': 'easyCore.Objects.Base',
-            '@class': 'Parameter',
-            '@version': '0.0.1',
-            'name': 'zero_shift',
-            'units': 'degree',
-            'value': 0.0,
-            'fixed': True
-        },
         'wavelength':   {
             '@module':  'easyCore.Objects.Base',
             '@class':   'Parameter',
@@ -74,12 +65,12 @@ class Pattern(BaseObj):
     }
 
     def __init__(self,
-                 zero_shift: Parameter, wavelength: Parameter,
+                 wavelength: Parameter,
                  resolution_u: Parameter, resolution_v: Parameter, resolution_w: Parameter,
                  resolution_x: Parameter, resolution_y: Parameter,
                  interface=None):
         super().__init__(self.__class__.__name__,
-                         zero_shift=zero_shift, wavelength=wavelength,
+                         wavelength=wavelength,
                          resolution_u=resolution_u, resolution_v=resolution_v, resolution_w=resolution_w,
                          resolution_x=resolution_x, resolution_y=resolution_y)
         self.name = self._name
@@ -87,7 +78,6 @@ class Pattern(BaseObj):
 
     @classmethod
     def from_pars(cls,
-                  zero_shift: float = _defaults['zero_shift']['value'],
                   wavelength: float = _defaults['wavelength']['value'],
                   resolution_u: float = _defaults['resolution_u']['value'],
                   resolution_v: float = _defaults['resolution_v']['value'],
@@ -96,8 +86,6 @@ class Pattern(BaseObj):
                   resolution_y: float = _defaults['resolution_y']['value']
                   ):
         defaults = deepcopy(cls._defaults)
-        defaults['zero_shift']['value'] = zero_shift
-        zero_shift = _decoder.process_decoded(defaults['zero_shift'])
         defaults['wavelength']['value'] = wavelength
         wavelength = _decoder.process_decoded(defaults['wavelength'])
         defaults['resolution_u']['value'] = resolution_u
@@ -110,20 +98,19 @@ class Pattern(BaseObj):
         resolution_x = _decoder.process_decoded(defaults['resolution_x'])
         defaults['resolution_y']['value'] = resolution_y
         resolution_y = _decoder.process_decoded(defaults['resolution_y'])
-        return cls(zero_shift=zero_shift, wavelength=wavelength,
+        return cls(wavelength=wavelength,
                    resolution_u=resolution_u, resolution_v=resolution_v, resolution_w=resolution_w,
                    resolution_x=resolution_x, resolution_y=resolution_y)
 
     @classmethod
     def default(cls):
         defaults = deepcopy(cls._defaults)
-        zero_shift = _decoder.process_decoded(defaults['zero_shift'])
         wavelength = _decoder.process_decoded(defaults['wavelength'])
         resolution_u = _decoder.process_decoded(defaults['resolution_u'])
         resolution_v = _decoder.process_decoded(defaults['resolution_v'])
         resolution_w = _decoder.process_decoded(defaults['resolution_w'])
         resolution_x = _decoder.process_decoded(defaults['resolution_x'])
         resolution_y = _decoder.process_decoded(defaults['resolution_y'])
-        return cls(zero_shift=zero_shift, wavelength=wavelength,
+        return cls(wavelength=wavelength,
                    resolution_u=resolution_u, resolution_v=resolution_v, resolution_w=resolution_w,
                    resolution_x=resolution_x, resolution_y=resolution_y)

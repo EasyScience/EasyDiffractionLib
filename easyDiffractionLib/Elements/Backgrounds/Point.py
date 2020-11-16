@@ -1,7 +1,7 @@
 __author__ = 'github.com/wardsimon'
 __version__ = '0.0.1'
 
-from typing import Union
+from typing import Union, List
 
 from easyCore import np
 from easyCore.Objects.Groups import BaseCollection
@@ -29,7 +29,6 @@ class BackgroundPoint(BaseObj):
 
     def set(self, value):
         self.y = value
-
 
     def _modify_x_label(self, value: float):
         self.name = '{:.1f}_deg'.format(value).replace(".", ",")
@@ -90,3 +89,19 @@ class PointBackground(Background):
         if item.x.raw_value in self.x_points:
             raise AttributeError(f'An BackgroundPoint at {item.x.raw_value} already exists.')
         super(PointBackground, self).append(item)
+
+    # def as_dict(self, skip: list = None):
+    #     this_dict = super(PointBackground, self).as_dict(skip=skip)
+    #     old_data = this_dict['data']
+    #     idx = np.array([item.x.raw_value for item in self]).argsort()
+    #     new_data = old_data[idx]
+    #     this_dict['data'] = new_data
+    #     return this_dict
+
+    def get_parameters(self) -> List[Parameter]:
+        """"
+        Redefine get_parameters so that the returned values are in th correct order
+        """
+        list_pars = np.array(super(PointBackground, self).get_parameters())
+        idx = np.array([item.x.raw_value for item in self]).argsort()
+        return list_pars[idx].tolist()

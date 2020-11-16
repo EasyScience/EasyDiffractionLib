@@ -48,9 +48,9 @@ class PointBackground(Background):
         y = np.zeros_like(reduced_x)
 
         low_x = x_array.flat[0]
-        x_points = self.x_points
+        x_points = self.x_sorted_points
         low_y = 0
-        y_points = self.y_points
+        y_points = self.y_sorted_points
 
         for point, intensity in zip(x_points, y_points):
             idx = (reduced_x >= low_x) & (reduced_x < point)
@@ -73,21 +73,25 @@ class PointBackground(Background):
         return super(PointBackground, self).__delitem__(key)
 
     @property
-    def x_points(self):
+    def x_sorted_points(self):
         x = np.array([item.x.raw_value for item in self])
         x.sort()
         return x
 
     @property
-    def y_points(self):
+    def y_sorted_points(self):
         idx = np.array([item.x.raw_value for item in self]).argsort()
         y = np.array([item.y.raw_value for item in self])
         return y[idx]
 
+    @property
+    def names(self):
+        return [item.name for item in self]
+
     def append(self, item: BackgroundPoint):
         if not isinstance(item, BackgroundPoint):
             raise TypeError('Item must be a BackgroundPoint')
-        if item.x.raw_value in self.x_points:
+        if item.x.raw_value in self.x_sorted_points:
             raise AttributeError(f'An BackgroundPoint at {item.x.raw_value} already exists.')
         super(PointBackground, self).append(item)
 

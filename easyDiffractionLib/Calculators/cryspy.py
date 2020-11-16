@@ -23,6 +23,7 @@ class Cryspy:
             }
 
         }
+        self.background = None
 
     def calculate(self, x_array: np.ndarray) -> np.ndarray:
         """
@@ -50,4 +51,9 @@ class Cryspy:
         pd = cryspy.Pd(setup=setup, resolution=resolution, phase=phase_list, background=background)
         profile = pd.calc_profile(x_array, [crystal], True, False)
 
-        return np.array(profile.intensity_total)
+        if self.background is None:
+            bg = np.zeros_like(x_array)
+        else:
+            bg = self.background.calculate(x_array)
+
+        return np.array(profile.intensity_total)  + bg

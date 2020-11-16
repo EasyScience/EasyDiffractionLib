@@ -25,6 +25,7 @@ class GSASII:
             }
         }
         self.filename = filename
+        self.background = None
 
     def create_temp_prm(self):
         if self.filename is None:
@@ -101,4 +102,9 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
             for p in pathlib.Path(os.path.dirname(self.filename)).glob("easydiffraction_temp*"):
                 p.unlink()
 
-        return ycalc
+        if self.background is None:
+            bg = np.zeros_like(x_array)
+        else:
+            bg = self.background.calculate(x_array)
+
+        return ycalc + bg

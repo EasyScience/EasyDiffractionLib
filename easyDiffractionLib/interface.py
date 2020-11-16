@@ -35,6 +35,17 @@ class InterfaceFactory(InterfaceFactoryTemplate):
         return property(fget=self.__get_instrument_item(self, name),
                         fset=self.__set_instrument_item(self, name))
 
+    def generate_background_binding(self, name, background) -> property:
+        """
+        Automatically bind a `Parameter` to the corresponding interface.
+        :param name: parameter name
+        :type name: str
+        :return: binding property
+        :rtype: property
+        """
+        return property(fget=self.__get_background_item(self, background, name),
+                        fset=self.__set_background_item(self, background, name))
+
     def generate_binding(self, name, *args, **kwargs) -> property:
         """
         Automatically bind a `Parameter` to the corresponding interface.
@@ -141,4 +152,34 @@ class InterfaceFactory(InterfaceFactoryTemplate):
 
         def inner(value):
             obj().set_instrument_value(key, value)
+        return inner
+
+    @staticmethod
+    def __get_background_item(obj, background, index: int) -> Callable:
+        """
+        Access the value of a key by a callable object
+        :param key: name of parameter to be retrieved
+        :type key: str
+        :return: function to get key
+        :rtype: Callable
+        """
+
+        def inner():
+            return obj().get_background_value(background, index)
+        return inner
+
+    @staticmethod
+    def __set_background_item(obj, background, index) -> Callable:
+        """
+        Set the value of a key by a callable object
+        :param obj: object to be created from
+        :type obj: InterfaceFactory
+        :param key: name of parameter to be set
+        :type key: str
+        :return: function to set key
+        :rtype: Callable
+        """
+
+        def inner(value):
+            obj().set_background_value(background, index, value)
         return inner

@@ -16,6 +16,7 @@ class CFML:
         self.filename = filename
         self.conditions = CFML_api.PowderPatternSimulationConditions()
         self.conditions.bkg = 0.0
+        self.background = None
 
     def calculate(self, x_array: np.ndarray) -> np.ndarray:
         """
@@ -66,4 +67,9 @@ class CFML:
             for p in pathlib.Path(os.path.dirname(self.filename)).glob("easydiffraction_temp*"):
                 p.unlink()
 
-        return diffraction_pattern.y
+        if self.background is None:
+            bg = np.zeros_like(x_array)
+        else:
+            bg = self.background.calculate(x_array)
+
+        return diffraction_pattern.y + bg

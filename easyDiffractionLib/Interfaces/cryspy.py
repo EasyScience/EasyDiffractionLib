@@ -92,6 +92,36 @@ class Cryspy(InterfaceTemplate):
             return
         self.calculator.conditions['resolution'][value_label] = value
 
+    def get_background_value(self, background, value_label: int) -> float:
+        """
+        Method to get a value from the calculator
+        :param value_label: parameter name to get
+        :type value_label: str
+        :return: associated value
+        :rtype: float
+        """
+        self.calculator.background = background
+        if value_label <= len(self.calculator.background):
+            return self.calculator.background[value_label]
+        else:
+            raise IndexError
+
+    def set_background_value(self, background, value_label: int, value: float):
+        """
+        Method to set a value from the calculator
+        :param value_label: parameter name to get
+        :type value_label: str
+        :param value: new numeric value
+        :type value: float
+        :return: None
+        :rtype: noneType
+        """
+        self.calculator.background = background
+        if value_label <= len(self.calculator.background):
+            self.calculator.background[value_label].set(value)
+        else:
+            raise IndexError
+
     def bulk_update(self, value_label_list: List[str], value_list: List[float], external: bool):
         """
         Perform an update of multiple values at once to save time on expensive updates

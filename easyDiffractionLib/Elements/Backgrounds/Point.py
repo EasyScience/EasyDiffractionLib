@@ -10,12 +10,13 @@ from .Background import Background
 
 
 class BackgroundPoint(BaseObj):
-    def __init__(self, x: Descriptor, y: Parameter):
+    def __init__(self, x: Descriptor, y: Parameter, name=None):
+        if name is None:
+            name = '{:.1f}_deg'.format(x.raw_value).replace(".", ",")
         x._callback = property(fget=None,
                                fset=lambda x_value: self._modify_x_label(x_value),
                                fdel=None)
-        super(BackgroundPoint, self).__init__('{:.1f}_deg'.format(x.raw_value).replace(".", ","), x=x, y=y)
-
+        super(BackgroundPoint, self).__init__(name, x=x, y=y)
 
     @classmethod
     def from_pars(cls, x: float, y: float):

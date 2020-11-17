@@ -61,7 +61,7 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
             scale = self.pattern.scale.raw_value
             offset = self.pattern.zero_shift.raw_value
 
-        this_x_array = x_array.copy() + offset
+        this_x_array = x_array + offset
 
         gpx = G2sc.G2Project(newgpx=os.path.join(self.prm_dir_path, 'easydiffraction_temp.gpx'))  # create a project
 

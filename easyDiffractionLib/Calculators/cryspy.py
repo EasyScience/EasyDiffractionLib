@@ -46,7 +46,7 @@ class Cryspy:
             scale = self.pattern.scale.raw_value
             offset = self.pattern.zero_shift.raw_value
 
-        this_x_array = x_array.copy() + offset
+        this_x_array = x_array + offset
 
         if borg.debug:
             print('CALLING FROM Cryspy\n----------------------')

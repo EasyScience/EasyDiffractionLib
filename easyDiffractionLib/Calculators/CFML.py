@@ -39,7 +39,7 @@ class CFML:
             scale = self.pattern.scale.raw_value
             offset = self.pattern.zero_shift.raw_value
 
-        this_x_array = x_array.copy() + offset
+        this_x_array = x_array + offset
 
         # Sample parameters
         cif_file = CFML_api.CIFFile(self.filename)

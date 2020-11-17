@@ -5,21 +5,21 @@ import os, tempfile
 from typing import Union
 
 from easyCore.Objects.Base import BaseObj
-from easyDiffractionLib import Crystal, Crystals
+from easyDiffractionLib import Phase, Phases
 from easyDiffractionLib.Elements.Experiments.Experiment import Pars1D
 from easyDiffractionLib.Elements.Experiments.Pattern import Pattern1D
 
 
 class Sample(BaseObj):
-    def __init__(self, phases: Union[Crystal, Crystals] = None,
+    def __init__(self, phases: Union[Phase, Phases] = None,
                  parameters=None, pattern=None,
                  interface=None, name: str = 'easySample'):
-        if isinstance(phases, Crystal):
-            phases = Crystals('Phases', phases)
+        if isinstance(phases, Phase):
+            phases = Phases('Phases', phases)
         elif phases is None:
-            phases = Crystals('Phases')
+            phases = Phases('Phases')
 
-        if not isinstance(phases, Crystals):
+        if not isinstance(phases, Phases):
             raise AttributeError('`phases` must be a Crystal or Crystals')
 
         if pattern is None:
@@ -75,9 +75,9 @@ class Sample(BaseObj):
 
     @phases.setter
     def phases(self, value):
-        if isinstance(value, Crystal):
-            value = Crystals('Phases', value)
-        if not isinstance(value, Crystals):
+        if isinstance(value, Phase):
+            value = Phases('Phases', value)
+        if not isinstance(value, Phases):
             raise ValueError
         self._phases = value
         self._borg.map.add_edge(self, value)

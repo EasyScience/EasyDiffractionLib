@@ -1,7 +1,7 @@
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
-import os, pathlib
+import os, pathlib, math
 
 import CFML_api
 
@@ -59,14 +59,20 @@ class CFML:
         self.conditions.theta_max = x_max
         self.conditions.theta_step = (x_max - x_min) / (num_points - 1)
 
+        #print("self.conditions", self.conditions)
         #print("self.conditions.theta_min", self.conditions.theta_min)
         #print("self.conditions.theta_max", self.conditions.theta_max)
         #print("self.conditions.theta_step", self.conditions.theta_step)
-        #print("self.conditions.getSinThetaOverLambdaMax()", self.conditions.getSinThetaOverLambdaMax())
+
+        sin_theta_over_lambda_max = self.conditions.getSinThetaOverLambdaMax()
+        if sin_theta_over_lambda_max <= 0:
+            sin_theta_over_lambda_max = math.sin(self.conditions.theta_max) / self.conditions.lamb
+        #print("CFML self.conditions.getSinThetaOverLambdaMax():", self.conditions.getSinThetaOverLambdaMax())
+        #print("Manually sin_theta_over_lambda_max:", sin_theta_over_lambda_max)
 
         # Calculations
         try:
-            reflection_list = CFML_api.ReflectionList(cell, space_group, True, 0, self.conditions.getSinThetaOverLambdaMax())
+            reflection_list = CFML_api.ReflectionList(cell, space_group, True, 0, sin_theta_over_lambda_max)
             reflection_list.compute_structure_factors(space_group, atom_list)
             diffraction_pattern = CFML_api.DiffractionPattern(self.conditions, reflection_list, cell.reciprocal_cell_vol)
         except:

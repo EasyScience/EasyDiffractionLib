@@ -82,7 +82,7 @@ class BackgroundContainer(BaseCollection):
     any type and
     """
     def __init__(self, *args, interface=None, **kwargs):
-        super(BackgroundContainer, self).__init__('Instrument', *args, **kwargs)
+        super(BackgroundContainer, self).__init__('background', *args, **kwargs)
         self.interface = interface
 
     @property

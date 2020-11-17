@@ -49,10 +49,7 @@ jobs:
       run: poetry update
 
     - name: Relink CrysFML from default Python dylib
-      run: |
-        poetry run python tools/Scripts/RelinkCrysfml.py $pythonLocation
-        ls -l /opt/hostedtoolcache/Python/3.7.9/x64/lib/
-        ls -l /home/runner/.cache/pypoetry/virtualenvs/easydiffractionlib-l-ltHCsT-py3.7/lib/python3.7/site-packages/libsLinux/CFML/
+      run: poetry run python tools/Scripts/RelinkCrysfml.py $pythonLocation
 
     - name: Run main.py
       run: poetry run easyDiffractionLib

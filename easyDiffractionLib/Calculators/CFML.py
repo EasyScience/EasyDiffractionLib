@@ -15,6 +15,8 @@ class CFML:
 
         self.filename = filename
         self.conditions = CFML_api.PowderPatternSimulationConditions()
+        self.conditions.job = CFML_api.PowderPatternSimulationSource.Neutrons
+        self.conditions.lorentzian_size = 10000.0
         self.conditions.bkg = 0.0
         self.background = None
         self.pattern = None
@@ -59,7 +61,7 @@ class CFML:
         self.conditions.theta_max = x_max
         self.conditions.theta_step = (x_max - x_min) / (num_points - 1)
 
-        #print("self.conditions", self.conditions)
+        print("self.conditions", self.conditions)
         #print("self.conditions.theta_min", self.conditions.theta_min)
         #print("self.conditions.theta_max", self.conditions.theta_max)
         #print("self.conditions.theta_step", self.conditions.theta_step)
@@ -67,8 +69,8 @@ class CFML:
         sin_theta_over_lambda_max = self.conditions.getSinThetaOverLambdaMax()
         if sin_theta_over_lambda_max <= 0:
             sin_theta_over_lambda_max = math.sin(self.conditions.theta_max) / self.conditions.lamb
-        #print("CFML self.conditions.getSinThetaOverLambdaMax():", self.conditions.getSinThetaOverLambdaMax())
-        #print("Manually sin_theta_over_lambda_max:", sin_theta_over_lambda_max)
+        print("CFML self.conditions.getSinThetaOverLambdaMax():", self.conditions.getSinThetaOverLambdaMax())
+        print("Manually sin_theta_over_lambda_max:", sin_theta_over_lambda_max)
 
         # Calculations
         try:

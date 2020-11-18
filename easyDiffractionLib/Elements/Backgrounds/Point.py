@@ -10,6 +10,9 @@ from .Background import Background
 
 
 class BackgroundPoint(BaseObj):
+    """
+    This class describes a background point.
+    """
     def __init__(self, x: Descriptor, y: Parameter, name=None):
         if name is None:
             name = '{:.1f}_deg'.format(x.raw_value).replace(".", ",")
@@ -37,8 +40,8 @@ class BackgroundPoint(BaseObj):
 
 class PointBackground(Background):
 
-    def __init__(self, *args, **kwargs):
-        super(PointBackground, self).__init__('point_background', *args, **kwargs)
+    def __init__(self, *args, linked_experiment=None, **kwargs):
+        super(PointBackground, self).__init__('point_background', *args, linked_experiment=linked_experiment, **kwargs)
 
     def calculate(self, x_array: np.ndarray) -> np.ndarray:
 

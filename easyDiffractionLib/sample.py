@@ -100,3 +100,10 @@ class Sample(BaseObj):
     @property
     def pattern(self):
         return self._pattern
+
+    def as_dict(self, skip: list = None) -> dict:
+        d = super(Sample, self).as_dict(skip=skip)
+        del d['_phases']
+        del d['_parameters']
+        del d['_pattern']
+        return d

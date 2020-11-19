@@ -66,11 +66,9 @@ class CFML:
         #print("self.conditions.theta_max", self.conditions.theta_max)
         #print("self.conditions.theta_step", self.conditions.theta_step)
 
-        sin_theta_over_lambda_max = self.conditions.getSinThetaOverLambdaMax()
-        if sin_theta_over_lambda_max <= 0:
-            sin_theta_over_lambda_max = math.sin(self.conditions.theta_max) / self.conditions.lamb
-        print("CFML self.conditions.getSinThetaOverLambdaMax():", self.conditions.getSinThetaOverLambdaMax())
-        print("Manually sin_theta_over_lambda_max:", sin_theta_over_lambda_max)
+        sin_theta_over_lambda_max = math.sin(math.radians(0.5 * self.conditions.theta_max)) / self.conditions.lamb
+        print(f"CFML self.conditions.getSinThetaOverLambdaMax(): {self.conditions.getSinThetaOverLambdaMax()}")
+        print(f"Manually sin_theta_over_lambda_max: {sin_theta_over_lambda_max}")
 
         # Calculations
         try:

@@ -80,7 +80,8 @@ class CFML:
         finally:
             # Clean up
             for p in pathlib.Path(os.path.dirname(self.filename)).glob("easydiffraction_temp*"):
-                p.unlink()
+                if os.path.basename(p) != "easydiffraction_temp.cif":
+                    p.unlink()
 
         if self.background is None:
             bg = np.zeros_like(this_x_array)

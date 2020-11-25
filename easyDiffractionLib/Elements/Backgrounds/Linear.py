@@ -1,12 +1,12 @@
 __author__ = 'github.com/wardsimon'
 __version__ = '0.0.1'
 
+from .Background import Background
 from typing import Union, List
 
 from easyCore import np
 from easyCore.Objects.Groups import BaseCollection
 from easyCore.Objects.Base import Parameter, Descriptor, BaseObj
-from .Background import Background
 
 
 class BackgroundFactor(BaseObj):

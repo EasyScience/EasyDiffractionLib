@@ -154,16 +154,6 @@ class BackgroundContainer(BaseCollection):
         # Set the new dict
         self._kwargs = items
 
-
-        # keys = self._kwargs.keys()
-        # items = {}
-        # for idx in range(key):
-        #     items[keys[idx]] = self._kwargs[keys[idx]]
-        # items[str(self._borg.map.convert_id_to_key(value))] = value
-        # for idx in range(key+1, len(self)):
-        #     items[keys[idx]] = self._kwargs[keys[idx]]
-        # self._kwargs = items
-
     def append(self, item):
         """
         Add an element to the list

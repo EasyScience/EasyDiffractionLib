@@ -28,12 +28,13 @@ class Background(BaseCollection):
 
         #  Convert `linked_experiment` to a Descriptor
         if linked_experiment is None:
-            raise AttributeError
+            raise AttributeError('Backgrounds need to be associated with an experiment. '
+                                 'Use the `linked_experiment` key word argument.')
         elif isinstance(linked_experiment, str):
             linked_experiment = Descriptor('linked_experiment', linked_experiment)
 
         if not isinstance(linked_experiment, Descriptor):
-            raise ValueError
+            raise ValueError('The `linked_experiment` key word argument must be a string or Descriptor')
 
         #  Initialise
         super(Background, self).__init__(*args, **kwargs)
@@ -61,7 +62,7 @@ class Background(BaseCollection):
         elif isinstance(value, Descriptor):
             self._linked_experiment = value
         else:
-            raise ValueError
+            raise ValueError('The `linked_experiment` key word argument must be a string or Descriptor')
 
     @abstractmethod
     def calculate(self, x_array: np.ndarray) -> np.ndarray:

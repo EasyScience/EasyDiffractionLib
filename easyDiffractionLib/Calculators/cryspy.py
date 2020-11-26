@@ -68,4 +68,9 @@ class Cryspy:
         else:
             bg = self.background.calculate(this_x_array)
 
-        return scale * np.array(profile.intensity_total) + bg
+        res = scale * np.array(profile.intensity_total) + bg
+
+        np.set_printoptions(precision=3)
+        print(f"y_calc: {res}")
+
+        return res

@@ -119,4 +119,9 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
         else:
             bg = self.background.calculate(this_x_array)
 
-        return scale*ycalc + bg
+        res = scale * ycalc + bg
+
+        np.set_printoptions(precision=3)
+        print(f"y_calc: {res}")
+
+        return res

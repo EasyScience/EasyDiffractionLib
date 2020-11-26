@@ -11,8 +11,6 @@ from easyCore import borg
 
 class CFML:
     def __init__(self, filename: str = None):
-        print("CFML __init__")
-
         self.filename = filename
         self.conditions = CFML_api.PowderPatternSimulationConditions()
         self.conditions.job = CFML_api.PowderPatternSimulationSource.Neutrons
@@ -32,7 +30,7 @@ class CFML:
         if self.filename is None:
             raise AttributeError
 
-        print("self.filename", self.filename )
+        #print("self.filename", self.filename)
 
         if self.pattern is None:
             scale = 1.0
@@ -66,7 +64,8 @@ class CFML:
         #print("self.conditions.theta_max", self.conditions.theta_max)
         #print("self.conditions.theta_step", self.conditions.theta_step)
 
-        sin_theta_over_lambda_max = math.sin(math.radians(0.5 * self.conditions.theta_max)) / self.conditions.lamb
+        #sin_theta_over_lambda_max = math.sin(math.radians(0.5 * self.conditions.theta_max)) / self.conditions.lamb
+        sin_theta_over_lambda_max = self.conditions.getSinThetaOverLambdaMax()
         #print(f"CFML self.conditions.getSinThetaOverLambdaMax(): {self.conditions.getSinThetaOverLambdaMax()}")
         #print(f"Manually sin_theta_over_lambda_max: {sin_theta_over_lambda_max}")
 
@@ -88,4 +87,10 @@ class CFML:
         else:
             bg = self.background.calculate(this_x_array)
 
-        return scale*diffraction_pattern.ycalc + bg
+
+        res = scale * diffraction_pattern.ycalc + bg
+
+        np.set_printoptions(precision=3)
+        print(f"y_calc: {res}")
+
+        return res

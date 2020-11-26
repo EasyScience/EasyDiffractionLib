@@ -97,7 +97,6 @@ class PointBackground(Background):
         :param kwargs: Any additional kwargs
         """
         super(PointBackground, self).__init__('point_background', *args, linked_experiment=linked_experiment, **kwargs)
-        self.__index_contents()
 
     def calculate(self, x_array: np.ndarray) -> np.ndarray:
         """
@@ -114,7 +113,7 @@ class PointBackground(Background):
 
         y = np.zeros_like(reduced_x)
 
-        low_x = x_array.flat[0]
+        low_x = x_array.flat[0] - 1e-10
         x_points = self.x_sorted_points
         low_y = 0
         y_points = self.y_sorted_points
@@ -157,9 +156,7 @@ class PointBackground(Background):
         :param idx: index of the item to be deleted
         :type idx: int
         """
-        removed_applied = super(PointBackground, self).__delitem__(idx)
-        self.__index_contents()
-        return removed_applied
+        return super(PointBackground, self).__delitem__(idx)
 
     @property
     def x_sorted_points(self) -> np.ndarray:
@@ -169,7 +166,9 @@ class PointBackground(Background):
         :return: Sorted x-values
         :rtype: np.ndarray
         """
-        return self._sorted_self['x']
+        x = np.array([item.x.raw_value for item in self])
+        x.sort()
+        return x
 
     @property
     def y_sorted_points(self) -> np.ndarray:
@@ -179,7 +178,9 @@ class PointBackground(Background):
         :return: Sorted y-values
         :rtype: np.ndarray
         """
-        return self._sorted_self['y']
+        idx = np.array([item.x.raw_value for item in self]).argsort()
+        y = np.array([item.y.raw_value for item in self])
+        return y[idx]
 
     @property
     def names(self) -> List[str]:
@@ -203,24 +204,11 @@ class PointBackground(Background):
         if item.x.raw_value in self.x_sorted_points:
             raise AttributeError(f'An BackgroundPoint at {item.x.raw_value} already exists.')
         super(PointBackground, self).append(item)
-        self.__index_contents()
 
     def get_parameters(self) -> List[Parameter]:
         """"
-        Redefine get_parameters so that the returned values are in th correct order
+        Redefine get_parameters so that the returned values are in the correct order
         """
         list_pars = np.array(super(PointBackground, self).get_parameters())
-        return list_pars[self._sorted_self['idx']].tolist()
-
-    def __index_contents(self):
-        """
-        Index the contents
-        """
-        x = np.array([item.x.raw_value for item in self])
-        idx = x.argsort()
-        y = np.array([item.y.raw_value for item in self])
-        self._sorted_self = {
-            'idx': idx,
-            'x': x[idx],
-            'y': y[idx]
-        }
+        idx = np.array([item.x.raw_value for item in self]).argsort()
+        return list_pars[idx].tolist()

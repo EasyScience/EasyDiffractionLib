@@ -30,6 +30,7 @@ easyCore = { git = 'https://github.com/easyScience/easyCore.git', rev = 'specie_
 pytest = "^5.2"
 toml = "^0.10"
 requests = '^2.24'
+jupyterlab = "^2.2"
 
 [tool.poetry.scripts]
 easyDiffractionLib = "easyDiffractionLib.main:main"

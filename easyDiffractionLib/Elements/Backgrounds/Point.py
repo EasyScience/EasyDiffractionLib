@@ -78,6 +78,10 @@ class BackgroundPoint(BaseObj):
         """
         self.name = '{:.1f}_deg'.format(value).replace(".", ",")
 
+    def __repr__(self) -> str:
+        y_str = str(self.y).split(': ')[1][:-1]
+        return f'<{self.__class__.__name__} \'{self.name}\': {y_str}>'
+
 
 class PointBackground(Background):
     """

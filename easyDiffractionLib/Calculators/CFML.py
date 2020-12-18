@@ -50,6 +50,7 @@ class CFML:
         #cell.print_description()
         #space_group.print_description()
         #atom_list.print_description()
+        #print(self.conditions)
 
         # Experiment/Instrumnet/Simulation parameters
         x_min = this_x_array[0]
@@ -64,10 +65,11 @@ class CFML:
         #print("self.conditions.theta_max", self.conditions.theta_max)
         #print("self.conditions.theta_step", self.conditions.theta_step)
 
-        #sin_theta_over_lambda_max = math.sin(math.radians(0.5 * self.conditions.theta_max)) / self.conditions.lamb
-        sin_theta_over_lambda_max = self.conditions.getSinThetaOverLambdaMax()
-        #print(f"CFML self.conditions.getSinThetaOverLambdaMax(): {self.conditions.getSinThetaOverLambdaMax()}")
-        #print(f"Manually sin_theta_over_lambda_max: {sin_theta_over_lambda_max}")
+        sin_theta_over_lambda_max = math.sin(math.radians(0.5 * self.conditions.theta_max)) / self.conditions.lamb
+        sin_theta_over_lambda_max = max(1.0, sin_theta_over_lambda_max)
+        #print(f"Manually sin_theta_over_lambda_max: {sin_theta_over_lambda_max} for lambda: {self.conditions.lamb}")
+        #sin_theta_over_lambda_max = self.conditions.getSinThetaOverLambdaMax()
+        #print(f"CFML self.conditions.getSinThetaOverLambdaMax(): {sin_theta_over_lambda_max} for lambda: {self.conditions.lamb}")
 
         # Calculations
         try:

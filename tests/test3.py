@@ -4,7 +4,7 @@ __version__ = '0.0.1'
 from easyCore import np
 
 from easyDiffractionLib.sample import Sample
-from easyDiffractionLib import Crystal, Crystals
+from easyDiffractionLib import Phase, Phases
 from easyDiffractionLib.interface import InterfaceFactory
 from easyDiffractionLib.Elements.Experiments.Experiment import Pars1D
 
@@ -13,14 +13,14 @@ import matplotlib.pyplot as plt
 
 i = InterfaceFactory()
 
-c = Crystals.from_cif_file('/home/simonward/PycharmProjects/easyScience/easyDiffractionLib/tests/SrTiO3.cif')
+c = Phases.from_cif_file('/home/simonward/PycharmProjects/easyScience/easyDiffractionLib/tests/SrTiO3.cif')
 
-S = Sample(phases=c, parameters=Pars1D(), interface=i)
+S = Sample(phases=c, parameters=Pars1D.default(), interface=i)
 
 x_data = np.linspace(5, 150, 10000)
 y_data = i.fit_func(x_data)
 
-i.switch('Cryspy')
+i.switch('CrysPy')
 S._updateInterface()
 
 y_data2 = np.array(i.fit_func(x_data))

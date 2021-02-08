@@ -40,3 +40,12 @@ easyDiffractionLib = "easyDiffractionLib.main:main"
 
 [ci.pyinstaller]
 libs = { macos = 'libsDarwin', ubuntu = 'libsLinux', windows = 'libsWin32' }
+
+
+[tool.dephell.main]
+from = {format = "poetry", path = "pyproject.toml"}
+to = {format = "setuppy", path = "setup.py"}
+
+[tool.dephell.requirements]
+from = {format = "poetry", path = "pyproject.toml"}
+to = {format = "pip", path = "requirements.txt"}

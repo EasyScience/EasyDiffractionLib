@@ -5,8 +5,7 @@ import os, pathlib, math
 
 import CFML_api
 
-from easyCore import np
-from easyCore import borg
+from easyCore import np, borg
 
 
 class CFML:
@@ -93,6 +92,7 @@ class CFML:
         res = scale * diffraction_pattern.ycalc + bg
 
         np.set_printoptions(precision=3)
-        print(f"y_calc: {res}")
+        if borg.debug:
+            print(f"y_calc: {res}")
 
         return res

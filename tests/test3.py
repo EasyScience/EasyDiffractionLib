@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 
 i = InterfaceFactory()
 
-c = Phases.from_cif_file('/home/simonward/PycharmProjects/easyScience/easyDiffractionLib/tests/SrTiO3.cif')
+c = Phases.from_cif_file('tests/SrTiO3.cif')
 
 S = Sample(phases=c, parameters=Pars1D.default(), interface=i)
 

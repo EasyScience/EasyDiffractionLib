@@ -2,7 +2,7 @@ __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
 import os, pathlib
-
+from easyCore import borg
 import GSASIIscriptable as G2sc
 
 from easyCore import np
@@ -122,6 +122,7 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
         res = scale * ycalc + bg
 
         np.set_printoptions(precision=3)
-        print(f"y_calc: {res}")
+        if borg.debug:
+            print(f"y_calc: {res}")
 
         return res

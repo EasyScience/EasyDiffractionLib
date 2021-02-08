@@ -19,21 +19,19 @@ packages = [ { include = "easyDiffractionLib" } ]
 [tool.poetry.dependencies]
 python = "^3.7, <3.8"
 cryspy = "^0.4.11"
-matplotlib = "^3.2, <3.3"
 # easyScience
-#libsDarwin = { git = 'ssh://git@github.com/easyScience/libsDarwin.git', rev = 'main', platform = 'darwin' }
-#libsLinux = { git = 'ssh://git@github.com/easyScience/libsLinux.git', rev = 'main', platform = 'linux' }
-#libsWin32 = { git = 'ssh://git@github.com/easyScience/libsWin32.git', rev = 'main', platform = 'win32' }
 libsDarwin = { git = 'https://github.com/easyScience/libsDarwin.git', rev = 'main', platform = 'darwin' }
 libsLinux = { git = 'https://github.com/easyScience/libsLinux.git', rev = 'main', platform = 'linux' }
 libsWin32 = { git = 'https://github.com/easyScience/libsWin32.git', rev = 'main', platform = 'win32' }
-easyCore = { git = 'https://github.com/easyScience/easyCore.git', rev = 'develop' }
+easyCore = { git = 'https://github.com/easyScience/easyCore.git', rev = 'xarray' }
+
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
 toml = "^0.10"
 requests = '^2.24'
-jupyterlab = "^2.2"
+hvplot = "^0.7.0"
+jupyter = "^1.0.0"
 
 [tool.poetry.scripts]
 easyDiffractionLib = "easyDiffractionLib.main:main"

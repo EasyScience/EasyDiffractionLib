@@ -5,7 +5,7 @@ import os, tempfile
 from typing import Union
 
 from easyCore.Objects.Base import BaseObj
-from easyCore.Utils.UndoRedo import stack_deco
+from easyCore.Utils.UndoRedo import property_stack_deco
 
 from easyDiffractionLib import Phase, Phases
 from easyDiffractionLib.Elements.Experiments.Experiment import Pars1D
@@ -76,7 +76,7 @@ class Sample(BaseObj):
         return self._phases
 
     @phases.setter
-    @stack_deco
+    @property_stack_deco
     def phases(self, value):
         if isinstance(value, Phase):
             value = Phases('Phases', value)
@@ -91,7 +91,7 @@ class Sample(BaseObj):
         return self._parameters
 
     @parameters.setter
-    @stack_deco
+    @property_stack_deco
     def parameters(self, value):
         if not isinstance(value, Pars1D):
             raise ValueError

@@ -210,3 +210,6 @@ class InterfaceFactory(InterfaceFactoryTemplate):
         def inner(value):
             obj().set_pattern_value(pattern, index, value)
         return inner
+
+    def get_hkl(self, x_array=None) -> dict:
+        return self().get_hkl(x_array)

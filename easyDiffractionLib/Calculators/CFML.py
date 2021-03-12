@@ -17,7 +17,12 @@ class CFML:
         self.conditions.bkg = 0.0
         self.background = None
         self.pattern = None
-
+        self.hkl_dict = {
+            'ttheta': np.empty(0),
+            'h': np.empty(0),
+            'k': np.empty(0),
+            'l': np.empty(0)
+        }
     def calculate(self, x_array: np.ndarray) -> np.ndarray:
         """
         For a given x calculate the corresponding y
@@ -83,11 +88,17 @@ class CFML:
                 if os.path.basename(p) != "easydiffraction_temp.cif":
                     p.unlink()
 
+        self.hkl_dict = {
+            'ttheta': np.array([12.950, 15.796, 20.409, 113.463, 114.292, 119.420, 119.827]),
+            'h': np.array([1, 2, 1, 4, 5, 9, 0]),
+            'k': np.array([-1, 0, 8, 9, 5, 0, 1]),
+            'l': np.array([0, 2, 1, 0, 5, 9, 0])
+        }
+
         if self.background is None:
             bg = np.zeros_like(this_x_array)
         else:
             bg = self.background.calculate(this_x_array)
-
 
         res = scale * diffraction_pattern.ycalc + bg
 
@@ -96,3 +107,9 @@ class CFML:
             print(f"y_calc: {res}")
 
         return res
+
+    def get_hkl(self, tth: np.array = None) -> dict:
+        hkl_dict = self.hkl_dict
+        if tth is not None:
+            pass
+        return hkl_dict

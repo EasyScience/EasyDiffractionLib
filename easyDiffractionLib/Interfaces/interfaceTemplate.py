@@ -42,3 +42,7 @@ class InterfaceTemplate(MSONable, metaclass=ABCMeta):
         :rtype: np.ndarray
         """
         pass
+
+    @abstractmethod
+    def get_hkl(self, x_array: np.ndarray = None) -> dict:
+        pass

@@ -27,6 +27,12 @@ class Cryspy:
         }
         self.background = None
         self.pattern = None
+        self.hkl_dict = {
+            'ttheta': np.empty(0),
+            'h': np.empty(0),
+            'k': np.empty(0),
+            'l': np.empty(0)
+        }
 
     def calculate(self, x_array: np.ndarray) -> np.ndarray:
         """
@@ -63,6 +69,13 @@ class Cryspy:
         pd = cryspy.Pd(setup=setup, resolution=resolution, phase=phase_list, background=background)
         profile = pd.calc_profile(this_x_array, [crystal], True, False)
 
+        self.hkl_dict = {
+            'ttheta': pd.d_internal_val['peak_' + crystal.data_name].numpy_ttheta,
+            'h': pd.d_internal_val['peak_'+crystal.data_name].numpy_index_h,
+            'k': pd.d_internal_val['peak_'+crystal.data_name].numpy_index_k,
+            'l': pd.d_internal_val['peak_'+crystal.data_name].numpy_index_l,
+        }
+
         if self.background is None:
             bg = np.zeros_like(this_x_array)
         else:
@@ -75,3 +88,27 @@ class Cryspy:
             print(f"y_calc: {res}")
 
         return res
+
+    def get_hkl(self, tth: np.array = None) -> dict:
+
+        hkl_dict = self.hkl_dict
+
+        if tth is not None:
+            crystal = cryspy.Crystal.from_cif(self.cif_str)
+            phase_list = cryspy.PhaseL()
+            phase = cryspy.Phase(label=crystal.data_name, scale=1, igsize=0)
+            phase_list.items.append(phase)
+            setup = cryspy.Setup(wavelength=self.conditions['wavelength'], offset_ttheta=0)
+            background = cryspy.PdBackgroundL()
+            resolution = cryspy.PdInstrResolution(**self.conditions['resolution'])
+            pd = cryspy.Pd(setup=setup, resolution=resolution, phase=phase_list, background=background)
+            _ = pd.calc_profile(this_x_array, [crystal], True, False)
+
+            hkl_dict = {
+                'ttheta': pd.d_internal_val['peak_' + crystal.data_name].numpy_ttheta,
+                'h': pd.d_internal_val['peak_' + crystal.data_name].numpy_index_h,
+                'k': pd.d_internal_val['peak_' + crystal.data_name].numpy_index_k,
+                'l': pd.d_internal_val['peak_' + crystal.data_name].numpy_index_l,
+            }
+
+        return hkl_dict

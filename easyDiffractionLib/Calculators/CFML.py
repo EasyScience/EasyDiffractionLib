@@ -89,10 +89,10 @@ class CFML:
                     p.unlink()
 
         self.hkl_dict = {
-            'ttheta': np.array([12.950, 15.796, 20.409, 113.463, 114.292, 119.420, 119.827]),
-            'h': np.array([1, 2, 1, 4, 5, 9, 0]),
-            'k': np.array([-1, 0, 8, 9, 5, 0, 1]),
-            'l': np.array([0, 2, 1, 0, 5, 9, 0])
+            'ttheta': np.array([]),
+            'h': np.array([]),
+            'k': np.array([]),
+            'l': np.array([])
         }
 
         if self.background is None:

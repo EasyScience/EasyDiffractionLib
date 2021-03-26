@@ -13,7 +13,7 @@ warnings.filterwarnings('ignore')
 class Cryspy:
 
     def __init__(self):
-        self.cif_str = ""
+        self._cif_str = ""
         self.conditions = {
             'wavelength': 1.25,
             'resolution': {
@@ -33,6 +33,34 @@ class Cryspy:
             'k': np.empty(0),
             'l': np.empty(0)
         }
+        self.storage = {}
+
+    @property
+    def cif_str(self):
+        return self._cif_str
+
+    @cif_str.setter
+    def cif_str(self, value):
+        self._cif_str = value
+        self.createPhase()
+
+    def createPhase(self):
+        crystal = cryspy.Crystal.from_cif(self.cif_str)
+        self.storage['crystal'] = crystal
+        phase = cryspy.Phase(label=crystal.data_name, scale=1, igsize=0)
+        # label = crystal.data_name + '_phase'
+        self.storage['phase'] = phase
+        return 'phase'
+
+    def updateCrystal(self, name='crystal', **kwargs):
+        c = self.storage[name]
+        for key in kwargs.keys():
+            setattr(c, key, kwargs[key])
+
+    def createSetup(self):
+        setup = cryspy.Setup(wavelength=self.conditions['wavelength'], offset_ttheta=0)
+        self.storage['setup'] = setup
+        return 'setup'
 
     def calculate(self, x_array: np.ndarray) -> np.ndarray:
         """
@@ -59,14 +87,24 @@ class Cryspy:
             print(self.conditions)
             print(self.cif_str)
 
-        crystal = cryspy.Crystal.from_cif(self.cif_str)
+        # self.createPhase()
+        self.createSetup()
+
         phase_list = cryspy.PhaseL()
-        phase = cryspy.Phase(label=crystal.data_name, scale=1, igsize=0)
-        phase_list.items.append(phase)
-        setup = cryspy.Setup(wavelength=self.conditions['wavelength'], offset_ttheta=0)
+        phase_list.items.append(self.storage['phase'])
         background = cryspy.PdBackgroundL()
         resolution = cryspy.PdInstrResolution(**self.conditions['resolution'])
-        pd = cryspy.Pd(setup=setup, resolution=resolution, phase=phase_list, background=background)
+        pd = cryspy.Pd(setup=self.storage['setup'], resolution=resolution, phase=phase_list, background=background)
+        crystal = self.storage['crystal']
+
+        if self.background is None:
+            bg = np.zeros_like(this_x_array)
+        else:
+            bg = self.background.calculate(this_x_array)
+
+        if crystal is None:
+            return bg
+
         profile = pd.calc_profile(this_x_array, [crystal], True, False)
 
         self.hkl_dict = {
@@ -75,11 +113,6 @@ class Cryspy:
             'k': pd.d_internal_val['peak_'+crystal.data_name].numpy_index_k,
             'l': pd.d_internal_val['peak_'+crystal.data_name].numpy_index_l,
         }
-
-        if self.background is None:
-            bg = np.zeros_like(this_x_array)
-        else:
-            bg = self.background.calculate(this_x_array)
 
         res = scale * np.array(profile.intensity_total) + bg
 
@@ -102,7 +135,7 @@ class Cryspy:
             background = cryspy.PdBackgroundL()
             resolution = cryspy.PdInstrResolution(**self.conditions['resolution'])
             pd = cryspy.Pd(setup=setup, resolution=resolution, phase=phase_list, background=background)
-            _ = pd.calc_profile(this_x_array, [crystal], True, False)
+            _ = pd.calc_profile(tth, [crystal], True, False)
 
             hkl_dict = {
                 'ttheta': pd.d_internal_val['peak_' + crystal.data_name].numpy_ttheta,

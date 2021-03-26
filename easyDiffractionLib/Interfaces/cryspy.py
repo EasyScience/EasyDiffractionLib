@@ -17,6 +17,15 @@ class Cryspy(InterfaceTemplate):
     _sample_link = {
         'cif_str': 'cif_str'}
 
+    _crystal_link = {
+        "length_a": "length_a",
+        "length_b": "length_b",
+        "length_c": "length_c",
+        "angle_alpha": "angle_alpha",
+        "angle_beta": "angle_beta",
+        "angle_gamma": "angle_gamma",
+    }
+
     _instrument_link = {
         'resolution_u': 'u',
         'resolution_v': 'v',
@@ -54,11 +63,17 @@ class Cryspy(InterfaceTemplate):
         :return: None
         :rtype: noneType
         """
+        if value_label == 'filename':
+            return
         if self._borg.debug:
             print(f'Interface1: Value of {value_label} set to {value}')
         if value_label in self._sample_link.keys():
             value_label = self._sample_link[value_label]
-        setattr(self.calculator, 'cif_str', value)
+        # if value_label in self._crystal_link and self.calculator.cif_str:
+        #     self.calculator.updateCrystal(**{value_label: value})
+        # else:
+        #     self.calculator.cif_str = value
+        self.calculator.cif_str = value
 
     def get_instrument_value(self, value_label: str) -> float:
         """

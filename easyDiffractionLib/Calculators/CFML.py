@@ -50,11 +50,13 @@ class CFML:
         cell = cif_file.cell
         space_group = cif_file.space_group
         atom_list = cif_file.atom_list
+        job_info = cif_file.job_info
 
         #cell.print_description()
         #space_group.print_description()
         #atom_list.print_description()
-        #print(self.conditions)
+        #print("job info", job_info)
+        #print("conditions", self.conditions)
 
         # Experiment/Instrumnet/Simulation parameters
         x_min = this_x_array[0]
@@ -64,20 +66,10 @@ class CFML:
         self.conditions.theta_max = x_max
         self.conditions.theta_step = (x_max - x_min) / (num_points - 1)
 
-        #print("self.conditions", self.conditions)
-        #print("self.conditions.theta_min", self.conditions.theta_min)
-        #print("self.conditions.theta_max", self.conditions.theta_max)
-        #print("self.conditions.theta_step", self.conditions.theta_step)
-
-        sin_theta_over_lambda_max = math.sin(math.radians(0.5 * self.conditions.theta_max)) / self.conditions.lamb
-        sin_theta_over_lambda_max = max(1.0, sin_theta_over_lambda_max)
-        #print(f"Manually sin_theta_over_lambda_max: {sin_theta_over_lambda_max} for lambda: {self.conditions.lamb}")
-        #sin_theta_over_lambda_max = self.conditions.getSinThetaOverLambdaMax()
-        #print(f"CFML self.conditions.getSinThetaOverLambdaMax(): {sin_theta_over_lambda_max} for lambda: {self.conditions.lamb}")
-
         # Calculations
         try:
-            reflection_list = CFML_api.ReflectionList(cell, space_group, True, 0, sin_theta_over_lambda_max)
+            reflection_list = CFML_api.ReflectionList(cell, space_group, True, job_info)
+            reflection_list.compute_structure_factors_job(space_group, atom_list, job_info)
             reflection_list.compute_structure_factors(space_group, atom_list)
             diffraction_pattern = CFML_api.DiffractionPattern(self.conditions, reflection_list, cell.reciprocal_cell_vol)
         except:

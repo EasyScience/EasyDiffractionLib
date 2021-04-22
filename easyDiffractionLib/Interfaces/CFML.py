@@ -22,7 +22,7 @@ class CFML(InterfaceTemplate):
         'resolution_v': 'v_resolution',
         'resolution_w': 'w_resolution',
         'resolution_x': 'x_resolution',
-        'resolution_y': 'y_resolution',
+        'resolution_y': 'lorentzian_size',
         'wavelength': 'lamb'
     }
 
@@ -75,7 +75,10 @@ class CFML(InterfaceTemplate):
         """
         if value_label in self._instrument_link.keys():
             value_label = self._instrument_link[value_label]
-        return getattr(self.calculator.conditions, value_label, None)
+        value = getattr(self.calculator.conditions, value_label, None)
+        if value_label == self._instrument_link['resolution_y']:
+            value = self.lorentzian_size_to_resolution_y(value)
+        return value
 
     def set_instrument_value(self, value_label: str, value: float):
         """
@@ -89,6 +92,8 @@ class CFML(InterfaceTemplate):
         """
         if self._borg.debug:
             print(f'Interface1: Value of {value_label} set to {value}')
+        if value_label == 'resolution_y':
+            value = self.lorentzian_size_to_resolution_y(value)
         if value_label in self._instrument_link.keys():
             value_label = self._instrument_link[value_label]
         setattr(self.calculator.conditions, value_label, value)
@@ -167,3 +172,10 @@ class CFML(InterfaceTemplate):
 
     def get_hkl(self, x_array: np.ndarray = None) -> dict:
         return self.calculator.get_hkl(x_array)
+
+    def lorentzian_size_to_resolution_y(self, value):
+        # convert CrysFML lorentzian_size to resolution_y (CrysPy y_resolution)
+        if value < 0.0001:
+            value = 0.0001
+        value = 100.0 / value
+        return value

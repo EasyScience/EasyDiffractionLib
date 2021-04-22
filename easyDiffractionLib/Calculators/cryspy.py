@@ -77,7 +77,7 @@ class Cryspy:
             scale = 1.0
             offset = 0
         else:
-            scale = self.pattern.scale.raw_value
+            scale = self.pattern.scale.raw_value / 500.0
             offset = self.pattern.zero_shift.raw_value
 
         this_x_array = x_array + offset

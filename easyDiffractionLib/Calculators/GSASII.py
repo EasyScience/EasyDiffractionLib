@@ -63,7 +63,7 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
             scale = 1.0
             offset = 0
         else:
-            scale = self.pattern.scale.raw_value
+            scale = self.pattern.scale.raw_value / 1000.0
             offset = self.pattern.zero_shift.raw_value
 
         this_x_array = x_array + offset
@@ -73,25 +73,33 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
         # step 1, setup: add a phase to the project
         cif_file = self.filename
         phase_name = 'Phase'
-        gpx.add_phase(cif_file, phasename=phase_name, fmthint='CIF')
+        phase_index = 0
+        phase0 = gpx.add_phase(cif_file,
+                               phasename=phase_name,
+                               fmthint='CIF')
 
         # step 2, setup: add a simulated histogram and link it to the previous phase(s)
         x_min = this_x_array[0]
         x_max = this_x_array[-1]
         n_points = np.prod(x_array.shape)
         x_step = (x_max-x_min)/(n_points - 1)
-        gpx.add_simulated_powder_histogram(f"{phase_name} simulation",
-                                           self.prm_file_path,
-                                           x_min, x_max, Tstep=x_step,
-                                           phases=gpx.phases())
+        histogram0 = gpx.add_simulated_powder_histogram(f"{phase_name} simulation",
+                                                        self.prm_file_path,
+                                                        x_min, x_max, Tstep=x_step,
+                                                        phases=gpx.phases())
 
-        # Set instrumental parameters
-        resolution_multiplier = 1000
-        u = self.conditions["resolution"]["u"] * resolution_multiplier
-        v = self.conditions["resolution"]["v"] * resolution_multiplier
-        w = self.conditions["resolution"]["w"] * resolution_multiplier
-        x = self.conditions["resolution"]["x"] * resolution_multiplier
-        y = self.conditions["resolution"]["y"] * resolution_multiplier
+        # Set parameters
+        val1 = 10000.0  #1000000.0
+        val2 = None
+        LGmix = 0.0  # 1.0 -> 0.0: NO VISIBLE INFLUENCE...
+        phase0.setSampleProfile(phase_index, 'size', 'isotropic', val1, val2=val2, LGmix=LGmix)
+        print("- size", phase0.data['Histograms'][f'PWDR {phase_name} simulation']['Size'])
+
+        u = self.conditions["resolution"]["u"] * 1850
+        v = self.conditions["resolution"]["v"] * 1850
+        w = self.conditions["resolution"]["w"] * 1850
+        x = self.conditions["resolution"]["x"]   # * 16
+        y = self.conditions["resolution"]["y"] - 6  # * 696 - 6
         gpx.data[f'PWDR {phase_name} simulation']['Instrument Parameters'][0]['U'] = [u,u,0]
         gpx.data[f'PWDR {phase_name} simulation']['Instrument Parameters'][0]['V'] = [v,v,0]
         gpx.data[f'PWDR {phase_name} simulation']['Instrument Parameters'][0]['W'] = [w,w,0]
@@ -102,7 +110,7 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
         gpx.data[f'PWDR {phase_name} simulation']['Instrument Parameters'][0]['Lam'] = [wl,wl,0]
 
         # Step 3: Set the scale factor to adjust the y scale
-        #hist1.SampleParameters['Scale'][0] = 1000000.
+        #histogram0.SampleParameters['Scale'][0] = 1000000.
 
         # step 4, compute: turn off parameter optimization and calculate pattern
         gpx.data['Controls']['data']['max cyc'] = 0  # refinement not needed

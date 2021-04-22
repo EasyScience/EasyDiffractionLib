@@ -68,7 +68,8 @@ class CFML:
         #space_group.print_description()
         #atom_list.print_description()
         #print("job info", job_info, self.conditions.job, CFML_api.PowderPatternSimulationSource.Neutrons)
-        #print("conditions", self.conditions)
+        print("conditions", self.conditions)
+        job_info.print_description()
 
         # Experiment/Instrumnet/Simulation parameters
         x_min = this_x_array[0]
@@ -98,8 +99,7 @@ class CFML:
             end_time = timeit.default_timer()
             print("+ reflection_list.compute_structure_factors: {0:.4f} s".format(end_time - start_time))
 
-            diffraction_pattern = CFML_api.DiffractionPattern(self.conditions,
-                                                              job_info,
+            diffraction_pattern = CFML_api.DiffractionPattern(job_info,
                                                               reflection_list,
                                                               cell.reciprocal_cell_vol)
             end_time = timeit.default_timer()

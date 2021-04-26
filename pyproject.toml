@@ -18,7 +18,7 @@ packages = [ { include = "easyDiffractionLib" } ]
 
 [tool.poetry.dependencies]
 python = "^3.7, <3.8"
-cryspy = "^0.4.11"
+cryspy = "^0.5"
 # easyScience
 libsDarwin = { git = 'https://github.com/easyScience/libsDarwin.git', rev = 'new_cfml', platform = 'darwin' }
 libsLinux = { git = 'https://github.com/easyScience/libsLinux.git', rev = 'new_cfml', platform = 'linux' }

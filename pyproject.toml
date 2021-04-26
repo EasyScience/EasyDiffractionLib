@@ -20,9 +20,9 @@ packages = [ { include = "easyDiffractionLib" } ]
 python = "^3.7, <3.8"
 cryspy = "^0.4.11"
 # easyScience
-libsDarwin = { git = 'https://github.com/easyScience/libsDarwin.git', rev = 'main', platform = 'darwin' }
-libsLinux = { git = 'https://github.com/easyScience/libsLinux.git', rev = 'main', platform = 'linux' }
-libsWin32 = { git = 'https://github.com/easyScience/libsWin32.git', rev = 'main', platform = 'win32' }
+libsDarwin = { git = 'https://github.com/easyScience/libsDarwin.git', rev = 'new_cfml', platform = 'darwin' }
+libsLinux = { git = 'https://github.com/easyScience/libsLinux.git', rev = 'new_cfml', platform = 'linux' }
+libsWin32 = { git = 'https://github.com/easyScience/libsWin32.git', rev = 'new_cfml', platform = 'win32' }
 easyCore = { git = 'https://github.com/easyScience/easyCore.git', rev = 'develop' }
 
 

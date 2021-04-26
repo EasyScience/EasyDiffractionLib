@@ -12,10 +12,15 @@ from easyCore import np, borg
 class CFML:
     def __init__(self, filename: str = None):
         self.filename = filename
-        self.conditions = CFML_api.PowderPatternSimulationConditions()
-        self.conditions.job = CFML_api.PowderPatternSimulationSource.Neutrons
-        self.conditions.lorentzian_size = 10000.0
-        self.conditions.bkg = 0.0
+        self.conditions = {
+            'lamb': 1.54,
+            'u_resolution': 0.01,
+            'v_resolution': 0.0,
+            'w_resolution': 0.0,
+            'x_resolution': 0.0,
+            'y_resolution': 0.0,
+            'z_resolution': 0.0
+        }
         self.background = None
         self.pattern = None
         self.hkl_dict = {
@@ -67,17 +72,22 @@ class CFML:
         #cell.print_description()
         #space_group.print_description()
         #atom_list.print_description()
-        #print("job info", job_info, self.conditions.job, CFML_api.PowderPatternSimulationSource.Neutrons)
-        print("conditions", self.conditions)
-        job_info.print_description()
+        #job_info.print_description()
 
-        # Experiment/Instrumnet/Simulation parameters
+        # Experiment/Instrument/Simulation parameters
         x_min = this_x_array[0]
         x_max = this_x_array[-1]
         num_points = np.prod(x_array.shape)
-        self.conditions.theta_min = x_min
-        self.conditions.theta_max = x_max
-        self.conditions.theta_step = (x_max - x_min) / (num_points - 1)
+        x_step = (x_max - x_min) / (num_points - 1)
+        job_info.range_2theta = (x_min, x_max)
+        job_info.theta_step = x_step
+        job_info.u_resolution = self.conditions['u_resolution']
+        job_info.v_resolution = self.conditions['v_resolution']
+        job_info.w_resolution = self.conditions['w_resolution']
+        job_info.x_resolution = self.conditions['x_resolution']
+        job_info.y_resolution = self.conditions['y_resolution']
+        job_info.lambdas = (self.conditions['lamb'], self.conditions['lamb'])
+        job_info.bkg = 0.0
 
         end_time = timeit.default_timer()
         print("+ calculate C: {0:.4f} s".format(end_time - start_time))

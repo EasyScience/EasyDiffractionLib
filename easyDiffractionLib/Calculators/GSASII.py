@@ -95,11 +95,11 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
         phase0.setSampleProfile(phase_index, 'size', 'isotropic', val1, val2=val2, LGmix=LGmix)
         print("- size", phase0.data['Histograms'][f'PWDR {phase_name} simulation']['Size'])
 
-        u = self.conditions["resolution"]["u"] * 1850
-        v = self.conditions["resolution"]["v"] * 1850
-        w = self.conditions["resolution"]["w"] * 1850
-        x = self.conditions["resolution"]["x"]   # * 16
-        y = self.conditions["resolution"]["y"] - 6  # * 696 - 6
+        u = self.conditions["resolution"]["u"] * 1850  # ~ CrysPy/CrysFML
+        v = self.conditions["resolution"]["v"] * 1850  # ~ CrysPy/CrysFML
+        w = self.conditions["resolution"]["w"] * 1850  # ~ CrysPy/CrysFML
+        x = self.conditions["resolution"]["x"] * 16  # ~ CrysPy/CrysFML
+        y = self.conditions["resolution"]["y"] - 6  # y - 6 ~ 0 in CrysPy/CrysFML
         gpx.data[f'PWDR {phase_name} simulation']['Instrument Parameters'][0]['U'] = [u,u,0]
         gpx.data[f'PWDR {phase_name} simulation']['Instrument Parameters'][0]['V'] = [v,v,0]
         gpx.data[f'PWDR {phase_name} simulation']['Instrument Parameters'][0]['W'] = [w,w,0]

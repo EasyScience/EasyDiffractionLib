@@ -20,11 +20,10 @@ packages = [ { include = "easyDiffractionLib" } ]
 python = "^3.7, <3.8"
 cryspy = "^0.5"
 # easyScience
-libsDarwin = { git = 'https://github.com/easyScience/libsDarwin.git', rev = 'new_cfml', platform = 'darwin' }
-libsLinux = { git = 'https://github.com/easyScience/libsLinux.git', rev = 'new_cfml', platform = 'linux' }
-libsWin32 = { git = 'https://github.com/easyScience/libsWin32.git', rev = 'new_cfml', platform = 'win32' }
+libsDarwin = { git = 'https://github.com/easyScience/libsDarwin.git', rev = 'develop', platform = 'darwin' }
+libsLinux = { git = 'https://github.com/easyScience/libsLinux.git', rev = 'develop', platform = 'linux' }
+libsWin32 = { git = 'https://github.com/easyScience/libsWin32.git', rev = 'develop', platform = 'win32' }
 easyCore = { git = 'https://github.com/easyScience/easyCore.git', rev = 'develop' }
-
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
@@ -40,7 +39,6 @@ easyDiffractionLib = "easyDiffractionLib.main:main"
 
 [ci.pyinstaller]
 libs = { macos = 'libsDarwin', ubuntu = 'libsLinux', windows = 'libsWin32' }
-
 
 [tool.dephell.main]
 from = {format = "poetry", path = "pyproject.toml"}

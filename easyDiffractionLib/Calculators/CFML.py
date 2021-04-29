@@ -95,7 +95,6 @@ class CFML:
         # Calculations
         try:
             start_time = timeit.default_timer()
-
             reflection_list = CFML_api.ReflectionList(cell,
                                                       space_group,
                                                       True,
@@ -103,12 +102,36 @@ class CFML:
             end_time = timeit.default_timer()
             print("+ reflection_list = CFML_api.ReflectionList: {0:.4f} s".format(end_time - start_time))
 
+            start_time = timeit.default_timer()
             reflection_list.compute_structure_factors(space_group,
                                                       atom_list,
                                                       job_info)
             end_time = timeit.default_timer()
             print("+ reflection_list.compute_structure_factors: {0:.4f} s".format(end_time - start_time))
 
+            start_time = timeit.default_timer()
+            ttheta_list = []
+            h_list = []
+            k_list = []
+            l_list = []
+            for i in range(reflection_list.nrefs):
+                reflection = reflection_list[i]
+                h = reflection.hkl[0]
+                k = reflection.hkl[1]
+                l = reflection.hkl[2]
+                h_list.append(h)
+                k_list.append(k)
+                l_list.append(l)
+                ttheta = np.rad2deg(np.arcsin(reflection.stl * job_info.lambdas[0])) * 2
+                ttheta_list.append(ttheta)
+            self.hkl_dict['ttheta'] = np.asarray(ttheta_list)
+            self.hkl_dict['h'] = np.asarray(h_list)
+            self.hkl_dict['k'] = np.asarray(k_list)
+            self.hkl_dict['l'] = np.asarray(l_list)
+            end_time = timeit.default_timer()
+            print("+ set reflection_list: {0:.4f} s".format(end_time - start_time))
+
+            start_time = timeit.default_timer()
             diffraction_pattern = CFML_api.DiffractionPattern(job_info,
                                                               reflection_list,
                                                               cell.reciprocal_cell_vol)
@@ -130,13 +153,6 @@ class CFML:
             print("+ calculate D: {0:.4f} s".format(end_time - start_time))
 
         start_time = timeit.default_timer()
-
-        self.hkl_dict = {
-            'ttheta': np.array([]),
-            'h': np.array([]),
-            'k': np.array([]),
-            'l': np.array([])
-        }
 
         if self.background is None:
             bg = np.zeros_like(this_x_array)

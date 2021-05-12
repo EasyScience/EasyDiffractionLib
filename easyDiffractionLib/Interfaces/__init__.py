@@ -12,17 +12,4 @@ except ImportError:
     # TODO make this a proper message (use logging?)
     print('Warning: CrysPy is not installed')
 
-try:
-    from easyDiffractionLib.Interfaces.CFML import CFML
-except Exception:
-    traceback.print_exc()
-    print('Warning: CFML is not installed')
-    
-try:
-    from easyDiffractionLib.Interfaces.GSASII import GSASII  # noqa: F401
-except Exception:
-    traceback.print_exc()
-    print('Warning: GSAS-II is not installed')
-
-
 from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate

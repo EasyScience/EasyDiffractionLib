@@ -6,7 +6,9 @@ from typing import List
 import numpy as np
 
 from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
+from easyCore.Objects.Inferface import ItemContainer
 from easyDiffractionLib.Calculators.cryspy import Cryspy as Cryspy_calc
+from easyDiffractionLib.Elements.Experiments.Experiment import Pars1D
 
 
 class Cryspy(InterfaceTemplate):
@@ -41,134 +43,26 @@ class Cryspy(InterfaceTemplate):
         self.calculator = Cryspy_calc()
         self._namespace = {}
 
-    def get_value(self, value_label: str) -> float:
-        """
-        Method to get a value from the calculator
-        :param value_label: parameter name to get
-        :type value_label: str
-        :return: associated value
-        :rtype: float
-        """
-        if value_label in self._sample_link.keys():
-            value_label = self._sample_link[value_label]
-        return getattr(self.calculator, value_label, None)
-
-    def set_value(self, value_label: str, value: float):
-        """
-        Method to set a value from the calculator
-        :param value_label: parameter name to get
-        :type value_label: str
-        :param value: new numeric value
-        :type value: float
-        :return: None
-        :rtype: noneType
-        """
-        if value_label == 'filename':
-            return
-        if self._borg.debug:
-            print(f'Interface1: Value of {value_label} set to {value}')
-        if value_label in self._sample_link.keys():
-            value_label = self._sample_link[value_label]
-        # if value_label in self._crystal_link and self.calculator.cif_str:
-        #     self.calculator.updateCrystal(**{value_label: value})
-        # else:
-        #     self.calculator.cif_str = value
-        self.calculator.cif_str = value
-
-    def get_instrument_value(self, value_label: str) -> float:
-        """
-        Method to get a value from the calculator
-        :param value_label: parameter name to get
-        :type value_label: str
-        :return: associated value
-        :rtype: float
-        """
-        if value_label in self._instrument_link.keys():
-            value_label = self._instrument_link[value_label]
-        if value_label == 'wavelength':
-            return self.calculator.conditions.get(value_label, None)
-        return self.calculator.conditions['resolution'].get(value_label, None)
-
-    def set_instrument_value(self, value_label: str, value: float):
-        """
-        Method to set a value from the calculator
-        :param value_label: parameter name to get
-        :type value_label: str
-        :param value: new numeric value
-        :type value: float
-        :return: None
-        :rtype: noneType
-        """
-        if self._borg.debug:
-            print(f'Interface1: Value of {value_label} set to {value}')
-        if value_label in self._instrument_link.keys():
-            value_label = self._instrument_link[value_label]
-        if value_label == 'wavelength':
-            self.calculator.conditions[value_label] = value
-            return
-        self.calculator.conditions['resolution'][value_label] = value
-
-    def get_background_value(self, background, value_label: int) -> float:
-        """
-        Method to get a value from the calculator
-        :param value_label: parameter name to get
-        :type value_label: str
-        :return: associated value
-        :rtype: float
-        """
-        self.calculator.background = background
-        # if value_label <= len(self.calculator.background):
-        #     return self.calculator.background[value_label]
-        # else:
-        #     raise IndexError
-
-    def set_background_value(self, background, value_label: int, value: float):
-        """
-        Method to set a value from the calculator
-        :param value_label: parameter name to get
-        :type value_label: str
-        :param value: new numeric value
-        :type value: float
-        :return: None
-        :rtype: noneType
-        """
-        self.calculator.background = background
-        # if value_label <= len(self.calculator.background):
-        #     self.calculator.background[value_label].set(value)
-        # else:
-        #     raise IndexError
-
-    def set_pattern_value(self, pattern, value_label: int, value: float):
-        """
-        Method to set a value from the calculator
-        :param value_label: parameter name to get
-        :type value_label: str
-        :param value: new numeric value
-        :type value: float
-        :return: None
-        :rtype: noneType
-        """
-        self.calculator.pattern = pattern
-
-    def bulk_update(self, value_label_list: List[str], value_list: List[float], external: bool):
-        """
-        Perform an update of multiple values at once to save time on expensive updates
-
-        :param value_label_list: list of parameters to set
-        :type value_label_list: List[str]
-        :param value_list: list of new numeric values
-        :type value_list: List[float]
-        :param external: should we lookup a name conversion to internal labeling?
-        :type external: bool
-        :return: None
-        :rtype: noneType
-        """
-        for label, value in zip(value_label_list, value_list):
-            # This is a simple case so we will serially update
-            if label in self._sample_link:
-                self.set_value(label, value)
-            elif label in self._instrument_link:
-                self.set_instrument_value(label, value)
+    def create(self, model):
+        r_list = []
+        if issubclass(type(model), Pars1D):
+            res_key = self.calculator.createResolution()
+            setup_key = self.calculator.createSetup()
+            keys = self._instrument_link.copy()
+            keys.pop('wavelength')
+            r_list.append(
+                ItemContainer(res_key, keys,
+                              self.calculator.genericReturn,
+                              self.calculator.genericUpdate)
+            )
+            r_list.append(
+                ItemContainer(setup_key, {'wavelength': self._instrument_link['wavelength']},
+                              self.calculator.genericReturn,
+                              self.calculator.genericUpdate)
+            )
+        else:
+            print(f"I'm a: {type(model)}")
+        return r_list
 
     def fit_func(self, x_array: np.ndarray) -> np.ndarray:
         """

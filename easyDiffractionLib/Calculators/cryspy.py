@@ -1,13 +1,13 @@
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
-from easyCore import np
-from easyCore import borg
+
 import cryspy
-
 import warnings
-
+from easyCore import np, borg
+from easyCore.Objects.Inferface import ItemContainer
 warnings.filterwarnings('ignore')
+
 
 
 class Cryspy:
@@ -57,10 +57,35 @@ class Cryspy:
         for key in kwargs.keys():
             setattr(c, key, kwargs[key])
 
-    def createSetup(self):
+    def createSetup(self, key='setup'):
         setup = cryspy.Setup(wavelength=self.conditions['wavelength'], offset_ttheta=0)
-        self.storage['setup'] = setup
-        return 'setup'
+        self.storage[key] = setup
+        return key
+
+    def updateSetup(self, key='setup', **kwargs):
+        setup = self.storage[key]
+        for r_key in kwargs.keys():
+            setattr(setup, r_key, kwargs[key])
+
+    def genericUpdate(self, item_key, **kwargs):
+        item = self.storage[item_key]
+        for key, value in kwargs.items():
+            setattr(item, key, kwargs[key])
+
+    def genericReturn(self, item_key, value_key):
+        item = self.storage[item_key]
+        value = getattr(item, value_key)
+        return value
+
+    def createResolution(self):
+        key = 'resolution'
+        self.storage[key] = cryspy.PdInstrResolution(**self.conditions['resolution'])
+        return key
+
+    def updateResolution(self, key, **kwargs):
+        resolution = self.storage[key]
+        for r_key in kwargs.keys():
+            setattr(resolution, r_key, kwargs[key])
 
     def calculate(self, x_array: np.ndarray) -> np.ndarray:
         """
@@ -86,9 +111,6 @@ class Cryspy:
             print('CALLING FROM Cryspy\n----------------------')
             print(self.conditions)
             print(self.cif_str)
-
-        # self.createPhase()
-        self.createSetup()
 
         phase_list = cryspy.PhaseL()
         phase_list.items.append(self.storage['phase'])

@@ -43,6 +43,32 @@ class InterfaceTemplate(MSONable, metaclass=ABCMeta):
         """
 
     @abstractmethod
+    def link_atom(self, model_name: str, atom):
+        """
+        This links an atom to a model
+
+        :param model_name: Name of Phase
+        :type model_name: str
+        :param atom: Site object
+        :type atom: Atom
+        :return:
+        :rtype:
+        """
+
+    @abstractmethod
+    def remove_atom(self, model_name: str, atom: str):
+        """
+        This links an atom to a model
+
+        :param model_name: Name of Phase
+        :type model_name: str
+        :param atom: Site object
+        :type atom: Atom
+        :return:
+        :rtype:
+        """
+
+    @abstractmethod
     def fit_func(self, x_array: np.ndarray) -> np.ndarray:
         """
         Function to perform a fit

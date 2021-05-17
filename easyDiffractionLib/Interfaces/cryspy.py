@@ -1,18 +1,13 @@
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
-from typing import List
-
 import numpy as np
-from typing import NamedTuple
 from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
 from easyCore.Objects.Inferface import ItemContainer
 from easyDiffractionLib.Calculators.cryspy import Cryspy as Cryspy_calc
 from easyDiffractionLib.Elements.Experiments.Experiment import Pars1D
 from easyDiffractionLib.Elements.Experiments.Pattern import Pattern1D
-
-
-
+from easyDiffractionLib import Lattice, SpaceGroup, Site, Phase
 
 
 class Cryspy(InterfaceTemplate):
@@ -40,10 +35,10 @@ class Cryspy(InterfaceTemplate):
        'fract_z': 'fract_z',
        'occupancy': 'occupancy',
        'adp_type': 'adp_type',
-       'Uiso': 'U_iso_or_equiv',
-       'Biso': 'B_iso_or_equiv',
-       'Uani': 'U_iso_or_equiv',
-       'Bani': 'B_iso_or_equiv'
+       'Uiso': 'u_iso_or_equiv',
+       'Biso': 'b_iso_or_equiv',
+       'Uani': 'u_iso_or_equiv',
+       'Bani': 'b_iso_or_equiv'
     }
     _instrument_link = {
         'resolution_u': 'u',
@@ -80,13 +75,46 @@ class Cryspy(InterfaceTemplate):
                               self.calculator.genericUpdate)
             )
         elif issubclass(t_, Pattern1D):
-            # These parameters do not link directly to cryspy objects. instead they link to the storage dict.
+            # These parameters do not link directly to cryspy objects.
+            self.calculator.pattern = model
+        elif issubclass(t_, Lattice):
+            l_key = self.calculator.createCell()
+            keys = self._crystal_link.copy()
             r_list.append(
-                ItemContainer()
+                ItemContainer(l_key, keys,
+                              self.calculator.genericReturn,
+                              self.calculator.genericUpdate)
             )
+        elif issubclass(t_, SpaceGroup):
+            s_key = self.calculator.createSpaceGroup()
+            keys = {'_space_group_HM_name': 'name_hm_alt'}
+            r_list.append(
+                ItemContainer(s_key, keys,
+                              self.calculator.genericReturn,
+                              self.calculator.updateSpacegroup)
+            )
+        elif issubclass(t_, Site):
+            a_key = self.calculator.createAtom(model.label.raw_value)
+            keys = self._atom_link.copy()
+            r_list.append(ItemContainer(a_key, keys,
+                                        lambda x, y: self.calculator.genericReturn(model.label.raw_value, y),
+                                        lambda x, **y: self.calculator.genericUpdate(model.label.raw_value, **y)))
+        elif issubclass(t_, Phase):
+            crystal_name = self.calculator.createEmptyCrystal(model.name)
+            self.calculator.assignCell_toCrystal('cell', crystal_name)
+            self.calculator.assignSpaceGroup_toCrystal('spacegroup', crystal_name)
+            for atom in model.atoms:
+                self.calculator.assignAtom_toCrystal(atom.label.raw_value, crystal_name)
         else:
-            print(f"I'm a: {type(model)}")
+            if self._borg.debug:
+                print(f"I'm a: {type(model)}")
         return r_list
+
+    def link_atom(self, crystal_name, atom):
+        self.calculator.assignAtom_toCrystal(atom.label.raw_value, crystal_name)
+
+    def remove_atom(self, crystal_name: str, atom_label):
+        self.calculator.removeAtom_fromCrystal(atom_label, crystal_name)
 
     def fit_func(self, x_array: np.ndarray) -> np.ndarray:
         """

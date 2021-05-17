@@ -24,6 +24,9 @@ class Sample(BaseObj):
         if not isinstance(phases, Phases):
             raise AttributeError('`phases` must be a Crystal or Crystals')
 
+        if parameters is None:
+            parameters = Pars1D.default()
+
         if pattern is None:
             pattern = Pattern1D.default()
 
@@ -33,22 +36,6 @@ class Sample(BaseObj):
         self.filename = os.path.join(tempfile.gettempdir(), 'easydiffraction_temp.cif')
         print(f"Temp CIF: {self.filename}")
         self.output_index = None
-        self._updateInterface()
-
-    def _updateInterface(self, interface_call: str = None):
-        if self.interface is not None:
-            if self._phases is not None and \
-                    (interface_call is None or interface_call == 'phases'):
-                self.interface.generate_bindings(self._phases, self, ifun=self.interface.generate_sample_binding)
-            if self._parameters is not None and \
-                    (interface_call is None or interface_call == 'pars'):
-                self.interface.generate_bindings(self._parameters, ifun=self.interface.generate_instrument_binding)
-                self.interface.generate_bindings(self._pattern, self._pattern, ifun=self.interface.generate_pattern_binding)
-            if len(self._pattern.backgrounds) > 0 and \
-                    self.interface is not None and \
-                    (interface_call is None or interface_call == 'background'):
-                # TODO: At the moment we're only going to support 1 BG as there are no experiments yet.
-                self.interface.generate_bindings(self._pattern.backgrounds, self._pattern.backgrounds[0], ifun=self.interface.generate_background_binding)
 
     def get_phase(self, phase_index):
         return self._phases[phase_index]
@@ -58,12 +45,10 @@ class Sample(BaseObj):
 
     def set_background(self, background):
         self._pattern.backgrounds.append(background)
-        self._updateInterface(interface_call='background')
 
     def remove_background(self, background):
         if background.linked_experiment.raw_value in self._pattern.backgrounds.linked_experiments:
             del self._pattern.backgrounds[background.linked_experiment.raw_value]
-            self._updateInterface(interface_call='background')
         else:
             raise ValueError
 
@@ -84,7 +69,7 @@ class Sample(BaseObj):
             raise ValueError
         self._phases = value
         self._borg.map.add_edge(self, value)
-        self._updateInterface(interface_call='phases')
+        value.interface = self.interface
 
     @property
     def parameters(self):

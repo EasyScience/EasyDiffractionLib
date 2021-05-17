@@ -4,11 +4,15 @@ __version__ = "0.0.1"
 from typing import List
 
 import numpy as np
-
+from typing import NamedTuple
 from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
 from easyCore.Objects.Inferface import ItemContainer
 from easyDiffractionLib.Calculators.cryspy import Cryspy as Cryspy_calc
 from easyDiffractionLib.Elements.Experiments.Experiment import Pars1D
+from easyDiffractionLib.Elements.Experiments.Pattern import Pattern1D
+
+
+
 
 
 class Cryspy(InterfaceTemplate):
@@ -28,6 +32,19 @@ class Cryspy(InterfaceTemplate):
         "angle_gamma": "angle_gamma",
     }
 
+    _atom_link = {
+       'label': 'label',
+       'specie': 'type_symbol',
+       'fract_x': 'fract_x',
+       'fract_y': 'fract_y',
+       'fract_z': 'fract_z',
+       'occupancy': 'occupancy',
+       'adp_type': 'adp_type',
+       'Uiso': 'U_iso_or_equiv',
+       'Biso': 'B_iso_or_equiv',
+       'Uani': 'U_iso_or_equiv',
+       'Bani': 'B_iso_or_equiv'
+    }
     _instrument_link = {
         'resolution_u': 'u',
         'resolution_v': 'v',
@@ -45,7 +62,9 @@ class Cryspy(InterfaceTemplate):
 
     def create(self, model):
         r_list = []
-        if issubclass(type(model), Pars1D):
+        t_ = type(model)
+        if issubclass(t_, Pars1D):
+            # These parameters are linked to the Resolution and Setup cryspy objects
             res_key = self.calculator.createResolution()
             setup_key = self.calculator.createSetup()
             keys = self._instrument_link.copy()
@@ -59,6 +78,11 @@ class Cryspy(InterfaceTemplate):
                 ItemContainer(setup_key, {'wavelength': self._instrument_link['wavelength']},
                               self.calculator.genericReturn,
                               self.calculator.genericUpdate)
+            )
+        elif issubclass(t_, Pattern1D):
+            # These parameters do not link directly to cryspy objects. instead they link to the storage dict.
+            r_list.append(
+                ItemContainer()
             )
         else:
             print(f"I'm a: {type(model)}")

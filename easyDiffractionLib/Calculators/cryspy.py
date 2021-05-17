@@ -34,6 +34,7 @@ class Cryspy:
             'l': np.empty(0)
         }
         self.storage = {}
+        self.powder1D = cryspy.Pd(background=cryspy.PdBackgroundL(), phase=cryspy.PhaseL())
 
     @property
     def cif_str(self):
@@ -42,30 +43,75 @@ class Cryspy:
     @cif_str.setter
     def cif_str(self, value):
         self._cif_str = value
-        self.createPhase()
+        key = self.createCrystal()
+        self.createPhase(key)
 
-    def createPhase(self):
-        crystal = cryspy.Crystal.from_cif(self.cif_str)
-        self.storage['crystal'] = crystal
-        phase = cryspy.Phase(label=crystal.data_name, scale=1, igsize=0)
-        # label = crystal.data_name + '_phase'
-        self.storage['phase'] = phase
-        return 'phase'
-
-    def updateCrystal(self, name='crystal', **kwargs):
-        c = self.storage[name]
-        for key in kwargs.keys():
-            setattr(c, key, kwargs[key])
-
-    def createSetup(self, key='setup'):
-        setup = cryspy.Setup(wavelength=self.conditions['wavelength'], offset_ttheta=0)
-        self.storage[key] = setup
+    def createPhase(self, crystal_name, key='phase'):
+        phase = cryspy.Phase(label=crystal_name, scale=1, igsize=0)
+        self.storage[key] = phase
         return key
 
-    def updateSetup(self, key='setup', **kwargs):
-        setup = self.storage[key]
-        for r_key in kwargs.keys():
-            setattr(setup, r_key, kwargs[key])
+    def createCrystal(self):
+        crystal = cryspy.Crystal.from_cif(self.cif_str)
+        key = crystal.data_name
+        self.storage[key] = crystal
+        self.createPhase(key)
+        return key
+
+    def createEmptyCrystal(self, crystal_name):
+        crystal = cryspy.Crystal(crystal_name, atom_site=cryspy.AtomSiteL())
+        self.storage[crystal_name] = crystal
+        self.createPhase(crystal_name)
+        return crystal_name
+
+    def createCell(self, key='cell'):
+        cell = cryspy.Cell()
+        self.storage[key] = cell
+        return key
+
+    def assignCell_toCrystal(self, cell_name, crystal_name):
+        crystal = self.storage[crystal_name]
+        cell = self.storage[cell_name]
+        crystal.cell = cell
+
+    def createSpaceGroup(self, key='spacegroup', **kwargs):
+        sg = cryspy.SpaceGroup(**kwargs)
+        self.storage[key] = sg
+        return key
+
+    def assignSpaceGroup_toCrystal(self, spacegroup_name, crystal_name):
+        crystal = self.storage[crystal_name]
+        space_group = self.storage[spacegroup_name]
+        setattr(crystal, 'space_group', space_group)
+
+    def updateSpacegroup(self, crystal_name, **kwargs):
+        # This has to be done as sg.name_hm_alt = 'blah' doesn't work :-(
+        sg_key = self.createSpaceGroup(**kwargs)
+        sg = self.storage[sg_key]
+        crystal = self.storage[crystal_name]
+        crystal.space_group = sg
+
+    def createAtom(self, atom_name, **kwargs):
+        atom = cryspy.AtomSite(label=atom_name, **kwargs)
+        self.storage[atom_name] = atom
+
+    def assignAtom_toCrystal(self, atom_label, crystal_name):
+        crystal = self.storage[crystal_name]
+        atom = self.storage[atom_label]
+        atom_list = crystal.atom_site
+
+
+    def createBackground(self, background_obj):
+        key = 'background'
+        self.storage[key] = background_obj
+        return key
+
+    def createSetup(self, key='setup', attach=True):
+        setup = cryspy.Setup(wavelength=self.conditions['wavelength'], offset_ttheta=0)
+        self.storage[key] = setup
+        if attach:
+            setattr(self.powder1D, 'setup', setup)
+        return key
 
     def genericUpdate(self, item_key, **kwargs):
         item = self.storage[item_key]
@@ -77,9 +123,12 @@ class Cryspy:
         value = getattr(item, value_key)
         return value
 
-    def createResolution(self):
+    def createResolution(self, attach=True):
         key = 'resolution'
-        self.storage[key] = cryspy.PdInstrResolution(**self.conditions['resolution'])
+        resolution = cryspy.PdInstrResolution(**self.conditions['resolution'])
+        self.storage[key] = resolution
+        if attach:
+            setattr(self.powder1D, 'resolution', resolution)
         return key
 
     def updateResolution(self, key, **kwargs):
@@ -112,11 +161,6 @@ class Cryspy:
             print(self.conditions)
             print(self.cif_str)
 
-        phase_list = cryspy.PhaseL()
-        phase_list.items.append(self.storage['phase'])
-        background = cryspy.PdBackgroundL()
-        resolution = cryspy.PdInstrResolution(**self.conditions['resolution'])
-        pd = cryspy.Pd(setup=self.storage['setup'], resolution=resolution, phase=phase_list, background=background)
         crystal = self.storage['crystal']
 
         if self.background is None:
@@ -127,7 +171,7 @@ class Cryspy:
         if crystal is None:
             return bg
 
-        profile = pd.calc_profile(this_x_array, [crystal], True, False)
+        profile = self.powder1D.calc_profile(this_x_array, [crystal], True, False)
 
         self.hkl_dict = {
             'ttheta': pd.d_internal_val['peak_' + crystal.data_name].numpy_ttheta,

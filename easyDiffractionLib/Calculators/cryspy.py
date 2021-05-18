@@ -72,8 +72,14 @@ class Cryspy:
         cell = self.storage[cell_name]
         crystal.cell = cell
 
-    def createSpaceGroup(self, key='spacegroup', **kwargs):
-        sg = cryspy.SpaceGroup(**kwargs)
+    def createSpaceGroup(self, key='spacegroup', name_hm_alt='P 1'):
+        sg_split = name_hm_alt.split(':')
+        sg = cryspy.SpaceGroup(name_hm_alt=sg_split[0])
+        if len(sg_split) > 1:
+            try:
+                sg.it_coordinate_system_code = sg_split[1]
+            except Exception as e:
+                print(e)
         self.storage[key] = sg
         return key
 
@@ -143,7 +149,7 @@ class Cryspy:
         resolution = cryspy.PdInstrResolution(**self.conditions['resolution'])
         self.storage[key] = resolution
         if attach:
-            setattr(self.powder_1D, 'resolution', resolution)
+            setattr(self.powder_1D, 'pd_instr_resolution', resolution)
         return key
 
     def updateResolution(self, key, **kwargs):
@@ -174,10 +180,10 @@ class Cryspy:
         # USe the default for now
         crystal = self.storage[self.current_crystal]
 
-        if self.background is None:
+        if self.pattern.backgrounds is None:
             bg = np.zeros_like(this_x_array)
         else:
-            bg = self.background.calculate(this_x_array)
+            bg = self.pattern.backgrounds[0].calculate(this_x_array)
 
         if crystal is None:
             return bg

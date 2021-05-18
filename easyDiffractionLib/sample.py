@@ -69,7 +69,7 @@ class Sample(BaseObj):
             raise ValueError
         self._phases = value
         self._borg.map.add_edge(self, value)
-        value.interface = self.interface
+        self._phases.interface = self.interface
 
     @property
     def parameters(self):
@@ -81,10 +81,10 @@ class Sample(BaseObj):
         if not isinstance(value, Pars1D):
             raise ValueError
         self._parameters = value
-        self._updateInterface(interface_call='pars')
+        self._parameters.interface = self._interface
 
     def update_bindings(self):
-        self._updateInterface()
+        self.generate_bindings()
 
     @property
     def pattern(self):

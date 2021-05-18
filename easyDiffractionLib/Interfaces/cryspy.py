@@ -86,7 +86,7 @@ class Cryspy(InterfaceTemplate):
                               self.calculator.genericUpdate)
             )
         elif issubclass(t_, SpaceGroup):
-            s_key = self.calculator.createSpaceGroup()
+            s_key = self.calculator.createSpaceGroup(name_hm_alt='P 1')
             keys = {'_space_group_HM_name': 'name_hm_alt'}
             r_list.append(
                 ItemContainer(s_key, keys,

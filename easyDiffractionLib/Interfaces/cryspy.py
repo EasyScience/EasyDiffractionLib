@@ -94,27 +94,27 @@ class Cryspy(InterfaceTemplate):
                               self.calculator.updateSpacegroup)
             )
         elif issubclass(t_, Site):
-            a_key = self.calculator.createAtom(model.label.raw_value)
+            a_key = self.calculator.createAtom(self._borg.map.convert_id_to_key(model))
             keys = self._atom_link.copy()
             r_list.append(ItemContainer(a_key, keys,
-                                        lambda x, y: self.calculator.genericReturn(model.label.raw_value, y),
-                                        lambda x, **y: self.calculator.genericUpdate(model.label.raw_value, **y)))
+                                        lambda x, y: self.calculator.genericReturn(a_key, y),
+                                        lambda x, **y: self.calculator.genericUpdate(a_key, **y)))
         elif issubclass(t_, Phase):
             crystal_name = self.calculator.createEmptyCrystal(model.name)
             self.calculator.assignCell_toCrystal('cell', crystal_name)
             self.calculator.assignSpaceGroup_toCrystal('spacegroup', crystal_name)
             for atom in model.atoms:
-                self.calculator.assignAtom_toCrystal(atom.label.raw_value, crystal_name)
+                self.calculator.assignAtom_toCrystal(self._borg.map.convert_id_to_key(atom), crystal_name)
         else:
             if self._borg.debug:
                 print(f"I'm a: {type(model)}")
         return r_list
 
     def link_atom(self, crystal_name, atom):
-        self.calculator.assignAtom_toCrystal(atom.label.raw_value, crystal_name)
+        self.calculator.assignAtom_toCrystal(self._borg.map.convert_id_to_key(atom), crystal_name)
 
-    def remove_atom(self, crystal_name: str, atom_label):
-        self.calculator.removeAtom_fromCrystal(atom_label, crystal_name)
+    def remove_atom(self, crystal_name: str, atom):
+        self.calculator.removeAtom_fromCrystal(self._borg.map.convert_id_to_key(atom), crystal_name)
 
     def fit_func(self, x_array: np.ndarray) -> np.ndarray:
         """

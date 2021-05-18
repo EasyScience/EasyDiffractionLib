@@ -7,6 +7,7 @@ import warnings
 from easyCore import np, borg
 warnings.filterwarnings('ignore')
 
+
 class Cryspy:
     def __init__(self):
         self.pattern = None
@@ -99,8 +100,9 @@ class Cryspy:
         self.assignSpaceGroup_toCrystal(sg_key, self.current_crystal)
 
     def createAtom(self, atom_name, **kwargs):
-        atom = cryspy.AtomSite(label=atom_name, **kwargs)
+        atom = cryspy.AtomSite(**kwargs)
         self.storage[atom_name] = atom
+        return atom_name
 
     def assignAtom_toCrystal(self, atom_label, crystal_name):
         crystal = self.storage[crystal_name]
@@ -180,7 +182,7 @@ class Cryspy:
         # USe the default for now
         crystal = self.storage[self.current_crystal]
 
-        if self.pattern.backgrounds is None:
+        if len(self.pattern.backgrounds) == 0:
             bg = np.zeros_like(this_x_array)
         else:
             bg = self.pattern.backgrounds[0].calculate(this_x_array)
@@ -205,21 +207,22 @@ class Cryspy:
         hkl_dict = self.hkl_dict
 
         if tth is not None:
-            crystal = cryspy.Crystal.from_cif(self.cif_str)
-            phase_list = cryspy.PhaseL()
-            phase = cryspy.Phase(label=crystal.data_name, scale=1, igsize=0)
-            phase_list.items.append(phase)
-            setup = cryspy.Setup(wavelength=self.conditions['wavelength'], offset_ttheta=0)
-            background = cryspy.PdBackgroundL()
-            resolution = cryspy.PdInstrResolution(**self.conditions['resolution'])
-            pd = cryspy.Pd(setup=setup, resolution=resolution, phase=phase_list, background=background)
-            _ = pd.calc_profile(tth, [crystal], True, False)
+            # crystal = cryspy.Crystal.from_cif(self.cif_str)
+            # phase_list = cryspy.PhaseL()
+            # phase = cryspy.Phase(label=crystal.data_name, scale=1, igsize=0)
+            # phase_list.items.append(phase)
+            # setup = cryspy.Setup(wavelength=self.conditions['wavelength'], offset_ttheta=0)
+            # background = cryspy.PdBackgroundL()
+            # resolution = cryspy.PdInstrResolution(**self.conditions['resolution'])
+            # pd = cryspy.Pd(setup=setup, resolution=resolution, phase=phase_list, background=background)
+            crystal = self.storage[self.current_crystal]
+            _ = self.powder_1D.calc_profile(tth, [crystal], True, False)
 
             hkl_dict = {
-                'ttheta': pd.d_internal_val['peak_' + crystal.data_name].numpy_ttheta,
-                'h': pd.d_internal_val['peak_' + crystal.data_name].numpy_index_h,
-                'k': pd.d_internal_val['peak_' + crystal.data_name].numpy_index_k,
-                'l': pd.d_internal_val['peak_' + crystal.data_name].numpy_index_l,
+                'ttheta': self.powder_1D.d_internal_val['peak_' + crystal.data_name].numpy_ttheta,
+                'h': self.powder_1D.d_internal_val['peak_' + crystal.data_name].numpy_index_h,
+                'k': self.powder_1D.d_internal_val['peak_' + crystal.data_name].numpy_index_k,
+                'l': self.powder_1D.d_internal_val['peak_' + crystal.data_name].numpy_index_l,
             }
 
         return hkl_dict

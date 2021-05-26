@@ -1,18 +1,18 @@
 __author__ = "github.com/wardsimon"
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
-import numpy as np
+from easyCore import borg, np
 from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
 from easyCore.Objects.Inferface import ItemContainer
 from easyDiffractionLib.Calculators.cryspy import Cryspy as Cryspy_calc
 from easyDiffractionLib.Elements.Experiments.Experiment import Pars1D
 from easyDiffractionLib.Elements.Experiments.Pattern import Pattern1D
-from easyDiffractionLib import Lattice, SpaceGroup, Site, Phase
+from easyDiffractionLib import Lattice, SpaceGroup, Site, Phase, Phases
 
 
 class Cryspy(InterfaceTemplate):
     """
-    A simple example interface using CFML
+    A simple example interface using Cryspy
     """
 
     _sample_link = {
@@ -53,11 +53,11 @@ class Cryspy(InterfaceTemplate):
 
     def __init__(self):
         self.calculator = Cryspy_calc()
-        self._namespace = {}
 
     def create(self, model):
         r_list = []
         t_ = type(model)
+        model_key = self.__identify(model)
         if issubclass(t_, Pars1D):
             # These parameters are linked to the Resolution and Setup cryspy objects
             res_key = self.calculator.createResolution()
@@ -78,7 +78,7 @@ class Cryspy(InterfaceTemplate):
             # These parameters do not link directly to cryspy objects.
             self.calculator.pattern = model
         elif issubclass(t_, Lattice):
-            l_key = self.calculator.createCell()
+            l_key = self.calculator.createCell(model_key)
             keys = self._crystal_link.copy()
             r_list.append(
                 ItemContainer(l_key, keys,
@@ -86,35 +86,52 @@ class Cryspy(InterfaceTemplate):
                               self.calculator.genericUpdate)
             )
         elif issubclass(t_, SpaceGroup):
-            s_key = self.calculator.createSpaceGroup(name_hm_alt='P 1')
+            s_key = self.calculator.createSpaceGroup(key=model_key, name_hm_alt='P 1')
             keys = {'_space_group_HM_name': 'name_hm_alt'}
             r_list.append(
                 ItemContainer(s_key, keys,
-                              self.calculator.genericReturn,
+                              self.calculator.getSpaceGroupSymbol,
                               self.calculator.updateSpacegroup)
             )
         elif issubclass(t_, Site):
-            a_key = self.calculator.createAtom(self._borg.map.convert_id_to_key(model))
+            a_key = self.calculator.createAtom(model_key)
             keys = self._atom_link.copy()
             r_list.append(ItemContainer(a_key, keys,
                                         lambda x, y: self.calculator.genericReturn(a_key, y),
                                         lambda x, **y: self.calculator.genericUpdate(a_key, **y)))
         elif issubclass(t_, Phase):
-            crystal_name = self.calculator.createEmptyCrystal(model.name)
-            self.calculator.assignCell_toCrystal('cell', crystal_name)
-            self.calculator.assignSpaceGroup_toCrystal('spacegroup', crystal_name)
+            ident = str(model_key) + '_phase'
+            self.calculator.createPhase(ident)
+            crystal_name = self.calculator.createEmptyCrystal(model.name, key=model_key)
+            self.calculator.assignCell_toCrystal(self.__identify(model.cell), model_key)
+            self.calculator.assignSpaceGroup_toCrystal(self.__identify(model._spacegroup), model_key)
             for atom in model.atoms:
-                self.calculator.assignAtom_toCrystal(self._borg.map.convert_id_to_key(atom), crystal_name)
+                self.calculator.assignAtom_toCrystal(self.__identify(atom), model_key)
+        elif issubclass(t_, Phases):
+            self.calculator.createModel(model_key)
+            for phase in model:
+                ident = str(self.__identify(phase)) + '_phase'
+                self.calculator.assignPhase(model_key, ident)
         else:
-            if self._borg.debug:
-                print(f"I'm a: {type(model)}")
+            # if self._borg.debug:
+            print(f"I'm a: {type(model)}")
         return r_list
 
-    def link_atom(self, crystal_name, atom):
-        self.calculator.assignAtom_toCrystal(self._borg.map.convert_id_to_key(atom), crystal_name)
+    def link_atom(self, crystal_obj, atom):
+        crystal_name = self.__identify(crystal_obj)
+        self.calculator.assignAtom_toCrystal(self.__identify(atom), crystal_name)
 
-    def remove_atom(self, crystal_name: str, atom):
-        self.calculator.removeAtom_fromCrystal(self._borg.map.convert_id_to_key(atom), crystal_name)
+    def remove_atom(self, crystal_obj, atom):
+        crystal_name = self.__identify(crystal_obj)
+        self.calculator.removeAtom_fromCrystal(self.__identify(atom), crystal_name)
+
+    def add_phase(self, phases_obj, phase_obj):
+        ident = str(self.__identify(phase_obj)) + '_phase'
+        self.calculator.assignPhase(self.__identify(phases_obj), ident)
+
+    def remove_phase(self, phases_obj, phase_obj):
+        ident = str(self.__identify(phase_obj)) + '_phase'
+        self.calculator.removePhase(self.__identify(phases_obj), ident)
 
     def fit_func(self, x_array: np.ndarray) -> np.ndarray:
         """
@@ -128,3 +145,7 @@ class Cryspy(InterfaceTemplate):
 
     def get_hkl(self, x_array: np.ndarray = None) -> dict:
         return self.calculator.get_hkl(x_array)
+
+    @staticmethod
+    def __identify(obj):
+        return borg.map.convert_id_to_key(obj)

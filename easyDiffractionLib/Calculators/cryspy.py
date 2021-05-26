@@ -1,5 +1,5 @@
 __author__ = "github.com/wardsimon"
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
 
 import cryspy
@@ -30,38 +30,50 @@ class Cryspy:
             'l': np.empty(0)
         }
         self.storage = {}
-        self.current_crystal = ''
-        self.powder_1D = cryspy.Pd(background=cryspy.PdBackgroundL(), phase=cryspy.PhaseL())
+        self.current_crystal = {}
+        self.model = None
 
     @property
     def cif_str(self):
-        key = self.current_crystal
+        key = list(self.current_crystal.keys())[0]
         return self.storage[key].to_cif()
 
     @cif_str.setter
     def cif_str(self, value):
         self.createCrystal_fromCifStr(value)
 
+    def createModel(self, model_id, model_type=None):
+        self.model = cryspy.Pd(background=cryspy.PdBackgroundL(), phase=cryspy.PhaseL())
+
     def createPhase(self, crystal_name, key='phase'):
         phase = cryspy.Phase(label=crystal_name, scale=1, igsize=0)
         self.storage[key] = phase
-        self.powder_1D.phase.items.append(phase)
         return key
+
+    def assignPhase(self, model_name, phase_name):
+        phase = self.storage[phase_name]
+        self.model.phase.items.append(phase)
+
+    def removePhase(self, model_name, phase_name):
+        phase = self.storage[phase_name]
+        self.model.phase.items.pop(phase)
 
     def createCrystal_fromCifStr(self, cif_str: str):
         crystal = cryspy.Crystal.from_cif(cif_str)
         key = crystal.data_name
         self.storage[key] = crystal
-        self.current_crystal = key
+        self.current_crystal[key] = key
         self.createPhase(key)
         return key
 
-    def createEmptyCrystal(self, crystal_name):
+    def createEmptyCrystal(self, crystal_name, key=None):
         crystal = cryspy.Crystal(crystal_name, atom_site=cryspy.AtomSiteL())
-        self.storage[crystal_name] = crystal
-        self.createPhase(crystal_name)
-        self.current_crystal = crystal_name
-        return crystal_name
+        if key is None:
+            key = crystal_name
+        self.storage[key] = crystal
+        self.createPhase(crystal_name, key=str(key) + '_phase')
+        self.current_crystal[key] = crystal_name
+        return key
 
     def createCell(self, key='cell'):
         cell = cryspy.Cell()
@@ -75,14 +87,24 @@ class Cryspy:
 
     def createSpaceGroup(self, key='spacegroup', name_hm_alt='P 1'):
         sg_split = name_hm_alt.split(':')
-        sg = cryspy.SpaceGroup(name_hm_alt=sg_split[0])
+        opts = {'name_hm_alt': sg_split[0]}
         if len(sg_split) > 1:
-            try:
-                sg.it_coordinate_system_code = sg_split[1]
-            except Exception as e:
-                print(e)
+            opts['it_coordinate_system_code'] = sg_split[1]
+        try:
+            sg = cryspy.SpaceGroup(**opts)
+        except Exception as e:
+            sg = cryspy.SpaceGroup(name_hm_alt=sg_split[0])
+            print(e)
         self.storage[key] = sg
         return key
+
+    def getSpaceGroupSymbol(self, spacegroup_name: str, *args, **kwargs):
+        sg = self.storage[spacegroup_name]
+        hm_alt = getattr(sg, 'name_hm_alt')
+        setting = getattr(sg, 'it_coordinate_system_code')
+        if setting:
+            hm_alt += ':' + setting
+        return hm_alt
 
     def assignSpaceGroup_toCrystal(self, spacegroup_name, crystal_name):
         if not crystal_name:
@@ -94,10 +116,15 @@ class Cryspy:
             atom.define_space_group_wyckoff(space_group.space_group_wyckoff)
             atom.form_object()
 
-    def updateSpacegroup(self, _, **kwargs):
+    def updateSpacegroup(self, sg_key, **kwargs):
         # This has to be done as sg.name_hm_alt = 'blah' doesn't work :-(
-        sg_key = self.createSpaceGroup(**kwargs)
-        self.assignSpaceGroup_toCrystal(sg_key, self.current_crystal)
+        sg_key = self.createSpaceGroup(key=sg_key, **kwargs)
+        key = list(self.current_crystal.keys())
+        if len(key) > 0:
+            key = key[0]
+        else:
+            key = ''
+        self.assignSpaceGroup_toCrystal(sg_key, key)
 
     def createAtom(self, atom_name, **kwargs):
         atom = cryspy.AtomSite(**kwargs)
@@ -129,11 +156,11 @@ class Cryspy:
         self.storage[key] = background_obj
         return key
 
-    def createSetup(self, key='setup', attach=True):
+    def createSetup(self, key='setup'):
         setup = cryspy.Setup(wavelength=self.conditions['wavelength'], offset_ttheta=0)
         self.storage[key] = setup
-        if attach:
-            setattr(self.powder_1D, 'setup', setup)
+        if self.model is not None:
+            setattr(self.model, 'setup', setup)
         return key
 
     def genericUpdate(self, item_key, **kwargs):
@@ -146,12 +173,12 @@ class Cryspy:
         value = getattr(item, value_key)
         return value
 
-    def createResolution(self, attach=True):
-        key = 'resolution'
+    def createResolution(self):
+        key = 'pd_instr_resolution'
         resolution = cryspy.PdInstrResolution(**self.conditions['resolution'])
         self.storage[key] = resolution
-        if attach:
-            setattr(self.powder_1D, 'pd_instr_resolution', resolution)
+        if self.model is not None:
+            setattr(self.model, 'pd_instr_resolution', resolution)
         return key
 
     def updateResolution(self, key, **kwargs):
@@ -168,6 +195,10 @@ class Cryspy:
         :rtype: np.ndarray
         """
 
+        for key_inner, key_outer in zip(['pd_instr_resolution', 'setup'], ['resolution', 'setup']):
+            if not hasattr(self.model, key_inner):
+                setattr(self.model, key_inner, self.storage[key_outer])
+
         if self.pattern is None:
             scale = 1.0
             offset = 0
@@ -180,7 +211,7 @@ class Cryspy:
         if borg.debug:
             print('CALLING FROM Cryspy\n----------------------')
         # USe the default for now
-        crystal = self.storage[self.current_crystal]
+        crystal = self.storage[list(self.current_crystal.keys())[-1]]
 
         if len(self.pattern.backgrounds) == 0:
             bg = np.zeros_like(this_x_array)
@@ -190,12 +221,12 @@ class Cryspy:
         if crystal is None:
             return bg
 
-        profile = self.powder_1D.calc_profile(this_x_array, [crystal], True, False)
+        profile = self.model.calc_profile(this_x_array, [crystal], True, False)
         self.hkl_dict = {
-            'ttheta': self.powder_1D.d_internal_val['peak_' + crystal.data_name].numpy_ttheta,
-            'h': self.powder_1D.d_internal_val['peak_'+crystal.data_name].numpy_index_h,
-            'k': self.powder_1D.d_internal_val['peak_'+crystal.data_name].numpy_index_k,
-            'l': self.powder_1D.d_internal_val['peak_'+crystal.data_name].numpy_index_l,
+            'ttheta': self.model.d_internal_val['peak_' + crystal.data_name].numpy_ttheta,
+            'h': self.model.d_internal_val['peak_'+crystal.data_name].numpy_index_h,
+            'k': self.model.d_internal_val['peak_'+crystal.data_name].numpy_index_k,
+            'l': self.model.d_internal_val['peak_'+crystal.data_name].numpy_index_l,
         }
         res = scale * np.array(profile.intensity_total) + bg
         if borg.debug:
@@ -215,14 +246,14 @@ class Cryspy:
             # background = cryspy.PdBackgroundL()
             # resolution = cryspy.PdInstrResolution(**self.conditions['resolution'])
             # pd = cryspy.Pd(setup=setup, resolution=resolution, phase=phase_list, background=background)
-            crystal = self.storage[self.current_crystal]
-            _ = self.powder_1D.calc_profile(tth, [crystal], True, False)
+            crystal = self.storage[list(self.current_crystal.keys())[-1]]
+            _ = self.model.calc_profile(tth, [crystal], True, False)
 
             hkl_dict = {
-                'ttheta': self.powder_1D.d_internal_val['peak_' + crystal.data_name].numpy_ttheta,
-                'h': self.powder_1D.d_internal_val['peak_' + crystal.data_name].numpy_index_h,
-                'k': self.powder_1D.d_internal_val['peak_' + crystal.data_name].numpy_index_k,
-                'l': self.powder_1D.d_internal_val['peak_' + crystal.data_name].numpy_index_l,
+                'ttheta': self.model.d_internal_val['peak_' + crystal.data_name].numpy_ttheta,
+                'h': self.model.d_internal_val['peak_' + crystal.data_name].numpy_index_h,
+                'k': self.model.d_internal_val['peak_' + crystal.data_name].numpy_index_k,
+                'l': self.model.d_internal_val['peak_' + crystal.data_name].numpy_index_l,
             }
 
         return hkl_dict

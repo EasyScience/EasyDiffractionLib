@@ -113,8 +113,8 @@ class Cryspy(InterfaceTemplate):
                 ident = str(self.__identify(phase)) + '_phase'
                 self.calculator.assignPhase(model_key, ident)
         else:
-            # if self._borg.debug:
-            print(f"I'm a: {type(model)}")
+            if self._borg.debug:
+                print(f"I'm a: {type(model)}")
         return r_list
 
     def link_atom(self, crystal_obj, atom):

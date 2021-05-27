@@ -36,7 +36,7 @@ _a_item = getattr(Phases, "append")
 def _p__delitem__(self, key):
     item = self[key]
     if self.interface is not None:
-        self.interface().removePhase(self, item)
+        self.interface().remove_phase(self, item)
     return _d_item(self, key)
 
 

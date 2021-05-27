@@ -56,7 +56,8 @@ class Cryspy:
 
     def removePhase(self, model_name, phase_name):
         phase = self.storage[phase_name]
-        self.model.phase.items.pop(phase)
+        idx = self.model.phase.items.index(phase)
+        self.model.phase.items.pop(idx)
 
     def createCrystal_fromCifStr(self, cif_str: str):
         crystal = cryspy.Crystal.from_cif(cif_str)

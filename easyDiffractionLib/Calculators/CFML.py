@@ -121,24 +121,14 @@ class CFML:
             print("+ reflection_list.compute_structure_factors: {0:.4f} s".format(end_time - start_time))
 
             start_time = timeit.default_timer()
-            ttheta_list = []
-            h_list = []
-            k_list = []
-            l_list = []
-            for i in range(reflection_list.nrefs):
-                reflection = reflection_list[i]
-                h = reflection.hkl[0]
-                k = reflection.hkl[1]
-                l = reflection.hkl[2]
-                h_list.append(h)
-                k_list.append(k)
-                l_list.append(l)
-                ttheta = np.rad2deg(np.arcsin(reflection.stl * job_info.lambdas[0])) * 2
-                ttheta_list.append(ttheta)
-            self.hkl_dict['ttheta'] = np.asarray(ttheta_list)
-            self.hkl_dict['h'] = np.asarray(h_list)
-            self.hkl_dict['k'] = np.asarray(k_list)
-            self.hkl_dict['l'] = np.asarray(l_list)
+
+            hkltth = np.array([[*reflection_list[i].hkl, reflection_list[i].stl] for i in range(reflection_list.nrefs)])
+
+            self.hkl_dict['ttheta'] = np.rad2deg(np.arcsin(hkltth[:, 3] * job_info.lambdas[0])) * 2
+            self.hkl_dict['h'] = hkltth[:, 0]
+            self.hkl_dict['k'] = hkltth[:, 1]
+            self.hkl_dict['l'] = hkltth[:, 2]
+
             end_time = timeit.default_timer()
             print("+ set reflection_list: {0:.4f} s".format(end_time - start_time))
 

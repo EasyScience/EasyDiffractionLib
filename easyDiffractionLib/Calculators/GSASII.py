@@ -143,10 +143,10 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
             'l': np.array([])
         }
 
-        if self.background is None:
+        if len(self.pattern.backgrounds) == 0:
             bg = np.zeros_like(this_x_array)
         else:
-            bg = self.background.calculate(this_x_array)
+            bg = self.pattern.backgrounds[0].calculate(this_x_array)
 
         res = scale * ycalc + bg
 

@@ -196,9 +196,9 @@ class Cryspy:
         :rtype: np.ndarray
         """
 
-        for key_inner, key_outer in zip(['pd_instr_resolution', 'setup'], ['resolution', 'setup']):
+        for key_inner in ['pd_instr_resolution', 'setup']:
             if not hasattr(self.model, key_inner):
-                setattr(self.model, key_inner, self.storage[key_outer])
+                setattr(self.model, key_inner, self.storage[key_inner])
 
         if self.pattern is None:
             scale = 1.0

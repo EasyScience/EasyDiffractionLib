@@ -32,10 +32,10 @@ class Sample(BaseObj):
 
         super(Sample, self).__init__(name, _phases=phases, _parameters=parameters, _pattern=pattern)
 
-        self.interface = interface
         self.filename = os.path.join(tempfile.gettempdir(), 'easydiffraction_temp.cif')
         print(f"Temp CIF: {self.filename}")
         self.output_index = None
+        self.interface = interface
 
     def get_phase(self, phase_index):
         return self._phases[phase_index]

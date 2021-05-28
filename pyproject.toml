@@ -20,6 +20,7 @@ packages = [ { include = "easyDiffractionLib" } ]
 python = "^3.7, <3.8"
 #cryspy = "^0.5"
 cryspy = { git = 'https://github.com/ikibalin/cryspy.git', rev = 'bravis_type_fix' }
+matplotlib = "^3.4"
 # easyScience
 libsDarwin = { git = 'https://github.com/easyScience/libsDarwin.git', rev = 'develop', platform = 'darwin' }
 libsLinux = { git = 'https://github.com/easyScience/libsLinux.git', rev = 'develop', platform = 'linux' }

@@ -136,11 +136,12 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
                 if os.path.basename(p) != "easydiffraction_temp.cif":
                     p.unlink()
 
+
         self.hkl_dict = {
-            'ttheta': np.array([]),
-            'h': np.array([]),
-            'k': np.array([]),
-            'l': np.array([])
+            'ttheta': gpx.data[f'PWDR {phase_name} simulation']['Reflection Lists'][phase_name]['RefList'][:, 5],
+            'h': gpx.data[f'PWDR {phase_name} simulation']['Reflection Lists'][phase_name]['RefList'][:, 0],
+            'k': gpx.data[f'PWDR {phase_name} simulation']['Reflection Lists'][phase_name]['RefList'][:, 1],
+            'l': gpx.data[f'PWDR {phase_name} simulation']['Reflection Lists'][phase_name]['RefList'][:, 2]
         }
 
         if len(self.pattern.backgrounds) == 0:

@@ -89,13 +89,13 @@ class Cryspy:
     def createSpaceGroup(self, key='spacegroup', name_hm_alt='P 1'):
         sg_split = name_hm_alt.split(':')
         opts = {'name_hm_alt': sg_split[0]}
-        if len(sg_split) > 1:
-            opts['it_coordinate_system_code'] = sg_split[1]
-        try:
-            sg = cryspy.SpaceGroup(**opts)
-        except Exception as e:
-            sg = cryspy.SpaceGroup(name_hm_alt=sg_split[0])
-            print(e)
+        # if len(sg_split) > 1:
+        #     opts['it_coordinate_system_code'] = sg_split[1]
+        # try:
+        #     sg = cryspy.SpaceGroup(**opts)
+        # except Exception as e:
+        sg = cryspy.SpaceGroup(**opts)
+            # print(e)
         self.storage[key] = sg
         return key
 

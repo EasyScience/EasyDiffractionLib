@@ -64,12 +64,13 @@ class Sample(BaseObj):
     @property_stack_deco
     def phases(self, value):
         if isinstance(value, Phase):
-            value = Phases('Phases', value)
-        if not isinstance(value, Phases):
+            self._phases.append(value)
+        elif isinstance(value, Phases):
+            self._phases = value
+            self._borg.map.add_edge(self, value)
+            self._phases.interface = self.interface
+        else:
             raise ValueError
-        self._phases = value
-        self._borg.map.add_edge(self, value)
-        self._phases.interface = self.interface
 
     @property
     def parameters(self):

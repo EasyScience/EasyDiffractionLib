@@ -1,10 +1,9 @@
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
-import numpy as np
 from abc import ABCMeta, abstractmethod
-
-from easyCore import borg
+from typing import Tuple
+from easyCore import np, borg
 from easyCore.Utils.json import MSONable
 
 
@@ -30,6 +29,44 @@ class InterfaceTemplate(MSONable, metaclass=ABCMeta):
         super().__init_subclass__(**kwargs)
         if not is_abstract:
             cls._interfaces.append(cls)
+
+    @abstractmethod
+    def create(self, model) -> Tuple[str, dict]:
+        """
+        Method to create an object in the calculator workspace and return it's ID.
+        This ID will be used in the implicit get/set for properties.
+
+        :param model:
+        :type model:
+        :return:
+        :rtype:
+        """
+
+    @abstractmethod
+    def link_atom(self, model_name: str, atom):
+        """
+        This links an atom to a model
+
+        :param model_name: Name of Phase
+        :type model_name: str
+        :param atom: Site object
+        :type atom: Atom
+        :return:
+        :rtype:
+        """
+
+    @abstractmethod
+    def remove_atom(self, model_name: str, atom: str):
+        """
+        This links an atom to a model
+
+        :param model_name: Name of Phase
+        :type model_name: str
+        :param atom: Site object
+        :type atom: Atom
+        :return:
+        :rtype:
+        """
 
     @abstractmethod
     def fit_func(self, x_array: np.ndarray) -> np.ndarray:

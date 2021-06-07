@@ -1,17 +1,18 @@
 __author__ = "github.com/wardsimon"
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
-from typing import List
-
-import numpy as np
-
+from easyCore import borg, np
 from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
+from easyCore.Objects.Inferface import ItemContainer
 from easyDiffractionLib.Calculators.cryspy import Cryspy as Cryspy_calc
+from easyDiffractionLib.Elements.Experiments.Experiment import Pars1D
+from easyDiffractionLib.Elements.Experiments.Pattern import Pattern1D
+from easyDiffractionLib import Lattice, SpaceGroup, Site, Phase, Phases
 
 
 class Cryspy(InterfaceTemplate):
     """
-    A simple example interface using CFML
+    A simple example interface using Cryspy
     """
 
     _sample_link = {
@@ -26,6 +27,19 @@ class Cryspy(InterfaceTemplate):
         "angle_gamma": "angle_gamma",
     }
 
+    _atom_link = {
+       'label': 'label',
+       'specie': 'type_symbol',
+       'fract_x': 'fract_x',
+       'fract_y': 'fract_y',
+       'fract_z': 'fract_z',
+       'occupancy': 'occupancy',
+       'adp_type': 'adp_type',
+       'Uiso': 'u_iso_or_equiv',
+       'Biso': 'b_iso_or_equiv',
+       'Uani': 'u_iso_or_equiv',
+       'Bani': 'b_iso_or_equiv'
+    }
     _instrument_link = {
         'resolution_u': 'u',
         'resolution_v': 'v',
@@ -39,136 +53,85 @@ class Cryspy(InterfaceTemplate):
 
     def __init__(self):
         self.calculator = Cryspy_calc()
-        self._namespace = {}
 
-    def get_value(self, value_label: str) -> float:
-        """
-        Method to get a value from the calculator
-        :param value_label: parameter name to get
-        :type value_label: str
-        :return: associated value
-        :rtype: float
-        """
-        if value_label in self._sample_link.keys():
-            value_label = self._sample_link[value_label]
-        return getattr(self.calculator, value_label, None)
+    def create(self, model):
+        r_list = []
+        t_ = type(model)
+        model_key = self.__identify(model)
+        if issubclass(t_, Pars1D):
+            # These parameters are linked to the Resolution and Setup cryspy objects
+            res_key = self.calculator.createResolution()
+            setup_key = self.calculator.createSetup()
+            keys = self._instrument_link.copy()
+            keys.pop('wavelength')
+            r_list.append(
+                ItemContainer(res_key, keys,
+                              self.calculator.genericReturn,
+                              self.calculator.genericUpdate)
+            )
+            r_list.append(
+                ItemContainer(setup_key, {'wavelength': self._instrument_link['wavelength']},
+                              self.calculator.genericReturn,
+                              self.calculator.genericUpdate)
+            )
+        elif issubclass(t_, Pattern1D):
+            # These parameters do not link directly to cryspy objects.
+            self.calculator.pattern = model
+        elif issubclass(t_, Lattice):
+            l_key = self.calculator.createCell(model_key)
+            keys = self._crystal_link.copy()
+            r_list.append(
+                ItemContainer(l_key, keys,
+                              self.calculator.genericReturn,
+                              self.calculator.genericUpdate)
+            )
+        elif issubclass(t_, SpaceGroup):
+            s_key = self.calculator.createSpaceGroup(key=model_key, name_hm_alt='P 1')
+            keys = {'_space_group_HM_name': 'name_hm_alt'}
+            r_list.append(
+                ItemContainer(s_key, keys,
+                              self.calculator.getSpaceGroupSymbol,
+                              self.calculator.updateSpacegroup)
+            )
+        elif issubclass(t_, Site):
+            a_key = self.calculator.createAtom(model_key)
+            keys = self._atom_link.copy()
+            r_list.append(ItemContainer(a_key, keys,
+                                        lambda x, y: self.calculator.genericReturn(a_key, y),
+                                        lambda x, **y: self.calculator.genericUpdate(a_key, **y)))
+        elif issubclass(t_, Phase):
+            ident = str(model_key) + '_phase'
+            self.calculator.createPhase(ident)
+            crystal_name = self.calculator.createEmptyCrystal(model.name, key=model_key)
+            self.calculator.assignCell_toCrystal(self.__identify(model.cell), model_key)
+            self.calculator.assignSpaceGroup_toCrystal(self.__identify(model._spacegroup), model_key)
+            for atom in model.atoms:
+                self.calculator.assignAtom_toCrystal(self.__identify(atom), model_key)
+        elif issubclass(t_, Phases):
+            self.calculator.createModel(model_key)
+            for phase in model:
+                ident = str(self.__identify(phase)) + '_phase'
+                self.calculator.assignPhase(model_key, ident)
+        else:
+            if self._borg.debug:
+                print(f"I'm a: {type(model)}")
+        return r_list
 
-    def set_value(self, value_label: str, value: float):
-        """
-        Method to set a value from the calculator
-        :param value_label: parameter name to get
-        :type value_label: str
-        :param value: new numeric value
-        :type value: float
-        :return: None
-        :rtype: noneType
-        """
-        if value_label == 'filename':
-            return
-        if self._borg.debug:
-            print(f'Interface1: Value of {value_label} set to {value}')
-        if value_label in self._sample_link.keys():
-            value_label = self._sample_link[value_label]
-        # if value_label in self._crystal_link and self.calculator.cif_str:
-        #     self.calculator.updateCrystal(**{value_label: value})
-        # else:
-        #     self.calculator.cif_str = value
-        self.calculator.cif_str = value
+    def link_atom(self, crystal_obj, atom):
+        crystal_name = self.__identify(crystal_obj)
+        self.calculator.assignAtom_toCrystal(self.__identify(atom), crystal_name)
 
-    def get_instrument_value(self, value_label: str) -> float:
-        """
-        Method to get a value from the calculator
-        :param value_label: parameter name to get
-        :type value_label: str
-        :return: associated value
-        :rtype: float
-        """
-        if value_label in self._instrument_link.keys():
-            value_label = self._instrument_link[value_label]
-        if value_label == 'wavelength':
-            return self.calculator.conditions.get(value_label, None)
-        return self.calculator.conditions['resolution'].get(value_label, None)
+    def remove_atom(self, crystal_obj, atom):
+        crystal_name = self.__identify(crystal_obj)
+        self.calculator.removeAtom_fromCrystal(self.__identify(atom), crystal_name)
 
-    def set_instrument_value(self, value_label: str, value: float):
-        """
-        Method to set a value from the calculator
-        :param value_label: parameter name to get
-        :type value_label: str
-        :param value: new numeric value
-        :type value: float
-        :return: None
-        :rtype: noneType
-        """
-        if self._borg.debug:
-            print(f'Interface1: Value of {value_label} set to {value}')
-        if value_label in self._instrument_link.keys():
-            value_label = self._instrument_link[value_label]
-        if value_label == 'wavelength':
-            self.calculator.conditions[value_label] = value
-            return
-        self.calculator.conditions['resolution'][value_label] = value
+    def add_phase(self, phases_obj, phase_obj):
+        ident = str(self.__identify(phase_obj)) + '_phase'
+        self.calculator.assignPhase(self.__identify(phases_obj), ident)
 
-    def get_background_value(self, background, value_label: int) -> float:
-        """
-        Method to get a value from the calculator
-        :param value_label: parameter name to get
-        :type value_label: str
-        :return: associated value
-        :rtype: float
-        """
-        self.calculator.background = background
-        # if value_label <= len(self.calculator.background):
-        #     return self.calculator.background[value_label]
-        # else:
-        #     raise IndexError
-
-    def set_background_value(self, background, value_label: int, value: float):
-        """
-        Method to set a value from the calculator
-        :param value_label: parameter name to get
-        :type value_label: str
-        :param value: new numeric value
-        :type value: float
-        :return: None
-        :rtype: noneType
-        """
-        self.calculator.background = background
-        # if value_label <= len(self.calculator.background):
-        #     self.calculator.background[value_label].set(value)
-        # else:
-        #     raise IndexError
-
-    def set_pattern_value(self, pattern, value_label: int, value: float):
-        """
-        Method to set a value from the calculator
-        :param value_label: parameter name to get
-        :type value_label: str
-        :param value: new numeric value
-        :type value: float
-        :return: None
-        :rtype: noneType
-        """
-        self.calculator.pattern = pattern
-
-    def bulk_update(self, value_label_list: List[str], value_list: List[float], external: bool):
-        """
-        Perform an update of multiple values at once to save time on expensive updates
-
-        :param value_label_list: list of parameters to set
-        :type value_label_list: List[str]
-        :param value_list: list of new numeric values
-        :type value_list: List[float]
-        :param external: should we lookup a name conversion to internal labeling?
-        :type external: bool
-        :return: None
-        :rtype: noneType
-        """
-        for label, value in zip(value_label_list, value_list):
-            # This is a simple case so we will serially update
-            if label in self._sample_link:
-                self.set_value(label, value)
-            elif label in self._instrument_link:
-                self.set_instrument_value(label, value)
+    def remove_phase(self, phases_obj, phase_obj):
+        ident = str(self.__identify(phase_obj)) + '_phase'
+        self.calculator.removePhase(self.__identify(phases_obj), ident)
 
     def fit_func(self, x_array: np.ndarray) -> np.ndarray:
         """
@@ -182,3 +145,7 @@ class Cryspy(InterfaceTemplate):
 
     def get_hkl(self, x_array: np.ndarray = None) -> dict:
         return self.calculator.get_hkl(x_array)
+
+    @staticmethod
+    def __identify(obj):
+        return borg.map.convert_id_to_key(obj)

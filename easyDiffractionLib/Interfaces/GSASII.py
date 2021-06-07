@@ -1,159 +1,124 @@
 __author__ = "github.com/wardsimon"
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
-from typing import List
-
-import numpy as np
-
-from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
-from easyDiffractionLib.Calculators.GSASII import GSASII as GSASII_calc
+from easyCore import borg, np
+from ..Interfaces.interfaceTemplate import InterfaceTemplate
+from easyCore.Objects.Inferface import ItemContainer
+from ..Calculators.GSASII import GSASII as GSAS_calc
+from easyDiffractionLib.Elements.Experiments.Experiment import Pars1D
+from easyDiffractionLib.Elements.Experiments.Pattern import Pattern1D
+from easyDiffractionLib.sample import Sample
+from easyDiffractionLib import Lattice, SpaceGroup, Site, Phases
 
 
 class GSASII(InterfaceTemplate):
     """
-    A simple example interface using GSASII
+    A simple FILE interface using GSASII
     """
 
     _sample_link = {
         'filename': 'filename'}
 
+    _crystal_link = {
+        "length_a": "length_a",
+        "length_b": "length_b",
+        "length_c": "length_c",
+        "angle_alpha": "angle_alpha",
+        "angle_beta": "angle_beta",
+        "angle_gamma": "angle_gamma",
+    }
+
     _instrument_link = {
-        'resolution_u': 'u',
-        'resolution_v': 'v',
-        'resolution_w': 'w',
-        'resolution_x': 'x',
-        'resolution_y': 'y',
+        'resolution_u': 'u_resolution',
+        'resolution_v': 'v_resolution',
+        'resolution_w': 'w_resolution',
+        'resolution_x': 'x_resolution',
+        'resolution_y': 'y_resolution',
         'wavelength': 'wavelength'
     }
 
-    name = 'GSAS-II'
+    _atom_link = {
+       'label': 'label',
+       'specie': 'specie',
+       'fract_x': 'fract_x',
+       'fract_y': 'fract_y',
+       'fract_z': 'fract_z',
+       'occupancy': 'occupancy',
+       'adp_type': 'adp_type',
+       'Uiso': 'Uiso',
+       'Biso': 'Biso',
+       'Uani': 'Uani',
+       'Bani': 'Bani'
+    }
+    _pattern_link = {
+        'scale': 'scale',
+        'x_offset': 'x_offset'
+    }
+
+    name = 'GSASII'
 
     def __init__(self):
-        self.calculator = GSASII_calc()
-        self._namespace = {}
+        self.calculator = GSAS_calc()
+        self._phase = None
+        self._filename = None
 
-    def get_value(self, value_label: str) -> float:
-        """
-        Method to get a value from the calculator
-        :param value_label: parameter name to get
-        :type value_label: str
-        :return: associated value
-        :rtype: float
-        """
-        if value_label in self._sample_link.keys():
-            value_label = self._sample_link[value_label]
-        return getattr(self.calculator, value_label, None)
+    def create(self, model):
+        r_list = []
+        t_ = type(model)
+        model_key = self.__identify(model)
+        if issubclass(t_, Pars1D):
+            # These parameters are linked to the Resolution and Setup CFML objects. Note that we can set the job type!
+            self.calculator.createConditions(job_type='N')
+            keys = self._instrument_link.copy()
+            r_list.append(
+                ItemContainer(model_key, keys,
+                              self.calculator.conditionsReturn,
+                              self.calculator.conditionsUpdate)
+            )
+        elif issubclass(t_, Pattern1D):
+            # These parameters do not link directly to CFML objects.
+            self.calculator.pattern = model
+        elif issubclass(t_, Lattice):
+            keys = self._crystal_link.copy()
+            r_list.append(
+                ItemContainer(model_key, keys,
+                              self.get_value,
+                              self.dump_cif)
+            )
+        elif issubclass(t_, SpaceGroup):
+            keys = {'_space_group_HM_name': '_space_group_HM_name'}
+            r_list.append(
+                ItemContainer(model_key, keys,
+                              self.get_value,
+                              self.dump_cif)
+            )
+        elif issubclass(t_, Site):
+            keys = self._atom_link.copy()
+            r_list.append(ItemContainer(model_key, keys,
+                                        self.get_value,
+                                        self.dump_cif))
+        elif issubclass(t_, Phases):
+            self._phase = model
+        elif issubclass(t_, Sample):
+            self._filename = model.filename
+            self.calculator.filename = model.filename
+            self.dump_cif()
+        else:
+            if self._borg.debug:
+                print(f"I'm a: {type(model)}")
+        return r_list
 
-    def set_value(self, value_label: str, value: float):
-        """
-        Method to set a value from the calculator
-        :param value_label: parameter name to get
-        :type value_label: str
-        :param value: new numeric value
-        :type value: float
-        :return: None
-        :rtype: noneType
-        """
-        if self._borg.debug:
-            print(f'Interface1: Value of {value_label} set to {value}')
-        if value_label in self._sample_link.keys():
-            value_label = self._sample_link[value_label]
-        setattr(self.calculator, value_label, value)
+    def link_atom(self, crystal_obj, atom):
+        pass
 
-    def get_background_value(self, background, value_label: int) -> float:
-        """
-        Method to get a value from the calculator
-        :param value_label: parameter name to get
-        :type value_label: str
-        :return: associated value
-        :rtype: float
-        """
-        self.calculator.background = background
-        # if value_label <= len(self.calculator.background):
-        #     return self.calculator.background[value_label]
-        # else:
-        #     raise IndexError
+    def remove_atom(self, crystal_obj, atom):
+        pass
 
-    def set_pattern_value(self, pattern, value_label: int, value: float):
-        """
-        Method to set a value from the calculator
-        :param value_label: parameter name to get
-        :type value_label: str
-        :param value: new numeric value
-        :type value: float
-        :return: None
-        :rtype: noneType
-        """
-        self.calculator.pattern = pattern
+    def add_phase(self, phases_obj, phase_obj):
+        pass
 
-    def set_background_value(self, background, value_label: int, value: float):
-        """
-        Method to set a value from the calculator
-        :param value_label: parameter name to get
-        :type value_label: str
-        :param value: new numeric value
-        :type value: float
-        :return: None
-        :rtype: noneType
-        """
-        self.calculator.background = background
-        # if value_label <= len(self.calculator.background):
-        #     self.calculator.background[value_label].set(value)
-        # else:
-        #     raise IndexError
-
-    def get_instrument_value(self, value_label: str) -> float:
-        """
-        Method to get a value from the calculator
-        :param value_label: parameter name to get
-        :type value_label: str
-        :return: associated value
-        :rtype: float
-        """
-        if value_label in self._instrument_link.keys():
-            value_label = self._instrument_link[value_label]
-        if value_label == 'wavelength':
-            return self.calculator.conditions.get(value_label, None)
-        return self.calculator.conditions['resolution'].get(value_label, None)
-
-    def set_instrument_value(self, value_label: str, value: float):
-        """
-        Method to set a value from the calculator
-        :param value_label: parameter name to get
-        :type value_label: str
-        :param value: new numeric value
-        :type value: float
-        :return: None
-        :rtype: noneType
-        """
-        if self._borg.debug:
-            print(f'Interface1: Value of {value_label} set to {value}')
-        if value_label in self._instrument_link.keys():
-            value_label = self._instrument_link[value_label]
-        if value_label == 'wavelength':
-            self.calculator.conditions[value_label] = value
-            return
-        self.calculator.conditions['resolution'][value_label] = value
-
-    def bulk_update(self, value_label_list: List[str], value_list: List[float], external: bool):
-        """
-        Perform an update of multiple values at once to save time on expensive updates
-
-        :param value_label_list: list of parameters to set
-        :type value_label_list: List[str]
-        :param value_list: list of new numeric values
-        :type value_list: List[float]
-        :param external: should we lookup a name conversion to internal labeling?
-        :type external: bool
-        :return: None
-        :rtype: noneType
-        """
-        for label, value in zip(value_label_list, value_list):
-            # This is a simple case so we will serially update
-            if label in self._sample_link:
-                self.set_value(label, value)
-            elif label in self._instrument_link:
-                self.set_instrument_value(label, value)
+    def remove_phase(self, phases_obj, phase_obj):
+        pass
 
     def fit_func(self, x_array: np.ndarray) -> np.ndarray:
         """
@@ -167,3 +132,17 @@ class GSASII(InterfaceTemplate):
 
     def get_hkl(self, x_array: np.ndarray = None) -> dict:
         return self.calculator.get_hkl(x_array)
+    
+    def dump_cif(self, *args, **kwargs):
+        if self._filename is None:
+            return
+        with open(self._filename, 'w') as fid:
+            fid.write(str(self._phase.cif))
+
+    def get_value(self, key, item_key):
+        item = borg.map.get_item_by_key(key)
+        return getattr(item, item_key).raw_value
+
+    @staticmethod
+    def __identify(obj):
+        return borg.map.convert_id_to_key(obj)

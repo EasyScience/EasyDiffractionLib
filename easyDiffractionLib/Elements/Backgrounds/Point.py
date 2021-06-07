@@ -112,26 +112,29 @@ class PointBackground(Background):
         :rtype: np.ndarray
         """
 
-        shape_x = x_array.shape
-        reduced_x = x_array.flat
+        # shape_x = x_array.shape
+        # reduced_x = x_array.flat
 
-        y = np.zeros_like(reduced_x)
+        # y = np.zeros_like(reduced_x)
 
-        low_x = x_array.flat[0] - 1e-10
+        # low_x = x_array.flat[0] - 1e-10
         x_points = self.x_sorted_points
-        low_y = 0
+        if not len(x_points):
+            return np.zeros_like(x_array)
+        # low_y = 0
         y_points = self.y_sorted_points
-
-        for point, intensity in zip(x_points, y_points):
-            idx = (reduced_x > low_x) & (reduced_x <= point)
-            if np.any(idx):
-                y[idx] = np.interp(reduced_x[idx], [low_x, point], [low_y, intensity])
-            low_x = point
-            low_y = intensity
-
-        idx = reduced_x > low_x
-        y[idx] = low_y
-        return y.reshape(shape_x)
+        return np.interp(x_array, x_points, y_points)
+        #
+        # for point, intensity in zip(x_points, y_points):
+        #     idx = (reduced_x > low_x) & (reduced_x <= point)
+        #     if np.any(idx):
+        #         y[idx] = np.interp(reduced_x[idx], [low_x, point], [low_y, intensity])
+        #     low_x = point
+        #     low_y = intensity
+        #
+        # idx = reduced_x > low_x
+        # y[idx] = low_y
+        # return y.reshape(shape_x)
 
     def __repr__(self) -> str:
         """

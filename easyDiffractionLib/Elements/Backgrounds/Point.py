@@ -119,6 +119,8 @@ class PointBackground(Background):
 
         # low_x = x_array.flat[0] - 1e-10
         x_points = self.x_sorted_points
+        if not len(x_points):
+            return np.zeros_like(x_array)
         # low_y = 0
         y_points = self.y_sorted_points
         return np.interp(x_array, x_points, y_points)

@@ -6,7 +6,7 @@ build-backend = "poetry.masonry.api"
 
 [tool.poetry]
 name = "easyDiffractionLib"
-version = "0.0.1"
+version = "0.0.2"
 description = 'Making diffraction data analysis and modelling easy.'
 license = "GPL-3.0-only"
 authors = ["Andrew Sazonov", "Simon Ward"]
@@ -25,7 +25,7 @@ matplotlib = "^3.4"
 libsDarwin = { git = 'https://github.com/easyScience/libsDarwin.git', rev = 'develop', platform = 'darwin' }
 libsLinux = { git = 'https://github.com/easyScience/libsLinux.git', rev = 'develop', platform = 'linux' }
 libsWin32 = { git = 'https://github.com/easyScience/libsWin32.git', rev = 'develop', platform = 'win32' }
-easyCore = { git = 'https://github.com/easyScience/easyCore.git', rev = 'InterfacingRedux' }
+easyCore = { git = 'https://github.com/easyScience/easyCore.git', rev = 'develop' }
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

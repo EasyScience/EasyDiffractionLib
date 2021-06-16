@@ -25,7 +25,7 @@ matplotlib = "^3.4"
 libsDarwin = { git = 'https://github.com/easyScience/libsDarwin.git', rev = 'develop', platform = 'darwin' }
 libsLinux = { git = 'https://github.com/easyScience/libsLinux.git', rev = 'develop', platform = 'linux' }
 libsWin32 = { git = 'https://github.com/easyScience/libsWin32.git', rev = 'develop', platform = 'win32' }
-easyCore = { git = 'https://github.com/easyScience/easyCore.git', rev = 'develop' }
+easyScienceCore = { git = 'https://github.com/easyScience/easyCore.git', rev = 'develop' }
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

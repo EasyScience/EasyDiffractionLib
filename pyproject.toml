@@ -16,15 +16,21 @@ documentation = "https://github.com/easyScience/easyDiffractionLib"
 include = ["CHANGELOG.md"]
 packages = [ { include = "easyDiffractionLib" } ]
 
+[[tool.poetry.source]]
+name = "easyScience"
+url = "https://easyscience.github.io/pypi/"
+secondary = true
+
 [tool.poetry.dependencies]
 python = "^3.7, <3.8"
 #cryspy = "^0.5"
 cryspy = { git = 'https://github.com/ikibalin/cryspy.git', rev = 'bravis_type_fix' }
 matplotlib = "^3.4"
 # easyScience
-libsDarwin = { git = 'https://github.com/easyScience/libsDarwin.git', rev = 'develop', platform = 'darwin' }
-libsLinux = { git = 'https://github.com/easyScience/libsLinux.git', rev = 'develop', platform = 'linux' }
-libsWin32 = { git = 'https://github.com/easyScience/libsWin32.git', rev = 'develop', platform = 'win32' }
+# libsDarwin = { git = 'https://github.com/easyScience/libsDarwin.git', rev = 'develop', platform = 'darwin' }
+# libsLinux = { git = 'https://github.com/easyScience/libsLinux.git', rev = 'develop', platform = 'linux' }
+# libsWin32 = { git = 'https://github.com/easyScience/libsWin32.git', rev = 'develop', platform = 'win32' }
+CFML = '^0.0.1'
 easyScienceCore = { git = 'https://github.com/easyScience/easyCore.git', rev = 'develop' }
 
 [tool.poetry.dev-dependencies]

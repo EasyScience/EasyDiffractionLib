@@ -3,7 +3,7 @@ __version__ = "0.0.1"
 
 import os, pathlib
 from easyCore import borg
-import GSASIIscriptable as G2sc
+from GSASII import GSASIIscriptable as G2sc
 
 from easyCore import np
 

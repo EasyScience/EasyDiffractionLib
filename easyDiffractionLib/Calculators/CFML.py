@@ -122,7 +122,7 @@ class CFML:
 
             start_time = timeit.default_timer()
 
-            hkltth = np.array([[*reflection_list[i].hkl, reflection_list[i].stl] for i in range(reflection_list.nrefs)])
+            hkltth = np.array([[*reflection_list[i].hkl, reflection_list[i].stl] for i in range(reflection_list.nref)])
 
             self.hkl_dict['ttheta'] = np.rad2deg(np.arcsin(hkltth[:, 3] * job_info.lambdas[0])) * 2
             self.hkl_dict['h'] = hkltth[:, 0]

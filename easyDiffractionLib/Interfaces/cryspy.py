@@ -5,7 +5,7 @@ from easyCore import borg, np
 from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
 from easyCore.Objects.Inferface import ItemContainer
 from easyDiffractionLib.Calculators.cryspy import Cryspy as Cryspy_calc
-from easyDiffractionLib.Elements.Experiments.Experiment import Pars1D
+from easyDiffractionLib.Profiles.P1D import Instrument1DParameters, Powder1DParameters
 from easyDiffractionLib.Elements.Experiments.Pattern import Pattern1D
 from easyDiffractionLib import Lattice, SpaceGroup, Site, Phase, Phases
 
@@ -58,7 +58,7 @@ class Cryspy(InterfaceTemplate):
         r_list = []
         t_ = type(model)
         model_key = self.__identify(model)
-        if issubclass(t_, Pars1D):
+        if issubclass(t_, Instrument1DParameters):
             # These parameters are linked to the Resolution and Setup cryspy objects
             res_key = self.calculator.createResolution()
             setup_key = self.calculator.createSetup()
@@ -74,7 +74,7 @@ class Cryspy(InterfaceTemplate):
                               self.calculator.genericReturn,
                               self.calculator.genericUpdate)
             )
-        elif issubclass(t_, Pattern1D):
+        elif issubclass(t_, Powder1DParameters):
             # These parameters do not link directly to cryspy objects.
             self.calculator.pattern = model
         elif issubclass(t_, Lattice):
@@ -108,10 +108,13 @@ class Cryspy(InterfaceTemplate):
             for atom in model.atoms:
                 self.calculator.assignAtom_toCrystal(self.__identify(atom), model_key)
         elif issubclass(t_, Phases):
-            self.calculator.createModel(model_key)
+            # self.calculator.createModel(model_key, 'powder1D')
             for phase in model:
                 ident = str(self.__identify(phase)) + '_phase'
                 self.calculator.assignPhase(model_key, ident)
+        elif t_.__name__ == 'Powder1D':
+        #     #TODO Check to see if parameters and pattern should be initialized here.
+            self.calculator.createModel(model_key, 'powder1D')
         else:
             if self._borg.debug:
                 print(f"I'm a: {type(model)}")

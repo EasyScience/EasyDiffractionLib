@@ -32,6 +32,7 @@ class Cryspy:
         self.storage = {}
         self.current_crystal = {}
         self.model = None
+        self.type = 'powder1D'
 
     @property
     def cif_str(self):
@@ -42,8 +43,16 @@ class Cryspy:
     def cif_str(self, value):
         self.createCrystal_fromCifStr(value)
 
-    def createModel(self, model_id, model_type=None):
-        self.model = cryspy.Pd(background=cryspy.PdBackgroundL(), phase=cryspy.PhaseL())
+    def createModel(self, model_id, model_type=''):
+        model = {
+            'background': cryspy.PdBackgroundL(),
+            'phase': cryspy.PhaseL()
+        }
+        cls = cryspy.Pd
+        if model_type == 'tof':
+            cls = cryspy.Tof
+            model['background'] = cryspy.TOFBackground()
+        self.model = cls(**model)
 
     def createPhase(self, crystal_name, key='phase'):
         phase = cryspy.Phase(label=crystal_name, scale=1, igsize=0)
@@ -187,7 +196,7 @@ class Cryspy:
         for r_key in kwargs.keys():
             setattr(resolution, r_key, kwargs[key])
 
-    def calculate(self, x_array: np.ndarray) -> np.ndarray:
+    def powder_1d_calculate(self, x_array: np.ndarray) -> np.ndarray:
         """
         For a given x calculate the corresponding y
         :param x_array: array of data points to be calculated
@@ -232,6 +241,19 @@ class Cryspy:
         res = scale * np.array(profile.intensity_total) + bg
         if borg.debug:
             print(f"y_calc: {res}")
+        return res
+
+    def calculate(self, x_array: np.ndarray) -> np.ndarray:
+        """
+        For a given x calculate the corresponding y
+        :param x_array: array of data points to be calculated
+        :type x_array: np.ndarray
+        :return: points calculated at `x`
+        :rtype: np.ndarray
+        """
+        res = np.zeros_like(x_array)
+        if self.type == 'powder1D':
+            return self.powder_1d_calculate(x_array)
         return res
 
     def get_hkl(self, tth: np.array = None) -> dict:

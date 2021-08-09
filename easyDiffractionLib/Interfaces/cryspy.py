@@ -5,7 +5,7 @@ from easyCore import borg, np
 from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
 from easyCore.Objects.Inferface import ItemContainer
 from easyDiffractionLib.Calculators.cryspy import Cryspy as Cryspy_calc
-from easyDiffractionLib.Profiles.P1D import Instrument1DParameters, Powder1DParameters
+from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters, Instrument1DTOFParameters, Powder1DParameters
 from easyDiffractionLib.Elements.Experiments.Pattern import Pattern1D
 from easyDiffractionLib import Lattice, SpaceGroup, Site, Phase, Phases
 
@@ -49,6 +49,8 @@ class Cryspy(InterfaceTemplate):
         'wavelength': 'wavelength'
     }
 
+    _instrument_tof_link = {k:k for k in Instrument1DTOFParameters._defaults.keys()}
+
     name = 'CrysPy'
 
     def __init__(self):
@@ -58,7 +60,7 @@ class Cryspy(InterfaceTemplate):
         r_list = []
         t_ = type(model)
         model_key = self.__identify(model)
-        if issubclass(t_, Instrument1DParameters):
+        if issubclass(t_, Instrument1DCWParameters):
             # These parameters are linked to the Resolution and Setup cryspy objects
             res_key = self.calculator.createResolution()
             setup_key = self.calculator.createSetup()
@@ -71,6 +73,31 @@ class Cryspy(InterfaceTemplate):
             )
             r_list.append(
                 ItemContainer(setup_key, {'wavelength': self._instrument_link['wavelength']},
+                              self.calculator.genericReturn,
+                              self.calculator.genericUpdate)
+            )
+        if issubclass(t_, Instrument1DTOFParameters):
+            # These parameters are linked to the Resolution and Setup cryspy objects
+            res_key = self.calculator.createResolution(cls_type='powder1DTOF')
+            setup_key = self.calculator.createSetup(cls_type='powder1DTOF')
+            keys = self._instrument_tof_link.copy()
+
+            setup_keys = {
+                k: keys[k] for k in ['ttheta_bank', 'dtt1', 'dtt2']
+            }
+            res_keys = {
+                k: keys[k] for k in ['sigma0', 'sigma1', 'sigma2',
+                                     'gamma0', 'gamma1', 'gamma2',
+                                     'alpha0', 'alpha1',
+                                     'beta0', 'beta1']
+            }
+            r_list.append(
+                ItemContainer(res_key, res_keys,
+                              self.calculator.genericReturn,
+                              self.calculator.genericUpdate)
+            )
+            r_list.append(
+                ItemContainer(setup_key, setup_keys,
                               self.calculator.genericReturn,
                               self.calculator.genericUpdate)
             )
@@ -112,9 +139,12 @@ class Cryspy(InterfaceTemplate):
             for phase in model:
                 ident = str(self.__identify(phase)) + '_phase'
                 self.calculator.assignPhase(model_key, ident)
-        elif t_.__name__ == 'Powder1D':
+        elif t_.__name__ == 'Powder1DCW':
         #     #TODO Check to see if parameters and pattern should be initialized here.
             self.calculator.createModel(model_key, 'powder1D')
+        elif t_.__name__ == 'Powder1DTOF':
+        #     #TODO Check to see if parameters and pattern should be initialized here.
+            self.calculator.createModel(model_key, 'Powder1DTOF')
         else:
             if self._borg.debug:
                 print(f"I'm a: {type(model)}")

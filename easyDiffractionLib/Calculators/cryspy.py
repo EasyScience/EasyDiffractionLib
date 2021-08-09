@@ -1,10 +1,10 @@
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.2"
 
-
 import cryspy
 import warnings
 from easyCore import np, borg
+
 warnings.filterwarnings('ignore')
 
 
@@ -22,12 +22,28 @@ class Cryspy:
             }
 
         }
+        self.conditions_TOF = {
+            'ttheta_bank':   0,
+            'dtt1':       0.1,
+            'dtt2':       0,
+            'resolution': {
+                'sigma0': 0,
+                'sigma1': 0,
+                'sigma2': 0,
+                'gamma0': 0,
+                'gamma1': 0,
+                'gamma2': 0,
+                'alpha0': 0,
+                'alpha1': 0,
+                'beta0':  0,
+                'beta1':  0}
+        }
         self.background = None
         self.hkl_dict = {
             'ttheta': np.empty(0),
-            'h': np.empty(0),
-            'k': np.empty(0),
-            'l': np.empty(0)
+            'h':      np.empty(0),
+            'k':      np.empty(0),
+            'l':      np.empty(0)
         }
         self.storage = {}
         self.current_crystal = {}
@@ -46,12 +62,13 @@ class Cryspy:
     def createModel(self, model_id, model_type=''):
         model = {
             'background': cryspy.PdBackgroundL(),
-            'phase': cryspy.PhaseL()
+            'phase':      cryspy.PhaseL()
         }
         cls = cryspy.Pd
-        if model_type == 'tof':
-            cls = cryspy.Tof
+        if model_type == 'Powder1DTOF':
+            cls = cryspy.TOF
             model['background'] = cryspy.TOFBackground()
+            self.type = 'powder1DTOF'
         self.model = cls(**model)
 
     def createPhase(self, crystal_name, key='phase'):
@@ -104,7 +121,7 @@ class Cryspy:
         #     sg = cryspy.SpaceGroup(**opts)
         # except Exception as e:
         sg = cryspy.SpaceGroup(**opts)
-            # print(e)
+        # print(e)
         self.storage[key] = sg
         return key
 
@@ -166,8 +183,18 @@ class Cryspy:
         self.storage[key] = background_obj
         return key
 
-    def createSetup(self, key='setup'):
-        setup = cryspy.Setup(wavelength=self.conditions['wavelength'], offset_ttheta=0)
+    def createSetup(self, key='setup', cls_type = None):
+
+        if cls_type is None:
+            cls_type = self.type
+
+        if cls_type == 'powder1D':
+            setup = cryspy.Setup(wavelength=self.conditions['wavelength'], offset_ttheta=0)
+        elif cls_type == 'powder1DTOF':
+            setup = cryspy.TOFParameters(zero=0, dtt1=self.conditions_TOF['dtt1'], dtt2=self.conditions_TOF['dtt2'],
+                                         ttheta_bank=self.conditions_TOF['ttheta_bank'])
+        else:
+            raise AttributeError('The experiment is of an unknown type')
         self.storage[key] = setup
         if self.model is not None:
             setattr(self.model, 'setup', setup)
@@ -183,12 +210,23 @@ class Cryspy:
         value = getattr(item, value_key)
         return value
 
-    def createResolution(self):
-        key = 'pd_instr_resolution'
-        resolution = cryspy.PdInstrResolution(**self.conditions['resolution'])
+    def createResolution(self, cls_type = None):
+
+        if cls_type is None:
+            cls_type = self.type
+
+        if cls_type == 'powder1D':
+            key = 'pd_instr_resolution'
+            resolution = cryspy.PdInstrResolution(**self.conditions['resolution'])
+        elif cls_type == 'powder1DTOF':
+            key = 'tof_profile'
+            resolution = cryspy.TOFProfile(**self.conditions_TOF['resolution'])
+            resolution.peak_shape = 'Gauss'
+        else:
+            raise AttributeError('The experiment is of an unknown type')
         self.storage[key] = resolution
         if self.model is not None:
-            setattr(self.model, 'pd_instr_resolution', resolution)
+            setattr(self.model, key, resolution)
         return key
 
     def updateResolution(self, key, **kwargs):
@@ -234,14 +272,64 @@ class Cryspy:
         profile = self.model.calc_profile(this_x_array, [crystal], True, False)
         self.hkl_dict = {
             'ttheta': self.model.d_internal_val['peak_' + crystal.data_name].numpy_ttheta,
-            'h': self.model.d_internal_val['peak_'+crystal.data_name].numpy_index_h,
-            'k': self.model.d_internal_val['peak_'+crystal.data_name].numpy_index_k,
-            'l': self.model.d_internal_val['peak_'+crystal.data_name].numpy_index_l,
+            'h':      self.model.d_internal_val['peak_' + crystal.data_name].numpy_index_h,
+            'k':      self.model.d_internal_val['peak_' + crystal.data_name].numpy_index_k,
+            'l':      self.model.d_internal_val['peak_' + crystal.data_name].numpy_index_l,
         }
         res = scale * np.array(profile.intensity_total) + bg
         if borg.debug:
             print(f"y_calc: {res}")
         return res
+
+    def powder_1d_tof_calculate(self, x_array: np.ndarray) -> np.ndarray:
+        """
+        For a given x calculate the corresponding y
+        :param x_array: array of data points to be calculated
+        :type x_array: np.ndarray
+        :return: points calculated at `x`
+        :rtype: np.ndarray
+        setup, tof_profile, phase, tof_background, tof_meas
+        """
+
+        for key_inner in ['tof_profile', 'setup']:
+            if not hasattr(self.model, key_inner):
+                setattr(self.model, key_inner, self.storage[key_inner])
+
+        if self.pattern is None:
+            scale = 1.0
+            offset = 0
+        else:
+            scale = self.pattern.scale.raw_value / 500.0
+            offset = self.pattern.zero_shift.raw_value
+
+        self.model['tof_parameters'].zero = offset
+        this_x_array = x_array
+
+        if borg.debug:
+            print('CALLING FROM Cryspy\n----------------------')
+        # USe the default for now
+        crystal = self.storage[list(self.current_crystal.keys())[-1]]
+
+        if len(self.pattern.backgrounds) == 0:
+            bg = np.zeros_like(this_x_array)
+        else:
+            bg = self.pattern.backgrounds[0].calculate(this_x_array)
+
+        if crystal is None:
+            return bg
+
+        profile = self.model.calc_profile(this_x_array, [crystal], True, False)
+        self.hkl_dict = {
+            'time': self.model.d_internal_val['peak_' + crystal.data_name].time,
+            'h':    self.model.d_internal_val['peak_' + crystal.data_name].index_h,
+            'k':    self.model.d_internal_val['peak_' + crystal.data_name].index_k,
+            'l':    self.model.d_internal_val['peak_' + crystal.data_name].index_l,
+        }
+        res = scale * np.array(profile.intensity_total) + bg
+        if borg.debug:
+            print(f"y_calc: {res}")
+        return res
+
 
     def calculate(self, x_array: np.ndarray) -> np.ndarray:
         """
@@ -254,6 +342,8 @@ class Cryspy:
         res = np.zeros_like(x_array)
         if self.type == 'powder1D':
             return self.powder_1d_calculate(x_array)
+        if self.type == 'powder1DTOF':
+            return self.powder_1d_tof_calculate(x_array)
         return res
 
     def get_hkl(self, tth: np.array = None) -> dict:
@@ -274,9 +364,9 @@ class Cryspy:
 
             hkl_dict = {
                 'ttheta': self.model.d_internal_val['peak_' + crystal.data_name].numpy_ttheta,
-                'h': self.model.d_internal_val['peak_' + crystal.data_name].numpy_index_h,
-                'k': self.model.d_internal_val['peak_' + crystal.data_name].numpy_index_k,
-                'l': self.model.d_internal_val['peak_' + crystal.data_name].numpy_index_l,
+                'h':      self.model.d_internal_val['peak_' + crystal.data_name].numpy_index_h,
+                'k':      self.model.d_internal_val['peak_' + crystal.data_name].numpy_index_k,
+                'l':      self.model.d_internal_val['peak_' + crystal.data_name].numpy_index_l,
             }
 
         return hkl_dict

@@ -17,8 +17,11 @@ class Runner:
 
     def add_job(self, name: str, job_type: str = 'powder1d'):
         if job_type == 'powder1d':
-            from easyDiffractionLib.Jobs import Powder1D
-            job_type = Powder1D
+            from easyDiffractionLib.Jobs import Powder1DCW
+            job_type = Powder1DCW
+        elif job_type == 'powder1dTOF':
+            from easyDiffractionLib.Jobs import Powder1DTOF
+            job_type = Powder1DTOF
         else:
             raise NotImplementedError
         job = job_type(name, self._data)

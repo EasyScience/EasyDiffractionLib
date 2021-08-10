@@ -8,8 +8,8 @@ from easyCore.Objects.Base import BaseObj
 from easyCore.Utils.UndoRedo import property_stack_deco
 
 from easyDiffractionLib import Phase, Phases
-from easyDiffractionLib.Elements.Experiments.Experiment import Pars1D
-from easyDiffractionLib.Elements.Experiments.Pattern import Pattern1D
+from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters as Pars1D
+from easyDiffractionLib.Profiles.P1D import Powder1DParameters as Pattern1D
 
 
 class Sample(BaseObj):

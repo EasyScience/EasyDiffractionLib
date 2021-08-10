@@ -146,9 +146,9 @@ class Cryspy(InterfaceTemplate):
         #     #TODO Check to see if parameters and pattern should be initialized here.
             self.calculator.createModel(model_key, 'Powder1DTOF')
         elif t_.__name__ == 'Sample': # This is legacy mode. Boo
-            if issubclass(t_.pattern, Instrument1DCWParameters):
+            if issubclass(type(model.parameters), Instrument1DCWParameters):
                 self.calculator.createModel(model_key, 'powder1D')
-            elif issubclass(t_.pattern, Instrument1DTOFParameters):
+            elif issubclass(type(model.parameters), Instrument1DTOFParameters):
                 self.calculator.createModel(model_key, 'Powder1DTOF')
             else:
                 raise AttributeError('Unknown EXP type')

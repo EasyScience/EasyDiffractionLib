@@ -48,6 +48,7 @@ class Cryspy:
         self.storage = {}
         self.current_crystal = {}
         self.model = None
+        self.phases = cryspy.PhaseL()
         self.type = 'powder1D'
 
     @property
@@ -62,7 +63,7 @@ class Cryspy:
     def createModel(self, model_id, model_type=''):
         model = {
             'background': cryspy.PdBackgroundL(),
-            'phase':      cryspy.PhaseL()
+            'phase':      self.phases
         }
         cls = cryspy.Pd
         if model_type == 'Powder1DTOF':
@@ -78,7 +79,7 @@ class Cryspy:
 
     def assignPhase(self, model_name, phase_name):
         phase = self.storage[phase_name]
-        self.model.phase.items.append(phase)
+        self.phases.items.append(phase)
 
     def removePhase(self, model_name, phase_name):
         phase = self.storage[phase_name]

@@ -61,6 +61,7 @@ class Cryspy(InterfaceTemplate):
         t_ = type(model)
         model_key = self.__identify(model)
         if issubclass(t_, Instrument1DCWParameters):
+            self.calculator.createModel(model_key, 'powder1DCW')
             # These parameters are linked to the Resolution and Setup cryspy objects
             res_key = self.calculator.createResolution()
             setup_key = self.calculator.createSetup()
@@ -77,6 +78,7 @@ class Cryspy(InterfaceTemplate):
                               self.calculator.genericUpdate)
             )
         if issubclass(t_, Instrument1DTOFParameters):
+            self.calculator.createModel(model_key, 'powder1DTOF')
             # These parameters are linked to the Resolution and Setup cryspy objects
             res_key = self.calculator.createResolution(cls_type='powder1DTOF')
             setup_key = self.calculator.createSetup(cls_type='powder1DTOF')
@@ -139,17 +141,17 @@ class Cryspy(InterfaceTemplate):
             for phase in model:
                 ident = str(self.__identify(phase)) + '_phase'
                 self.calculator.assignPhase(model_key, ident)
-        elif t_.__name__ == 'Powder1DCW':
-        #     #TODO Check to see if parameters and pattern should be initialized here.
-            self.calculator.createModel(model_key, 'powder1D')
-        elif t_.__name__ == 'Powder1DTOF':
-        #     #TODO Check to see if parameters and pattern should be initialized here.
-            self.calculator.createModel(model_key, 'Powder1DTOF')
+        # elif t_.__name__ == 'Powder1DCW':
+        # #     #TODO Check to see if parameters and pattern should be initialized here.
+        #
+        # elif t_.__name__ == 'Powder1DTOF':
+        # #     #TODO Check to see if parameters and pattern should be initialized here.
+        #
         elif t_.__name__ == 'Sample': # This is legacy mode. Boo
             if issubclass(type(model.parameters), Instrument1DCWParameters):
-                self.calculator.createModel(model_key, 'powder1D')
+                self.calculator.createModel(model_key, 'powder1DCW')
             elif issubclass(type(model.parameters), Instrument1DTOFParameters):
-                self.calculator.createModel(model_key, 'Powder1DTOF')
+                self.calculator.createModel(model_key, 'powder1DTOF')
             else:
                 raise AttributeError('Unknown EXP type')
         else:

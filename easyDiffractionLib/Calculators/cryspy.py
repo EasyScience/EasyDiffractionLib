@@ -49,7 +49,7 @@ class Cryspy:
         self.current_crystal = {}
         self.model = None
         self.phases = cryspy.PhaseL()
-        self.type = 'powder1D'
+        self.type = 'powder1DCW'
 
     @property
     def cif_str(self):
@@ -60,13 +60,13 @@ class Cryspy:
     def cif_str(self, value):
         self.createCrystal_fromCifStr(value)
 
-    def createModel(self, model_id, model_type=''):
+    def createModel(self, model_id, model_type='powder1DCW'):
         model = {
             'background': cryspy.PdBackgroundL(),
             'phase':      self.phases
         }
         cls = cryspy.Pd
-        if model_type == 'Powder1DTOF':
+        if model_type == 'powder1DTOF':
             cls = cryspy.TOF
             model['background'] = cryspy.TOFBackground()
             self.type = 'powder1DTOF'
@@ -189,7 +189,7 @@ class Cryspy:
         if cls_type is None:
             cls_type = self.type
 
-        if cls_type == 'powder1D':
+        if cls_type == 'powder1DCW':
             setup = cryspy.Setup(wavelength=self.conditions['wavelength'], offset_ttheta=0)
         elif cls_type == 'powder1DTOF':
             setup = cryspy.TOFParameters(zero=0, dtt1=self.conditions_TOF['dtt1'], dtt2=self.conditions_TOF['dtt2'],
@@ -216,7 +216,7 @@ class Cryspy:
         if cls_type is None:
             cls_type = self.type
 
-        if cls_type == 'powder1D':
+        if cls_type == 'powder1DCW':
             key = 'pd_instr_resolution'
             resolution = cryspy.PdInstrResolution(**self.conditions['resolution'])
         elif cls_type == 'powder1DTOF':
@@ -321,10 +321,10 @@ class Cryspy:
 
         profile = self.model.calc_profile(this_x_array, [crystal], True, False)
         self.hkl_dict = {
-            'time': self.model.d_internal_val['peak_' + crystal.data_name].time,
-            'h':    self.model.d_internal_val['peak_' + crystal.data_name].index_h,
-            'k':    self.model.d_internal_val['peak_' + crystal.data_name].index_k,
-            'l':    self.model.d_internal_val['peak_' + crystal.data_name].index_l,
+            'time': np.array(self.model.d_internal_val['peak_' + crystal.data_name].time),
+            'h':    np.array(self.model.d_internal_val['peak_' + crystal.data_name].index_h),
+            'k':    np.array(self.model.d_internal_val['peak_' + crystal.data_name].index_k),
+            'l':    np.array(self.model.d_internal_val['peak_' + crystal.data_name].index_l),
         }
         res = scale * np.array(profile.intensity_total) + bg
         if borg.debug:
@@ -341,7 +341,7 @@ class Cryspy:
         :rtype: np.ndarray
         """
         res = np.zeros_like(x_array)
-        if self.type == 'powder1D':
+        if self.type == 'powder1DCW':
             return self.powder_1d_calculate(x_array)
         if self.type == 'powder1DTOF':
             return self.powder_1d_tof_calculate(x_array)

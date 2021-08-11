@@ -294,7 +294,16 @@ class Cryspy:
 
         for key_inner in ['tof_profile', 'setup']:
             if not hasattr(self.model, key_inner):
-                setattr(self.model, key_inner, self.storage[key_inner])
+                try:
+                    setattr(self.model, key_inner, self.storage[key_inner])
+                except ValueError:
+                    # Try to fix cryspy....
+                    s = self.storage[key_inner]
+                    cls = s.__class__
+                    for idx, item in enumerate(self.model.items):
+                        if isinstance(item, cls) and id(item) is not id(s):
+                            self.model.items[idx] = s
+                            break
 
         if self.pattern is None:
             scale = 1.0

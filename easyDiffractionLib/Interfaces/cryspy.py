@@ -141,12 +141,12 @@ class Cryspy(InterfaceTemplate):
             for phase in model:
                 ident = str(self.__identify(phase)) + '_phase'
                 self.calculator.assignPhase(model_key, ident)
-        # elif t_.__name__ == 'Powder1DCW':
-        # #     #TODO Check to see if parameters and pattern should be initialized here.
-        #
-        # elif t_.__name__ == 'Powder1DTOF':
-        # #     #TODO Check to see if parameters and pattern should be initialized here.
-        #
+        elif t_.__name__ == 'Powder1DCW':
+        #     #TODO Check to see if parameters and pattern should be initialized here.
+            self.calculator.createModel(model_key, 'powder1DCW')
+        elif t_.__name__ == 'Powder1DTOF':
+        #     #TODO Check to see if parameters and pattern should be initialized here.
+            self.calculator.createModel(model_key, 'powder1DTOF')
         elif t_.__name__ == 'Sample': # This is legacy mode. Boo
             if issubclass(type(model.parameters), Instrument1DCWParameters):
                 self.calculator.createModel(model_key, 'powder1DCW')

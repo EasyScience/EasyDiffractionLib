@@ -1,12 +1,12 @@
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.2"
 
+
 from easyCore import borg, np
 from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
 from easyCore.Objects.Inferface import ItemContainer
 from easyDiffractionLib.Calculators.cryspy import Cryspy as Cryspy_calc
 from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters, Instrument1DTOFParameters, Powder1DParameters
-from easyDiffractionLib.Elements.Experiments.Pattern import Pattern1D
 from easyDiffractionLib import Lattice, SpaceGroup, Site, Phase, Phases
 
 

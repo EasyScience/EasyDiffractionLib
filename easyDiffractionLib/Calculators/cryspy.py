@@ -69,7 +69,7 @@ class Cryspy:
         if model_type == 'powder1DTOF':
             cls = cryspy.TOF
             model['background'] = cryspy.TOFBackground()
-            self.type = 'powder1DTOF'
+        self.type = model_type
         self.model = cls(**model)
 
     def createPhase(self, crystal_name, key='phase'):

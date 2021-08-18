@@ -141,17 +141,17 @@ class Cryspy(InterfaceTemplate):
             for phase in model:
                 ident = str(self.__identify(phase)) + '_phase'
                 self.calculator.assignPhase(model_key, ident)
-        elif t_.__name__ == 'Powder1DCW':
+        elif t_.__name__ in ['Powder1DCW', 'powder1DCW', 'Npowder1DCW']:
         #     #TODO Check to see if parameters and pattern should be initialized here.
-            self.calculator.createModel(model_key, 'powder1DCW')
-        elif t_.__name__ == 'Powder1DTOF':
+            self.__createModel(model_key, 'powder1DCW')
+        elif t_.__name__ in ['Powder1DTOF', 'powder1DTOF', 'Npowder1DTOF']:
         #     #TODO Check to see if parameters and pattern should be initialized here.
-            self.calculator.createModel(model_key, 'powder1DTOF')
+            self.__createModel(model_key, 'powder1DTOF')
         elif t_.__name__ == 'Sample': # This is legacy mode. Boo
             if issubclass(type(model.parameters), Instrument1DCWParameters):
-                self.calculator.createModel(model_key, 'powder1DCW')
+                self.__createModel(model_key, 'powder1DCW')
             elif issubclass(type(model.parameters), Instrument1DTOFParameters):
-                self.calculator.createModel(model_key, 'powder1DTOF')
+                self.__createModel(model_key, 'powder1DTOF')
             else:
                 raise AttributeError('Unknown EXP type')
         else:
@@ -187,6 +187,9 @@ class Cryspy(InterfaceTemplate):
 
     def get_hkl(self, x_array: np.ndarray = None) -> dict:
         return self.calculator.get_hkl(x_array)
+
+    def __createModel(self, model, model_type):
+        self.calculator.createModel(model, model_type)
 
     @staticmethod
     def __identify(obj):

@@ -5,8 +5,7 @@ from easyCore import borg, np
 from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
 from easyCore.Objects.Inferface import ItemContainer
 from easyDiffractionLib.Calculators.CFML import CFML as CFML_calc
-from easyDiffractionLib.Elements.Experiments.Experiment import Pars1D
-from easyDiffractionLib.Elements.Experiments.Pattern import Pattern1D
+from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters, Powder1DParameters
 from easyDiffractionLib.sample import Sample
 from easyDiffractionLib import Lattice, SpaceGroup, Site, Phases
 
@@ -66,7 +65,7 @@ class CFML(InterfaceTemplate):
         r_list = []
         t_ = type(model)
         model_key = self.__identify(model)
-        if issubclass(t_, Pars1D):
+        if issubclass(t_, Instrument1DCWParameters):
             # These parameters are linked to the Resolution and Setup CFML objects. Note that we can set the job type!
             self.calculator.createConditions(job_type='N')
             keys = self._instrument_link.copy()
@@ -75,7 +74,7 @@ class CFML(InterfaceTemplate):
                               self.calculator.conditionsReturn,
                               self.calculator.conditionsUpdate)
             )
-        elif issubclass(t_, Pattern1D):
+        elif issubclass(t_, Powder1DParameters):
             # These parameters do not link directly to CFML objects.
             self.calculator.pattern = model
         elif issubclass(t_, Lattice):
@@ -100,9 +99,9 @@ class CFML(InterfaceTemplate):
         elif issubclass(t_, Phases):
             self._phase = model
         elif issubclass(t_, Sample):
-            self._filename = model.filename
-            self.calculator.filename = model.filename
-            self.dump_cif()
+            self.__createModel(model)
+        elif t_.__name__ in ['Powder1DCW', 'powder1DCW', 'Npowder1DCW']:
+            self.__createModel(model)
         else:
             if self._borg.debug:
                 print(f"I'm a: {type(model)}")
@@ -138,6 +137,11 @@ class CFML(InterfaceTemplate):
             return
         with open(self._filename, 'w') as fid:
             fid.write(str(self._phase.cif))
+
+    def __createModel(self, model):
+        self._filename = model.filename
+        self.calculator.filename = model.filename
+        self.dump_cif()
 
     def get_value(self, key, item_key):
         item = borg.map.get_item_by_key(key)

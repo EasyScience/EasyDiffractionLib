@@ -5,8 +5,7 @@ from easyCore import borg, np
 from ..Interfaces.interfaceTemplate import InterfaceTemplate
 from easyCore.Objects.Inferface import ItemContainer
 from ..Calculators.GSASII import GSASII as GSAS_calc
-from easyDiffractionLib.Elements.Experiments.Experiment import Pars1D
-from easyDiffractionLib.Elements.Experiments.Pattern import Pattern1D
+from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters, Powder1DParameters
 from easyDiffractionLib.sample import Sample
 from easyDiffractionLib import Lattice, SpaceGroup, Site, Phases
 
@@ -66,7 +65,7 @@ class GSASII(InterfaceTemplate):
         r_list = []
         t_ = type(model)
         model_key = self.__identify(model)
-        if issubclass(t_, Pars1D):
+        if issubclass(t_, Instrument1DCWParameters):
             # These parameters are linked to the Resolution and Setup CFML objects. Note that we can set the job type!
             self.calculator.createConditions(job_type='N')
             keys = self._instrument_link.copy()
@@ -75,7 +74,7 @@ class GSASII(InterfaceTemplate):
                               self.calculator.conditionsReturn,
                               self.calculator.conditionsUpdate)
             )
-        elif issubclass(t_, Pattern1D):
+        elif issubclass(t_, Powder1DParameters):
             # These parameters do not link directly to CFML objects.
             self.calculator.pattern = model
         elif issubclass(t_, Lattice):
@@ -99,10 +98,11 @@ class GSASII(InterfaceTemplate):
                                         self.dump_cif))
         elif issubclass(t_, Phases):
             self._phase = model
+        elif t_.__name__ in ['Powder1DCW', 'powder1DCW', 'Npowder1DCW']:
+        #     #TODO Check to see if parameters and pattern should be initialized here.
+            self.__createModel(model_key, 'powder1DCW')
         elif issubclass(t_, Sample):
-            self._filename = model.filename
-            self.calculator.filename = model.filename
-            self.dump_cif()
+            self.__createModel(model)
         else:
             if self._borg.debug:
                 print(f"I'm a: {type(model)}")
@@ -142,6 +142,11 @@ class GSASII(InterfaceTemplate):
     def get_value(self, key, item_key):
         item = borg.map.get_item_by_key(key)
         return getattr(item, item_key).raw_value
+
+    def __createModel(self, model):
+        self._filename = model.filename
+        self.calculator.filename = model.filename
+        self.dump_cif()
 
     @staticmethod
     def __identify(obj):

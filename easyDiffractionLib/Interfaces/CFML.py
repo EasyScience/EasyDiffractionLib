@@ -2,12 +2,12 @@ __author__ = "github.com/wardsimon"
 __version__ = "0.0.2"
 
 from easyCore import borg, np
-from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
 from easyCore.Objects.Inferface import ItemContainer
-from easyDiffractionLib.Calculators.CFML import CFML as CFML_calc
-from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters, Powder1DParameters
-from easyDiffractionLib.sample import Sample
 from easyDiffractionLib import Lattice, SpaceGroup, Site, Phases
+from easyDiffractionLib.sample import Sample
+from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
+from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters, Powder1DParameters
+from easyDiffractionLib.Calculators.CFML import CFML as CFML_calc
 
 
 class CFML(InterfaceTemplate):
@@ -54,12 +54,22 @@ class CFML(InterfaceTemplate):
         'x_offset': 'x_offset'
     }
 
+    feature_available = {
+        'Npowder1DCW': True
+    }
+
     name = 'CrysFML'
 
     def __init__(self):
         self.calculator = CFML_calc()
         self._phase = None
         self._filename = None
+
+    @staticmethod
+    def feature_checker(radiation='N', exp_type='CW', sample_type='powder', dimensionality='1D', test_str=None):
+        return InterfaceTemplate.features(radiation=radiation, exp_type=exp_type, sample_type=sample_type,
+                                          dimensionality=dimensionality, test_str=test_str,
+                                          FEATURES=CFML.feature_available)
 
     def create(self, model):
         r_list = []

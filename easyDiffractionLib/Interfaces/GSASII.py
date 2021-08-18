@@ -54,12 +54,22 @@ class GSASII(InterfaceTemplate):
         'x_offset': 'x_offset'
     }
 
+    feature_available = {
+        'Npowder1DCW': True
+    }
+
     name = 'GSASII'
 
     def __init__(self):
         self.calculator = GSAS_calc()
         self._phase = None
         self._filename = None
+
+    @staticmethod
+    def feature_checker(radiation='N', exp_type='CW', sample_type='powder', dimensionality='1D', test_str=None):
+        return InterfaceTemplate.features(radiation=radiation, exp_type=exp_type, sample_type=sample_type,
+                                          dimensionality=dimensionality, test_str=test_str,
+                                          FEATURES=GSASII.feature_available)
 
     def create(self, model):
         r_list = []

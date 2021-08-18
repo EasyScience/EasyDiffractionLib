@@ -3,11 +3,11 @@ __version__ = "0.0.2"
 
 
 from easyCore import borg, np
-from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
 from easyCore.Objects.Inferface import ItemContainer
-from easyDiffractionLib.Calculators.cryspy import Cryspy as Cryspy_calc
-from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters, Instrument1DTOFParameters, Powder1DParameters
 from easyDiffractionLib import Lattice, SpaceGroup, Site, Phase, Phases
+from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters, Instrument1DTOFParameters, Powder1DParameters
+from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
+from easyDiffractionLib.Calculators.cryspy import Cryspy as Cryspy_calc
 
 
 class Cryspy(InterfaceTemplate):
@@ -53,8 +53,19 @@ class Cryspy(InterfaceTemplate):
 
     name = 'CrysPy'
 
+    feature_available = {
+        'Npowder1DCW': True,
+        'Npowder1DTOF': True
+    }
+
     def __init__(self):
         self.calculator = Cryspy_calc()
+
+    @staticmethod
+    def feature_checker(radiation='N', exp_type='CW', sample_type='powder', dimensionality='1D', test_str=None):
+        return InterfaceTemplate.features(radiation=radiation, exp_type=exp_type, sample_type=sample_type,
+                                          dimensionality=dimensionality, test_str=test_str,
+                                          FEATURES=Cryspy.feature_available)
 
     def create(self, model):
         r_list = []

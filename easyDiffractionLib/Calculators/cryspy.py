@@ -1,9 +1,13 @@
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.2"
 
+import time
+
 import cryspy
 import warnings
 from easyCore import np, borg
+from pathos import multiprocessing as mp
+import functools
 
 warnings.filterwarnings('ignore')
 
@@ -50,6 +54,7 @@ class Cryspy:
         self.model = None
         self.phases = cryspy.PhaseL()
         self.type = 'powder1DCW'
+        self.additional_data = {}
 
     @property
     def cif_str(self):
@@ -83,8 +88,9 @@ class Cryspy:
 
     def removePhase(self, model_name, phase_name):
         phase = self.storage[phase_name]
-        idx = self.model.phase.items.index(phase)
-        self.model.phase.items.pop(idx)
+        del self.storage[phase_name]
+        self.phases.items.pop(self.phases.items.index(phase))
+        self.current_crystal.pop(int(phase_name.split('_')[0]))
 
     def createCrystal_fromCifStr(self, cif_str: str):
         crystal = cryspy.Crystal.from_cif(cif_str)
@@ -259,28 +265,7 @@ class Cryspy:
 
         if borg.debug:
             print('CALLING FROM Cryspy\n----------------------')
-        # USe the default for now
-        crystal = self.storage[list(self.current_crystal.keys())[-1]]
-
-        if len(self.pattern.backgrounds) == 0:
-            bg = np.zeros_like(this_x_array)
-        else:
-            bg = self.pattern.backgrounds[0].calculate(this_x_array)
-
-        if crystal is None:
-            return bg
-
-        profile = self.model.calc_profile(this_x_array, [crystal], True, False)
-        self.hkl_dict = {
-            'ttheta': self.model.d_internal_val['peak_' + crystal.data_name].numpy_ttheta,
-            'h':      self.model.d_internal_val['peak_' + crystal.data_name].numpy_index_h,
-            'k':      self.model.d_internal_val['peak_' + crystal.data_name].numpy_index_k,
-            'l':      self.model.d_internal_val['peak_' + crystal.data_name].numpy_index_l,
-        }
-        res = scale * np.array(profile.intensity_total) + bg
-        if borg.debug:
-            print(f"y_calc: {res}")
-        return res
+        return self.do_calc(scale, this_x_array)
 
     def powder_1d_tof_calculate(self, x_array: np.ndarray) -> np.ndarray:
         """
@@ -317,29 +302,72 @@ class Cryspy:
 
         if borg.debug:
             print('CALLING FROM Cryspy\n----------------------')
-        # USe the default for now
-        crystal = self.storage[list(self.current_crystal.keys())[-1]]
+        return self.do_calc(scale, this_x_array)
 
+    def do_calc(self, scale, this_x_array):
         if len(self.pattern.backgrounds) == 0:
             bg = np.zeros_like(this_x_array)
         else:
             bg = self.pattern.backgrounds[0].calculate(this_x_array)
 
-        if crystal is None:
+        num_crys = len(self.current_crystal.keys())
+        if num_crys == 0:
             return bg
+        elif num_crys == 1:
+            crystals = [self.storage[list(self.current_crystal.keys())[-1]]]
+            profiles = [self.model.calc_profile(this_x_array, crystals, True, False)]
+            peak_dat = [self.model.d_internal_val['peak_' + crystals[0].data_name]]
+            crystals = [crystals]
+        elif num_crys > 1:
+            pool = mp.ProcessPool(num_crys)
+            crystals = [[self.storage[key]] for key in self.current_crystal.keys()]
+            result = pool.amap(functools.partial(self._do_run, this_x_array), crystals)
+            while not result.ready():
+                time.sleep(0.1)
+            obtained = result.get()
+            profiles = [obj[0] for obj in obtained]
+            peak_dat = [obj[1] for obj in obtained]
+        else:
+            raise ArithmeticError
 
-        profile = self.model.calc_profile(this_x_array, [crystal], True, False)
+        # Do this for now
+        x_str = 'ttheta'
+        if self.type == 'powder1DTOF':
+            x_str = 'time'
         self.hkl_dict = {
-            'time': np.array(self.model.d_internal_val['peak_' + crystal.data_name].time),
-            'h':    np.array(self.model.d_internal_val['peak_' + crystal.data_name].index_h),
-            'k':    np.array(self.model.d_internal_val['peak_' + crystal.data_name].index_k),
-            'l':    np.array(self.model.d_internal_val['peak_' + crystal.data_name].index_l),
+            x_str: getattr(peak_dat[0], 'numpy_' + x_str),
+            'h':      peak_dat[0].numpy_index_h,
+            'k':      peak_dat[0].numpy_index_k,
+            'l':      peak_dat[0].numpy_index_l,
         }
-        res = scale * np.array(profile.intensity_total) + bg
+        res = scale * np.sum(np.array([[np.array(prof.intensity_total)] for prof in profiles]), axis=0) + bg
+
+        self.additional_data = {
+            crystal[0].data_name: {
+                'hkl': {
+                    x_str: getattr(peak_dat[idx], 'numpy_' + x_str),
+                    'h':      peak_dat[idx].numpy_index_h,
+                    'k':      peak_dat[idx].numpy_index_k,
+                    'l':      peak_dat[idx].numpy_index_l,
+                    },
+                'profile': scale * np.array(profiles[idx].intensity_total)
+            } for idx, crystal in enumerate(crystals)
+        }
+        self.additional_data['background'] = bg
+
         if borg.debug:
             print(f"y_calc: {res}")
         return res
 
+    def _do_run(self, x_array, crystals):
+        phasesL = cryspy.PhaseL()
+        idx = [idx for idx, item in enumerate(self.phases.items) if item.label == crystals[0].data_name][0]
+        phasesL.items.append(self.phases.items[idx])
+        idx = [idx for idx, item in enumerate(self.model.items) if isinstance(item, cryspy.PhaseL)][0]
+        self.model.items[idx] = phasesL
+        result1 = self.model.calc_profile(x_array, crystals, flag_internal=True, flag_polarized=False)
+        result2 = self.model.d_internal_val['peak_' + crystals[0].data_name]
+        return result1, result2
 
     def calculate(self, x_array: np.ndarray) -> np.ndarray:
         """

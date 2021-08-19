@@ -30,6 +30,7 @@ matplotlib = "^3.4"
 CFML = '^0.0.1'
 GSASII = '^0.0.1'
 easyScienceCore = { git = 'https://github.com/easyScience/easyCore.git', rev = 'develop' }
+pathos = "^0.2.8"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

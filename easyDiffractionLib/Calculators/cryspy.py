@@ -89,8 +89,15 @@ class Cryspy:
     def removePhase(self, model_name, phase_name):
         phase = self.storage[phase_name]
         del self.storage[phase_name]
+        del self.storage[str(model_name) + '_scale']
         self.phases.items.pop(self.phases.items.index(phase))
         self.current_crystal.pop(int(phase_name.split('_')[0]))
+
+    def setPhaseScale(self, model_name, scale=1):
+        self.storage[str(model_name) + '_scale'] = scale
+
+    def getPhaseScale(self, model_name, *args, **kwargs):
+        return self.storage.get(str(model_name) + '_scale', 1)
 
     def createCrystal_fromCifStr(self, cif_str: str):
         crystal = cryspy.Crystal.from_cif(cif_str)
@@ -316,6 +323,7 @@ class Cryspy:
             return bg
 
         crystals = [self.storage[key] for key in self.current_crystal.keys()]
+        phase_scales = [self.storage[str(key) + '_scale'] for key in self.current_crystal.keys()]
         phase_lists = []
         for crystal in crystals:
             phasesL = cryspy.PhaseL()
@@ -342,7 +350,7 @@ class Cryspy:
             'l':   peak_dat[0].numpy_index_l,
         }
 
-        res = scale * np.sum(np.array([[np.array(prof.intensity_total)] for prof in profiles]), axis=0) + bg
+        res = scale * np.sum(np.array([[phase_scales[idx] * np.array(prof.intensity_total)] for idx, prof in enumerate(profiles)]), axis=0) + bg
 
         self.additional_data = {
             crystal.data_name: {

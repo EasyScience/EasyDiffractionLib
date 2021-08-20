@@ -145,6 +145,12 @@ class Cryspy(InterfaceTemplate):
             crystal_name = self.calculator.createEmptyCrystal(model.name, key=model_key)
             self.calculator.assignCell_toCrystal(self.__identify(model.cell), model_key)
             self.calculator.assignSpaceGroup_toCrystal(self.__identify(model._spacegroup), model_key)
+            self.calculator.setPhaseScale(model_key, scale=model.scale.raw_value)
+            r_list.append(
+                ItemContainer(model_key, {'scale': 'scale'},
+                              self.calculator.getPhaseScale,
+                              self.calculator.setPhaseScale)
+            )
             for atom in model.atoms:
                 self.calculator.assignAtom_toCrystal(self.__identify(atom), model_key)
         elif issubclass(t_, Phases):

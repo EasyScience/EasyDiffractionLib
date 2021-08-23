@@ -202,7 +202,7 @@ class Cryspy(InterfaceTemplate):
         """
         return self.calculator.calculate(x_array)
 
-    def get_hkl(self, x_array: np.ndarray = None) -> dict:
+    def get_hkl(self, x_array: np.ndarray = None, idx=None, phase_name=None) -> dict:
         return self.calculator.get_hkl(x_array)
 
     def __createModel(self, model, model_type):

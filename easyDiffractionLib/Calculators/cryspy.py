@@ -43,18 +43,13 @@ class Cryspy:
                 'beta1':  0}
         }
         self.background = None
-        self.hkl_dict = {
-            'ttheta': np.empty(0),
-            'h':      np.empty(0),
-            'k':      np.empty(0),
-            'l':      np.empty(0)
-        }
         self.storage = {}
         self.current_crystal = {}
         self.model = None
         self.phases = cryspy.PhaseL()
         self.type = 'powder1DCW'
         self.additional_data = {}
+        self.polarized = False
 
     @property
     def cif_str(self):
@@ -70,6 +65,12 @@ class Cryspy:
             'background': cryspy.PdBackgroundL(),
             'phase':      self.phases
         }
+
+        self.polarized = False
+        if model_type.endswith('Pol'):
+            self.polarized = True
+            model_type = model_type.split('Pol')[0]
+
         cls = cryspy.Pd
         if model_type == 'powder1DTOF':
             cls = cryspy.TOF
@@ -331,9 +332,9 @@ class Cryspy:
             phasesL.items.append(self.phases.items[idx])
             phase_lists.append(phasesL)
         pool = mp.ProcessPool(num_crys)
-        result = pool.amap(functools.partial(_do_run, self.model, this_x_array), crystals, phase_lists)
+        result = pool.amap(functools.partial(_do_run, self.model, self.polarized, this_x_array), crystals, phase_lists)
         while not result.ready():
-            time.sleep(0.1)
+            time.sleep(0.01)
         obtained = result.get()
         profiles, peak_dat = zip(*obtained)
         # else:
@@ -343,31 +344,25 @@ class Cryspy:
         x_str = 'ttheta'
         if self.type == 'powder1DTOF':
             x_str = 'time'
-        self.hkl_dict = {
-            x_str: getattr(peak_dat[0], 'numpy_' + x_str),
-            'h':   peak_dat[0].numpy_index_h,
-            'k':   peak_dat[0].numpy_index_k,
-            'l':   peak_dat[0].numpy_index_l,
-        }
-
-        res = scale * np.sum(np.array([[phase_scales[idx] * np.array(prof.intensity_total)] for idx, prof in enumerate(profiles)]), axis=0) + bg
-
-        self.additional_data = {
-            crystal.data_name: {
-                'hkl':     {
-                    x_str: getattr(peak_dat[idx], 'numpy_' + x_str),
-                    'h':   peak_dat[idx].numpy_index_h,
-                    'k':   peak_dat[idx].numpy_index_k,
-                    'l':   peak_dat[idx].numpy_index_l,
-                },
-                'profile': scale * np.array(profiles[idx].intensity_total)
-            } for idx, crystal in enumerate(crystals)
-        }
+        if self.polarized:
+            # TODO *REPLACE PLACEHOLDER FN*
+            dependents, additional_data = self.polarized_update(lambda up, down: up + down, crystals, profiles,
+                                                                peak_dat, phase_scales, x_str)
+        else:
+            dependents, additional_data = self.nonPolarized_update(crystals, profiles, peak_dat, phase_scales, x_str)
+        self.additional_data.update(additional_data)
+        self.additional_data['global_scale'] = scale
         self.additional_data['background'] = bg
+        self.additional_data['ivar_run'] = this_x_array
+        self.additional_data['components'] = dependents
+        self.additional_data['phase_names'] = list(additional_data.keys())
+        self.additional_data['type'] = self.type
+
+        dependent_output = scale * np.sum(dependents, axis=0) + bg
 
         if borg.debug:
-            print(f"y_calc: {res}")
-        return res
+            print(f"y_calc: {dependent_output}")
+        return dependent_output
 
     def calculate(self, x_array: np.ndarray) -> np.ndarray:
         """
@@ -378,41 +373,85 @@ class Cryspy:
         :rtype: np.ndarray
         """
         res = np.zeros_like(x_array)
+        self.additional_data['ivar'] = res
         if self.type == 'powder1DCW':
             return self.powder_1d_calculate(x_array)
         if self.type == 'powder1DTOF':
             return self.powder_1d_tof_calculate(x_array)
         return res
 
-    def get_hkl(self, tth: np.array = None) -> dict:
+    def get_hkl(self, x_array: np.ndarray = None, idx: int = 0, phase_name=None) -> dict:
 
-        hkl_dict = self.hkl_dict
+        # Do we need to re-run a calculation to get the HKL's
+        do_run = False
+        old_x = self.additional_data.get('ivar', np.array(()))
+        if not np.array_equal(old_x, x_array):
+            do_run = True
+        if do_run and x_array is not None:
+            _ = self.calculate(x_array)
 
-        if tth is not None:
-            # crystal = cryspy.Crystal.from_cif(self.cif_str)
-            # phase_list = cryspy.PhaseL()
-            # phase = cryspy.Phase(label=crystal.data_name, scale=1, igsize=0)
-            # phase_list.items.append(phase)
-            # setup = cryspy.Setup(wavelength=self.conditions['wavelength'], offset_ttheta=0)
-            # background = cryspy.PdBackgroundL()
-            # resolution = cryspy.PdInstrResolution(**self.conditions['resolution'])
-            # pd = cryspy.Pd(setup=setup, resolution=resolution, phase=phase_list, background=background)
-            crystal = self.storage[list(self.current_crystal.keys())[-1]]
-            _ = self.model.calc_profile(tth, [crystal], True, False)
+        # Collate and return
+        if phase_name is None:
+            known_phases = list(self.current_crystal.values())
+            phase_name = known_phases[idx]
+        phase_data = self.additional_data.get(phase_name, False)
+        return phase_data['hkl']
 
-            hkl_dict = {
-                'ttheta': self.model.d_internal_val['peak_' + crystal.data_name].numpy_ttheta,
-                'h':      self.model.d_internal_val['peak_' + crystal.data_name].numpy_index_h,
-                'k':      self.model.d_internal_val['peak_' + crystal.data_name].numpy_index_k,
-                'l':      self.model.d_internal_val['peak_' + crystal.data_name].numpy_index_l,
-            }
+    @staticmethod
+    def nonPolarized_update(crystals, profiles, peak_dat, scales, x_str):
+        dependent = np.array([profile.intensity_total for profile in profiles])
 
-        return hkl_dict
+        output = {}
+        for idx, profile in enumerate(profiles):
+            output.update({
+                crystals[idx].data_name: {
+                    'hkl':           {
+                        x_str: getattr(peak_dat[idx], 'numpy_' + x_str),
+                        'h':   peak_dat[idx].numpy_index_h,
+                        'k':   peak_dat[idx].numpy_index_k,
+                        'l':   peak_dat[idx].numpy_index_l,
+                    },
+                    'profile':       scales[idx] * dependent[idx, :],
+                    'components':    {
+                        'total': dependent[idx, :]
+                    },
+                    'profile_scale': scales[idx],
+                }
+            })
+        return dependent, output
+
+    @staticmethod
+    def polarized_update(func, crystals, profiles, peak_dat, scales, x_str):
+        up = np.array([profile.intensity_up_total for profile in profiles])
+        down = np.array([profile.intensity_down_total for profile in profiles])
+        dependent = np.array([func(u, d) for u, d in zip(up, down)])
+
+        output = {}
+        for idx, profile in enumerate(profiles):
+            output.update({
+                crystals[idx].data_name: {
+                    'hkl':           {
+                        x_str: getattr(peak_dat[idx], 'numpy_' + x_str),
+                        'h':   peak_dat[idx].numpy_index_h,
+                        'k':   peak_dat[idx].numpy_index_k,
+                        'l':   peak_dat[idx].numpy_index_l,
+                    },
+                    'profile':       scales[idx] * dependent[idx, :],
+                    'components':    {
+                        'total': dependent[idx, :],
+                        'up': up[idx, :],
+                        'down': down[idx, :]
+                    },
+                    'profile_scale': scales[idx],
+                    'func': func
+                }
+            })
+        return dependent, output
 
 
-def _do_run(model, x_array, crystals, phase_list):
+def _do_run(model, polarized, x_array, crystals, phase_list, ):
     idx = [idx for idx, item in enumerate(model.items) if isinstance(item, cryspy.PhaseL)][0]
     model.items[idx] = phase_list
-    result1 = model.calc_profile(x_array, [crystals], flag_internal=True, flag_polarized=False)
+    result1 = model.calc_profile(x_array, [crystals], flag_internal=True, flag_polarized=polarized)
     result2 = model.d_internal_val['peak_' + crystals.data_name]
     return result1, result2

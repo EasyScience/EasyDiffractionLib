@@ -14,6 +14,9 @@ class InterfaceFactory(InterfaceFactoryTemplate):
     def get_hkl(self, x_array=None, idx=None, phase_name=None) -> dict:
         return self().get_hkl(x_array, idx=idx, phase_name=phase_name)
 
+    def get_phase_components(self, phase_name):
+        return self().get_phase_components(phase_name)
+
     def interface_compatability(self, check_str: str) -> List[str]:
         compatible_interfaces = []
         for interface in self._interfaces:

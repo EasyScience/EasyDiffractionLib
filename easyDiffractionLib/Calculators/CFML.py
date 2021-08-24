@@ -21,6 +21,8 @@ class CFML:
             'k': np.empty(0),
             'l': np.empty(0)
         }
+        self.known_phases = {}
+        self.additional_data = {}
 
     def createConditions(self, job_type='N'):
         self.conditions = {
@@ -122,13 +124,6 @@ class CFML:
 
             start_time = timeit.default_timer()
 
-            hkltth = np.array([[*reflection_list[i].hkl, reflection_list[i].stl] for i in range(reflection_list.nref)])
-
-            self.hkl_dict['ttheta'] = np.rad2deg(np.arcsin(hkltth[:, 3] * job_info.lambdas[0])) * 2
-            self.hkl_dict['h'] = hkltth[:, 0]
-            self.hkl_dict['k'] = hkltth[:, 1]
-            self.hkl_dict['l'] = hkltth[:, 2]
-
             end_time = timeit.default_timer()
             print("+ set reflection_list: {0:.4f} s".format(end_time - start_time))
 
@@ -160,7 +155,18 @@ class CFML:
         else:
             bg = self.pattern.backgrounds[0].calculate(this_x_array)
 
-        res = scale * diffraction_pattern.ycalc + bg
+        dependent, additional_data = self.nonPolarized_update(list(self.known_phases.items())[0], diffraction_pattern,
+                                                   reflection_list, job_info, scales=1)
+        self.additional_data.update(additional_data)
+        self.additional_data['global_scale'] = scale
+        self.additional_data['background'] = bg
+        self.additional_data['ivar_run'] = this_x_array
+        self.additional_data['ivar'] = x_array
+        self.additional_data['components'] = diffraction_pattern.ycalc
+        self.additional_data['phase_names'] = list(self.known_phases.items())
+        self.additional_data['type'] = 'powder1DCW'
+
+        res = scale * dependent + bg
 
         end_time = timeit.default_timer()
         print("+ calculate E: {0:.4f} s".format(end_time - start_time))
@@ -176,8 +182,61 @@ class CFML:
 
         return res
 
-    def get_hkl(self, x_array: np.ndarray = None, idx=None, phase_name=None) -> dict:
-        hkl_dict = self.hkl_dict
-        if tth is not None:
-            pass
-        return hkl_dict
+    def get_hkl(self, x_array: np.ndarray = None, idx=0, phase_name=None) -> dict:
+
+        # Do we need to re-run a calculation to get the HKL's
+        do_run = False
+        old_x = self.additional_data.get('ivar', np.array(()))
+        if not np.array_equal(old_x, x_array):
+            do_run = True
+        if do_run and x_array is not None:
+            _ = self.calculate(x_array)
+
+        # Collate and return
+        if phase_name is None:
+            known_phases = list(self.known_phases.values())
+            phase_name = known_phases[idx]
+        phase_data = self.additional_data.get(phase_name, {})
+        return phase_data.get('hkl', {
+            'ttheta': np.array([]),
+            'h': np.array([]),
+            'k': np.array([]),
+            'l': np.array([])
+        })
+
+    @staticmethod
+    def nonPolarized_update(crystal_name, diffraction_pattern, reflection_list, job_info, scales=1):
+        # dependent = np.array([diffraction_pattern.ycalc for diffraction_pattern in profiles])
+        dependent = diffraction_pattern.ycalc
+
+        hkltth = np.array([[*reflection_list[i].hkl, reflection_list[i].stl] for i in range(reflection_list.nref)])
+
+        output = {
+                crystal_name: {
+                    'hkl':           {
+                        'ttheta': np.rad2deg(np.arcsin(hkltth[:, 3] * job_info.lambdas[0])) * 2,
+                        'h':   hkltth[:, 0],
+                        'k':   hkltth[:, 1],
+                        'l':   hkltth[:, 2],
+                    },
+                    'profile':       scales * dependent,
+                    'components':    {
+                        'total': dependent
+                    },
+                    'profile_scale': scales,
+                }
+            }
+        return dependent, output
+
+    def add_phase(self, phase_id, phase_name):
+        self.known_phases[phase_id] = phase_name
+
+    def remove_phase(self, phases_id):
+        if phases_id in self.known_phases:
+            del self.known_phases[phases_id]
+
+    def get_phase_components(self, phase_name):
+        data = None
+        if phase_name in self.additional_data['phase_names']:
+            data = self.additional_data[phase_name].copy()
+        return data

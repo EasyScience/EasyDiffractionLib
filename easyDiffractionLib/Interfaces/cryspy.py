@@ -205,6 +205,10 @@ class Cryspy(InterfaceTemplate):
     def get_hkl(self, x_array: np.ndarray = None, idx=None, phase_name=None) -> dict:
         return self.calculator.get_hkl(x_array)
 
+    def get_phase_components(self, phase_name):
+        data = self.calculator.get_phase_components(phase_name)
+        return data
+
     def __createModel(self, model, model_type):
         self.calculator.createModel(model, model_type)
 

@@ -3,7 +3,7 @@ __version__ = "0.0.2"
 
 from easyCore import borg, np
 from easyCore.Objects.Inferface import ItemContainer
-from easyDiffractionLib import Lattice, SpaceGroup, Site, Phases
+from easyDiffractionLib import Lattice, SpaceGroup, Site, Phases, Phase
 from easyDiffractionLib.sample import Sample
 from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
 from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters, Powder1DParameters
@@ -108,6 +108,8 @@ class CFML(InterfaceTemplate):
                                         self.dump_cif))
         elif issubclass(t_, Phases):
             self._phase = model
+        elif issubclass(t_, Phase):
+            self.calculator.add_phase(str(model_key), model.name)
         elif issubclass(t_, Sample):
             self.__createModel(model)
         elif t_.__name__ in ['Powder1DCW', 'powder1DCW', 'Npowder1DCW']:
@@ -124,10 +126,12 @@ class CFML(InterfaceTemplate):
         pass
 
     def add_phase(self, phases_obj, phase_obj):
-        pass
+        ident = str(self.__identify(phase_obj))
+        self.calculator.add_phase(ident, phase_obj.name)
 
     def remove_phase(self, phases_obj, phase_obj):
-        pass
+        ident = str(self.__identify(phase_obj))
+        self.calculator.remove_phase(ident)
 
     def fit_func(self, x_array: np.ndarray) -> np.ndarray:
         """
@@ -156,6 +160,9 @@ class CFML(InterfaceTemplate):
     def get_value(self, key, item_key):
         item = borg.map.get_item_by_key(key)
         return getattr(item, item_key).raw_value
+
+    def get_phase_components(self, phase_name):
+        return None
 
     @staticmethod
     def __identify(obj):

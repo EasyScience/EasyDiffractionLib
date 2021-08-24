@@ -41,17 +41,24 @@ f = Fitter(S, interface.fit_func)
 
 # Vary the scale and the BG points
 S.pattern.scale.fixed = False
+S.pattern.zero_shift.fixed = False
 S.parameters.resolution_u.fixed = False
 S.parameters.resolution_v.fixed = False
 S.parameters.resolution_w.fixed = False
-S.backgrounds[0][0].y.fixed = False
-S.backgrounds[0][1].y.fixed = False
+S.backgrounds[0][0].y.fixed = True
+S.backgrounds[0][1].y.fixed = True
 
-# result = f.fit(data_x, data_y, weights=1/data_e)
-result = data_set['I'].easyCore.fit(f)
+result = f.fit(data_x, data_y)
+# result = data_set['I'].easyCore.fit(f)
 
 if result.success:
     print("The fit has been successful: {}".format(result.success))
     print("The gooodness of fit is: {}".format(result.goodness_of_fit))
 
 sim_y_data = interface.fit_func(data_x)
+
+import matplotlib.pyplot as plt
+
+plt.plot(data_x, data_y, label='Data')
+plt.plot(data_x, result.y_calc, label='Calculate')
+plt.show()

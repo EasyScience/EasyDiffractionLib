@@ -8,8 +8,8 @@ from easyCore.Objects.Base import BaseObj
 from easyCore.Utils.UndoRedo import property_stack_deco
 
 from easyDiffractionLib import Phase, Phases
-from easyDiffractionLib.Elements.Experiments.Experiment import Pars1D
-from easyDiffractionLib.Elements.Experiments.Pattern import Pattern1D
+from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters, Instrument1DTOFParameters
+from easyDiffractionLib.Profiles.P1D import Powder1DParameters as Pattern1D
 
 
 class Sample(BaseObj):
@@ -25,7 +25,7 @@ class Sample(BaseObj):
             raise AttributeError('`phases` must be a Crystal or Crystals')
 
         if parameters is None:
-            parameters = Pars1D.default()
+            parameters = Instrument1DCWParameters.default()
 
         if pattern is None:
             pattern = Pattern1D.default()
@@ -79,12 +79,14 @@ class Sample(BaseObj):
     @parameters.setter
     @property_stack_deco
     def parameters(self, value):
-        if not isinstance(value, Pars1D):
+        if not isinstance(value, Instrument1DCWParameters):
             raise ValueError
         self._parameters = value
         self._parameters.interface = self._interface
 
     def update_bindings(self):
+        if not self.interface.current_interface.feature_checker(test_str=self.exp_type_str):
+            raise AssertionError('The interface is not suitable for this experiment')
         self.generate_bindings()
 
     @property
@@ -97,3 +99,14 @@ class Sample(BaseObj):
         del d['_parameters']
         del d['_pattern']
         return d
+
+    @property
+    def exp_type_str(self) -> str:
+        type_str = 'Npowder1D'
+        if isinstance(self._parameters, Instrument1DCWParameters):
+            type_str += 'CW'
+        elif isinstance(self._parameters, Instrument1DTOFParameters):
+            type_str += 'TOF'
+        else:
+            raise TypeError(f'Experiment is of unknown type: {type(self._parameters)}')
+        return type_str

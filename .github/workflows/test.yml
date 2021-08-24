@@ -31,9 +31,9 @@ jobs:
     #  with:
     #    ssh-private-key: ${{ secrets.GH_WEBFACTORY_KEY }}
 
-    - name: Set up dependences
-      if: runner.os == 'Linux'
-      run: sudo apt-get install libgfortran4
+#     - name: Set up dependences
+#       if: runner.os == 'Linux'
+#       run: sudo apt-get install libgfortran4
 
     - name: Set up Python environment
       uses: actions/setup-python@v2
@@ -52,8 +52,8 @@ jobs:
     - name: Create venv and install dependences
       run: poetry update
 
-    - name: Relink CrysFML from default Python dylib
-      run: poetry run python tools/Scripts/RelinkCrysfml.py $pythonLocation
+#     - name: Relink CrysFML from default Python dylib
+#       run: poetry run python tools/Scripts/RelinkCrysfml.py $pythonLocation
 
     - name: Run main.py
       run: poetry run easyDiffractionLib

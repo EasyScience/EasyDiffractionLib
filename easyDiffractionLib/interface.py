@@ -11,7 +11,7 @@ class InterfaceFactory(InterfaceFactoryTemplate):
     def __init__(self):
         super(InterfaceFactory, self).__init__(InterfaceTemplate._interfaces)
 
-    def get_hkl(self, x_array=None) -> dict:
+    def get_hkl(self, x_array=None, idx=None) -> dict:
         return self().get_hkl(x_array)
 
     def interface_compatability(self, check_str: str) -> List[str]:

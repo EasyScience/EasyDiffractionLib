@@ -6,7 +6,6 @@ from ..Interfaces.interfaceTemplate import InterfaceTemplate
 from easyCore.Objects.Inferface import ItemContainer
 from ..Calculators.GSASII import GSASII as GSAS_calc
 from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters, Powder1DParameters
-from easyDiffractionLib.sample import Sample
 from easyDiffractionLib import Lattice, SpaceGroup, Site, Phases
 
 
@@ -72,6 +71,7 @@ class GSASII(InterfaceTemplate):
                                           FEATURES=GSASII.feature_available)
 
     def create(self, model):
+        from easyDiffractionLib.sample import Sample
         r_list = []
         t_ = type(model)
         model_key = self.__identify(model)

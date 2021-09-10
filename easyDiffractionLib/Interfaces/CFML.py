@@ -4,7 +4,6 @@ __version__ = "0.0.2"
 from easyCore import borg, np
 from easyCore.Objects.Inferface import ItemContainer
 from easyDiffractionLib import Lattice, SpaceGroup, Site, Phases
-from easyDiffractionLib.sample import Sample
 from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
 from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters, Powder1DParameters
 from easyDiffractionLib.Calculators.CFML import CFML as CFML_calc
@@ -72,6 +71,7 @@ class CFML(InterfaceTemplate):
                                           FEATURES=CFML.feature_available)
 
     def create(self, model):
+        from easyDiffractionLib.sample import Sample
         r_list = []
         t_ = type(model)
         model_key = self.__identify(model)

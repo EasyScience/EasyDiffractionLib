@@ -9,12 +9,13 @@ from easyCore.Utils.UndoRedo import property_stack_deco
 
 from easyDiffractionLib import Phase, Phases
 from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters, Instrument1DTOFParameters
+from easyDiffractionLib.interface import InterfaceFactory
 from easyDiffractionLib.Profiles.P1D import Powder1DParameters as Pattern1D
 
 
 class Sample(BaseObj):
     def __init__(self, phases: Union[Phase, Phases] = None,
-                 parameters=None, pattern=None,
+                 parameters=None, pattern=None, calculator=None,
                  interface=None, name: str = 'easySample'):
         if isinstance(phases, Phase):
             phases = Phases('Phases', phases)
@@ -35,7 +36,12 @@ class Sample(BaseObj):
         self.filename = os.path.join(tempfile.gettempdir(), 'easydiffraction_temp.cif')
         print(f"Temp CIF: {self.filename}")
         self.output_index = None
-        self.interface = interface
+        if calculator is not None:
+            self.interface = calculator
+        elif interface is not None:
+            self.interface = interface
+        else:
+            self.interface = InterfaceFactory()
 
     def get_phase(self, phase_index):
         return self._phases[phase_index]

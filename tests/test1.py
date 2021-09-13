@@ -19,8 +19,8 @@ phase = Phase.from_cif_file('tests/SrTiO3.cif')
 sample = Sample(phases=phase,
                 parameters=Instrument1DCWParameters.default(),
                 calculator=calculator)
-# S.phase.cell.length_a = 5
-# S.parameters.wavelength = 1.25
+# sample.phase.cell.length_a = 5
+sample.parameters.wavelength = 1.25
 # print(S)
 x_data = np.linspace(5, 150, 100)
 y_data = calculator.fit_func(x_data)
@@ -39,13 +39,15 @@ y_data = calculator.fit_func(x_data)
 # plt.show()
 
 calculator.switch('CrysFML')
+calculator.filename = 'tests/SrTiO3.cif'
 sample = Sample(phases=phase,
                 parameters=Instrument1DCWParameters.default(),
                 calculator=calculator)
+
 # ._updateInterface()
 
-# S.phase.cell.length_a = 5
-# S.parameters.wavelength = 1.25
+# sample.phase.cell.length_a = 5
+sample.parameters.wavelength = 1.25
 # print(S)
 x_data = np.linspace(5, 150, 100)
 y_data = calculator.fit_func(x_data)

@@ -29,7 +29,7 @@ matplotlib = "^3.4"
 # easyScience
 CFML = '^0.0.1'
 GSASII = '^0.0.1'
-easyScienceCore = { git = 'https://github.com/easyScience/easyCore.git', rev = 'develop' }
+easyScienceCore = { git = 'https://github.com/easyScience/easyCore.git', rev = 'param_value_workaround' }
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

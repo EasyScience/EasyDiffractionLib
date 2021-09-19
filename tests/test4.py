@@ -47,8 +47,11 @@ S = Sample(phases=phases, parameters=parameters, pattern=pattern, calculator=cal
 x_data = np.linspace(1, 120, 500)
 y_data = calculator.fit_func(x_data)
 
-plt.plot(x_data, y_data, label="CW")
-plt.show()
+# plt.plot(x_data, y_data, label="CW")
+# plt.show()
+
+phases = S.phases[0]
+pattern = S.pattern
 
 parameters = TOFParams.default()
 parameters.length_a = 8.56
@@ -57,14 +60,16 @@ parameters.length_b = 8.56
 parameters.dtt1 = 6167.24700
 parameters.dtt2 = -2.28000
 parameters.ttheta_bank = 145.00
+pattern.zero_shift = 0.0
+pattern.scale = 100.0
 
-tof_str = 'Npowder1DTOF'
-interfaces = calculator.interface_compatability(tof_str)
-calculator.switch(interfaces[0])
+# tof_str = 'Npowder1DTOF'
+# interfaces = calculator.interface_compatability(tof_str)
+# calculator.switch(interfaces[0])
 
 S = Sample(phases=phases, parameters=parameters, pattern=pattern, calculator=calculator)
 
-x_data = np.linspace(20, 120, 50)
+x_data = np.linspace(5000, 60000, 50)
 y_data = calculator.fit_func(x_data)
 
 plt.plot(x_data, y_data, label="TOF")

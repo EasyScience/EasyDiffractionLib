@@ -155,6 +155,8 @@ class CFML(InterfaceTemplate):
 
     def get_value(self, key, item_key):
         item = borg.map.get_item_by_key(key)
+        if item_key in ['Uiso', 'Uani', 'Biso', 'Bani']:
+            return getattr(getattr(item, 'adp'), item_key).raw_value
         return getattr(item, item_key).raw_value
 
     @staticmethod

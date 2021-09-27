@@ -6,7 +6,7 @@ from easyCore import np
 from easyDiffractionLib.sample import Sample
 from easyDiffractionLib import Phase, Phases
 from easyDiffractionLib.interface import InterfaceFactory
-from easyDiffractionLib.Elements.Experiments.Experiment import Pars1D
+from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters
 
 import matplotlib.pyplot as plt
 
@@ -15,7 +15,7 @@ i = InterfaceFactory()
 
 c = Phases.from_cif_file('tests/SrTiO3.cif')
 
-S = Sample(phases=c, parameters=Pars1D.default(), interface=i)
+S = Sample(phases=c, parameters=Instrument1DCWParameters.default(), interface=i)
 
 x_data = np.linspace(5, 150, 10000)
 y_data = i.fit_func(x_data)

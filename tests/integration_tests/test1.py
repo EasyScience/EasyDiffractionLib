@@ -5,54 +5,60 @@ from easyCore import np
 
 from easyDiffractionLib.sample import Sample
 from easyDiffractionLib import Phase
-from easyDiffractionLib.interface import InterfaceFactory
-from easyDiffractionLib.Elements.Experiments.Experiment import Pars1D
+from easyDiffractionLib.interface import InterfaceFactory as Calculator
+from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters
 
 import matplotlib.pyplot as plt
 
 
-i = InterfaceFactory()
+calculator = Calculator()
 
-c = Phase.from_cif_file('tests/SrTiO3.cif')
+phase = Phase.from_cif_file('tests/SrTiO3.cif')
 
-S = Sample(phases=c, parameters=Pars1D.default(), interface=i)
-# S.phase.cell.length_a = 5
-# S.parameters.wavelength = 1.25
+sample = Sample(phases=phase,
+                parameters=Instrument1DCWParameters.default(),
+                calculator=calculator)
+
+# sample.phase.cell.length_a = 5
+sample.parameters.wavelength = 1.25
 # print(S)
 x_data = np.linspace(5, 150, 100)
-y_data = i.fit_func(x_data)
+y_data = calculator.fit_func(x_data)
 
-plt.plot(x_data, y_data, label="CFL")
+plt.plot(x_data, y_data, label="CrysPy")
 plt.show()
 
-S.parameters.wavelength = 2.5
-y_data = i.fit_func(x_data)
-plt.plot(x_data, y_data, label="CFL")
+sample.parameters.wavelength = 2.5
+y_data = calculator.fit_func(x_data)
+plt.plot(x_data, y_data, label="CrysPy")
 plt.show()
 
-S.phases[0].cell.length_a = 10
-y_data = i.fit_func(x_data)
-plt.plot(x_data, y_data, label="CFL")
+sample.phases[0].cell.length_a = 10
+y_data = calculator.fit_func(x_data)
+plt.plot(x_data, y_data, label="CrysPY")
 plt.show()
 
-i.switch('CrysPy')
-S._updateInterface()
+calculator.switch('CrysFML')
+params = sample.parameters
+sample = Sample(phases=phase,
+                parameters=params,
+                interface=calculator)
 
-# S.phase.cell.length_a = 5
-# S.parameters.wavelength = 1.25
+sample.phases[0].cell.length_a = 9.0
+sample.parameters.wavelength = 1.25
 # print(S)
 x_data = np.linspace(5, 150, 100)
-y_data = i.fit_func(x_data)
+y_data = calculator.fit_func(x_data)
 
 plt.plot(x_data, y_data, label="CFL")
 plt.show()
 
-S.parameters.wavelength = 2.5
-y_data = i.fit_func(x_data)
+sample.parameters.wavelength = 2.5
+y_data = calculator.fit_func(x_data)
 plt.plot(x_data, y_data, label="CFL")
 plt.show()
 
-S.phases[0].cell.length_a = 10
-y_data = i.fit_func(x_data)
+sample.phases[0].cell.length_a = 10
+y_data = calculator.fit_func(x_data)
 plt.plot(x_data, y_data, label="CFL")
 plt.show()

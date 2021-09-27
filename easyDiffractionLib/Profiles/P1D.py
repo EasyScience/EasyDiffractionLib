@@ -292,8 +292,8 @@ class Instrument1DTOFParameters(BaseObj):
             '@version': '0.0.1',
             'name':     'sigma2',
             'value':    0.0,
-            'fixed':    True
-
+            'fixed':    True,
+            'enabled':  False
         },
         'gamma0':   {
             '@module':  'easyCore.Objects.Base',
@@ -301,15 +301,17 @@ class Instrument1DTOFParameters(BaseObj):
             '@version': '0.0.1',
             'name':     'gamma0',
             'value':    0.0,
-            'fixed':    True
+            'fixed':    True,
+            'enabled':  False
         },
         'gamma1':   {
             '@module':  'easyCore.Objects.Base',
             '@class':   'Parameter',
             '@version': '0.0.1',
             'name':     'gamma1',
-            'value':    0.60400,
-            'fixed':    True
+            'value':    0.0,
+            'fixed':    True,
+            'enabled':  False
         },
         'gamma2':   {
             '@module':  'easyCore.Objects.Base',
@@ -317,7 +319,8 @@ class Instrument1DTOFParameters(BaseObj):
             '@version': '0.0.1',
             'name':     'gamma2',
             'value':    0.0,
-            'fixed':    True
+            'fixed':    True,
+            'enabled':  False
         },
         'alpha0':   {
             '@module':  'easyCore.Objects.Base',

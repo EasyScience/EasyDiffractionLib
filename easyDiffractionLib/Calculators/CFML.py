@@ -38,7 +38,7 @@ class CFML:
             self.conditions[key]= value
 
     def conditionsReturn(self, _, name):
-        self.conditions.get(name)
+        return self.conditions.get(name)
 
     def calculate(self, x_array: np.ndarray) -> np.ndarray:
         """

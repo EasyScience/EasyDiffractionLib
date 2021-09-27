@@ -23,13 +23,13 @@ secondary = true
 
 [tool.poetry.dependencies]
 python = "^3.7, <3.9"
-#cryspy = "^0.5"
-cryspy = { git = 'https://github.com/ikibalin/cryspy.git', rev = 'bravis_type_fix' }
 matplotlib = "^3.4"
+py3Dmol = "^1.7.0"
 # easyScience
+cryspy = { git = 'https://github.com/ikibalin/cryspy.git', rev = 'bravis_type_fix' }
 CFML = '^0.0.1'
 GSASII = '^0.0.1'
-easyScienceCore = { git = 'https://github.com/easyScience/easyCore.git', rev = 'develop' }
+easysciencecore = { git = 'https://github.com/easyScience/easyCore.git', rev = 'develop' } # "^0.1.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
@@ -37,6 +37,7 @@ toml = "^0.10"
 requests = '^2.24'
 hvplot = "^0.7.0"
 jupyter = "^1.0.0"
+ipympl = "^0.8.0"
 
 [tool.poetry.scripts]
 easyDiffractionLib = "easyDiffractionLib.main:main"

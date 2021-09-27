@@ -41,7 +41,7 @@ class GSASII:
             self.conditions[key]= value
 
     def conditionsReturn(self, _, name):
-        self.conditions.get(name)
+        return self.conditions.get(name)
 
     def create_temp_prm(self):
         if self.filename is None:

@@ -7,27 +7,20 @@
 
 **easyDiffractionLib** is the foundation of the *easyScience* universe, providing the building blocks for libraries and applications which aim to make scientific data simulation and analysis easier.
 
-## Install
-
-**easyDiffractionLib** can be downloaded using pip:
-
-```pip install easysciencecore```
-
-Or direct from the repository:
-
-```pip install https://github.com/easyScience/easyDiffractionLib```
-
 ## Getting Started
+
+**Currently easyDiffractionLib is in alpha and has not been released on pypi. Please use one of the alternative methods.**
 
 ### Download easyDiffractionLib repo
 * Open **Terminal**
 * Change the current working directory to the location where you want the **easyDiffractionLib** directory
-* Clone **easyDiffractionApp** repo from GitHub using **git**
+* Clone **easyDiffractionLib** repo from GitHub using **git**
   ```
-  git clone https://github.com/easyScience/easyDiffractionApp
+  git clone https://github.com/easyScience/easyDiffractionLib
   ```
-  
-### Install easyDiffractionLib dependencies
+* Or extract [this zip file](https://github.com/easyScience/easyDiffractionLib/archive/refs/heads/main.zip)
+
+### Install easyDiffractionLib dependencies (Using poetry)
 * Open **Terminal**
 * Install [**Poetry**](https://python-poetry.org/docs/) (Python dependency manager)
   * osx / linux / bashonwindows
@@ -39,11 +32,31 @@ Or direct from the repository:
     (Invoke-WebRequest -Uri https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py -UseBasicParsing).Content | python
     ```
 * Go to **easyDiffractionLib** directory
-* Create virtual environment for **easyDiffractionLib** and install its dependences using **poetry** (configuration file: **pyproject.toml**)
+* Create virtual environment for **easyDiffractionLib** and install its dependencies using **poetry** (configuration file: **pyproject.toml**)
   ```
   poetry install
   ```
-  
+
+### Install easyDiffractionLib dependencies (Using requirements.txt)
+* Open **Terminal**
+* Activate any environment which you may want to use
+* Go to **easyDiffractionLib** directory
+* Install via
+  ```
+  pip install -r requirements.txt
+  ```
+
+
+### Using pip
+
+Currently, **easyDiffractionLib** can be installed via pointing pip to this repository:
+```
+pip install https://github.com/easyScience/easyDiffractionLib
+```
+
+
+## Examples
+
 ### Run Jupyter Notebook examples that use easyDiffractionLib
 * Open **Terminal**
 * Go to **easyDiffractionLib** directory
@@ -61,7 +74,7 @@ Or direct from the repository:
 
 ## Test
 
-After installation, launch the test suite:
+The installation can be verified by running the test suite:
 
 ```python -m pytest```
 

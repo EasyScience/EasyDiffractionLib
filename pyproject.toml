@@ -4,6 +4,13 @@
 requires = ["poetry>=1.0"]
 build-backend = "poetry.masonry.api"
 
+[tool.coverage.run]
+source = ['easyDiffractionLib']
+
+[tool.github.info]
+organization = 'easyScience'
+repo = 'easyDiffractionLib'
+
 [tool.poetry]
 name = "easyDiffractionLib"
 version = "0.0.2"
@@ -23,16 +30,8 @@ classifiers = [
 include = ["CHANGELOG.md"]
 packages = [ { include = "easyDiffractionLib" } ]
 
-[[tool.poetry.source]]
-name = "easyScience"
-url = "https://easyscience.github.io/pypi/"
-secondary = true
-
 [tool.poetry.dependencies]
 python = "^3.7, <3.9"
-matplotlib = "^3.4"
-py3Dmol = "^1.7.0"
-# easyScience
 cryspy = { git = 'https://github.com/ikibalin/cryspy.git', rev = 'bravis_type_fix' }
 CFML = '^0.0.1'
 GSASII = '^0.0.1'
@@ -45,18 +44,16 @@ requests = '^2.24'
 hvplot = "^0.7.0"
 jupyter = "^1.0.0"
 ipympl = "^0.8.0"
-
-[tool.coverage.run]
-source = ['easyDiffractionLib']
-
-[tool.github.info]
-organization = 'easyScience'
-repo = 'easyDiffractionLib'
+matplotlib = "^3.4"
+py3Dmol = "^1.7.0"
 
 [tool.poetry.scripts]
 easyDiffractionLib = "easyDiffractionLib.main:main"
 
-# CUSTOM CONFIG
+[[tool.poetry.source]]
+name = "easyScience"
+url = "https://easyscience.github.io/pypi/"
+secondary = true
 
 [tool.tox]
 legacy_tox_ini = """
@@ -90,4 +87,3 @@ commands =
     poetry install -vvv
     poetry run pytest --cov --cov-report=xml
 """
-

@@ -1,88 +1,62 @@
-# [![License][50]][51] [![Release][32]][33] [![Downloads][70]][71] [![CI Build][20]][21] 
-
-[![CodeFactor][83]][84] [![Lines of code][81]](<>) [![Total lines][80]](<>) [![Files][82]](<>)
+## [![Downloads][70]][71] [![Lines of code][81]](<>) [![Total lines][80]](<>) [![Files][82]](<>) [![License][50]][51]
 
 
-<img height="80"><img src="https://raw.githubusercontent.com/easyScience/easyDiffractionLib/master/resources/images/ed_logo.svg" height="65">
+<img height="80"><img src="https://raw.githubusercontent.com/easyScience/easyDiffractionApp/master/resources/images/ed_logo.svg" height="65">
 
-**easyDiffractionLib** is the foundation of the *easyScience* universe, providing the building blocks for libraries and applications which aim to make scientific data simulation and analysis easier.
+**easydiffractionLib** is a Python library for modelling and analysis of diffraction data, a base of the [**easyDiffraction**](https://easydiffraction.org)
+
 
 ## Getting Started
 
-**Currently easyDiffractionLib is in alpha and has not been released on pypi. Please use one of the alternative methods.**
+### Install easyDiffractionLib
 
-### Download easyDiffractionLib repo
-* Open **Terminal**
-* Change the current working directory to the location where you want the **easyDiffractionLib** directory
-* Clone **easyDiffractionLib** repo from GitHub using **git**
-  ```
-  git clone https://github.com/easyScience/easyDiffractionLib
-  ```
-* Or extract [this zip file](https://github.com/easyScience/easyDiffractionLib/archive/refs/heads/main.zip)
+Currently **easyDiffractionLib** is in **alpha** and has not been released on **pypi**. Please use the alternative method given below to install **easyDiffractionLib** from the [GitHub repo](https://github.com/easyScience/easyDiffractionLib) using our [custom Python Package Index](https://easyscience.github.io/pypi) for some dependencies, such as CrysFML and GSAS-II.
 
-### Install easyDiffractionLib dependencies (Using poetry)
-* Open **Terminal**
-* Install [**Poetry**](https://python-poetry.org/docs/) (Python dependency manager)
-  * osx / linux / bashonwindows
-    ```
-    curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-    ```
-  * windows powershell
-    ```
-    (Invoke-WebRequest -Uri https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py -UseBasicParsing).Content | python
-    ```
-* Go to **easyDiffractionLib** directory
-* Create virtual environment for **easyDiffractionLib** and install its dependencies using **poetry** (configuration file: **pyproject.toml**)
+* Create and go to, e.g., **easyDiffraction** (*optional*) 
   ```
-  poetry install
+  mkdir easyDiffraction && cd easyDiffraction
   ```
-
-### Install easyDiffractionLib dependencies (Using requirements.txt)
-* Open **Terminal**
-* Activate any environment which you may want to use
-* Go to **easyDiffractionLib** directory
-* Install via
+* Create virtual environment and activate it (*optional*)
   ```
-  pip install -r requirements.txt
+  python -m venv .venv
+  source .venv/bin/activate
   ```
-
-
-### Using pip
-
-Currently, **easyDiffractionLib** can be installed via pointing pip to this repository:
-```
-pip install https://github.com/easyScience/easyDiffractionLib
-```
+* Upgrade pip (*optional*)
+  ```
+  pip install --upgrade pip
+  ```
+* Install **easyDiffractionLib**
+  ```
+  pip install git+https://github.com/easyScience/easyDiffractionLib@more_notebooks --extra-index-url https://easyscience.github.io/pypi
+  ```
 
 
 ## Examples
 
-### Run Jupyter Notebook examples that use easyDiffractionLib
-* Open **Terminal**
-* Go to **easyDiffractionLib** directory
+### Jupyter Notebook examples that use easyDiffractionLib
+
+* Install **easyDiffractionLib** as described above
+* Install Jupyter Notebook and visualization libraries, such as matplotlib and py3Dmol
+  ```
+  pip install jupyter notebook ipympl matplotlib py3Dmol
+  ```
+* Download **easyDiffractionLib** Jupyter Notebook [examples](https://github.com/easyScience/easyDiffractionLib/tree/more_notebooks/examples) from GitHub, e.g., using svn
+  ```
+  svn export https://github.com/easyScience/easyDiffractionLib/branches/more_notebooks/examples
+  ```
 * Run Jupyter Notebook server
   ```
-  poetry run jupyter notebook
+  jupyter notebook examples/
   ```
 * In webbrowser open
   ```
   http://localhost:8888/
   ```
-* Go to *examples* directory
 * Select one of the *.ipynb files
-
-
-## Test
-
-The installation can be verified by running the test suite:
-
-```python -m pytest```
 
 ## Documentation
 
-Documentation can be found at:
-
-[https://easyScience.github.io/easyDiffractionLib](https://easyScience.github.io/easyDiffractionLib)
+Documentation can be found at: [https://easyScience.github.io/easyDiffractionLib](https://easyScience.github.io/easyDiffractionLib)
 
 ## Contributing
 We absolutely welcome contributions. **easyDiffractionLib** is maintained by the ESS and on a volunteer basis and thus we need to foster a community that can support user questions and develop new features to make this software a useful tool for all users while encouraging every member of the community to share their ideas.

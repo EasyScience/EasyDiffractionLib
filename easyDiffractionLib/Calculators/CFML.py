@@ -51,7 +51,7 @@ class CFML:
         if self.filename is None:
             raise AttributeError
 
-        print("\n\n\n")
+        #print("\n\n\n")
         start_time = timeit.default_timer()
 
         if self.pattern is None:
@@ -62,7 +62,7 @@ class CFML:
             offset = self.pattern.zero_shift.raw_value
 
         end_time = timeit.default_timer()
-        print("+ calculate A: {0:.4f} s".format(end_time - start_time))
+        #print("+ calculate A: {0:.4f} s".format(end_time - start_time))
 
         start_time = timeit.default_timer()
 
@@ -76,7 +76,7 @@ class CFML:
         job_info = cif_file.job_info
 
         end_time = timeit.default_timer()
-        print("+ calculate B: {0:.4f} s".format(end_time - start_time))
+        #print("+ calculate B: {0:.4f} s".format(end_time - start_time))
 
         start_time = timeit.default_timer()
 
@@ -101,7 +101,7 @@ class CFML:
         job_info.bkg = 0.0
 
         end_time = timeit.default_timer()
-        print("+ calculate C: {0:.4f} s".format(end_time - start_time))
+        #print("+ calculate C: {0:.4f} s".format(end_time - start_time))
 
         # Calculations
         try:
@@ -111,14 +111,14 @@ class CFML:
                                                       True,
                                                       job_info)
             end_time = timeit.default_timer()
-            print("+ reflection_list = CFML_api.ReflectionList: {0:.4f} s".format(end_time - start_time))
+            #print("+ reflection_list = CFML_api.ReflectionList: {0:.4f} s".format(end_time - start_time))
 
             start_time = timeit.default_timer()
             reflection_list.compute_structure_factors(space_group,
                                                       atom_list,
                                                       job_info)
             end_time = timeit.default_timer()
-            print("+ reflection_list.compute_structure_factors: {0:.4f} s".format(end_time - start_time))
+            #print("+ reflection_list.compute_structure_factors: {0:.4f} s".format(end_time - start_time))
 
             start_time = timeit.default_timer()
 
@@ -130,14 +130,14 @@ class CFML:
             self.hkl_dict['l'] = hkltth[:, 2]
 
             end_time = timeit.default_timer()
-            print("+ set reflection_list: {0:.4f} s".format(end_time - start_time))
+            #print("+ set reflection_list: {0:.4f} s".format(end_time - start_time))
 
             start_time = timeit.default_timer()
             diffraction_pattern = CFML_api.DiffractionPattern(job_info,
                                                               reflection_list,
                                                               cell.reciprocal_cell_vol)
             end_time = timeit.default_timer()
-            print("+ diffraction_pattern = CFML_api.DiffractionPattern: {0:.4f} s".format(end_time - start_time))
+            #print("+ diffraction_pattern = CFML_api.DiffractionPattern: {0:.4f} s".format(end_time - start_time))
 
         except:
             raise ArithmeticError
@@ -151,7 +151,7 @@ class CFML:
                     p.unlink()
 
             end_time = timeit.default_timer()
-            print("+ calculate D: {0:.4f} s".format(end_time - start_time))
+            #print("+ calculate D: {0:.4f} s".format(end_time - start_time))
 
         start_time = timeit.default_timer()
 
@@ -163,7 +163,7 @@ class CFML:
         res = scale * diffraction_pattern.ycalc + bg
 
         end_time = timeit.default_timer()
-        print("+ calculate E: {0:.4f} s".format(end_time - start_time))
+        #print("+ calculate E: {0:.4f} s".format(end_time - start_time))
 
         start_time = timeit.default_timer()
 
@@ -172,7 +172,7 @@ class CFML:
             print(f"y_calc: {res}")
 
         end_time = timeit.default_timer()
-        print("+ calculate F: {0:.4f} s".format(end_time - start_time))
+        #print("+ calculate F: {0:.4f} s".format(end_time - start_time))
 
         return res
 

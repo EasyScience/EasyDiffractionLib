@@ -8,11 +8,18 @@ build-backend = "poetry.masonry.api"
 name = "easyDiffractionLib"
 version = "0.0.2"
 description = 'Making diffraction data analysis and modelling easy.'
-license = "GPL-3.0-only"
-authors = ["Andrew Sazonov", "Simon Ward"]
+license = "BSD-3"
+authors = ["Simon Ward",  "Andrew Sazonov"]
 readme = "README.md"
 homepage = "https://github.com/easyScience/easyDiffractionLib"
 documentation = "https://github.com/easyScience/easyDiffractionLib"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",  # Define that your audience are developers
+    "Topic :: Scientific/Engineering :: Physics",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",  # Again, pick a license
+    "Programming Language :: Python :: 3 :: Only",
+]
 include = ["CHANGELOG.md"]
 packages = [ { include = "easyDiffractionLib" } ]
 
@@ -39,18 +46,48 @@ hvplot = "^0.7.0"
 jupyter = "^1.0.0"
 ipympl = "^0.8.0"
 
+[tool.coverage.run]
+source = ['easyDiffractionLib']
+
+[tool.github.info]
+organization = 'easyScience'
+repo = 'easyDiffractionLib'
+
 [tool.poetry.scripts]
 easyDiffractionLib = "easyDiffractionLib.main:main"
 
 # CUSTOM CONFIG
 
-[ci.pyinstaller]
-libs = { macos = 'libsDarwin', ubuntu = 'libsLinux', windows = 'libsWin32' }
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+isolated_build = True
+envlist = py{37,38,39}
+[gh-actions]
+python =
+    3.7: py37
+    3.8: py38
+    3.9: py39
+[gh-actions:env]
+PLATFORM =
+    ubuntu-latest: linux
+    macos-latest: macos
+    windows-latest: windows
+[testenv]
+passenv =
+    CI
+    GITHUB_ACTIONS
+    GITHUB_ACTION
+    GITHUB_REF
+    GITHUB_REPOSITORY
+    GITHUB_HEAD_REF
+    GITHUB_RUN_ID
+    GITHUB_SHA
+    COVERAGE_FILE
+deps = coverage
+whitelist_externals = poetry
+commands =
+    poetry install -vvv
+    poetry run pytest --cov --cov-report=xml
+"""
 
-[tool.dephell.main]
-from = {format = "poetry", path = "pyproject.toml"}
-to = {format = "setuppy", path = "setup.py"}
-
-[tool.dephell.requirements]
-from = {format = "poetry", path = "pyproject.toml"}
-to = {format = "pip", path = "requirements.txt"}

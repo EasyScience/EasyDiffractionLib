@@ -54,6 +54,12 @@ Currently **easyDiffractionLib** is in **alpha** and has not been released on **
   ```
 * Select one of the *.ipynb files
 
+## Test
+
+The installation can be verified by running the test suite:
+
+```python -m pytest```
+
 ## Documentation
 
 Documentation can be found at: [https://easyScience.github.io/easyDiffractionLib](https://easyScience.github.io/easyDiffractionLib)

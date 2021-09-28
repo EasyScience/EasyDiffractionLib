@@ -1,5 +1,10 @@
-__author__ = 'github.com/wardsimon'
-__version__ = '0.0.1'
+__author__ = "github.com/wardsimon"
+__version__ = "0.0.1"
+
+import os
+
+CIF_DIRECTORY = os.path.join("tests", "test_resources", "cifs")
+AVAILABLE_PHASES = os.listdir(CIF_DIRECTORY)
 
 
 def test_get_phase():

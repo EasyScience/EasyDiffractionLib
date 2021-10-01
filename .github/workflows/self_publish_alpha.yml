@@ -51,11 +51,7 @@ jobs:
         cd pypi
         git config --local user.email "$(git log --format='%ae' HEAD^!)"
         git config --local user.name "$(git log --format='%an' HEAD^!)"
-        git remote add github "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git"
-        git pull github ${GITHUB_REF} --ff-only
-        git add .
-        if [ -z "$(git status --porcelain)" ]; then
-          exit 0
-        fi
-        git commit -m "Fix a[href] in Webflow exported html"
-        git push github HEAD:${GITHUB_REF}
+        git remote add github "https://$GITHUB_ACTOR:${{ secrets.ES_TOKEN }}@github.com/easyScience/pypi.git"
+        git add easyDiffractionLib/index.html
+        git commit -m "Uto update eDL alpha"
+        git push origin HEAD:main

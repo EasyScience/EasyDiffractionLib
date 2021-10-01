@@ -51,7 +51,7 @@ jobs:
         path: ${{ env.REPO_PATH }}
     - name: Copy index to new repo
       env:
-        SOURCE: index.yaml
+        SOURCE: index.html
         TARGET: pypi/easyDiffractionLib/
       run:
         cp ${{ env.SOURCE }} ${{ env.TARGET }}

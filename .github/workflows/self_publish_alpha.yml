@@ -39,19 +39,31 @@ jobs:
       run: |
         python tools/Scripts/generate_html.py
 
-    - name: Checkout tools repo
+    - name: Checkout target repo
       uses: actions/checkout@v2
+      env:
+        REPO: easyScience/pypi
+        REPO_PATH: pypi
       with:
-        repository: easyScience/pypi
-        path: pypi
-
-    - name: Commit files
-      run: |-
-        mv index.html pypi/easyDiffractionLib/
-        cd pypi
-        git config --local user.email "$(git log --format='%ae' HEAD^!)"
-        git config --local user.name "$(git log --format='%an' HEAD^!)"
-        git remote add github "https://${{ secrets.ES_TOKEN }}@github.com/easyScience/pypi.git"
-        git add easyDiffractionLib/index.html
-        git commit -m "Uto update eDL alpha"
-        git push origin HEAD:master
+        fetch-depth: 0
+        token: ${{ secrets.ES_TOKEN }}
+        repository: "${{ env.REPO }}"
+        path: ${{ env.REPO_PATH }}
+    - name: Copy index to new repo
+      env:
+        SOURCE: index.yaml
+        TARGET: pypi/easyDiffractionLib/
+      run:
+        cp ${{ env.SOURCE }} ${{ env.TARGET }}
+    - name: Push
+      env:
+        REPO_PATH: pypi
+        GIT_USERNAME: action
+        GIT_EMAIL: action@github.com
+      run: |
+        cd ${{ env.REPO_PATH }}
+        git config --local user.name "${{ env.GIT_USERNAME }}"
+        git config --local user.email "${{ env.GIT_EMAIL }}"
+        git add .
+        git commit -m "Github Actions Automatically Built in `date +"%Y-%m-%d %H:%M"`"
+        git push

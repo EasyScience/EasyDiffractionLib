@@ -9,49 +9,49 @@ jobs:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '[ci skip]')"
     steps:
-    - name: Check-out repository
-      uses: actions/checkout@v2
+      - name: Check-out repository
+        uses: actions/checkout@v2
 
-    - uses: actions/setup-python@v2
-      name: Setup Python
-      with:
-        python-version: 3.8
+      - uses: actions/setup-python@v2
+        name: Setup Python
+        with:
+          python-version: 3.8
 
-    - uses: Gr1N/setup-poetry@v4
-    - name: Install and build
-      run: |
-        poetry update
-        poetry build
+      - uses: Gr1N/setup-poetry@v4
+      - name: Install and build
+        run: |
+          poetry update
+          poetry build
 
-    - name: Upload Artifacts GitHub releases
-      uses: ncipollo/release-action@v1
-      with:
-        draft: false
-        prerelease: true
-        allowUpdates: true
-        replacesArtifacts: true
-        token: ${{ secrets.GITHUB_TOKEN }}
-        artifacts: ./**/*.whl
-        tag: eDL_alpha
-        body: This is an alpha build of easyDiffractionLib
+      - name: Upload Artifacts GitHub releases
+        uses: ncipollo/release-action@v1
+        with:
+          draft: false
+          prerelease: true
+          allowUpdates: true
+          replacesArtifacts: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          artifacts: ./**/*.whl
+          tag: eDL_alpha
+          body: This is an alpha build of easyDiffractionLib
 
-    - name: Generate HTML
-      run: |
-        python tools/Scripts/generate_html.py
+      - name: Generate HTML
+        run: |
+          python tools/Scripts/generate_html.py
 
-    - name: Checkout tools repo
-      uses: actions/checkout@v2
-      with:
-        repository: easyScience/pypi
-        path: pypi
+      - name: Checkout tools repo
+        uses: actions/checkout@v2
+        with:
+          repository: easyScience/pypi
+          path: pypi
 
-    - name: Checkout pypi repo
-    - uses: actions/checkout@v2
-    - run: |-
-        mv index.html pypi/easyDiffractionLib/
-        cd pypi
-        git config user.name github-actions
-        git config user.email github-actions@github.com
-        git add .
-        git commit -m "Auto update easyDiffractionLib"
-        git push
+      - name: Checkout pypi repo
+      - uses: actions/checkout@v2
+      - run: |-
+          mv index.html pypi/easyDiffractionLib/
+          cd pypi
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "Auto update easyDiffractionLib"
+          git push

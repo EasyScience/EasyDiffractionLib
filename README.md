@@ -96,7 +96,7 @@ We absolutely welcome contributions. **easyDiffractionLib** is maintained by the
 
 <!---CI Build Status--->
 
-[20]: https://github.com/easyScience/easyDiffractionLib/workflows/unit_tests/badge.svg
+[20]: https://github.com/easyScience/easyDiffractionLib/actions/workflows/unit_test.yml/badge.svg
 
 [21]: https://github.com/easyScience/easyDiffractionLib/actions
 

@@ -4,7 +4,7 @@ __version__ = "0.0.1"
 import os
 
 whl_dir = "dist"
-base_url = "https://github.com/easyScience/easyDifractionLib/releases/download/develop/"
+base_url = "https://github.com/easyScience/easyDifractionLib/releases/download/eDL_alpha/"
 
 file = [file for file in os.listdir(whl_dir) if file.endswith(".whl")][0]
 

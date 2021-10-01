@@ -270,7 +270,18 @@ class Cryspy:
         if crystal is None:
             return bg
 
-        profile = self.model.calc_profile(this_x_array, [crystal], True, False)
+        crystals = [crystal]
+        phase_lists = []
+        for crystal in crystals:
+            phasesL = cryspy.PhaseL()
+            idx = [idx for idx, item in reversed(list(enumerate(self.phases.items))) if item.label == crystal.data_name][0]
+            phasesL.items.append(self.phases.items[idx])
+            phase_lists.append(phasesL)
+
+        idx = [idx for idx, item in enumerate(self.model.items) if isinstance(item, cryspy.PhaseL)][0]
+        self.model.items[idx] = phase_lists[0]
+
+        profile = self.model.calc_profile(this_x_array, crystals, True, False)
         self.hkl_dict = {
             'ttheta': self.model.d_internal_val['peak_' + crystal.data_name].numpy_ttheta,
             'h':      self.model.d_internal_val['peak_' + crystal.data_name].numpy_index_h,
@@ -328,7 +339,18 @@ class Cryspy:
         if crystal is None:
             return bg
 
-        profile = self.model.calc_profile(this_x_array, [crystal], True, False)
+        crystals = [crystal]
+        phase_lists = []
+        for crystal in crystals:
+            phasesL = cryspy.PhaseL()
+            idx = [idx for idx, item in reversed(list(enumerate(self.phases.items))) if item.label == crystal.data_name][0]
+            phasesL.items.append(self.phases.items[idx])
+            phase_lists.append(phasesL)
+
+        idx = [idx for idx, item in enumerate(self.model.items) if isinstance(item, cryspy.PhaseL)][0]
+        self.model.items[idx] = phase_lists[0]
+
+        profile = self.model.calc_profile(this_x_array, crystals, True, False)
         self.hkl_dict = {
             'time': np.array(self.model.d_internal_val['peak_' + crystal.data_name].time),
             'h':    np.array(self.model.d_internal_val['peak_' + crystal.data_name].index_h),

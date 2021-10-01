@@ -1,4 +1,4 @@
-name: test macOS
+name: unit_test
 
 # Trigger the workflow on push or pull request
 on: [push, pull_request]
@@ -38,7 +38,7 @@ jobs:
     - name: Set up Python environment
       uses: actions/setup-python@v2
       with:
-          python-version: 3.7
+        python-version: 3.7
 
     - name: Some logging
       shell: bash

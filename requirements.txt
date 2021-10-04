@@ -1,5 +1,5 @@
-easysciencecore @ git+https://github.com/easyScience/easyCore.git@develop ; python_version >= "3.7" and python_version < "4.0"
 cryspy @ git+https://github.com/ikibalin/cryspy.git@bravis_type_fix
 --extra-index-url https://easyscience.github.io/pypi
+easysciencecore
 cfml==0.0.1
 gsasii==0.0.1

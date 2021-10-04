@@ -1,0 +1,4 @@
+#!/bin/bash
+
+pip install -r requirements-dev.txt
+jupyter labextension install jupyterlab_3dmol

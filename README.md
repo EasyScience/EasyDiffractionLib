@@ -1,23 +1,21 @@
-# [![License][50]][51] [![Release][32]][33] [![Downloads][70]][71] [![Unit Tests][20]][21]
-
+# [![Unit Tests][20]][21] ![Release][31] [![Downloads][70]][71] [![Lines of code][81]](<>) [![Total lines][80]](<>) [![Files][82]](<>) [![License][50]][51]
 
 <img height="80"><img src="https://raw.githubusercontent.com/easyScience/easyDiffractionApp/master/resources/images/ed_logo.svg" height="65">
 
-**easydiffractionLib** is a Python library for modelling and analysis of diffraction data, a base of the [**easyDiffraction**](https://easydiffraction.org)
+**easydiffractionLib** is a Python library which provides:
+* Scripting interface to simulate and analyse neutron diffraction patterns.
+* Multiple optimization algorithms to minimize models to experimental data: [Lmfit](https://lmfit.github.io/lmfit-py/), [Bumps](https://github.com/bumps/bumps) and [DFO_LS](https://github.com/numericalalgorithmsgroup/dfols).
+* Multiple calculation engines: [CrysPy](https://github.com/ikibalin/cryspy), [CrysFML](https://www.ill.eu/sites/fullprof/php/programs24b7.html?pagina=Crysfml), [GSAS-II](https://subversion.xray.aps.anl.gov/trac/pyGSAS).
 
-**easyDiffractionLib** is the foundation of [*easyDiffraction*](https://github.com/easyScience/easyDiffraction), an intuitive application which
-endeavors simplifying and accelerating the analysis of diffraction experiments. *easyDiffractionLib* provides:
-* Scripting interface to simulate and analyse neutron diffraction patterns
-* Optimization algorithms to minimize models to experimental data
-* 3 pattern calculators; [cryspy](https://github.com/ikibalin/cryspy), [crysFML](https://www.ill.eu/sites/fullprof/php/programs24b7.html?pagina=Crysfml), [GSAS-II](https://subversion.xray.aps.anl.gov/trac/pyGSAS)
+**easydiffractionLib** is the foundation of [**easyDiffraction**](https://github.com/easyScience/easyDiffraction), an intuitive application which endeavors simplifying and accelerating the analysis of diffraction experiments.
 
 ## Getting Started
 
 ### Install easyDiffractionLib
 
-Currently **easyDiffractionLib** is in **alpha** and has not been released on **pypi**. Please use the alternative method given below to install **easyDiffractionLib** from the [GitHub repo](https://github.com/easyScience/easyDiffractionLib) using our [custom Python Package Index](https://easyscience.github.io/pypi) for some dependencies, such as CrysFML and GSAS-II.
+Currently **easyDiffractionLib** is in **alpha** and has not been released on **pypi**. Please use the alternative method given below to install **easyDiffractionLib** from our [custom Python Package Index](https://easyscience.github.io/pypi).
 
-* Create and go to, e.g., **easyDiffraction** (*optional*)
+* Create and go to, e.g., **easyDiffraction** directory (*optional*)
   ```
   mkdir easyDiffraction && cd easyDiffraction
   ```
@@ -32,22 +30,21 @@ Currently **easyDiffractionLib** is in **alpha** and has not been released on **
   ```
 * Install **easyDiffractionLib**
   ```
-  pip install git+https://github.com/easyScience/easyDiffractionLib@more_notebooks --extra-index-url https://easyscience.github.io/pypi
+  pip install easyDiffraction --extra-index-url https://easyscience.github.io/pypi
   ```
-
 
 ## Examples
 
 ### Jupyter Notebook examples that use easyDiffractionLib
 
 * Install **easyDiffractionLib** as described above
-* Install Jupyter Notebook and visualization libraries, such as matplotlib and py3Dmol
+* Install Jupyter Notebook and visualization libraries, such as matplotlib and py3Dmol (*if not done already*)
   ```
   pip install jupyter notebook ipympl matplotlib py3Dmol
   ```
-* Download **easyDiffractionLib** Jupyter Notebook [examples](https://github.com/easyScience/easyDiffractionLib/tree/more_notebooks/examples) from GitHub, e.g., using svn
+* Download **easyDiffractionLib** Jupyter Notebook [examples](https://github.com/easyScience/easyDiffractionLib/tree/develop/examples) from GitHub, e.g., using **svn** (*if not done already*)
   ```
-  svn export https://github.com/easyScience/easyDiffractionLib/branches/more_notebooks/examples
+  svn export https://github.com/easyScience/easyDiffractionLib/branches/develop/examples
   ```
 * Run Jupyter Notebook server
   ```
@@ -57,7 +54,7 @@ Currently **easyDiffractionLib** is in **alpha** and has not been released on **
   ```
   http://localhost:8888/
   ```
-* Select one of the *.ipynb files
+* Select one of the ***.ipynb** files
 
 ## Test
 
@@ -65,15 +62,11 @@ The installation can be verified by running the test suite:
 
 ```python -m pytest```
 
-## Documentation
-
-Documentation can be found at: [https://easyScience.github.io/easyDiffractionLib](https://easyScience.github.io/easyDiffractionLib)
-
 ## Contributing
 We absolutely welcome contributions. **easyDiffractionLib** is maintained by the ESS and on a volunteer basis and thus we need to foster a community that can support user questions and develop new features to make this software a useful tool for all users while encouraging every member of the community to share their ideas.
 
 ## License
-**easyDiffractionLib** is licenced under the  BSD-3-Clause license.
+**easyDiffractionLib** is licenced under the  BSD-3-Clause license, [DFO_LS](https://github.com/numericalalgorithmsgroup/dfols) is subject to the GPL license.
 
 <!---CI Build Status--->
 
@@ -83,6 +76,8 @@ We absolutely welcome contributions. **easyDiffractionLib** is maintained by the
 
 
 <!---Release--->
+
+[31]: https://img.shields.io/badge/release-v0.0.1--alpha-orange
 
 [32]: https://img.shields.io/pypi/v/easyScienceCore.svg
 

@@ -2,7 +2,6 @@ pytest>=5.2
 toml>=0.10
 requests>=2.24
 hvplot>=0.7.0
-jupyter>=1.0.0
 ipympl>=0.8.0
 matplotlib>=3.4
 py3Dmol>=1.7.0

@@ -20,8 +20,14 @@ jobs:
     - uses: Gr1N/setup-poetry@v4
     - name: Install and build
       run: |
-        poetry update
+        poetry version prerelease
         poetry build
+
+    - name: Set name variable
+      id: name
+      run: |
+        EDLVERSION=$( poetry version | awk -F'[" "|.|-]' '{ print $5=="" ? $2"."$3"."$4 : $2"."$3"."$4"-"$5 ;}' )
+        echo "::set-output name=tag::$EDLVERSION"
 
     - name: Upload Artifacts GitHub releases
       uses: ncipollo/release-action@v1
@@ -32,12 +38,12 @@ jobs:
         replacesArtifacts: true
         token: ${{ secrets.GITHUB_TOKEN }}
         artifacts: ./**/*.whl
-        tag: eDL_alpha
+        tag: ${{ steps.name.outputs.tag }}
         body: This is an alpha build of easyDiffractionLib
 
     - name: Generate HTML
       run: |
-        python tools/Scripts/generate_html.py
+        python tools/Scripts/generate_html.py ${{ steps.name.outputs.tag }}
 
     - name: Checkout target repo
       uses: actions/checkout@v2
@@ -47,14 +53,13 @@ jobs:
       with:
         fetch-depth: 0
         token: ${{ secrets.ES_TOKEN }}
-        repository: "${{ env.REPO }}"
+        repository: ${{ env.REPO }}
         path: ${{ env.REPO_PATH }}
     - name: Copy index to new repo
       env:
         SOURCE: index.html
         TARGET: pypi/easydiffractionlib/
-      run:
-        cp ${{ env.SOURCE }} ${{ env.TARGET }}
+      run: cp ${{ env.SOURCE }} ${{ env.TARGET }}
     - name: Push
       env:
         REPO_PATH: pypi

@@ -2,11 +2,14 @@ __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
 import os
+import sys
+
+tag = "eDL_alpha"
+if len(sys.argv) > 1:
+    tag = sys.argv[1]
 
 whl_dir = "dist"
-base_url = (
-    "https://github.com/easyScience/easyDiffractionLib/releases/download/eDL_alpha/"
-)
+base_url = f"https://github.com/easyScience/easyDiffractionLib/releases/download/{tag}/"
 
 file = [file for file in os.listdir(whl_dir) if file.endswith(".whl")][0]
 

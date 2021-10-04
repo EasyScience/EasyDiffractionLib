@@ -32,8 +32,8 @@ packages = [ { include = "easyDiffractionLib" } ]
 
 [tool.poetry.dependencies]
 python = "^3.7, <3.9"
+easyScienceCore = '>=0.1.1a0'
 cryspy = { git = 'https://github.com/ikibalin/cryspy.git', rev = 'bravis_type_fix' }
-easysciencecore = '^0.1'
 CFML = '^0.0.1'
 GSASII = '^0.0.1'
 

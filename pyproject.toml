@@ -12,7 +12,7 @@ organization = 'easyScience'
 repo = 'easyDiffractionLib'
 
 [tool.poetry]
-name = "easyDiffractionLib"
+name = "easyDiffraction"
 version = "0.0.2"
 description = 'Making diffraction data analysis and modelling easy.'
 license = "BSD-3-Clause"

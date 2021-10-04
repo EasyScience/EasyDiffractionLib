@@ -58,7 +58,7 @@ jobs:
     - name: Copy index to new repo
       env:
         SOURCE: index.html
-        TARGET: pypi/easydiffractionlib/
+        TARGET: pypi/easydiffraction/
       run: cp ${{ env.SOURCE }} ${{ env.TARGET }}
     - name: Push
       env:

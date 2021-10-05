@@ -15,8 +15,13 @@ repos:
   - id: check-toml
   - id: pretty-format-json
   - id: detect-private-key
-#- repo: local
-#  hooks:
+- repo: local
+  hooks:
+  - id: export_dev_requirements
+    name: Export dev requirements
+    language: system
+    pass_filenames: false
+    entry: peodd -o requirements-dev.txt
 #  - id: export-requirements
 #    name: Export requeriments.txt
 #    language: system

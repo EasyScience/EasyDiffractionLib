@@ -38,10 +38,12 @@ Currently **easyDiffractionLib** is in **alpha** and has not been released on **
 
 ### Jupyter Notebook examples that use easyDiffractionLib
 
+#### Locally
+
 * Install **easyDiffractionLib** as described above
-* Install Jupyter Notebook and visualization libraries, such as matplotlib and py3Dmol (*if not done already*)
+* Install Jupyter Notebook and visualization libraries, such as **py3Dmol** and **bokeh** (*if not done already*)
   ```
-  pip install jupyter notebook ipympl matplotlib py3Dmol
+  pip install notebook py3Dmol bokeh
   ```
 * Download **easyDiffractionLib** Jupyter Notebook [examples](https://github.com/easyScience/easyDiffractionLib/tree/develop/examples) from GitHub, e.g., using **svn** (*if not done already*)
   ```
@@ -57,9 +59,9 @@ Currently **easyDiffractionLib** is in **alpha** and has not been released on **
   ```
 * Select one of the ***.ipynb** files
 
-### Via Binder
+#### Via Binder
 
-Examples can also be run on the online service [binder](https://mybinder.org/). [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/easyScience/easyDiffractionLib/develop) and navigate to the examples folder to run one of the notebooks or create your own.
+Examples can also be run on the online service [**Binder**](https://mybinder.org/). Click [launch **Binder**](https://mybinder.org/v2/gh/easyScience/easyDiffractionLib/develop) and navigate to the examples folder to run one of the notebooks or create your own.
 
 ## Test
 

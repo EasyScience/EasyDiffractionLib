@@ -59,9 +59,14 @@ Currently **easyDiffractionLib** is in **alpha** and has not been released on **
   ```
 * Select one of the ***.ipynb** files
 
-#### Via Binder
+#### Via Binder (interactive)
 
 Examples can also be run on the online service [**Binder**](https://mybinder.org/). Click [launch **Binder**](https://mybinder.org/v2/gh/easyScience/easyDiffractionLib/develop) and navigate to the examples folder to run one of the notebooks or create your own.
+
+#### Via nbviewer (non-interactive preview)
+
+* [Simulation](https://nbviewer.jupyter.org/github/easyScience/easyDiffractionLib/blob/develop/examples/Simulation.ipynb)
+* [Fitting](https://nbviewer.jupyter.org/github/easyScience/easyDiffractionLib/blob/develop/examples/Fitting.ipynb)
 
 ## Test
 

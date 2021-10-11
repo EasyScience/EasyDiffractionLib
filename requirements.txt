@@ -1,0 +1,5 @@
+cryspy @ git+https://github.com/ikibalin/cryspy.git@bravis_type_fix
+--extra-index-url https://easyscience.github.io/pypi
+easysciencecore>=0.1.1a0
+cfml==0.0.1
+gsasii==0.0.1

@@ -1,0 +1,86 @@
+# POETRY CONFIG
+
+[build-system]
+requires = ["poetry>=1.0"]
+build-backend = "poetry.masonry.api"
+
+[tool.coverage.run]
+source = ['easyDiffractionLib']
+
+[tool.github.info]
+organization = 'easyScience'
+repo = 'easyDiffractionLib'
+
+[tool.poetry]
+name = "easyDiffraction"
+version = "0.0.2"
+description = 'Making diffraction data analysis and modelling easy.'
+license = "BSD-3-Clause"
+authors = ["Simon Ward",  "Andrew Sazonov"]
+readme = "README.md"
+homepage = "https://github.com/easyScience/easyDiffractionLib"
+documentation = "https://github.com/easyScience/easyDiffractionLib"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",  # Define that your audience are developers
+    "Topic :: Scientific/Engineering :: Physics",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",  # Again, pick a license
+    "Programming Language :: Python :: 3 :: Only",
+]
+include = ["CHANGELOG.md"]
+packages = [ { include = "easyDiffractionLib" } ]
+
+[tool.poetry.dependencies]
+python = "^3.7, <3.9"
+easyScienceCore = '>=0.1.1a0'
+cryspy = { git = 'https://github.com/ikibalin/cryspy.git', rev = 'bravis_type_fix' }
+CFML = '^0.0.1'
+GSASII = '^0.0.1'
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+toml = "^0.10"
+requests = '^2.24'
+py3Dmol = "^1.7.0"
+bokeh = "^2.4.0"
+
+[tool.poetry.scripts]
+easyDiffractionLib = "easyDiffractionLib.main:main"
+
+[[tool.poetry.source]]
+name = "easyScience"
+url = "https://easyscience.github.io/pypi/"
+secondary = true
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+isolated_build = True
+envlist = py{37,38,39}
+[gh-actions]
+python =
+    3.7: py37
+    3.8: py38
+    3.9: py39
+[gh-actions:env]
+PLATFORM =
+    ubuntu-latest: linux
+    macos-latest: macos
+    windows-latest: windows
+[testenv]
+passenv =
+    CI
+    GITHUB_ACTIONS
+    GITHUB_ACTION
+    GITHUB_REF
+    GITHUB_REPOSITORY
+    GITHUB_HEAD_REF
+    GITHUB_RUN_ID
+    GITHUB_SHA
+    COVERAGE_FILE
+deps = coverage
+whitelist_externals = poetry
+commands =
+    poetry install -vvv
+    poetry run pytest --cov --cov-report=xml
+"""

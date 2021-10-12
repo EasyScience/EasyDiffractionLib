@@ -14,16 +14,15 @@ class Pars1D(BaseObj):
         'wavelength':   {
             '@module':  'easyCore.Objects.Base',
             '@class':   'Parameter',
-            '@version': '0.0.1',
             'name':     'wavelength',
             'units':    'angstrom',
             'value':    1.54056,
-            'fixed': True
+            'fixed': True,
+            'min': 0
         },
         'resolution_u': {
             '@module':  'easyCore.Objects.Base',
             '@class':   'Parameter',
-            '@version': '0.0.1',
             'name':     'resolution_u',
             'value':    0.0002,
             'fixed': True
@@ -31,7 +30,6 @@ class Pars1D(BaseObj):
         'resolution_v': {
             '@module':  'easyCore.Objects.Base',
             '@class':   'Parameter',
-            '@version': '0.0.1',
             'name':     'resolution_v',
             'value':    -0.0002,
             'fixed': True
@@ -40,7 +38,6 @@ class Pars1D(BaseObj):
         'resolution_w': {
             '@module':  'easyCore.Objects.Base',
             '@class':   'Parameter',
-            '@version': '0.0.1',
             'name':     'resolution_w',
             'value':    0.012,
             'fixed': True
@@ -49,7 +46,6 @@ class Pars1D(BaseObj):
         'resolution_x': {
             '@module':  'easyCore.Objects.Base',
             '@class':   'Parameter',
-            '@version': '0.0.1',
             'name':     'resolution_x',
             'value':    0.0,
             'fixed': True
@@ -57,7 +53,6 @@ class Pars1D(BaseObj):
         'resolution_y': {
             '@module': 'easyCore.Objects.Base',
             '@class': 'Parameter',
-            '@version': '0.0.1',
             'name': 'resolution_y',
             'value': 0.0,
             'fixed': True

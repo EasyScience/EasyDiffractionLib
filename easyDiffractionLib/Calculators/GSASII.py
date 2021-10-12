@@ -3,7 +3,7 @@ __version__ = "0.0.1"
 
 import os, pathlib
 from easyCore import borg
-import GSASIIscriptable as G2sc
+from GSASII import GSASIIscriptable as G2sc
 
 from easyCore import np
 
@@ -14,20 +14,34 @@ class GSASII:
         self.prm_file_name = 'easydiffraction_temp.prm'
         self.prm_file_path = ""
         self.prm_dir_path = ""
-        self.conditions = {
-            'wavelength': 1.25,
-            'resolution': {
-                'u': 0.001,
-                'v': 0.001,
-                'w': 0.001,
-                'x': 0.000,
-                'y': 0.000
-            }
-        }
+        self.conditions = None
         self.filename = filename
         self.background = None
         self.pattern = None
+        self.hkl_dict = {
+            'ttheta': np.empty(0),
+            'h': np.empty(0),
+            'k': np.empty(0),
+            'l': np.empty(0)
+        }
 
+    def createConditions(self, job_type=None):
+        self.conditions = {
+            'wavelength'  : 1.54,
+            'u_resolution': 0.01,
+            'v_resolution': 0.0,
+            'w_resolution': 0.0,
+            'x_resolution': 0.0,
+            'y_resolution': 0.0,
+            'z_resolution': 0.0
+        }
+
+    def conditionsUpdate(self, _, **kwargs):
+        for key, value in kwargs.items():
+            self.conditions[key]= value
+
+    def conditionsReturn(self, _, name):
+        return self.conditions.get(name)
 
     def create_temp_prm(self):
         if self.filename is None:
@@ -58,7 +72,7 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
             scale = 1.0
             offset = 0
         else:
-            scale = self.pattern.scale.raw_value
+            scale = self.pattern.scale.raw_value / 1000.0
             offset = self.pattern.zero_shift.raw_value
 
         this_x_array = x_array + offset
@@ -68,25 +82,33 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
         # step 1, setup: add a phase to the project
         cif_file = self.filename
         phase_name = 'Phase'
-        gpx.add_phase(cif_file, phasename=phase_name, fmthint='CIF')
+        phase_index = 0
+        phase0 = gpx.add_phase(cif_file,
+                               phasename=phase_name,
+                               fmthint='CIF')
 
         # step 2, setup: add a simulated histogram and link it to the previous phase(s)
         x_min = this_x_array[0]
         x_max = this_x_array[-1]
         n_points = np.prod(x_array.shape)
-        x_step = (x_max-x_min)/(n_points - 1)
-        gpx.add_simulated_powder_histogram(f"{phase_name} simulation",
-                                           self.prm_file_path,
-                                           x_min, x_max, Tstep=x_step,
-                                           phases=gpx.phases())
+        x_step = (x_max - x_min)/(n_points - 1)
+        histogram0 = gpx.add_simulated_powder_histogram(f"{phase_name} simulation",
+                                                        self.prm_file_path,
+                                                        x_min, x_max, Tstep=x_step,
+                                                        phases=gpx.phases())
 
-        # Set instrumental parameters
-        resolution_multiplier = 1000
-        u = self.conditions["resolution"]["u"] * resolution_multiplier
-        v = self.conditions["resolution"]["v"] * resolution_multiplier
-        w = self.conditions["resolution"]["w"] * resolution_multiplier
-        x = self.conditions["resolution"]["x"] * resolution_multiplier
-        y = self.conditions["resolution"]["y"] * resolution_multiplier
+        # Set parameters
+        val1 = 10000.0  #1000000.0
+        val2 = None
+        LGmix = 0.0  # 1.0 -> 0.0: NO VISIBLE INFLUENCE...
+        phase0.setSampleProfile(phase_index, 'size', 'isotropic', val1, val2=val2, LGmix=LGmix)
+        #print("- size", phase0.data['Histograms'][f'PWDR {phase_name} simulation']['Size'])
+
+        u = self.conditions["u_resolution"] * 1850  # ~ CrysPy/CrysFML
+        v = self.conditions["v_resolution"] * 1850  # ~ CrysPy/CrysFML
+        w = self.conditions["w_resolution"] * 1850  # ~ CrysPy/CrysFML
+        x = self.conditions["x_resolution"] * 16  # ~ CrysPy/CrysFML
+        y = self.conditions["y_resolution"] - 6  # y - 6 ~ 0 in CrysPy/CrysFML
         gpx.data[f'PWDR {phase_name} simulation']['Instrument Parameters'][0]['U'] = [u,u,0]
         gpx.data[f'PWDR {phase_name} simulation']['Instrument Parameters'][0]['V'] = [v,v,0]
         gpx.data[f'PWDR {phase_name} simulation']['Instrument Parameters'][0]['W'] = [w,w,0]
@@ -97,7 +119,7 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
         gpx.data[f'PWDR {phase_name} simulation']['Instrument Parameters'][0]['Lam'] = [wl,wl,0]
 
         # Step 3: Set the scale factor to adjust the y scale
-        #hist1.SampleParameters['Scale'][0] = 1000000.
+        #histogram0.SampleParameters['Scale'][0] = 1000000.
 
         # step 4, compute: turn off parameter optimization and calculate pattern
         gpx.data['Controls']['data']['max cyc'] = 0  # refinement not needed
@@ -114,10 +136,18 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
                 if os.path.basename(p) != "easydiffraction_temp.cif":
                     p.unlink()
 
-        if self.background is None:
+
+        self.hkl_dict = {
+            'ttheta': gpx.data[f'PWDR {phase_name} simulation']['Reflection Lists'][phase_name]['RefList'][:, 5],
+            'h': gpx.data[f'PWDR {phase_name} simulation']['Reflection Lists'][phase_name]['RefList'][:, 0],
+            'k': gpx.data[f'PWDR {phase_name} simulation']['Reflection Lists'][phase_name]['RefList'][:, 1],
+            'l': gpx.data[f'PWDR {phase_name} simulation']['Reflection Lists'][phase_name]['RefList'][:, 2]
+        }
+
+        if len(self.pattern.backgrounds) == 0:
             bg = np.zeros_like(this_x_array)
         else:
-            bg = self.background.calculate(this_x_array)
+            bg = self.pattern.backgrounds[0].calculate(this_x_array)
 
         res = scale * ycalc + bg
 
@@ -126,3 +156,9 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
             print(f"y_calc: {res}")
 
         return res
+
+    def get_hkl(self, tth: np.array = None) -> dict:
+        hkl_dict = self.hkl_dict
+        if tth is not None:
+            pass
+        return hkl_dict

@@ -41,7 +41,7 @@ class GSASII:
             self.conditions[key]= value
 
     def conditionsReturn(self, _, name):
-        self.conditions.get(name)
+        return self.conditions.get(name)
 
     def create_temp_prm(self):
         if self.filename is None:
@@ -102,7 +102,7 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
         val2 = None
         LGmix = 0.0  # 1.0 -> 0.0: NO VISIBLE INFLUENCE...
         phase0.setSampleProfile(phase_index, 'size', 'isotropic', val1, val2=val2, LGmix=LGmix)
-        print("- size", phase0.data['Histograms'][f'PWDR {phase_name} simulation']['Size'])
+        #print("- size", phase0.data['Histograms'][f'PWDR {phase_name} simulation']['Size'])
 
         u = self.conditions["u_resolution"] * 1850  # ~ CrysPy/CrysFML
         v = self.conditions["v_resolution"] * 1850  # ~ CrysPy/CrysFML

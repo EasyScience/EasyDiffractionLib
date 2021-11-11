@@ -8,8 +8,8 @@ from easyCore.Objects.Inferface import InterfaceFactoryTemplate
 
 
 class InterfaceFactory(InterfaceFactoryTemplate):
-    def __init__(self):
-        super(InterfaceFactory, self).__init__(InterfaceTemplate._interfaces)
+    def __init__(self, *args, **kwargs):
+        super(InterfaceFactory, self).__init__(InterfaceTemplate._interfaces, *args, **kwargs)
 
     def get_hkl(self, x_array=None, idx=None, phase_name=None) -> dict:
         return self().get_hkl(x_array, idx=idx, phase_name=phase_name)

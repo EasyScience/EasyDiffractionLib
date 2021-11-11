@@ -6,7 +6,6 @@ from ..Interfaces.interfaceTemplate import InterfaceTemplate
 from easyCore.Objects.Inferface import ItemContainer
 from ..Calculators.GSASII import GSASII as GSAS_calc
 from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters, Powder1DParameters
-from easyDiffractionLib.sample import Sample
 from easyDiffractionLib import Lattice, SpaceGroup, Site, Phases
 
 
@@ -72,6 +71,7 @@ class GSASII(InterfaceTemplate):
                                           FEATURES=GSASII.feature_available)
 
     def create(self, model):
+        from easyDiffractionLib.sample import Sample
         r_list = []
         t_ = type(model)
         model_key = self.__identify(model)
@@ -140,6 +140,7 @@ class GSASII(InterfaceTemplate):
         """
         return self.calculator.calculate(x_array)
 
+
     def get_hkl(self, x_array: np.ndarray = None, idx=None, phase_name=None) -> dict:
         return self.calculator.get_hkl(x_array)
     
@@ -151,6 +152,8 @@ class GSASII(InterfaceTemplate):
 
     def get_value(self, key, item_key):
         item = borg.map.get_item_by_key(key)
+        if item_key in ['Uiso', 'Uani', 'Biso', 'Bani']:
+            return getattr(getattr(item, 'adp'), item_key).raw_value
         return getattr(item, item_key).raw_value
 
     def __createModel(self, model):

@@ -126,6 +126,6 @@ class InterfaceTemplate(MSONable, metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_hkl(self, x_array: np.ndarray = None) -> dict:
+    def get_hkl(self, x_array: np.ndarray = None, idx=None) -> dict:
         pass
         

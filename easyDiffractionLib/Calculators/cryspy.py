@@ -273,6 +273,7 @@ class Cryspy:
 
         if borg.debug:
             print('CALLING FROM Cryspy\n----------------------')
+
         return self.do_calc_setup(scale, this_x_array)
 
     def powder_1d_tof_calculate(self, x_array: np.ndarray) -> np.ndarray:

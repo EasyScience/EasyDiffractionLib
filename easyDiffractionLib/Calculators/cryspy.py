@@ -6,7 +6,7 @@ import time
 import cryspy
 import warnings
 from easyCore import np, borg
-from pathos import multiprocessing as mp
+# from pathos import multiprocessing as mp
 import functools
 
 warnings.filterwarnings('ignore')
@@ -326,17 +326,23 @@ class Cryspy:
         crystals = [self.storage[key] for key in self.current_crystal.keys()]
         phase_scales = [self.storage[str(key) + '_scale'] for key in self.current_crystal.keys()]
         phase_lists = []
+        profiles = []
+        peak_dat = []
         for crystal in crystals:
             phasesL = cryspy.PhaseL()
             idx = [idx for idx, item in enumerate(self.phases.items) if item.label == crystal.data_name][0]
             phasesL.items.append(self.phases.items[idx])
             phase_lists.append(phasesL)
-        pool = mp.ProcessPool(num_crys)
-        result = pool.amap(functools.partial(_do_run, self.model, self.polarized, this_x_array), crystals, phase_lists)
-        while not result.ready():
-            time.sleep(0.01)
-        obtained = result.get()
-        profiles, peak_dat = zip(*obtained)
+            profile, peak = _do_run(self.model, self.polarized, this_x_array, crystal, phasesL)
+            profiles.append(profile)
+            peak_dat.append(peak)
+        # pool = mp.ProcessPool(num_crys)
+        # print("\n\nPOOL = " + str(pool))
+        # result = pool.amap(functools.partial(_do_run, self.model, self.polarized, this_x_array), crystals, phase_lists)
+        # while not result.ready():
+        #     time.sleep(0.01)
+        # obtained = result.get()
+        # profiles, peak_dat = zip(*obtained)
         # else:
         #     raise ArithmeticError
 
@@ -358,6 +364,7 @@ class Cryspy:
         self.additional_data['phase_names'] = list(additional_data.keys())
         self.additional_data['type'] = self.type
 
+        # just the sum of all phases
         dependent_output = scale * np.sum(dependents, axis=0) + bg
 
         if borg.debug:

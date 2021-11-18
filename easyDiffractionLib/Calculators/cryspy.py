@@ -368,9 +368,12 @@ class Cryspy:
         # just the sum of all phases
         dependent_output = scale * np.sum(dependents, axis=0) + bg
 
+        # returned_deps = [scale*dep+bg for dep in dependents]
+
         if borg.debug:
             print(f"y_calc: {dependent_output}")
         return dependent_output
+        # return returned_deps
 
     def calculate(self, x_array: np.ndarray) -> np.ndarray:
         """
@@ -387,6 +390,23 @@ class Cryspy:
         if self.type == 'powder1DTOF':
             return self.powder_1d_tof_calculate(x_array)
         return res
+
+    def get_calculated_y_for_phase(self, phase_idx: int) -> list:
+        """
+        For a given phase index, return the calculated y
+        :param phase_name: name of the phase
+        :type phase_idx: int
+        :return: calculated y
+        :rtype: np.ndarray
+        """
+        if phase_idx > len(self.additional_data['components']):
+            raise KeyError(f"{phase_name} not in phase_names")
+        return self.additional_data['components'][phase_idx]
+
+    def get_total_y_for_phases(self) -> list:
+        x_values = self.additional_data['ivar_run']
+        y_values = np.sum([s for s in self.additional_data['components']], axis=0)
+        return x_values, y_values
 
     def get_hkl(self, x_array: np.ndarray = None, idx: int = 0, phase_name=None) -> dict:
 

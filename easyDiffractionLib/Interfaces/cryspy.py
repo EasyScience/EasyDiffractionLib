@@ -213,6 +213,12 @@ class Cryspy(InterfaceTemplate):
     def __createModel(self, model, model_type):
         self.calculator.createModel(model, model_type)
 
+    def get_calculated_y_for_phase(self, phase_idx: int) -> list:
+        return self.calculator.get_calculated_y_for_phase(phase_idx)
+
+    def get_total_y_for_phases(self) -> list:
+        return self.calculator.get_total_y_for_phases()
+
     @staticmethod
     def __identify(obj):
         return borg.map.convert_id_to_key(obj)

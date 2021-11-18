@@ -128,4 +128,11 @@ class InterfaceTemplate(MSONable, metaclass=ABCMeta):
     @abstractmethod
     def get_hkl(self, x_array: np.ndarray = None, idx=None) -> dict:
         pass
-        
+
+    @abstractmethod
+    def get_calculated_y_for_phase(self, idx=None) -> list:
+        pass
+
+    @abstractmethod
+    def get_total_y_for_phases(self) -> list:
+        pass

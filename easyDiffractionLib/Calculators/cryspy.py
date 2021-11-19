@@ -361,14 +361,14 @@ class Cryspy:
         self.additional_data['global_scale'] = scale
         self.additional_data['background'] = bg
         self.additional_data['ivar_run'] = this_x_array
-        self.additional_data['components'] = dependents
         self.additional_data['phase_names'] = list(additional_data.keys())
         self.additional_data['type'] = self.type
 
         # just the sum of all phases
         dependent_output = scale * np.sum(dependents, axis=0) + bg
 
-        # returned_deps = [scale*dep+bg for dep in dependents]
+        scaled_dependents = [scale*dep+bg for dep in dependents]
+        self.additional_data['components'] = scaled_dependents
 
         if borg.debug:
             print(f"y_calc: {dependent_output}")
@@ -394,13 +394,13 @@ class Cryspy:
     def get_calculated_y_for_phase(self, phase_idx: int) -> list:
         """
         For a given phase index, return the calculated y
-        :param phase_name: name of the phase
+        :param phase_idx: index of the phase
         :type phase_idx: int
         :return: calculated y
         :rtype: np.ndarray
         """
         if phase_idx > len(self.additional_data['components']):
-            raise KeyError(f"{phase_name} not in phase_names")
+            raise KeyError(f"phase_index incorrect: {phase_idx}")
         return self.additional_data['components'][phase_idx]
 
     def get_total_y_for_phases(self) -> list:

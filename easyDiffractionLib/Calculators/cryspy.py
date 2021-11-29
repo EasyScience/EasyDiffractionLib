@@ -13,6 +13,8 @@ import functools
 
 warnings.filterwarnings("ignore")
 
+normalization = 500.0
+
 
 class Cryspy:
     def __init__(self):
@@ -44,7 +46,7 @@ class Cryspy:
         self.model = None
         self.phases = cryspy.PhaseL()
         self.type = "powder1DCW"
-        self.additional_data = {}
+        self.additional_data = {"phases": {}}
         self.polarized = False
 
     @property
@@ -85,7 +87,9 @@ class Cryspy:
         del self.storage[phase_name]
         del self.storage[phase_name.split("_")[0] + "_scale"]
         self.phases.items.pop(self.phases.items.index(phase))
-        self.current_crystal.pop(int(phase_name.split("_")[0]))
+        name = self.current_crystal.pop(int(phase_name.split("_")[0]))
+        if name in self.additional_data["phases"].keys():
+            del self.additional_data["phases"][name]
 
     def setPhaseScale(self, model_name, scale=1):
         self.storage[str(model_name) + "_scale"] = scale
@@ -265,7 +269,7 @@ class Cryspy:
             scale = 1.0
             offset = 0
         else:
-            scale = self.pattern.scale.raw_value / 500.0
+            scale = self.pattern.scale.raw_value / normalization
             offset = self.pattern.zero_shift.raw_value
 
         this_x_array = x_array + offset
@@ -302,7 +306,7 @@ class Cryspy:
             scale = 1.0
             offset = 0
         else:
-            scale = self.pattern.scale.raw_value / 500.0
+            scale = self.pattern.scale.raw_value / normalization
             offset = self.pattern.zero_shift.raw_value
 
         self.model["tof_parameters"].zero = offset
@@ -346,7 +350,8 @@ class Cryspy:
             peak_dat.append(peak)
         # pool = mp.ProcessPool(num_crys)
         # print("\n\nPOOL = " + str(pool))
-        # result = pool.amap(functools.partial(_do_run, self.model, self.polarized, this_x_array), crystals, phase_lists)
+        # result = pool.amap(functools.partial(_do_run, self.model, self.polarized, this_x_array), crystals,
+        # phase_lists)
         # while not result.ready():
         #     time.sleep(0.01)
         # obtained = result.get()
@@ -372,7 +377,7 @@ class Cryspy:
             dependents, additional_data = self.nonPolarized_update(
                 crystals, profiles, peak_dat, phase_scales, x_str
             )
-        self.additional_data.update(additional_data)
+        self.additional_data["phases"].update(additional_data)
         self.additional_data["global_scale"] = scale
         self.additional_data["background"] = bg
         self.additional_data["ivar_run"] = this_x_array
@@ -382,12 +387,18 @@ class Cryspy:
         # just the sum of all phases
         dependent_output = scale * np.sum(dependents, axis=0) + bg
 
-        scaled_dependents = [scale * dep + bg for dep in dependents]
+        scaled_dependents = [scale * dep for dep in dependents]
+        self.additional_data["components"] = scaled_dependents
         self.additional_data["components"] = scaled_dependents
 
         if borg.debug:
             print(f"y_calc: {dependent_output}")
-        return dependent_output
+        return (
+            np.sum(
+                [s["profile"] for s in self.additional_data["phases"].values()], axis=0
+            )
+            + self.additional_data["background"]
+        )
         # return returned_deps
 
     def calculate(self, x_array: np.ndarray) -> np.ndarray:
@@ -406,6 +417,12 @@ class Cryspy:
             return self.powder_1d_tof_calculate(x_array)
         return res
 
+    def get_phase_components(self, phase_name):
+        data = None
+        if phase_name in self.additional_data["phase_names"]:
+            data = self.additional_data["phases"][phase_name].copy()
+        return data
+
     def get_calculated_y_for_phase(self, phase_idx: int) -> list:
         """
         For a given phase index, return the calculated y
@@ -416,11 +433,16 @@ class Cryspy:
         """
         if phase_idx > len(self.additional_data["components"]):
             raise KeyError(f"phase_index incorrect: {phase_idx}")
-        return self.additional_data["components"][phase_idx]
+        return list(self.additional_data["phases"].values())[phase_idx]["profile"]
 
     def get_total_y_for_phases(self) -> Tuple[np.ndarray, np.ndarray]:
         x_values = self.additional_data["ivar_run"]
-        y_values = np.sum([s for s in self.additional_data["components"]], axis=0)
+        y_values = (
+            np.sum(
+                [s["profile"] for s in self.additional_data["phases"].values()], axis=0
+            )
+            + self.additional_data["background"]
+        )
         return x_values, y_values
 
     def get_hkl(
@@ -465,7 +487,7 @@ class Cryspy:
                             "k": peak_dat[idx].numpy_index_k,
                             "l": peak_dat[idx].numpy_index_l,
                         },
-                        "profile": scales[idx] * dependent[idx, :],
+                        "profile": scales[idx] * dependent[idx, :] / normalization,
                         "components": {"total": dependent[idx, :]},
                         "profile_scale": scales[idx],
                     }
@@ -490,7 +512,7 @@ class Cryspy:
                             "k": peak_dat[idx].numpy_index_k,
                             "l": peak_dat[idx].numpy_index_l,
                         },
-                        "profile": scales[idx] * dependent[idx, :],
+                        "profile": scales[idx] * dependent[idx, :] / normalization,
                         "components": {
                             "total": dependent[idx, :],
                             "up": up[idx, :],

@@ -1,12 +1,11 @@
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
-import os, pathlib, re
-from typing import Tuple
-
 import CFML_api
-import timeit
+import os
+import re
 
+from typing import Tuple
 from easyCore import np, borg
 
 
@@ -16,14 +15,8 @@ class CFML:
         self.conditions = None
         self.background = None
         self.pattern = None
-        self.hkl_dict = {
-            "ttheta": np.empty(0),
-            "h": np.empty(0),
-            "k": np.empty(0),
-            "l": np.empty(0),
-        }
         self.known_phases = {}
-        self.additional_data = {}
+        self.additional_data = {"phases": {}}
         self.storage = {}
 
     def createConditions(self, job_type="N"):
@@ -55,20 +48,12 @@ class CFML:
         if self.filename is None:
             raise AttributeError
 
-        # print("\n\n\n")
-        start_time = timeit.default_timer()
-
         if self.pattern is None:
             scale = 1.0
             offset = 0
         else:
             scale = self.pattern.scale.raw_value
             offset = self.pattern.zero_shift.raw_value
-
-        end_time = timeit.default_timer()
-        # print("+ calculate A: {0:.4f} s".format(end_time - start_time))
-
-        start_time = timeit.default_timer()
 
         this_x_array = x_array + offset
 
@@ -87,22 +72,18 @@ class CFML:
 
         # Sample parameters
         # We assume that the phases items has the same indexing as the knownphases item
-        for idx, file in enumerate(self.grab_cifs()[::-1]):
+        cifs = self.grab_cifs()
+        if len(cifs) == 0:
+            raise ValueError("No phases found for calculation")
+        # Reset the phases dict
+        self.additional_data["phases"] = dict()
+
+        for idx, file in enumerate(cifs):
             cif_file = CFML_api.CIFFile(file)
             cell = cif_file.cell
             space_group = cif_file.space_group
             atom_list = cif_file.atom_list
             job_info = cif_file.job_info
-
-            end_time = timeit.default_timer()
-            # print("+ calculate B: {0:.4f} s".format(end_time - start_time))
-
-            start_time = timeit.default_timer()
-
-            # cell.print_description()
-            # space_group.print_description()
-            # atom_list.print_description()
-            # job_info.print_description()
 
             job_info.range_2theta = (x_min, x_max)
             job_info.theta_step = x_step
@@ -114,52 +95,23 @@ class CFML:
             job_info.lambdas = (self.conditions["lamb"], self.conditions["lamb"])
             job_info.bkg = 0.0
 
-            end_time = timeit.default_timer()
-            # print("+ calculate C: {0:.4f} s".format(end_time - start_time))
-
             # Calculations
             try:
-                start_time = timeit.default_timer()
                 reflection_list = CFML_api.ReflectionList(
                     cell, space_group, True, job_info
                 )
-                end_time = timeit.default_timer()
-                # print("+ reflection_list = CFML_api.ReflectionList: {0:.4f} s".format(end_time - start_time))
 
-                start_time = timeit.default_timer()
                 reflection_list.compute_structure_factors(
                     space_group, atom_list, job_info
                 )
-                end_time = timeit.default_timer()
-                # print("+ reflection_list.compute_structure_factors: {0:.4f} s".format(end_time - start_time))
 
-                start_time = timeit.default_timer()
-
-                end_time = timeit.default_timer()
-                # print("+ set reflection_list: {0:.4f} s".format(end_time - start_time))
-
-                start_time = timeit.default_timer()
                 diffraction_pattern = CFML_api.DiffractionPattern(
                     job_info, reflection_list, cell.reciprocal_cell_vol
                 )
-                end_time = timeit.default_timer()
-                # print("+ diffraction_pattern = CFML_api.DiffractionPattern: {0:.4f} s".format(end_time - start_time))
-
-            except:
+            except Exception as e:
+                for cif in cifs:
+                    os.remove(cif)
                 raise ArithmeticError
-            finally:
-
-                start_time = timeit.default_timer()
-
-                # Clean up
-                # for p in pathlib.Path(os.path.dirname(self.filename)).glob("easydiffraction_temp*"):
-                #     if os.path.basename(p) != "easydiffraction_temp.cif":
-                #         p.unlink()
-
-                end_time = timeit.default_timer()
-                # print("+ calculate D: {0:.4f} s".format(end_time - start_time))
-
-            start_time = timeit.default_timer()
 
             item = list(self.known_phases.items())[idx]
             key = list(self.known_phases.keys())[idx]
@@ -169,7 +121,9 @@ class CFML:
                 item, diffraction_pattern, reflection_list, job_info, scales=phase_scale
             )
             dependents.append(dependent)
-            self.additional_data.update(additional_data)
+            self.additional_data["phases"].update(additional_data)
+        for cif in cifs:
+            os.remove(cif)
         self.additional_data["global_scale"] = scale
         self.additional_data["background"] = bg
         self.additional_data["ivar_run"] = this_x_array
@@ -180,19 +134,14 @@ class CFML:
 
         dependent_output = scale * np.sum(dependents, axis=0) + bg
 
-        end_time = timeit.default_timer()
-        # print("+ calculate E: {0:.4f} s".format(end_time - start_time))
-
-        start_time = timeit.default_timer()
-
-        np.set_printoptions(precision=3)
         if borg.debug:
             print(f"y_calc: {dependent_output}")
-
-        end_time = timeit.default_timer()
-        # print("+ calculate F: {0:.4f} s".format(end_time - start_time))
-
-        return dependent_output
+        return (
+            np.sum(
+                [s["profile"] for s in self.additional_data["phases"].values()], axis=0
+            )
+            + self.additional_data["background"]
+        )
 
     def get_hkl(self, x_array: np.ndarray = None, idx=0, phase_name=None) -> dict:
 
@@ -223,7 +172,6 @@ class CFML:
     def nonPolarized_update(
         crystal_name, diffraction_pattern, reflection_list, job_info, scales=1
     ):
-        # dependent = np.array([diffraction_pattern.ycalc for diffraction_pattern in profiles])
         dependent = diffraction_pattern.ycalc
 
         hkltth = np.array(
@@ -259,7 +207,7 @@ class CFML:
     def get_phase_components(self, phase_name):
         data = None
         if phase_name in self.additional_data["phase_names"]:
-            data = self.additional_data[phase_name].copy()
+            data = self.additional_data["phases"][phase_name].copy()
         return data
 
     def get_calculated_y_for_phase(self, phase_idx: int) -> list:
@@ -272,11 +220,16 @@ class CFML:
         """
         if phase_idx > len(self.additional_data["components"]):
             raise KeyError(f"phase_index incorrect: {phase_idx}")
-        return self.additional_data["components"][phase_idx]
+        return list(self.additional_data["phases"].values())[phase_idx]["profile"]
 
     def get_total_y_for_phases(self) -> Tuple[np.ndarray, np.ndarray]:
         x_values = self.additional_data["ivar_run"]
-        y_values = np.sum([s for s in self.additional_data["components"]], axis=0)
+        y_values = (
+            np.sum(
+                [s["profile"] for s in self.additional_data["phases"].values()], axis=0
+            )
+            + self.additional_data["background"]
+        )
         return x_values, y_values
 
     def setPhaseScale(self, model_name, scale=1):
@@ -290,8 +243,9 @@ class CFML:
         ext = file[-3:]
         file = file[:-4]
         files = [
-            os.path.join(base, f)
+            base + os.path.sep + f
             for f in os.listdir(base)
             if re.match(rf"{file}_[0-9]+.*\.{ext}", f)
         ]
-        return files
+        inds = np.argsort([int(s.split("_")[2][:-4]) for s in files])
+        return [files[i] for i in inds]

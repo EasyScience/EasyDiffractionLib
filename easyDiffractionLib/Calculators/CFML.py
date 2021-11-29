@@ -220,7 +220,9 @@ class CFML:
         """
         if phase_idx > len(self.additional_data["components"]):
             raise KeyError(f"phase_index incorrect: {phase_idx}")
-        return list(self.additional_data["phases"].values())[phase_idx]["profile"]
+        return self.additional_data["phases"][
+            self.additional_data["phase_names"][phase_idx]
+        ]["profile"]
 
     def get_total_y_for_phases(self) -> Tuple[np.ndarray, np.ndarray]:
         x_values = self.additional_data["ivar_run"]
@@ -247,5 +249,4 @@ class CFML:
             for f in os.listdir(base)
             if re.match(rf"{file}_[0-9]+.*\.{ext}", f)
         ]
-        inds = np.argsort([int(s.split("_")[2][:-4]) for s in files])
-        return [files[i] for i in inds]
+        return files

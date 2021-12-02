@@ -157,13 +157,16 @@ class Cryspy:
 
     def updateSpacegroup(self, sg_key, **kwargs):
         # This has to be done as sg.name_hm_alt = 'blah' doesn't work :-(
+        keys = list(self.current_crystal.keys())
+        previous_key = ""
+        for key in keys:
+            if key in self.storage.keys():
+                previous_sg = getattr(self.storage[key], "space_group", None)
+                if previous_sg == self.storage[sg_key]:
+                    previous_key = key
+                    break
         sg_key = self.createSpaceGroup(key=sg_key, **kwargs)
-        key = list(self.current_crystal.keys())
-        if len(key) > 0:
-            key = key[0]
-        else:
-            key = ""
-        self.assignSpaceGroup_toCrystal(sg_key, key)
+        self.assignSpaceGroup_toCrystal(sg_key, previous_key)
 
     def createAtom(self, atom_name, **kwargs):
         atom = cryspy.AtomSite(**kwargs)

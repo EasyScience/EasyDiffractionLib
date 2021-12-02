@@ -75,8 +75,6 @@ class CFML:
         cifs = self.grab_cifs()
         if len(cifs) == 0:
             raise ValueError("No phases found for calculation")
-        # Reset the phases dict
-        self.additional_data["phases"] = dict()
 
         for idx, file in enumerate(cifs):
             cif_file = CFML_api.CIFFile(file)
@@ -202,7 +200,11 @@ class CFML:
 
     def remove_phase(self, phases_id):
         if phases_id in self.known_phases:
-            del self.known_phases[phases_id]
+            name = self.known_phases.pop(phases_id)
+            if name in self.additional_data["phase_names"]:
+                del self.additional_data["phase_names"][name]
+            if name in self.additional_data["phases"].keys():
+                del self.additional_data["phases"][name]
 
     def get_phase_components(self, phase_name):
         data = None

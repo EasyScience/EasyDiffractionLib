@@ -448,15 +448,13 @@ class Cryspy:
         )
         return x_values, y_values
 
-    def get_hkl(
-        self, x_array: np.ndarray = None, idx: int = 0, phase_name=None
-    ) -> dict:
-
+    def get_hkl(self, x_array: np.ndarray = None, idx: int = 0, phase_name=None) -> dict:
         # Do we need to re-run a calculation to get the HKL's
         do_run = False
         old_x = self.additional_data.get("ivar", np.array(()))
         if not np.array_equal(old_x, x_array):
             do_run = True
+
         if do_run and x_array is not None:
             _ = self.calculate(x_array)
 
@@ -464,16 +462,7 @@ class Cryspy:
         if phase_name is None:
             known_phases = list(self.current_crystal.values())
             phase_name = known_phases[idx]
-        phase_data = self.additional_data.get(phase_name, {})
-        return phase_data.get(
-            "hkl",
-            {
-                "ttheta": np.array([]),
-                "h": np.array([]),
-                "k": np.array([]),
-                "l": np.array([]),
-            },
-        )
+        return self.additional_data['phases'][phase_name]['hkl']
 
     @staticmethod
     def nonPolarized_update(crystals, profiles, peak_dat, scales, x_str):

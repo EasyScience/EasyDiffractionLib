@@ -448,16 +448,7 @@ class Cryspy:
         )
         return x_values, y_values
 
-    def get_hkl(self, x_array: np.ndarray = None, idx: int = 0, phase_name=None) -> dict:
-        # Do we need to re-run a calculation to get the HKL's
-        do_run = False
-        old_x = self.additional_data.get("ivar", np.array(()))
-        if not np.array_equal(old_x, x_array):
-            do_run = True
-
-        if do_run and x_array is not None:
-            _ = self.calculate(x_array)
-
+    def get_hkl(self, idx: int = 0, phase_name=None) -> dict:
         # Collate and return
         if phase_name is None:
             known_phases = list(self.current_crystal.values())

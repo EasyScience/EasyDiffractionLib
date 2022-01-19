@@ -448,11 +448,18 @@ class Cryspy:
         )
         return x_values, y_values
 
-    def get_hkl(self, idx: int = 0, phase_name=None) -> dict:
+    def get_hkl(self, idx: int = 0, phase_name=None, encoded_name=False) -> dict:
         # Collate and return
-        if phase_name is None:
-            known_phases = list(self.current_crystal.values())
-            phase_name = known_phases[idx]
+        if phase_name is not None:
+            if encoded_name:
+                known_phases = [str(key) for key in self.current_crystal.keys()]
+                idx = known_phases.index(phase_name)
+                phase_name = list(self.current_crystal.values())[idx]
+            else:
+                known_phases = list(self.current_crystal.values())
+                phase_name = known_phases[idx]
+        else:
+            phase_name = list(self.current_crystal.values())[idx]
         return self.additional_data['phases'][phase_name]['hkl']
 
     @staticmethod

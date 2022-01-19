@@ -11,8 +11,8 @@ class InterfaceFactory(InterfaceFactoryTemplate):
     def __init__(self, *args, **kwargs):
         super(InterfaceFactory, self).__init__(InterfaceTemplate._interfaces, *args, **kwargs)
 
-    def get_hkl(self, x_array=None, idx=None, phase_name=None) -> dict:
-        return self().get_hkl(x_array, idx=idx, phase_name=phase_name)
+    def get_hkl(self, x_array=None, idx=None, phase_name=None, encoded_name=False) -> dict:
+        return self().get_hkl(x_array, idx=idx, phase_name=phase_name, encoded_name=encoded_name)
 
     def get_total_y_for_phases(self) -> list:
         return self().get_total_y_for_phases()

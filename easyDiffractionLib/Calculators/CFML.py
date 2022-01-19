@@ -141,7 +141,7 @@ class CFML:
             + self.additional_data["background"]
         )
 
-    def get_hkl(self, x_array: np.ndarray = None, idx=0, phase_name=None) -> dict:
+    def get_hkl(self, x_array: np.ndarray = None, idx=0, phase_name=None, encoded_name=False) -> dict:
 
         # Do we need to re-run a calculation to get the HKL's
         do_run = False

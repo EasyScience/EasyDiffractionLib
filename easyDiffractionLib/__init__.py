@@ -2,7 +2,7 @@ __author__ = 'github.com/wardsimon'
 __version__ = '0.0.1'
 
 
-from easyCore.Elements.HigherLevel.Phase import Phases, Atoms, Site, SpaceGroup, Lattice, Phase
+from easyCrystallography.Structures.Phase import Phases, Atoms, Site, SpaceGroup, Lattice, Phase
 
 """
 This is a horrendous monkey patch of the Phase and Phases class so that adding and removing communicates

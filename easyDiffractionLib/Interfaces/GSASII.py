@@ -141,7 +141,7 @@ class GSASII(InterfaceTemplate):
         return self.calculator.calculate(x_array)
 
 
-    def get_hkl(self, x_array: np.ndarray = None, idx=None, phase_name=None) -> dict:
+    def get_hkl(self, x_array: np.ndarray = None, idx=None, phase_name=None, encoded_name=False) -> dict:
         return self.calculator.get_hkl(x_array)
     
     def dump_cif(self, *args, **kwargs):

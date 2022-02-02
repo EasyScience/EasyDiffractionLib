@@ -39,7 +39,7 @@ easyScienceCore = '>=0.2.0'
 easyCrystallography = { git = 'https://github.com/easyScience/easyCrystallography.git', rev = 'develop' }
 
 [tool.poetry.dev-dependencies]
-pytest = "^5.2"
+pytest = "^6.2"
 toml = "^0.10"
 requests = '^2.24'
 py3Dmol = "^1.7.0"

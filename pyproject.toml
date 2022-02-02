@@ -13,7 +13,7 @@ repo = 'easyDiffractionLib'
 
 [tool.poetry]
 name = "easyDiffraction"
-version = "0.0.2"
+version = "0.0.3"
 description = 'Making diffraction data analysis and modelling easy.'
 license = "BSD-3-Clause"
 authors = ["Simon Ward",  "Andrew Sazonov"]
@@ -35,7 +35,7 @@ python = "^3.7, <3.9"
 cryspy = { git = 'https://github.com/ikibalin/cryspy.git', rev = 'bravis_type_fix' }
 CFML = '^0.0.1'
 GSASII = '^0.0.1'
-easyScienceCore = { git = 'https://github.com/easyScience/easyCore.git', rev = 'pre-release' }
+easyScienceCore = '>=0.2.0'
 easyCrystallography = { git = 'https://github.com/easyScience/easyCrystallography.git', rev = 'develop' }
 
 [tool.poetry.dev-dependencies]

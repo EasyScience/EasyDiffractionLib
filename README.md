@@ -45,9 +45,9 @@ Currently **easyDiffractionLib** is in **alpha** and has not been released on **
   ```
   pip install notebook py3Dmol bokeh
   ```
-* Download **easyDiffractionLib** Jupyter Notebook [examples](https://github.com/easyScience/easyDiffractionLib/tree/develop/examples) from GitHub, e.g., using **svn** (*if not done already*)
+* Download **easyDiffractionLib** Jupyter Notebook [examples](https://github.com/easyScience/easyDiffractionLib/tree/master/examples) from GitHub, e.g., using **svn** (*if not done already*)
   ```
-  svn export https://github.com/easyScience/easyDiffractionLib/branches/develop/examples
+  svn export https://github.com/easyScience/easyDiffractionLib/branches/master/examples
   ```
 * Run Jupyter Notebook server
   ```
@@ -61,18 +61,24 @@ Currently **easyDiffractionLib** is in **alpha** and has not been released on **
 
 #### Via Binder (interactive)
 
-Examples can also be run on the online service [**Binder**](https://mybinder.org/). Click [launch **Binder**](https://mybinder.org/v2/gh/easyScience/easyDiffractionLib/develop) and navigate to the examples folder to run one of the notebooks or create your own.
+Examples can also be run on the online service [**Binder**](https://mybinder.org/). Click [launch **Binder**](https://mybinder.org/v2/gh/easyScience/easyDiffractionLib/master) and navigate to the examples folder to run one of the notebooks or create your own.
 
 #### Via nbviewer (non-interactive preview)
 
-* [Simulation](https://nbviewer.jupyter.org/github/easyScience/easyDiffractionLib/blob/develop/examples/Simulation.ipynb)
-* [Fitting](https://nbviewer.jupyter.org/github/easyScience/easyDiffractionLib/blob/develop/examples/Fitting.ipynb)
+* [Simulation](https://nbviewer.jupyter.org/github/easyScience/easyDiffractionLib/blob/master/examples/Simulation.ipynb)
+* [Fitting](https://nbviewer.jupyter.org/github/easyScience/easyDiffractionLib/blob/master/examples/Fitting.ipynb)
 
 ## Test
 
-The installation can be verified by running the test suite:
+Testing is run via `pytest`, though it is not installed by default. Install it with:
+```
+pip install pytest
+```
 
-```python -m pytest```
+The installation can be verified by running the test suite:
+```
+python -m pytest
+```
 
 ## Contributing
 We absolutely welcome contributions. **easyDiffractionLib** is maintained by the ESS and on a volunteer basis and thus we need to foster a community that can support user questions and develop new features to make this software a useful tool for all users while encouraging every member of the community to share their ideas.

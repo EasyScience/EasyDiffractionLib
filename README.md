@@ -1,4 +1,4 @@
-# [![Unit Tests][20]][21] ![Release][31] [![Downloads][70]][71] [![Lines of code][81]](<>) [![Total lines][80]](<>) [![Files][82]](<>) [![License][50]][51] [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/easyScience/easyDiffractionLib/master)
+# [![Unit Tests][20]][21] ![Release][31] [![Downloads][70]][71] [![Lines of code][81]](<>) [![Total lines][80]](<>) [![Files][82]](<>) [![License][50]][51] [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/easyScience/easyDiffractionLib/develop)
 
 
 <img height="80"><img src="https://raw.githubusercontent.com/easyScience/easyDiffractionApp/master/resources/images/ed_logo.svg" height="65">

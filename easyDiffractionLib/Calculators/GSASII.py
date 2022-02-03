@@ -157,8 +157,8 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
 
         return res
 
-    def get_hkl(self, tth: np.array = None) -> dict:
+    def get_hkl(self, x_array: np.ndarray = None, idx=None, phase_name=None, encoded_name=False) -> dict:
         hkl_dict = self.hkl_dict
-        if tth is not None:
+        if x_array is not None:
             pass
         return hkl_dict

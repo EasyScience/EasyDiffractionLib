@@ -36,7 +36,7 @@ cryspy = { git = 'https://github.com/ikibalin/cryspy.git', rev = 'bravis_type_fi
 CFML = '^0.0.1'
 GSASII = '^0.0.1'
 easyScienceCore = '>=0.2.0'
-easyCrystallography = { git = 'https://github.com/easyScience/easyCrystallography.git', rev = 'develop' }
+easyCrystallography = '>=0.1.0'
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

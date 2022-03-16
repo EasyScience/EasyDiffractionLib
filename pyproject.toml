@@ -24,7 +24,7 @@ classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",  # Define that your audience are developers
     "Topic :: Scientific/Engineering :: Physics",
-    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",  # Again, pick a license
+    "License :: OSI Approved :: BSD License",  # Again, pick a license
     "Programming Language :: Python :: 3 :: Only",
 ]
 include = ["CHANGELOG.md"]

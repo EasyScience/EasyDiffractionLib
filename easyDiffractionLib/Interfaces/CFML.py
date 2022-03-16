@@ -2,6 +2,7 @@ __author__ = "github.com/wardsimon"
 __version__ = "0.0.2"
 
 import os
+import glob
 from easyCore import borg, np
 from easyCore.Objects.Inferface import ItemContainer
 
@@ -159,6 +160,8 @@ class CFML(InterfaceTemplate):
     def dump_cif(self, *args, **kwargs):
         if self._filename is None:
             return
+        # delete preexising cif files
+        self.remove_cif()
         with open(self._filename, "w") as fid:
             fid.write(str(self._phase.cif))
         base, file = os.path.split(self._filename)
@@ -167,6 +170,20 @@ class CFML(InterfaceTemplate):
         for idx, phase in enumerate(self._phase):
             with open(f"{os.path.join(base, file)}_{idx}.{ext}", "w") as fid:
                 fid.write(str(phase.cif))
+
+    def remove_cif(self):
+        if self._filename is None:
+            return
+        base, file = os.path.split(self._filename)
+        ext = file[-3:]
+        file = file[:-4]
+        file_wildcarded = os.path.join(base, file) + '_*.' + ext
+        fileList = glob.glob(file_wildcarded)
+        for f in fileList:
+            try:
+                os.remove(f)
+            except OSError:
+                pass
 
     def __createModel(self, model):
         self._filename = model.filename

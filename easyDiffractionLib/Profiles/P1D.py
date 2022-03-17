@@ -193,6 +193,22 @@ class Instrument1DCWParameters(BaseObj):
             "value": 0.0,
             "fixed": True,
         },
+        "polarization": {
+            "@module": "easyCore.Objects.Base",
+            "@class": "Parameter",
+            "@version": "0.0.1",
+            "name": "polarization",
+            "value": 0.0,
+            "fixed": True,
+        },
+        "polarizing_efficiency": {
+            "@module": "easyCore.Objects.Base",
+            "@class": "Parameter",
+            "@version": "0.0.1",
+            "name": "polarizing_efficiency",
+            "value": 100,
+            "fixed": True,
+        },
     }
 
     def __init__(
@@ -203,6 +219,8 @@ class Instrument1DCWParameters(BaseObj):
         resolution_w: Parameter,
         resolution_x: Parameter,
         resolution_y: Parameter,
+        polarization: Parameter,
+        polarizing_efficiency: Parameter,
         interface=None,
     ):
         super().__init__(
@@ -213,6 +231,8 @@ class Instrument1DCWParameters(BaseObj):
             resolution_w=resolution_w,
             resolution_x=resolution_x,
             resolution_y=resolution_y,
+            polarization=polarization,
+            polarizing_efficiency=polarizing_efficiency,
         )
         self.name = self._name
         self.interface = interface
@@ -226,6 +246,8 @@ class Instrument1DCWParameters(BaseObj):
         resolution_w: float = _defaults["resolution_w"]["value"],
         resolution_x: float = _defaults["resolution_x"]["value"],
         resolution_y: float = _defaults["resolution_y"]["value"],
+        polarization: float = _defaults["polarization"]["value"],
+        polarizing_efficiency: float = _defaults["polarizing_efficiency"]["value"],
     ):
         defaults = deepcopy(cls._defaults)
         defaults["wavelength"]["value"] = wavelength
@@ -240,6 +262,10 @@ class Instrument1DCWParameters(BaseObj):
         resolution_x = _decoder.process_decoded(defaults["resolution_x"])
         defaults["resolution_y"]["value"] = resolution_y
         resolution_y = _decoder.process_decoded(defaults["resolution_y"])
+        defaults["polarization"]["value"] = polarization
+        polarization = _decoder.process_decoded(defaults["polarization"])
+        defaults["polarizing_efficiency"]["value"] = polarizing_efficiency
+        polarizing_efficiency = _decoder.process_decoded(defaults["polarizing_efficiency"])
         return cls(
             wavelength=wavelength,
             resolution_u=resolution_u,
@@ -247,6 +273,8 @@ class Instrument1DCWParameters(BaseObj):
             resolution_w=resolution_w,
             resolution_x=resolution_x,
             resolution_y=resolution_y,
+            polarization=polarization,
+            polarizing_efficiency=polarizing_efficiency,
         )
 
     @classmethod
@@ -258,6 +286,8 @@ class Instrument1DCWParameters(BaseObj):
         resolution_w = _decoder.process_decoded(defaults["resolution_w"])
         resolution_x = _decoder.process_decoded(defaults["resolution_x"])
         resolution_y = _decoder.process_decoded(defaults["resolution_y"])
+        polarization = _decoder.process_decoded(defaults["polarization"])
+        polarizing_efficiency = _decoder.process_decoded(defaults["polarizing_efficiency"])
         return cls(
             wavelength=wavelength,
             resolution_u=resolution_u,
@@ -265,6 +295,8 @@ class Instrument1DCWParameters(BaseObj):
             resolution_w=resolution_w,
             resolution_x=resolution_x,
             resolution_y=resolution_y,
+            polarization=polarization,
+            polarizing_efficiency=polarizing_efficiency,
         )
 
 
@@ -382,6 +414,22 @@ class Instrument1DTOFParameters(BaseObj):
             "value": 0.00224,
             "fixed": True,
         },
+        "polarization": {
+            "@module": "easyCore.Objects.Base",
+            "@class": "Parameter",
+            "@version": "0.0.1",
+            "name": "polarization",
+            "value": 0.0,
+            "fixed": True,
+        },
+        "polarizing_efficiency": {
+            "@module": "easyCore.Objects.Base",
+            "@class": "Parameter",
+            "@version": "0.0.1",
+            "name": "polarizing_efficiency",
+            "value": 100,
+            "fixed": True,
+        },
     }
 
     def __init__(
@@ -399,6 +447,8 @@ class Instrument1DTOFParameters(BaseObj):
         alpha1: Parameter,
         beta0: Parameter,
         beta1: Parameter,
+        polarization: Parameter,
+        polarizing_efficiency: Parameter,
         interface=None,
     ):
         super().__init__(
@@ -416,6 +466,8 @@ class Instrument1DTOFParameters(BaseObj):
             alpha1=alpha1,
             beta0=beta0,
             beta1=beta1,
+            polarization=polarization,
+            polarizing_efficiency=polarizing_efficiency,
         )
         self.name = self._name
         self.interface = interface
@@ -436,6 +488,8 @@ class Instrument1DTOFParameters(BaseObj):
         alpha1: float = _defaults["alpha1"]["value"],
         beta0: float = _defaults["beta0"]["value"],
         beta1: float = _defaults["beta1"]["value"],
+        polarization: float = _defaults["polarization"]["value"],
+        polarizing_efficiency: float = _defaults["polarizing_efficiency"]["value"],
     ):
         defaults = deepcopy(cls._defaults)
         defaults["ttheta_bank"]["value"] = ttheta_bank
@@ -464,6 +518,10 @@ class Instrument1DTOFParameters(BaseObj):
         beta0 = _decoder.process_decoded(defaults["beta0"])
         defaults["beta1"]["value"] = beta1
         beta1 = _decoder.process_decoded(defaults["beta1"])
+        defaults["polarization"]["value"] = polarization
+        polarization = _decoder.process_decoded(defaults["polarization"])
+        defaults["polarizing_efficiency"]["value"] = polarizing_efficiency
+        polarizing_efficiency = _decoder.process_decoded(defaults["polarizing_efficiency"])
 
         return cls(
             ttheta_bank=ttheta_bank,
@@ -479,6 +537,8 @@ class Instrument1DTOFParameters(BaseObj):
             alpha1=alpha1,
             beta0=beta0,
             beta1=beta1,
+            polarization=polarization,
+            polarizing_efficiency=polarizing_efficiency,
         )
 
     @classmethod
@@ -497,6 +557,9 @@ class Instrument1DTOFParameters(BaseObj):
         alpha1 = _decoder.process_decoded(defaults["alpha1"])
         beta0 = _decoder.process_decoded(defaults["beta0"])
         beta1 = _decoder.process_decoded(defaults["beta1"])
+        polarization = _decoder.process_decoded(defaults["polarization"])
+        polarizing_efficiency = _decoder.process_decoded(defaults["polarizing_efficiency"])
+
         return cls(
             ttheta_bank=ttheta_bank,
             dtt1=dtt1,
@@ -511,6 +574,8 @@ class Instrument1DTOFParameters(BaseObj):
             alpha1=alpha1,
             beta0=beta0,
             beta1=beta1,
+            polarization=polarization,
+            polarizing_efficiency=polarizing_efficiency,
         )
 
 

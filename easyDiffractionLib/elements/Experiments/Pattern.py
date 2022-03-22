@@ -4,7 +4,7 @@ __version__ = '0.0.1'
 from easyCore.Objects.Base import BaseObj, Parameter
 from copy import deepcopy
 from easyCore.Utils.json import MontyDecoder
-from easyDiffractionLib.Elements.Backgrounds.Background import BackgroundContainer
+from easyDiffractionLib.elements.Backgrounds.Background import BackgroundContainer
 _decoder = MontyDecoder()
 
 
@@ -29,7 +29,7 @@ class Pattern1D(BaseObj):
             'fixed': True
         },
         'backgrounds': {
-            '@module': 'easyDiffractionLib.Elements.Backgrounds.Background',
+            '@module': 'easyDiffractionLib.elements.Backgrounds.Background',
             '@class': 'BackgroundContainer',
             '@version': '0.0.1',
             'data': [],

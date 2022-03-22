@@ -2,7 +2,7 @@ __author__ = 'github.com/wardsimon'
 __version__ = '0.0.1'
 
 import os, tempfile
-from typing import Union
+from typing import Union, ClassVar
 
 from easyCore.Objects.Base import BaseObj
 from easyCore.Utils.UndoRedo import property_stack_deco
@@ -11,9 +11,15 @@ from easyDiffractionLib import Phase, Phases
 from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters, Instrument1DTOFParameters
 from easyDiffractionLib.interface import InterfaceFactory
 from easyDiffractionLib.Profiles.P1D import Powder1DParameters as Pattern1D
+from easyDiffractionLib.Profiles.P1D import PolPowder1DParameters as Pattern1D_Pol
 
 
 class Sample(BaseObj):
+
+    _phases: ClassVar[Phases]
+    _parameters: ClassVar
+    _pattern: ClassVar
+
     def __init__(self, phases: Union[Phase, Phases] = None,
                  parameters=None, pattern=None, calculator=None,
                  interface=None, name: str = 'easySample'):
@@ -109,6 +115,8 @@ class Sample(BaseObj):
     @property
     def exp_type_str(self) -> str:
         type_str = 'Npowder1D'
+        if isinstance(self._pattern, Pattern1D_Pol):
+            type_str = 'Pol' + type_str
         if isinstance(self._parameters, Instrument1DCWParameters):
             type_str += 'CW'
         elif isinstance(self._parameters, Instrument1DTOFParameters):

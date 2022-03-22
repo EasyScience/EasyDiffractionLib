@@ -10,7 +10,8 @@ exp_type_strings = {
     'radiation_options':   ['N', 'X'],
     'exp_type_options':    ['CW', 'TOF'],
     'dimensional_options': ['1D', '2D'],
-    'sample_options':      ['powder', 'single']
+    'sample_options':      ['powder', 'single'],
+    'polarization_options': ['unp', 'pol']
 }
 
 
@@ -23,12 +24,14 @@ class InterfaceTemplate(MSONable, metaclass=ABCMeta):
     _link = {}
 
     @staticmethod
-    def features(radiation='N', exp_type='CW', sample_type='powder', dimensionality='1D', test_str=None, FEATURES=None):
+    def features(radiation='N', exp_type='CW', sample_type='powder', dimensionality='1D', polarization='unp',
+                 test_str=None, FEATURES=None):
 
         if FEATURES is None:
             raise AttributeError
         feature_dict = InterfaceTemplate._feature_generator(radiation=radiation, exp_type=exp_type,
-                                                            sample_type=sample_type, dimensionality=dimensionality)
+                                                            sample_type=sample_type, dimensionality=dimensionality,
+                                                            polarization=polarization)
 
         for key in FEATURES.keys():
             feature_dict[key] = FEATURES[key]
@@ -38,7 +41,7 @@ class InterfaceTemplate(MSONable, metaclass=ABCMeta):
         return feature_dict[test_str]
 
     @staticmethod
-    def _feature_generator(radiation='N', exp_type='CW', sample_type='powder', dimensionality='1D'):
+    def _feature_generator(radiation='N', exp_type='CW', sample_type='powder', dimensionality='1D', polarization='unp'):
         radiation_options = exp_type_strings['radiation_options']
         if radiation not in radiation_options:
             raise AttributeError(f'"{radiation}" is not supported, only: {radiation_options}')
@@ -51,11 +54,15 @@ class InterfaceTemplate(MSONable, metaclass=ABCMeta):
         sample_options = exp_type_strings['sample_options']
         if sample_type not in sample_options:
             raise AttributeError(f'"{sample_type}" is not supported, only: {sample_options}')
+        polarization_options = exp_type_strings['polarization_options']
+        if polarization not in polarization_options:
+            raise AttributeError(f'"{polarization}" is not supported, only: {polarization_options}')
 
         features = [''.join(item) for item in np.array(np.meshgrid(radiation_options,
                                                                    sample_options,
                                                                    dimensional_options,
-                                                                   exp_type_options)).T.reshape(-1,
+                                                                   exp_type_options,
+                                                                   polarization_options)).T.reshape(-1,
                                                                                                 len(exp_type_strings)).tolist()]
         feature_dict = dict.fromkeys(features, False)
         return feature_dict

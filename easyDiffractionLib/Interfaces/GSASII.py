@@ -4,7 +4,7 @@ __version__ = "0.0.2"
 from easyCore import borg, np
 from ..Interfaces.interfaceTemplate import InterfaceTemplate
 from easyCore.Objects.Inferface import ItemContainer
-from ..Calculators.GSASII import GSASII as GSAS_calc
+from ..calculators.GSASII import GSASII as GSAS_calc
 from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters, Powder1DParameters
 from easyDiffractionLib import Lattice, SpaceGroup, Site, Phases
 

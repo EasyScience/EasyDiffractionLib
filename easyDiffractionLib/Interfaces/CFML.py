@@ -10,7 +10,7 @@ from easyDiffractionLib import Lattice, SpaceGroup, Site, Phases, Phase
 
 from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
 from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters, Powder1DParameters
-from easyDiffractionLib.Calculators.CFML import CFML as CFML_calc
+from easyDiffractionLib.calculators.CFML import CFML as CFML_calc
 
 
 class CFML(InterfaceTemplate):

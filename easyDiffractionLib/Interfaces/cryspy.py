@@ -8,10 +8,12 @@ from easyDiffractionLib import Lattice, SpaceGroup, Site, Phase, Phases
 from easyDiffractionLib.Profiles.P1D import (
     Instrument1DCWParameters,
     Instrument1DTOFParameters,
+    Instrument1DCWPolParameters,
     Powder1DParameters,
 )
+from easyDiffractionLib.components.polarization import PolarizedBeam
 from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
-from easyDiffractionLib.Calculators.cryspy import Cryspy as Cryspy_calc
+from easyDiffractionLib.calculators.cryspy import Cryspy as Cryspy_calc
 
 
 class Cryspy(InterfaceTemplate):
@@ -51,12 +53,16 @@ class Cryspy(InterfaceTemplate):
         "resolution_y": "y",
         "wavelength": "wavelength",
     }
+    _polarization_link = {
+        "polarization": "polarization",
+        "efficiency": "efficiency",
+    }
 
     _instrument_tof_link = {k: k for k in Instrument1DTOFParameters._defaults.keys()}
 
     name = "CrysPy"
 
-    feature_available = {"Npowder1DCW": True, "Npowder1DTOF": True}
+    feature_available = {"Npowder1DCWunp": True, "Npowder1DTOFunp": True, "Npowder1DCWpol": True}
 
     def __init__(self):
         self.calculator = Cryspy_calc()
@@ -67,6 +73,7 @@ class Cryspy(InterfaceTemplate):
         exp_type="CW",
         sample_type="powder",
         dimensionality="1D",
+        polarization='unp',
         test_str=None,
     ):
         return InterfaceTemplate.features(
@@ -74,6 +81,7 @@ class Cryspy(InterfaceTemplate):
             exp_type=exp_type,
             sample_type=sample_type,
             dimensionality=dimensionality,
+            polarization=polarization,
             test_str=test_str,
             FEATURES=Cryspy.feature_available,
         )
@@ -147,6 +155,16 @@ class Cryspy(InterfaceTemplate):
         elif issubclass(t_, Powder1DParameters):
             # These parameters do not link directly to cryspy objects.
             self.calculator.pattern = model
+        elif issubclass(t_, PolarizedBeam):
+            p_key = self.calculator.createPolarization()
+            r_list.append(
+                ItemContainer(
+                    p_key,
+                    self._polarization_link,
+                    self.calculator.genericReturn,
+                    self.calculator.genericUpdate,
+                )
+            )
         elif issubclass(t_, Lattice):
             l_key = self.calculator.createCell(model_key)
             keys = self._crystal_link.copy()
@@ -211,12 +229,17 @@ class Cryspy(InterfaceTemplate):
             #     #TODO Check to see if parameters and pattern should be initialized here.
             self.__createModel(model_key, "powder1DTOF")
         elif t_.__name__ == "Sample":  # This is legacy mode. Boo
-            if issubclass(type(model.parameters), Instrument1DCWParameters):
-                self.__createModel(model_key, "powder1DCW")
-            elif issubclass(type(model.parameters), Instrument1DTOFParameters):
-                self.__createModel(model_key, "powder1DTOF")
+            tt_ = type(model.parameters)
+            base = 'powder1D'
+            if issubclass(tt_, Instrument1DCWParameters):
+                base += "CW"
+            elif issubclass(tt_, Instrument1DTOFParameters):
+                base += "TOF"
+            elif issubclass(tt_, Instrument1DCWPolParameters):
+                base += "pol"
             else:
                 raise AttributeError("Unknown EXP type")
+            self.__createModel(model_key, base)
         else:
             if self._borg.debug:
                 print(f"I'm a: {type(model)}")

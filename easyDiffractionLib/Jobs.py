@@ -79,6 +79,12 @@ class Powder1DCW(JobBase_1D):
         self._x_axis_name = 'tth'
 
 
+class PolPowder1DCW(JobBase_1D):
+    def __init__(self, name: str, datastore: xr.Dataset, phases=None, parameters=None, pattern=None):
+        from easyDiffractionLib.Profiles.P1D import Polarized1DClasses
+        super(PolPowder1DCW, self).__init__(name, Polarized1DClasses, datastore, phases, parameters, pattern)
+        self._x_axis_name = 'tth'
+
 class Powder1DTOF(JobBase_1D):
 
     def __init__(self, name: str, datastore: xr.Dataset, phases=None, parameters=None, pattern=None):

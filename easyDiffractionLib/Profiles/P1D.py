@@ -1,14 +1,15 @@
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
+from copy import deepcopy
 from typing import TypeVar, List
 
 from easyCore.Datasets.xarray import xr
 from easyCore.Objects.Base import BaseObj, Parameter
-from copy import deepcopy
 from easyCore.Utils.json import MontyDecoder
-from easyDiffractionLib.Elements.Backgrounds.Background import BackgroundContainer
 from easyDiffractionLib.Profiles.common import JobSetup, _DataClassBase
+from easyDiffractionLib.components.polarization import PolarizedBeam
+from easyDiffractionLib.elements.Backgrounds.Background import BackgroundContainer
 
 _decoder = MontyDecoder()
 T = TypeVar("T")
@@ -71,60 +72,69 @@ class Powder1DPolExp(Powder1DExp):
 class Powder1DParameters(BaseObj):
     _name = "1DPowderProfile"
     _defaults = {
-        "zero_shift": {
-            "@module": "easyCore.Objects.Base",
-            "@class": "Parameter",
+        "zero_shift":  {
+            "@module":  "easyCore.Objects.Base",
+            "@class":   "Parameter",
             "@version": "0.0.1",
-            "name": "zero_shift",
-            "units": "degree",
-            "value": 0.0,
-            "fixed": True,
+            "name":     "zero_shift",
+            "units":    "degree",
+            "value":    0.0,
+            "fixed":    True,
         },
-        "scale": {
-            "@module": "easyCore.Objects.Base",
-            "@class": "Parameter",
+        "scale":       {
+            "@module":  "easyCore.Objects.Base",
+            "@class":   "Parameter",
             "@version": "0.0.1",
-            "name": "scale",
-            "value": 1,
-            "fixed": True,
-            "enabled": False,
+            "name":     "scale",
+            "value":    1,
+            "fixed":    True,
+            "enabled":  False,
         },
         "backgrounds": {
-            "@module": "easyDiffractionLib.Elements.Backgrounds.Background",
-            "@class": "BackgroundContainer",
+            "@module":  "easyDiffractionLib.elements.Backgrounds.Background",
+            "@class":   "BackgroundContainer",
             "@version": "0.0.1",
-            "data": [],
+            "data":     [],
         },
     }
 
     def __init__(
-        self,
-        zero_shift: Parameter,
-        scale: Parameter,
-        backgrounds: BackgroundContainer,
-        interface=None,
+            self,
+            zero_shift: Parameter,
+            scale: Parameter,
+            backgrounds: BackgroundContainer,
+            interface=None,
+            **kwargs
     ):
         super().__init__(
             self.__class__.__name__,
             zero_shift=zero_shift,
             scale=scale,
             backgrounds=backgrounds,
+            **kwargs
         )
         self.name = self._name
         self.interface = interface
 
-    @classmethod
-    def from_pars(
-        cls,
-        zero_shift: float = _defaults["zero_shift"]["value"],
-        scale: float = _defaults["scale"]["value"],
-    ):
-        defaults = deepcopy(cls._defaults)
+    @staticmethod
+    def _generate_defaults(zero_shift: float = _defaults["zero_shift"]["value"],
+                           scale: float = _defaults["scale"]["value"]
+                           ):
+        defaults = deepcopy(Powder1DParameters._defaults)
         defaults["zero_shift"]["value"] = zero_shift
         zero_shift = _decoder.process_decoded(defaults["zero_shift"])
         defaults["scale"]["value"] = scale
         scale = _decoder.process_decoded(defaults["scale"])
         backgrounds = BackgroundContainer()
+        return zero_shift, scale, backgrounds
+
+    @classmethod
+    def from_pars(
+            cls,
+            zero_shift: float = _defaults["zero_shift"]["value"],
+            scale: float = _defaults["scale"]["value"],
+    ):
+        zero_shift, scale, backgrounds = cls._generate_defaults(zero_shift, scale)
         return cls(zero_shift=zero_shift, scale=scale, backgrounds=backgrounds)
 
     @classmethod
@@ -138,90 +148,100 @@ class Powder1DParameters(BaseObj):
 
 
 class PolPowder1DParameters(Powder1DParameters):
-    pass
+    _defaults = {
+        'beam': {
+            'efficiency':   1.0,
+            'polarization': 0.0,
+        },
+    }
+
+    def __init__(self,
+                 zero_shift: Parameter,
+                 scale: Parameter,
+                 backgrounds: BackgroundContainer,
+                 beam: PolarizedBeam,
+                 interface=None,
+                 **kwargs
+                 ):
+        super().__init__(
+            zero_shift=zero_shift,
+            scale=scale,
+            backgrounds=backgrounds,
+            interface=interface,
+            beam=beam,
+            **kwargs
+        )
+
+    @classmethod
+    def from_pars(cls, zero_shift: float, scale: float, polarization: float, efficiency: float, interface=None):
+        zero_shift, scale, backgrounds = cls._generate_defaults(zero_shift, scale)
+        beam = PolarizedBeam.from_pars(polarization, efficiency)
+        return cls(zero_shift=zero_shift, scale=scale, backgrounds=backgrounds, beam=beam, interface=interface)
 
 
 class Instrument1DCWParameters(BaseObj):
     _name = "InstrumentalParameters"
     _defaults = {
-        "wavelength": {
-            "@module": "easyCore.Objects.Base",
-            "@class": "Parameter",
+        "wavelength":            {
+            "@module":  "easyCore.Objects.Base",
+            "@class":   "Parameter",
             "@version": "0.0.1",
-            "name": "wavelength",
-            "units": "angstrom",
-            "value": 1.54056,
-            "fixed": True,
+            "name":     "wavelength",
+            "units":    "angstrom",
+            "value":    1.54056,
+            "fixed":    True,
         },
-        "resolution_u": {
-            "@module": "easyCore.Objects.Base",
-            "@class": "Parameter",
+        "resolution_u":          {
+            "@module":  "easyCore.Objects.Base",
+            "@class":   "Parameter",
             "@version": "0.0.1",
-            "name": "resolution_u",
-            "value": 0.0002,
-            "fixed": True,
+            "name":     "resolution_u",
+            "value":    0.0002,
+            "fixed":    True,
         },
-        "resolution_v": {
-            "@module": "easyCore.Objects.Base",
-            "@class": "Parameter",
+        "resolution_v":          {
+            "@module":  "easyCore.Objects.Base",
+            "@class":   "Parameter",
             "@version": "0.0.1",
-            "name": "resolution_v",
-            "value": -0.0002,
-            "fixed": True,
+            "name":     "resolution_v",
+            "value":    -0.0002,
+            "fixed":    True,
         },
-        "resolution_w": {
-            "@module": "easyCore.Objects.Base",
-            "@class": "Parameter",
+        "resolution_w":          {
+            "@module":  "easyCore.Objects.Base",
+            "@class":   "Parameter",
             "@version": "0.0.1",
-            "name": "resolution_w",
-            "value": 0.012,
-            "fixed": True,
+            "name":     "resolution_w",
+            "value":    0.012,
+            "fixed":    True,
         },
-        "resolution_x": {
-            "@module": "easyCore.Objects.Base",
-            "@class": "Parameter",
+        "resolution_x":          {
+            "@module":  "easyCore.Objects.Base",
+            "@class":   "Parameter",
             "@version": "0.0.1",
-            "name": "resolution_x",
-            "value": 0.0,
-            "fixed": True,
+            "name":     "resolution_x",
+            "value":    0.0,
+            "fixed":    True,
         },
-        "resolution_y": {
-            "@module": "easyCore.Objects.Base",
-            "@class": "Parameter",
+        "resolution_y":          {
+            "@module":  "easyCore.Objects.Base",
+            "@class":   "Parameter",
             "@version": "0.0.1",
-            "name": "resolution_y",
-            "value": 0.0,
-            "fixed": True,
-        },
-        "polarization": {
-            "@module": "easyCore.Objects.Base",
-            "@class": "Parameter",
-            "@version": "0.0.1",
-            "name": "polarization",
-            "value": 0.0,
-            "fixed": True,
-        },
-        "polarizing_efficiency": {
-            "@module": "easyCore.Objects.Base",
-            "@class": "Parameter",
-            "@version": "0.0.1",
-            "name": "polarizing_efficiency",
-            "value": 100,
-            "fixed": True,
+            "name":     "resolution_y",
+            "value":    0.0,
+            "fixed":    True,
         },
     }
 
     def __init__(
-        self,
-        wavelength: Parameter,
-        resolution_u: Parameter,
-        resolution_v: Parameter,
-        resolution_w: Parameter,
-        resolution_x: Parameter,
-        resolution_y: Parameter,
-        polarization: Parameter,
-        polarizing_efficiency: Parameter,
-        interface=None,
+            self,
+            wavelength: Parameter,
+            resolution_u: Parameter,
+            resolution_v: Parameter,
+            resolution_w: Parameter,
+            resolution_x: Parameter,
+            resolution_y: Parameter,
+            interface=None,
     ):
         super().__init__(
             self.__class__.__name__,
@@ -230,24 +250,20 @@ class Instrument1DCWParameters(BaseObj):
             resolution_v=resolution_v,
             resolution_w=resolution_w,
             resolution_x=resolution_x,
-            resolution_y=resolution_y,
-            polarization=polarization,
-            polarizing_efficiency=polarizing_efficiency,
+            resolution_y=resolution_y
         )
         self.name = self._name
         self.interface = interface
 
     @classmethod
     def from_pars(
-        cls,
-        wavelength: float = _defaults["wavelength"]["value"],
-        resolution_u: float = _defaults["resolution_u"]["value"],
-        resolution_v: float = _defaults["resolution_v"]["value"],
-        resolution_w: float = _defaults["resolution_w"]["value"],
-        resolution_x: float = _defaults["resolution_x"]["value"],
-        resolution_y: float = _defaults["resolution_y"]["value"],
-        polarization: float = _defaults["polarization"]["value"],
-        polarizing_efficiency: float = _defaults["polarizing_efficiency"]["value"],
+            cls,
+            wavelength: float = _defaults["wavelength"]["value"],
+            resolution_u: float = _defaults["resolution_u"]["value"],
+            resolution_v: float = _defaults["resolution_v"]["value"],
+            resolution_w: float = _defaults["resolution_w"]["value"],
+            resolution_x: float = _defaults["resolution_x"]["value"],
+            resolution_y: float = _defaults["resolution_y"]["value"]
     ):
         defaults = deepcopy(cls._defaults)
         defaults["wavelength"]["value"] = wavelength
@@ -262,10 +278,6 @@ class Instrument1DCWParameters(BaseObj):
         resolution_x = _decoder.process_decoded(defaults["resolution_x"])
         defaults["resolution_y"]["value"] = resolution_y
         resolution_y = _decoder.process_decoded(defaults["resolution_y"])
-        defaults["polarization"]["value"] = polarization
-        polarization = _decoder.process_decoded(defaults["polarization"])
-        defaults["polarizing_efficiency"]["value"] = polarizing_efficiency
-        polarizing_efficiency = _decoder.process_decoded(defaults["polarizing_efficiency"])
         return cls(
             wavelength=wavelength,
             resolution_u=resolution_u,
@@ -273,8 +285,6 @@ class Instrument1DCWParameters(BaseObj):
             resolution_w=resolution_w,
             resolution_x=resolution_x,
             resolution_y=resolution_y,
-            polarization=polarization,
-            polarizing_efficiency=polarizing_efficiency,
         )
 
     @classmethod
@@ -286,8 +296,6 @@ class Instrument1DCWParameters(BaseObj):
         resolution_w = _decoder.process_decoded(defaults["resolution_w"])
         resolution_x = _decoder.process_decoded(defaults["resolution_x"])
         resolution_y = _decoder.process_decoded(defaults["resolution_y"])
-        polarization = _decoder.process_decoded(defaults["polarization"])
-        polarizing_efficiency = _decoder.process_decoded(defaults["polarizing_efficiency"])
         return cls(
             wavelength=wavelength,
             resolution_u=resolution_u,
@@ -295,161 +303,159 @@ class Instrument1DCWParameters(BaseObj):
             resolution_w=resolution_w,
             resolution_x=resolution_x,
             resolution_y=resolution_y,
-            polarization=polarization,
-            polarizing_efficiency=polarizing_efficiency,
         )
 
 
 class Instrument1DTOFParameters(BaseObj):
     _name = "InstrumentalParameters"
     _defaults = {
-        "ttheta_bank": {
-            "@module": "easyCore.Objects.Base",
-            "@class": "Parameter",
+        "ttheta_bank":           {
+            "@module":  "easyCore.Objects.Base",
+            "@class":   "Parameter",
             "@version": "0.0.1",
-            "name": "ttheta_bank",
-            "units": "deg",
-            "value": 145.00,
-            "fixed": True,
+            "name":     "ttheta_bank",
+            "units":    "deg",
+            "value":    145.00,
+            "fixed":    True,
         },
-        "dtt1": {
-            "@module": "easyCore.Objects.Base",
-            "@class": "Parameter",
+        "dtt1":                  {
+            "@module":  "easyCore.Objects.Base",
+            "@class":   "Parameter",
             "@version": "0.0.1",
-            "name": "dtt1",
-            "units": "deg",
-            "value": 6167.24700,
-            "fixed": True,
+            "name":     "dtt1",
+            "units":    "deg",
+            "value":    6167.24700,
+            "fixed":    True,
         },
-        "dtt2": {
-            "@module": "easyCore.Objects.Base",
-            "@class": "Parameter",
+        "dtt2":                  {
+            "@module":  "easyCore.Objects.Base",
+            "@class":   "Parameter",
             "@version": "0.0.1",
-            "name": "dtt2",
-            "units": "deg",
-            "value": -2.28000,
-            "fixed": True,
+            "name":     "dtt2",
+            "units":    "deg",
+            "value":    -2.28000,
+            "fixed":    True,
         },
-        "sigma0": {
-            "@module": "easyCore.Objects.Base",
-            "@class": "Parameter",
+        "sigma0":                {
+            "@module":  "easyCore.Objects.Base",
+            "@class":   "Parameter",
             "@version": "0.0.1",
-            "name": "sigma0",
-            "value": 0.409,
-            "fixed": True,
+            "name":     "sigma0",
+            "value":    0.409,
+            "fixed":    True,
         },
-        "sigma1": {
-            "@module": "easyCore.Objects.Base",
-            "@class": "Parameter",
+        "sigma1":                {
+            "@module":  "easyCore.Objects.Base",
+            "@class":   "Parameter",
             "@version": "0.0.1",
-            "name": "sigma1",
-            "value": 8.118,
-            "fixed": True,
+            "name":     "sigma1",
+            "value":    8.118,
+            "fixed":    True,
         },
-        "sigma2": {
-            "@module": "easyCore.Objects.Base",
-            "@class": "Parameter",
+        "sigma2":                {
+            "@module":  "easyCore.Objects.Base",
+            "@class":   "Parameter",
             "@version": "0.0.1",
-            "name": "sigma2",
-            "value": 0.0,
-            "fixed": True,
-            "enabled": False,
+            "name":     "sigma2",
+            "value":    0.0,
+            "fixed":    True,
+            "enabled":  False,
         },
-        "gamma0": {
-            "@module": "easyCore.Objects.Base",
-            "@class": "Parameter",
+        "gamma0":                {
+            "@module":  "easyCore.Objects.Base",
+            "@class":   "Parameter",
             "@version": "0.0.1",
-            "name": "gamma0",
-            "value": 0.0,
-            "fixed": True,
-            "enabled": False,
+            "name":     "gamma0",
+            "value":    0.0,
+            "fixed":    True,
+            "enabled":  False,
         },
-        "gamma1": {
-            "@module": "easyCore.Objects.Base",
-            "@class": "Parameter",
+        "gamma1":                {
+            "@module":  "easyCore.Objects.Base",
+            "@class":   "Parameter",
             "@version": "0.0.1",
-            "name": "gamma1",
-            "value": 0.0,
-            "fixed": True,
-            "enabled": False,
+            "name":     "gamma1",
+            "value":    0.0,
+            "fixed":    True,
+            "enabled":  False,
         },
-        "gamma2": {
-            "@module": "easyCore.Objects.Base",
-            "@class": "Parameter",
+        "gamma2":                {
+            "@module":  "easyCore.Objects.Base",
+            "@class":   "Parameter",
             "@version": "0.0.1",
-            "name": "gamma2",
-            "value": 0.0,
-            "fixed": True,
-            "enabled": False,
+            "name":     "gamma2",
+            "value":    0.0,
+            "fixed":    True,
+            "enabled":  False,
         },
-        "alpha0": {
-            "@module": "easyCore.Objects.Base",
-            "@class": "Parameter",
+        "alpha0":                {
+            "@module":  "easyCore.Objects.Base",
+            "@class":   "Parameter",
             "@version": "0.0.1",
-            "name": "alpha0",
-            "value": 0.0,
-            "fixed": True,
+            "name":     "alpha0",
+            "value":    0.0,
+            "fixed":    True,
         },
-        "alpha1": {
-            "@module": "easyCore.Objects.Base",
-            "@class": "Parameter",
+        "alpha1":                {
+            "@module":  "easyCore.Objects.Base",
+            "@class":   "Parameter",
             "@version": "0.0.1",
-            "name": "alpha1",
-            "value": 0.29710,
-            "fixed": True,
+            "name":     "alpha1",
+            "value":    0.29710,
+            "fixed":    True,
         },
-        "beta0": {
-            "@module": "easyCore.Objects.Base",
-            "@class": "Parameter",
+        "beta0":                 {
+            "@module":  "easyCore.Objects.Base",
+            "@class":   "Parameter",
             "@version": "0.0.1",
-            "name": "beta0",
-            "value": 0.04182,
-            "fixed": True,
+            "name":     "beta0",
+            "value":    0.04182,
+            "fixed":    True,
         },
-        "beta1": {
-            "@module": "easyCore.Objects.Base",
-            "@class": "Parameter",
+        "beta1":                 {
+            "@module":  "easyCore.Objects.Base",
+            "@class":   "Parameter",
             "@version": "0.0.1",
-            "name": "beta1",
-            "value": 0.00224,
-            "fixed": True,
+            "name":     "beta1",
+            "value":    0.00224,
+            "fixed":    True,
         },
-        "polarization": {
-            "@module": "easyCore.Objects.Base",
-            "@class": "Parameter",
+        "polarization":          {
+            "@module":  "easyCore.Objects.Base",
+            "@class":   "Parameter",
             "@version": "0.0.1",
-            "name": "polarization",
-            "value": 0.0,
-            "fixed": True,
+            "name":     "polarization",
+            "value":    0.0,
+            "fixed":    True,
         },
         "polarizing_efficiency": {
-            "@module": "easyCore.Objects.Base",
-            "@class": "Parameter",
+            "@module":  "easyCore.Objects.Base",
+            "@class":   "Parameter",
             "@version": "0.0.1",
-            "name": "polarizing_efficiency",
-            "value": 100,
-            "fixed": True,
+            "name":     "polarizing_efficiency",
+            "value":    100,
+            "fixed":    True,
         },
     }
 
     def __init__(
-        self,
-        ttheta_bank: Parameter,
-        dtt1: Parameter,
-        dtt2: Parameter,
-        sigma0: Parameter,
-        sigma1: Parameter,
-        sigma2: Parameter,
-        gamma0: Parameter,
-        gamma1: Parameter,
-        gamma2: Parameter,
-        alpha0: Parameter,
-        alpha1: Parameter,
-        beta0: Parameter,
-        beta1: Parameter,
-        polarization: Parameter,
-        polarizing_efficiency: Parameter,
-        interface=None,
+            self,
+            ttheta_bank: Parameter,
+            dtt1: Parameter,
+            dtt2: Parameter,
+            sigma0: Parameter,
+            sigma1: Parameter,
+            sigma2: Parameter,
+            gamma0: Parameter,
+            gamma1: Parameter,
+            gamma2: Parameter,
+            alpha0: Parameter,
+            alpha1: Parameter,
+            beta0: Parameter,
+            beta1: Parameter,
+            polarization: Parameter,
+            polarizing_efficiency: Parameter,
+            interface=None,
     ):
         super().__init__(
             self.__class__.__name__,
@@ -474,22 +480,22 @@ class Instrument1DTOFParameters(BaseObj):
 
     @classmethod
     def from_pars(
-        cls,
-        ttheta_bank: float = _defaults["ttheta_bank"]["value"],
-        dtt1: float = _defaults["dtt1"]["value"],
-        dtt2: float = _defaults["dtt2"]["value"],
-        sigma0: float = _defaults["sigma0"]["value"],
-        sigma1: float = _defaults["sigma1"]["value"],
-        sigma2: float = _defaults["sigma2"]["value"],
-        gamma0: float = _defaults["gamma0"]["value"],
-        gamma1: float = _defaults["gamma1"]["value"],
-        gamma2: float = _defaults["gamma2"]["value"],
-        alpha0: float = _defaults["alpha0"]["value"],
-        alpha1: float = _defaults["alpha1"]["value"],
-        beta0: float = _defaults["beta0"]["value"],
-        beta1: float = _defaults["beta1"]["value"],
-        polarization: float = _defaults["polarization"]["value"],
-        polarizing_efficiency: float = _defaults["polarizing_efficiency"]["value"],
+            cls,
+            ttheta_bank: float = _defaults["ttheta_bank"]["value"],
+            dtt1: float = _defaults["dtt1"]["value"],
+            dtt2: float = _defaults["dtt2"]["value"],
+            sigma0: float = _defaults["sigma0"]["value"],
+            sigma1: float = _defaults["sigma1"]["value"],
+            sigma2: float = _defaults["sigma2"]["value"],
+            gamma0: float = _defaults["gamma0"]["value"],
+            gamma1: float = _defaults["gamma1"]["value"],
+            gamma2: float = _defaults["gamma2"]["value"],
+            alpha0: float = _defaults["alpha0"]["value"],
+            alpha1: float = _defaults["alpha1"]["value"],
+            beta0: float = _defaults["beta0"]["value"],
+            beta1: float = _defaults["beta1"]["value"],
+            polarization: float = _defaults["polarization"]["value"],
+            polarizing_efficiency: float = _defaults["polarizing_efficiency"]["value"],
     ):
         defaults = deepcopy(cls._defaults)
         defaults["ttheta_bank"]["value"] = ttheta_bank
@@ -589,4 +595,12 @@ Unpolarized1DClasses = JobSetup(
 
 Unpolarized1DTOFClasses = JobSetup(
     [Powder1DSim, Powder1DExp], Powder1DParameters, Instrument1DTOFParameters
+)
+
+Polarized1DClasses = JobSetup(
+    [Powder1DSim, Powder1DExp], PolPowder1DParameters, Instrument1DCWParameters
+)
+
+Polarized1DTOFClasses = JobSetup(
+    [Powder1DSim, Powder1DExp], PolPowder1DParameters, Instrument1DTOFParameters
 )

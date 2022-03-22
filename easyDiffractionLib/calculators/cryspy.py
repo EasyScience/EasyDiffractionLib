@@ -231,6 +231,11 @@ class Cryspy:
         value = getattr(item, value_key)
         return value
 
+    def createPolarization(self, key='pol_beam'):
+        item = cryspy.DiffrnRadiation()
+        self.storage[key] = item
+        return key
+
     def createResolution(self, cls_type=None):
 
         if cls_type is None:

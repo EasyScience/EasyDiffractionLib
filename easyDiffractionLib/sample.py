@@ -10,6 +10,7 @@ from easyCore.Utils.UndoRedo import property_stack_deco
 from easyDiffractionLib import Phase, Phases
 from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters, Instrument1DTOFParameters
 from easyDiffractionLib.interface import InterfaceFactory
+from easyDiffractionLib.Interfaces.types import Powder, Neutron
 from easyDiffractionLib.Profiles.P1D import Powder1DParameters as Pattern1D
 from easyDiffractionLib.Profiles.P1D import PolPowder1DParameters as Pattern1D_Pol
 
@@ -39,6 +40,24 @@ class Sample(BaseObj):
 
         super(Sample, self).__init__(name, _phases=phases, _parameters=parameters, _pattern=pattern)
 
+        # Set bases for easy identification
+        self._update_bases(Powder)
+        self._update_bases(Neutron)
+
+        if isinstance(pattern, Pattern1D):
+            from easyDiffractionLib.Interfaces.types import UPol
+            self._update_bases(UPol)
+        elif isinstance(pattern, Pattern1D_Pol):
+            from easyDiffractionLib.Interfaces.types import Pol
+            self._update_bases(Pol)
+
+        if isinstance(parameters, Instrument1DCWParameters):
+            from easyDiffractionLib.Interfaces.types import CW
+            self._update_bases(CW)
+        elif isinstance(parameters, Instrument1DTOFParameters):
+            from easyDiffractionLib.Interfaces.types import TOF
+            self._update_bases(TOF)
+
         self.filename = os.path.join(tempfile.gettempdir(), 'easydiffraction_temp.cif')
         print(f"Temp CIF: {self.filename}")
         self.output_index = None
@@ -48,6 +67,18 @@ class Sample(BaseObj):
             self.interface = interface
         else:
             self.interface = InterfaceFactory()
+
+    @property
+    def interface(self):
+        return self._interface
+
+    @interface.setter
+    def interface(self, value):
+        self._interface = value
+        # This is required so that the type is correctly passes.
+        if value is not None:
+            self.interface.generate_bindings(self)
+            self.generate_bindings()
 
     def get_phase(self, phase_index):
         return self._phases[phase_index]
@@ -114,13 +145,34 @@ class Sample(BaseObj):
 
     @property
     def exp_type_str(self) -> str:
-        type_str = 'Npowder1D'
-        if isinstance(self._pattern, Pattern1D_Pol):
-            type_str = 'Pol' + type_str
-        if isinstance(self._parameters, Instrument1DCWParameters):
+        from easyDiffractionLib.Interfaces.types import Neutron, XRay, Powder, SingleCrystal, Pol, UPol, CW, TOF
+        type_str = ''
+        if issubclass(self, Neutron):
+            type_str += 'N'
+        elif issubclass(self, XRay):
+            type_str += 'X'
+
+        if issubclass(self, Powder):
+            type_str += 'powder'
+        elif issubclass(self, SingleCrystal):
+            type_str += 'single'
+
+        type_str += '1D'
+
+        if issubclass(self, CW):
             type_str += 'CW'
-        elif isinstance(self._parameters, Instrument1DTOFParameters):
+        elif issubclass(self, TOF):
             type_str += 'TOF'
-        else:
-            raise TypeError(f'Experiment is of unknown type: {type(self._parameters)}')
+
+        if issubclass(self, Pol):
+            type_str += 'pol'
+        elif issubclass(self, UPol):
+            type_str += 'upol'
+
         return type_str
+
+    def _update_bases(self, new_base):
+        base_class = getattr(self, '__old_class__', self.__class__)
+        old_bases = set(self.__class__.__bases__)
+        old_bases = old_bases - {base_class, *new_base.__mro__}  # This should fix multiple inheritance
+        self.__class__.__bases__ = (new_base, *old_bases, base_class)

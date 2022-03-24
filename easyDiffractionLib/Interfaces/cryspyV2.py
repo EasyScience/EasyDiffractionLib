@@ -15,6 +15,8 @@ from easyDiffractionLib.components.polarization import PolarizedBeam
 from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
 from easyDiffractionLib.calculators.cryspy import Cryspy as Cryspy_calc
 
+from easyDiffractionLib.Interfaces.types import Powder as Powder_type, SingleCrystal as SingleCrystal_type, \
+    CW as CW_type, TOF as TOF_type, Pol as Pol_type, UPol as UPol_type, Neutron as Neutron_type
 
 class MetaCryspy:
 
@@ -36,7 +38,7 @@ class MetaCryspy:
         return borg.map.convert_id_to_key(obj)
 
 
-class CryspyBase(MetaCryspy, metaclass=ABCMeta):
+class CryspyBase(MetaCryspy, Neutron_type, metaclass=ABCMeta):
     """
     A simple example interface using Cryspy
     """
@@ -199,7 +201,7 @@ class CryspyBase(MetaCryspy, metaclass=ABCMeta):
         return self.calculator.get_total_y_for_phases()
 
 
-class Powder:
+class Powder(Powder_type):
     def create(self, model, master=False):
         if not master:
             return MetaCryspy.create(self, model)
@@ -212,11 +214,11 @@ class Powder:
         return r_list
 
 
-class SingleCrystal:
+class SingleCrystal(SingleCrystal_type):
     pass
 
 
-class CW:
+class CW(CW_type):
     _instrument_link = {
         "resolution_u": "u",
         "resolution_v": "v",
@@ -258,7 +260,7 @@ class CW:
         return r_list
 
 
-class TOF:
+class TOF(TOF_type):
     _instrument_tof_link = {k: k for k in Instrument1DTOFParameters._defaults.keys()}
 
     def create(self, model, master=False):
@@ -309,7 +311,7 @@ class TOF:
         return r_list
 
 
-class POL:
+class POL(Pol_type):
     _polarization_link = {
         "polarization": "polarization",
         "efficiency": "efficiency",
@@ -334,7 +336,15 @@ class POL:
         return r_list
 
 
-class CryspyCW(CryspyBase, CW, Powder):
+class UPol(UPol_type):
+    def model(self, model, master=False):
+        if not master:
+            return MetaCryspy.model(self, model)
+        r_list = []
+        return r_list
+
+
+class CryspyCW(CryspyBase, CW, Powder, UPol):
     def create(self, model, master=False):
         if not master:
             return MetaCryspy.create(self, model)
@@ -347,7 +357,7 @@ class CryspyCW(CryspyBase, CW, Powder):
         return r_list
 
 
-class CryspyTOF(CryspyBase, TOF, Powder):
+class CryspyTOF(CryspyBase, TOF, Powder, UPol):
     def create(self, model, master=False):
         if not master:
             return MetaCryspy.create(self, model)
@@ -360,7 +370,7 @@ class CryspyTOF(CryspyBase, TOF, Powder):
         return r_list
 
 
-class CryspyCWPol(CryspyCW, POL, CW, Powder):
+class CryspyCWPol(CryspyBase, CW, Powder, POL):
     def create(self, model, master=False):
         if not master:
             return MetaCryspy.create(self, model)
@@ -373,7 +383,7 @@ class CryspyCWPol(CryspyCW, POL, CW, Powder):
         return r_list
 
 
-class CryspyTOFPol(CryspyTOF, POL, TOF, Powder):
+class CryspyTOFPol(CryspyBase, TOF, Powder, POL):
     def create(self, model, master=False):
         if not master:
             return MetaCryspy.create(self, model)
@@ -416,9 +426,12 @@ class CryspyV2(InterfaceTemplate):
         )
 
     def create(self, model):
-        cls = CryspyBase._subsets[0]
-        self._internal = cls(calculator=self.calculator)
-        return self._internal.create(model)
+        cls = self._get_constructor(CryspyBase._subsets, model)
+        if cls is not None and cls is not self._internal.__class__:
+            self._internal = cls(calculator=self.calculator)
+        return self._internal.create(model, master=True)
+
+
 
     def link_atom(self, model_name: str, atom):
         if self._internal is not None:

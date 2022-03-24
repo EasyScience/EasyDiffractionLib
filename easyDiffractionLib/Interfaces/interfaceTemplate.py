@@ -143,3 +143,14 @@ class InterfaceTemplate(MSONable, metaclass=ABCMeta):
     @abstractmethod
     def get_total_y_for_phases(self) -> list:
         pass
+
+    @staticmethod
+    def _get_constructor(known_components, sample_object):
+        all_bases = set([base for base in sample_object.__class__.__bases__ if hasattr(base, '_internal_type')])
+        if len(all_bases) == 0:
+            return None
+        all_components = [set([base for base in component.__mro__ if hasattr(base, '_internal_type')]) for component in known_components]
+        for idx, component in enumerate(all_components):
+            test = all_bases-component
+            if len(test) == 0:
+                return known_components[idx]

@@ -147,26 +147,27 @@ class Sample(BaseObj):
     def exp_type_str(self) -> str:
         from easyDiffractionLib.Interfaces.types import Neutron, XRay, Powder, SingleCrystal, Pol, UPol, CW, TOF
         type_str = ''
-        if issubclass(type(self), Neutron):
+        self_type = type(self)
+        if issubclass(self_type, Neutron):
             type_str += 'N'
-        elif issubclass(type(self), XRay):
+        elif issubclass(self_type, XRay):
             type_str += 'X'
 
-        if issubclass(type(self), Powder):
+        if issubclass(self_type, Powder):
             type_str += 'powder'
-        elif issubclass(type(self), SingleCrystal):
+        elif issubclass(self_type, SingleCrystal):
             type_str += 'single'
 
         type_str += '1D'
 
-        if issubclass(type(self), CW):
+        if issubclass(self_type, CW):
             type_str += 'CW'
-        elif issubclass(type(self), TOF):
+        elif issubclass(self_type, TOF):
             type_str += 'TOF'
 
-        if issubclass(type(self), Pol):
+        if issubclass(self_type, Pol):
             type_str += 'pol'
-        elif issubclass(type(self), UPol):
+        elif issubclass(self_type, UPol):
             type_str += 'unp'
 
         return type_str

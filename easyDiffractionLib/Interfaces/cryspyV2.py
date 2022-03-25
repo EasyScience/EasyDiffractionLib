@@ -18,6 +18,7 @@ from easyDiffractionLib.calculators.cryspy import Cryspy as Cryspy_calc
 from easyDiffractionLib.Interfaces.types import Powder as Powder_type, SingleCrystal as SingleCrystal_type, \
     CW as CW_type, TOF as TOF_type, Pol as Pol_type, UPol as UPol_type, Neutron as Neutron_type
 
+
 class MetaCryspy:
 
     _borg = borg
@@ -339,7 +340,7 @@ class POL(Pol_type):
 class UPol(UPol_type):
     def model(self, model, master=False):
         if not master:
-            return MetaCryspy.model(self, model)
+            return MetaCryspy.create(self, model)
         r_list = []
         return r_list
 
@@ -430,8 +431,6 @@ class CryspyV2(InterfaceTemplate):
         if cls is not None and cls is not self._internal.__class__:
             self._internal = cls(calculator=self.calculator)
         return self._internal.create(model, master=True)
-
-
 
     def link_atom(self, model_name: str, atom):
         if self._internal is not None:

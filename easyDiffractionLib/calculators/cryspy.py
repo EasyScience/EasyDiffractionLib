@@ -1,8 +1,8 @@
 __author__ = "github.com/wardsimon"
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
 import time
-from typing import Tuple
+from typing import Tuple, Optional, Any, Callable, List
 
 import cryspy
 import warnings
@@ -50,22 +50,20 @@ class Cryspy:
         self.polarized = False
 
     @property
-    def cif_str(self):
+    def cif_str(self) -> str:
         key = list(self.current_crystal.keys())[0]
         return self.storage[key].to_cif()
 
     @cif_str.setter
-    def cif_str(self, value):
+    def cif_str(self, value: str):
         self.createCrystal_fromCifStr(value)
 
-    def createModel(self, model_id, model_type="powder1DCW"):
+    def createModel(self, model_id: str, model_type: str = "powder1DCW"):
         model = {"background": cryspy.PdBackgroundL(), "phase": self.phases}
-
         self.polarized = False
         if model_type.endswith("Pol"):
             self.polarized = True
             model_type = model_type.split("Pol")[0]
-
         cls = cryspy.Pd
         if model_type == "powder1DTOF":
             cls = cryspy.TOF
@@ -73,16 +71,16 @@ class Cryspy:
         self.type = model_type
         self.model = cls(**model)
 
-    def createPhase(self, crystal_name, key="phase"):
+    def createPhase(self, crystal_name: str, key: str ="phase") -> str:
         phase = cryspy.Phase(label=crystal_name, scale=1, igsize=0)
         self.storage[key] = phase
         return key
 
-    def assignPhase(self, model_name, phase_name):
+    def assignPhase(self, model_name: str, phase_name: str):
         phase = self.storage[phase_name]
         self.phases.items.append(phase)
 
-    def removePhase(self, model_name, phase_name):
+    def removePhase(self, model_name: str, phase_name: str):
         phase = self.storage[phase_name]
         del self.storage[phase_name]
         del self.storage[phase_name.split("_")[0] + "_scale"]
@@ -91,13 +89,13 @@ class Cryspy:
         if name in self.additional_data["phases"].keys():
             del self.additional_data["phases"][name]
 
-    def setPhaseScale(self, model_name, scale=1):
+    def setPhaseScale(self, model_name: str, scale: float = 1.):
         self.storage[str(model_name) + "_scale"] = scale
 
-    def getPhaseScale(self, model_name, *args, **kwargs):
-        return self.storage.get(str(model_name) + "_scale", 1)
+    def getPhaseScale(self, model_name: str, *args, **kwargs) -> float:
+        return self.storage.get(str(model_name) + "_scale", 1.)
 
-    def createCrystal_fromCifStr(self, cif_str: str):
+    def createCrystal_fromCifStr(self, cif_str: str) -> str:
         crystal = cryspy.Crystal.from_cif(cif_str)
         key = crystal.data_name
         self.storage[key] = crystal
@@ -105,7 +103,7 @@ class Cryspy:
         self.createPhase(key)
         return key
 
-    def createEmptyCrystal(self, crystal_name, key=None):
+    def createEmptyCrystal(self, crystal_name: str, key: Optional[str] = None) -> str:
         crystal = cryspy.Crystal(crystal_name, atom_site=cryspy.AtomSiteL())
         if key is None:
             key = crystal_name
@@ -114,17 +112,17 @@ class Cryspy:
         self.current_crystal[key] = crystal_name
         return key
 
-    def createCell(self, key="cell"):
+    def createCell(self, key: str = "cell") -> str:
         cell = cryspy.Cell()
         self.storage[key] = cell
         return key
 
-    def assignCell_toCrystal(self, cell_name, crystal_name):
+    def assignCell_toCrystal(self, cell_name: str, crystal_name: str):
         crystal = self.storage[crystal_name]
         cell = self.storage[cell_name]
         crystal.cell = cell
 
-    def createSpaceGroup(self, key="spacegroup", name_hm_alt="P 1"):
+    def createSpaceGroup(self, key: str = "spacegroup", name_hm_alt: str = "P 1") -> str:
         sg_split = name_hm_alt.split(":")
         opts = {"name_hm_alt": sg_split[0]}
         # if len(sg_split) > 1:
@@ -137,7 +135,7 @@ class Cryspy:
         self.storage[key] = sg
         return key
 
-    def getSpaceGroupSymbol(self, spacegroup_name: str, *args, **kwargs):
+    def getSpaceGroupSymbol(self, spacegroup_name: str, *args, **kwargs) -> str:
         sg = self.storage[spacegroup_name]
         hm_alt = getattr(sg, "name_hm_alt")
         setting = getattr(sg, "it_coordinate_system_code")
@@ -145,7 +143,7 @@ class Cryspy:
             hm_alt += ":" + setting
         return hm_alt
 
-    def assignSpaceGroup_toCrystal(self, spacegroup_name, crystal_name):
+    def assignSpaceGroup_toCrystal(self, spacegroup_name: str, crystal_name: str):
         if not crystal_name:
             return
         crystal = self.storage[crystal_name]
@@ -155,7 +153,7 @@ class Cryspy:
             atom.define_space_group_wyckoff(space_group.space_group_wyckoff)
             atom.form_object()
 
-    def updateSpacegroup(self, sg_key, **kwargs):
+    def updateSpacegroup(self, sg_key: str, **kwargs):
         # This has to be done as sg.name_hm_alt = 'blah' doesn't work :-(
         keys = list(self.current_crystal.keys())
         previous_key = ""
@@ -168,12 +166,12 @@ class Cryspy:
         sg_key = self.createSpaceGroup(key=sg_key, **kwargs)
         self.assignSpaceGroup_toCrystal(sg_key, previous_key)
 
-    def createAtom(self, atom_name, **kwargs):
+    def createAtom(self, atom_name: str, **kwargs) -> str:
         atom = cryspy.AtomSite(**kwargs)
         self.storage[atom_name] = atom
         return atom_name
 
-    def assignAtom_toCrystal(self, atom_label, crystal_name):
+    def assignAtom_toCrystal(self, atom_label: str, crystal_name: str):
         crystal = self.storage[crystal_name]
         atom = self.storage[atom_label]
         wyckoff = crystal.space_group.space_group_wyckoff
@@ -184,7 +182,7 @@ class Cryspy:
                 continue
             item.items.append(atom)
 
-    def removeAtom_fromCrystal(self, atom_label, crystal_name):
+    def removeAtom_fromCrystal(self, atom_label: str, crystal_name: str):
         crystal = self.storage[crystal_name]
         atom = self.storage[atom_label]
         for item in crystal.items:
@@ -193,12 +191,12 @@ class Cryspy:
             idx = item.items.index(atom)
             del item.items[idx]
 
-    def createBackground(self, background_obj):
+    def createBackground(self, background_obj) -> str:
         key = "background"
         self.storage[key] = background_obj
         return key
 
-    def createSetup(self, key="setup", cls_type=None):
+    def createSetup(self, key: str = "setup", cls_type: Optional[str] =None):
 
         if cls_type is None:
             cls_type = self.type
@@ -221,22 +219,22 @@ class Cryspy:
             setattr(self.model, "setup", setup)
         return key
 
-    def genericUpdate(self, item_key, **kwargs):
+    def genericUpdate(self, item_key: str, **kwargs):
         item = self.storage[item_key]
         for key, value in kwargs.items():
             setattr(item, key, kwargs[key])
 
-    def genericReturn(self, item_key, value_key):
+    def genericReturn(self, item_key: str, value_key: str) -> Any:
         item = self.storage[item_key]
         value = getattr(item, value_key)
         return value
 
-    def createPolarization(self, key='pol_beam'):
+    def createPolarization(self, key: str = 'pol_beam') -> str:
         item = cryspy.DiffrnRadiation()
         self.storage[key] = item
         return key
 
-    def createResolution(self, cls_type=None):
+    def createResolution(self, cls_type: Optional[str] = None) -> str:
 
         if cls_type is None:
             cls_type = self.type
@@ -255,12 +253,12 @@ class Cryspy:
             setattr(self.model, key, resolution)
         return key
 
-    def updateResolution(self, key, **kwargs):
+    def updateResolution(self, key: str, **kwargs):
         resolution = self.storage[key]
         for r_key in kwargs.keys():
             setattr(resolution, r_key, kwargs[key])
 
-    def powder_1d_calculate(self, x_array: np.ndarray) -> np.ndarray:
+    def powder_1d_calculate(self, x_array: np.ndarray, pol_fn: Optional[Callable] = None) -> np.ndarray:
         """
         For a given x calculate the corresponding y
         :param x_array: array of data points to be calculated
@@ -285,9 +283,9 @@ class Cryspy:
         if borg.debug:
             print("CALLING FROM Cryspy\n----------------------")
 
-        return self.do_calc_setup(scale, this_x_array)
+        return self.do_calc_setup(scale, this_x_array, pol_fn)
 
-    def powder_1d_tof_calculate(self, x_array: np.ndarray) -> np.ndarray:
+    def powder_1d_tof_calculate(self, x_array: np.ndarray, pol_fn) -> np.ndarray:
         """
         For a given x calculate the corresponding y
         :param x_array: array of data points to be calculated
@@ -322,9 +320,9 @@ class Cryspy:
 
         if borg.debug:
             print("CALLING FROM Cryspy\n----------------------")
-        return self.do_calc_setup(scale, this_x_array)
+        return self.do_calc_setup(scale, this_x_array, pol_fn)
 
-    def do_calc_setup(self, scale, this_x_array):
+    def do_calc_setup(self, scale: float, this_x_array: np.ndarray, pol_fn: Callable) -> np.ndarray:
         if len(self.pattern.backgrounds) == 0:
             bg = np.zeros_like(this_x_array)
         else:
@@ -374,7 +372,7 @@ class Cryspy:
         if self.polarized:
             # TODO *REPLACE PLACEHOLDER FN*
             dependents, additional_data = self.polarized_update(
-                lambda up, down: up + down,
+                pol_fn,
                 crystals,
                 profiles,
                 peak_dat,
@@ -409,7 +407,7 @@ class Cryspy:
         )
         # return returned_deps
 
-    def calculate(self, x_array: np.ndarray) -> np.ndarray:
+    def calculate(self, x_array: np.ndarray, pol_fn: Optional[Callable] = None) -> np.ndarray:
         """
         For a given x calculate the corresponding y
         :param x_array: array of data points to be calculated
@@ -419,19 +417,22 @@ class Cryspy:
         """
         res = np.zeros_like(x_array)
         self.additional_data["ivar"] = res
+        args = [x_array]
+        if pol_fn is not None:
+            args.append(pol_fn)
         if self.type == "powder1DCW":
-            return self.powder_1d_calculate(x_array)
+            return self.powder_1d_calculate(*args)
         if self.type == "powder1DTOF":
-            return self.powder_1d_tof_calculate(x_array)
+            return self.powder_1d_tof_calculate(*args)
         return res
 
-    def get_phase_components(self, phase_name):
+    def get_phase_components(self, phase_name: str) -> List[np.ndarray]:
         data = None
         if phase_name in self.additional_data["phase_names"]:
             data = self.additional_data["phases"][phase_name].copy()
         return data
 
-    def get_calculated_y_for_phase(self, phase_idx: int) -> list:
+    def get_calculated_y_for_phase(self, phase_idx: int) -> List[np.ndarray]:
         """
         For a given phase index, return the calculated y
         :param phase_idx: index of the phase
@@ -453,7 +454,7 @@ class Cryspy:
         )
         return x_values, y_values
 
-    def get_hkl(self, idx: int = 0, phase_name=None, encoded_name=False) -> dict:
+    def get_hkl(self, idx: int = 0, phase_name: Optional[str] = None, encoded_name: bool = False) -> dict:
         # Collate and return
         if phase_name is not None:
             if encoded_name:
@@ -520,7 +521,7 @@ class Cryspy:
             )
         return dependent, output
 
-    def get_phase_components(self, phase_name):
+    def get_phase_components(self, phase_name: str) -> Optional[dict]:
         data = None
         if phase_name in self.additional_data["phase_names"]:
             data = self.additional_data[phase_name].copy()

@@ -37,7 +37,8 @@ class Pattern1D(BaseObj):
     }
 
     def __init__(self,
-                 zero_shift: Parameter, scale: Parameter,
+                 zero_shift: Parameter,
+                 scale: Parameter,
                  backgrounds: BackgroundContainer,
                  interface=None):
         super().__init__(self.__class__.__name__,

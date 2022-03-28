@@ -22,7 +22,7 @@ class Sample(BaseObj):
     _pattern: ClassVar
 
     def __init__(self, phases: Union[Phase, Phases] = None,
-                 parameters=None, pattern=None, calculator=None,
+                 parameters=None, pattern=None,
                  interface=None, name: str = 'easySample'):
         if isinstance(phases, Phase):
             phases = Phases('Phases', phases)
@@ -61,9 +61,7 @@ class Sample(BaseObj):
         self.filename = os.path.join(tempfile.gettempdir(), 'easydiffraction_temp.cif')
         print(f"Temp CIF: {self.filename}")
         self.output_index = None
-        if calculator is not None:
-            self.interface = calculator
-        elif interface is not None:
+        if interface is not None:
             self.interface = interface
         else:
             self.interface = InterfaceFactory()

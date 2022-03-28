@@ -383,6 +383,15 @@ class CryspyCWPol(CryspyBase, CW, Powder, POL):
             self._createModel(model_key, base)
         return r_list
 
+    def fit_func(self, x_array: np.ndarray, method = lambda up, down: up+down) -> np.ndarray:
+        """
+        Function to perform a fit
+        :param x_array: points to be calculated at
+        :type x_array: np.ndarray
+        :return: calculated points
+        :rtype: np.ndarray
+        """
+        return self.calculator.calculate(x_array, method)
 
 class CryspyTOFPol(CryspyBase, TOF, Powder, POL):
     def create(self, model, master=False):

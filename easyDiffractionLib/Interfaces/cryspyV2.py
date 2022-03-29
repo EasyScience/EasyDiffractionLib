@@ -4,6 +4,7 @@ __version__ = "0.0.2"
 from abc import ABCMeta
 from easyCore import borg, np
 from easyCore.Objects.Inferface import ItemContainer
+from easyCrystallography.Components.Site import Site as Site_base
 from easyDiffractionLib import Lattice, SpaceGroup, Site, Phase, Phases
 from easyDiffractionLib.Profiles.P1D import (
     Instrument1DCWParameters,
@@ -15,8 +16,15 @@ from easyDiffractionLib.components.polarization import PolarizedBeam
 from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
 from easyDiffractionLib.calculators.cryspy import Cryspy as Cryspy_calc
 
-from easyDiffractionLib.Interfaces.types import Powder as Powder_type, SingleCrystal as SingleCrystal_type, \
-    CW as CW_type, TOF as TOF_type, Pol as Pol_type, UPol as UPol_type, Neutron as Neutron_type
+from easyDiffractionLib.Interfaces.types import (
+    Powder as Powder_type,
+    SingleCrystal as SingleCrystal_type,
+    CW as CW_type,
+    TOF as TOF_type,
+    Pol as Pol_type,
+    UPol as UPol_type,
+    Neutron as Neutron_type,
+)
 
 
 class MetaCryspy:
@@ -25,7 +33,7 @@ class MetaCryspy:
 
     def create(self, model):
         cls = self.__class__
-        cls_s = cls.__mro__[0:cls.__mro__.index(MetaCryspy)]
+        cls_s = cls.__mro__[0 : cls.__mro__.index(MetaCryspy)]
         r_list = []
         for cls_ in cls_s:
             if hasattr(cls_, "create"):
@@ -116,7 +124,7 @@ class CryspyBase(MetaCryspy, Neutron_type, metaclass=ABCMeta):
                     self.calculator.updateSpacegroup,
                 )
             )
-        elif issubclass(t_, Site):
+        elif issubclass(t_, Site) or issubclass(t_, Site_base):
             a_key = self.calculator.createAtom(model_key)
             keys = self._atom_link.copy()
             r_list.append(
@@ -185,7 +193,9 @@ class CryspyBase(MetaCryspy, Neutron_type, metaclass=ABCMeta):
         """
         return self.calculator.calculate(x_array)
 
-    def get_hkl(self, x_array: np.ndarray = None, idx=None, phase_name=None, encoded_name=False) -> dict:
+    def get_hkl(
+        self, x_array: np.ndarray = None, idx=None, phase_name=None, encoded_name=False
+    ) -> dict:
         return self.calculator.get_hkl(idx, phase_name, encoded_name)
 
     def get_phase_components(self, phase_name):
@@ -226,7 +236,7 @@ class CW(CW_type):
         "resolution_w": "w",
         "resolution_x": "x",
         "resolution_y": "y",
-        "wavelength":   "wavelength",
+        "wavelength": "wavelength",
     }
 
     def create(self, model, master=False):
@@ -352,8 +362,12 @@ class CryspyCW(CryspyBase, CW, Powder, UPol):
         r_list = []
         t_ = type(model)
         model_key = self._identify(model)
-        base = 'powder1DCW'
-        if t_.__name__ == "Sample" or t_.__name__ in ["Powder1DCW", "powder1DCW", "Npowder1DCW"]:
+        base = "powder1DCW"
+        if t_.__name__ == "Sample" or t_.__name__ in [
+            "Powder1DCW",
+            "powder1DCW",
+            "Npowder1DCW",
+        ]:
             self._createModel(model_key, base)
         return r_list
 
@@ -365,8 +379,12 @@ class CryspyTOF(CryspyBase, TOF, Powder, UPol):
         r_list = []
         t_ = type(model)
         model_key = self._identify(model)
-        base = 'powder1DTOF'
-        if t_.__name__ == "Sample" or t_.__name__ in ["Powder1DTOF", "powder1DTOF", "Npowder1DTOF"]:
+        base = "powder1DTOF"
+        if t_.__name__ == "Sample" or t_.__name__ in [
+            "Powder1DTOF",
+            "powder1DTOF",
+            "Npowder1DTOF",
+        ]:
             self._createModel(model_key, base)
         return r_list
 
@@ -378,12 +396,18 @@ class CryspyCWPol(CryspyBase, CW, Powder, POL):
         r_list = []
         t_ = type(model)
         model_key = self._identify(model)
-        base = 'powder1DCWpol'
-        if t_.__name__ == "Sample" or t_.__name__ in ["Powder1DCWpol", "powder1DCWpol", "Npowder1DCWpol"]:
+        base = "powder1DCWpol"
+        if t_.__name__ == "Sample" or t_.__name__ in [
+            "Powder1DCWpol",
+            "powder1DCWpol",
+            "Npowder1DCWpol",
+        ]:
             self._createModel(model_key, base)
         return r_list
 
-    def fit_func(self, x_array: np.ndarray, method = lambda up, down: up+down) -> np.ndarray:
+    def fit_func(
+        self, x_array: np.ndarray, method=lambda up, down: up + down
+    ) -> np.ndarray:
         """
         Function to perform a fit
         :param x_array: points to be calculated at
@@ -393,6 +417,7 @@ class CryspyCWPol(CryspyBase, CW, Powder, POL):
         """
         return self.calculator.calculate(x_array, method)
 
+
 class CryspyTOFPol(CryspyBase, TOF, Powder, POL):
     def create(self, model, master=False):
         if not master:
@@ -400,8 +425,12 @@ class CryspyTOFPol(CryspyBase, TOF, Powder, POL):
         r_list = []
         t_ = type(model)
         model_key = self._identify(model)
-        base = 'powder1DTOFpol'
-        if t_.__name__ == "Sample" or t_.__name__ in ["Powder1DTOFpol", "powder1DTOFpol", "Npowder1DTOFpol"]:
+        base = "powder1DTOFpol"
+        if t_.__name__ == "Sample" or t_.__name__ in [
+            "Powder1DTOFpol",
+            "powder1DTOFpol",
+            "Npowder1DTOFpol",
+        ]:
             self._createModel(model_key, base)
         return r_list
 
@@ -410,7 +439,11 @@ class CryspyV2(InterfaceTemplate):
 
     name = "CrysPyV2"
 
-    feature_available = {"Npowder1DCWunp": True, "Npowder1DTOFunp": True, "Npowder1DCWpol": True}
+    feature_available = {
+        "Npowder1DCWunp": True,
+        "Npowder1DTOFunp": True,
+        "Npowder1DCWpol": True,
+    }
 
     def __init__(self):
         self.calculator = Cryspy_calc()
@@ -422,7 +455,7 @@ class CryspyV2(InterfaceTemplate):
         exp_type="CW",
         sample_type="powder",
         dimensionality="1D",
-        polarization='unp',
+        polarization="unp",
         test_str=None,
     ):
         return InterfaceTemplate.features(

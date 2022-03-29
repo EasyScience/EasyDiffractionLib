@@ -4,6 +4,7 @@ __version__ = "0.0.2"
 
 from easyCore import borg, np
 from easyCore.Objects.Inferface import ItemContainer
+from easyCrystallography.Components.Site import Site as Site_base
 from easyDiffractionLib import Lattice, SpaceGroup, Site, Phase, Phases
 from easyDiffractionLib.Profiles.P1D import (
     Instrument1DCWParameters,
@@ -62,7 +63,11 @@ class Cryspy(InterfaceTemplate):
 
     name = "CrysPy"
 
-    feature_available = {"Npowder1DCWunp": True, "Npowder1DTOFunp": True, "Npowder1DCWpol": True}
+    feature_available = {
+        "Npowder1DCWunp": True,
+        "Npowder1DTOFunp": True,
+        "Npowder1DCWpol": True,
+    }
 
     def __init__(self):
         self.calculator = Cryspy_calc()
@@ -73,7 +78,7 @@ class Cryspy(InterfaceTemplate):
         exp_type="CW",
         sample_type="powder",
         dimensionality="1D",
-        polarization='unp',
+        polarization="unp",
         test_str=None,
     ):
         return InterfaceTemplate.features(
@@ -187,7 +192,7 @@ class Cryspy(InterfaceTemplate):
                     self.calculator.updateSpacegroup,
                 )
             )
-        elif issubclass(t_, Site):
+        elif issubclass(t_, Site) or issubclass(t_, Site_base):
             a_key = self.calculator.createAtom(model_key)
             keys = self._atom_link.copy()
             r_list.append(
@@ -230,7 +235,7 @@ class Cryspy(InterfaceTemplate):
             self.__createModel(model_key, "powder1DTOF")
         elif t_.__name__ == "Sample":  # This is legacy mode. Boo
             tt_ = type(model.parameters)
-            base = 'powder1D'
+            base = "powder1D"
             if issubclass(tt_, Instrument1DCWParameters):
                 base += "CW"
             elif issubclass(tt_, Instrument1DTOFParameters):
@@ -274,7 +279,9 @@ class Cryspy(InterfaceTemplate):
         """
         return self.calculator.calculate(x_array)
 
-    def get_hkl(self, x_array: np.ndarray = None, idx=None, phase_name=None, encoded_name=False) -> dict:
+    def get_hkl(
+        self, x_array: np.ndarray = None, idx=None, phase_name=None, encoded_name=False
+    ) -> dict:
         return self.calculator.get_hkl(idx, phase_name, encoded_name)
 
     def get_phase_components(self, phase_name):

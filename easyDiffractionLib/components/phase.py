@@ -1,13 +1,29 @@
-__author__ = 'github.com/wardsimon'
-__version__ = '0.0.1'
+__author__ = "github.com/wardsimon"
+__version__ = "0.0.1"
 
 from easyCrystallography.Structures.Phase import Phase as ecPhase, Phases as ecPhases
 from .site import Site, Atoms
 
-class Phase(ecPhase):
 
+class Phase(ecPhase):
     _SITE_CLASS = Site
-    _ATOM_CLASS = Atoms
+    _ATOMS_CLASS = Atoms
+
+    def __init__(
+        self,
+        name,
+        spacegroup=None,
+        cell=None,
+        atoms=None,
+        scale=None,
+        interface=None,
+        enforce_sym=True,
+        **kwargs
+    ):
+        super(Phase, self).__init__(
+            name, spacegroup, cell, atoms, scale, enforce_sym=enforce_sym
+        )
+        self.interface = interface
 
     def add_atom(self, *args, **kwargs):
         super(Phase, self).add_atom(*args, **kwargs)
@@ -22,7 +38,6 @@ class Phase(ecPhase):
 
 
 class Phases(ecPhases):
-
     _SITE_CLASS = Site
     _ATOM_CLASS = Atoms
     _PHASE_CLASS = Phase

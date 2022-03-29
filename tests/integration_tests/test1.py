@@ -1,5 +1,5 @@
-__author__ = 'github.com/wardsimon'
-__version__ = '0.0.1'
+__author__ = "github.com/wardsimon"
+__version__ = "0.0.1"
 
 from easyCore import np
 
@@ -13,11 +13,11 @@ import matplotlib.pyplot as plt
 
 calculator = Calculator()
 
-phase = Phase.from_cif_file('tests/SrTiO3.cif')
+phase = Phase.from_cif_file("tests/test_resources/cifs/SrTiO3.cif")
 
-sample = Sample(phases=phase,
-                parameters=Instrument1DCWParameters.default(),
-                calculator=calculator)
+sample = Sample(
+    phases=phase, parameters=Instrument1DCWParameters.default(), interface=calculator
+)
 
 # sample.phase.cell.length_a = 5
 sample.parameters.wavelength = 1.25
@@ -38,11 +38,9 @@ y_data = calculator.fit_func(x_data)
 plt.plot(x_data, y_data, label="CrysPY")
 plt.show()
 
-calculator.switch('CrysFML')
+calculator.switch("CrysFML")
 params = sample.parameters
-sample = Sample(phases=phase,
-                parameters=params,
-                interface=calculator)
+sample = Sample(phases=phase, parameters=params, interface=calculator)
 
 sample.phases[0].cell.length_a = 9.0
 sample.parameters.wavelength = 1.25

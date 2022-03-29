@@ -3,8 +3,8 @@
 #  © 2022 Contributors to the easyCore project <https://github.com/easyScience/easyCrystallography>
 #
 
-__author__ = 'github.com/wardsimon'
-__version__ = '0.2.0'
+__author__ = "github.com/wardsimon"
+__version__ = "0.2.0"
 
 from typing import List, Union, ClassVar, TypeVar, Optional
 
@@ -13,17 +13,18 @@ from easyCore.Objects.Base import Descriptor, Parameter, BaseObj
 from easyCore.Objects.Groups import BaseCollection
 from easyCore.Utils.io.star import StarLoop
 
-from easyCrystallography.Components.Site import Site as ecSite, \
-    PeriodicSite as ecPeriodicSite, \
-    Atoms as ecAtoms, \
-    PeriodicAtoms as ecPeriodicAtoms
+from easyCrystallography.Components.Site import (
+    Site as ecSite,
+    PeriodicSite as ecPeriodicSite,
+    Atoms as ecAtoms,
+    PeriodicAtoms as ecPeriodicAtoms,
+)
 from easyCrystallography.Components.Lattice import PeriodicLattice
 from easyCrystallography.Components.Specie import Specie
 from easyCrystallography.Components.AtomicDisplacement import AtomicDisplacement
 
 
 class Site(ecSite):
-
     def __init__(
         self,
         label: Optional[Union[str, Descriptor]] = None,
@@ -55,7 +56,6 @@ class Site(ecSite):
 
 
 class PeriodicSite(ecPeriodicSite):
-
     @classmethod
     def from_site(cls, lattice: PeriodicLattice, site: Site):
         kwargs = ecPeriodicSite._from_site_kwargs(lattice, site)

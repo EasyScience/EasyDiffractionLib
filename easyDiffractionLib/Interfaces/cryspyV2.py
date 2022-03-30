@@ -430,6 +430,7 @@ class POL(Pol_type):
 
         r_list = []
         t_ = type(model)
+        model_key = self._identify(model)
 
         # Link the Polarization parameters to the calculator.
         if issubclass(t_, PolarizedBeam):
@@ -438,6 +439,20 @@ class POL(Pol_type):
                 ItemContainer(
                     p_key,
                     self._polarization_link,
+                    self.calculator.genericReturn,
+                    self.calculator.genericUpdate,
+                )
+            )
+        # We have already created a Site in cryspy, now add the MSP
+        elif issubclass(t_, Site) or issubclass(t_, Site_base):
+            msp_type = model.msp.msp_type.raw_value
+            pars = model.get_parameters()
+            msp_pars = {par.name: par.raw_value for par in pars}
+            ref_name = self.calculator.attachMSP(model_key, msp_type, msp_pars)
+            r_list.append(
+                ItemContainer(
+                    ref_name,
+                    {par.name: par.name for par in pars},
                     self.calculator.genericReturn,
                     self.calculator.genericUpdate,
                 )

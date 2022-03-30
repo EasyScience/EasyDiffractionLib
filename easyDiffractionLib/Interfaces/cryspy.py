@@ -203,6 +203,19 @@ class Cryspy(InterfaceTemplate):
                     lambda x, **y: self.calculator.genericUpdate(a_key, **y),
                 )
             )
+            if hasattr(model, "msp"):
+                msp_type = model.msp.msp_type.raw_value
+                pars = model.get_parameters()
+                msp_pars = {par.name: par.raw_value for par in pars}
+                ref_name = self.calculator.attachMSP(model_key, msp_type, msp_pars)
+                r_list.append(
+                    ItemContainer(
+                        ref_name,
+                        {par.name: par.name for par in pars},
+                        self.calculator.genericReturn,
+                        self.calculator.genericUpdate,
+                    )
+                )
         elif issubclass(t_, Phase):
             ident = str(model_key) + "_phase"
             self.calculator.createPhase(ident)

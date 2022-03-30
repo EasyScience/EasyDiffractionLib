@@ -2,7 +2,7 @@ __author__ = "github.com/wardsimon"
 __version__ = "0.0.3"
 
 import time
-from typing import Tuple, Optional, Any, Callable, List
+from typing import Tuple, Optional, Any, Callable, List, Dict
 
 import cryspy
 import warnings
@@ -71,7 +71,7 @@ class Cryspy:
         self.type = model_type
         self.model = cls(**model)
 
-    def createPhase(self, crystal_name: str, key: str ="phase") -> str:
+    def createPhase(self, crystal_name: str, key: str = "phase") -> str:
         phase = cryspy.Phase(label=crystal_name, scale=1, igsize=0)
         self.storage[key] = phase
         return key
@@ -89,11 +89,11 @@ class Cryspy:
         if name in self.additional_data["phases"].keys():
             del self.additional_data["phases"][name]
 
-    def setPhaseScale(self, model_name: str, scale: float = 1.):
+    def setPhaseScale(self, model_name: str, scale: float = 1.0):
         self.storage[str(model_name) + "_scale"] = scale
 
     def getPhaseScale(self, model_name: str, *args, **kwargs) -> float:
-        return self.storage.get(str(model_name) + "_scale", 1.)
+        return self.storage.get(str(model_name) + "_scale", 1.0)
 
     def createCrystal_fromCifStr(self, cif_str: str) -> str:
         crystal = cryspy.Crystal.from_cif(cif_str)
@@ -122,7 +122,9 @@ class Cryspy:
         cell = self.storage[cell_name]
         crystal.cell = cell
 
-    def createSpaceGroup(self, key: str = "spacegroup", name_hm_alt: str = "P 1") -> str:
+    def createSpaceGroup(
+        self, key: str = "spacegroup", name_hm_alt: str = "P 1"
+    ) -> str:
         sg_split = name_hm_alt.split(":")
         opts = {"name_hm_alt": sg_split[0]}
         # if len(sg_split) > 1:
@@ -171,6 +173,15 @@ class Cryspy:
         self.storage[atom_name] = atom
         return atom_name
 
+    def attachMSP(self, atom_name: str, msp_name: str, msp_args: Dict[str, float]):
+        atom = self.storage[atom_name]
+        msp = cryspy.AtomSiteSusceptibility(chi_type=msp_name, **msp_args)
+        ref_name = str(atom_name) + "_" + msp_name
+        self.storage[ref_name] = msp
+        # TODO: I do not know if this is the right way to do this
+        setattr(atom, "susceptibility", msp)
+        return ref_name
+
     def assignAtom_toCrystal(self, atom_label: str, crystal_name: str):
         crystal = self.storage[crystal_name]
         atom = self.storage[atom_label]
@@ -196,7 +207,7 @@ class Cryspy:
         self.storage[key] = background_obj
         return key
 
-    def createSetup(self, key: str = "setup", cls_type: Optional[str] =None):
+    def createSetup(self, key: str = "setup", cls_type: Optional[str] = None):
 
         if cls_type is None:
             cls_type = self.type
@@ -229,7 +240,7 @@ class Cryspy:
         value = getattr(item, value_key)
         return value
 
-    def createPolarization(self, key: str = 'pol_beam') -> str:
+    def createPolarization(self, key: str = "pol_beam") -> str:
         item = cryspy.DiffrnRadiation()
         self.storage[key] = item
         return key
@@ -258,7 +269,9 @@ class Cryspy:
         for r_key in kwargs.keys():
             setattr(resolution, r_key, kwargs[key])
 
-    def powder_1d_calculate(self, x_array: np.ndarray, pol_fn: Optional[Callable] = None) -> np.ndarray:
+    def powder_1d_calculate(
+        self, x_array: np.ndarray, pol_fn: Optional[Callable] = None
+    ) -> np.ndarray:
         """
         For a given x calculate the corresponding y
         :param x_array: array of data points to be calculated
@@ -322,7 +335,9 @@ class Cryspy:
             print("CALLING FROM Cryspy\n----------------------")
         return self.do_calc_setup(scale, this_x_array, pol_fn)
 
-    def do_calc_setup(self, scale: float, this_x_array: np.ndarray, pol_fn: Callable) -> np.ndarray:
+    def do_calc_setup(
+        self, scale: float, this_x_array: np.ndarray, pol_fn: Callable
+    ) -> np.ndarray:
         if len(self.pattern.backgrounds) == 0:
             bg = np.zeros_like(this_x_array)
         else:
@@ -407,7 +422,9 @@ class Cryspy:
         )
         # return returned_deps
 
-    def calculate(self, x_array: np.ndarray, pol_fn: Optional[Callable] = None) -> np.ndarray:
+    def calculate(
+        self, x_array: np.ndarray, pol_fn: Optional[Callable] = None
+    ) -> np.ndarray:
         """
         For a given x calculate the corresponding y
         :param x_array: array of data points to be calculated
@@ -454,7 +471,9 @@ class Cryspy:
         )
         return x_values, y_values
 
-    def get_hkl(self, idx: int = 0, phase_name: Optional[str] = None, encoded_name: bool = False) -> dict:
+    def get_hkl(
+        self, idx: int = 0, phase_name: Optional[str] = None, encoded_name: bool = False
+    ) -> dict:
         # Collate and return
         if phase_name is not None:
             if encoded_name:
@@ -466,7 +485,7 @@ class Cryspy:
                 phase_name = known_phases[idx]
         else:
             phase_name = list(self.current_crystal.values())[idx]
-        return self.additional_data['phases'][phase_name]['hkl']
+        return self.additional_data["phases"][phase_name]["hkl"]
 
     @staticmethod
     def nonPolarized_update(crystals, profiles, peak_dat, scales, x_str):

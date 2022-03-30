@@ -3,14 +3,14 @@
 #  © 2022 Contributors to the easyCore project <https://github.com/easyScience/easyCrystallography>
 #
 
+from __future__ import annotations
+
 __author__ = "github.com/wardsimon"
 __version__ = "0.2.0"
 
-from typing import List, Union, ClassVar, TypeVar, Optional
+from typing import List, Union, ClassVar, TypeVar, Optional, TYPE_CHECKING
 
-from easyCore import np
-from easyCore.Objects.Base import Descriptor, Parameter, BaseObj
-from easyCore.Objects.Groups import BaseCollection
+from easyCore.Objects.Base import Descriptor, Parameter
 from easyCore.Utils.io.star import StarLoop
 
 from easyCrystallography.Components.Site import (
@@ -22,6 +22,7 @@ from easyCrystallography.Components.Site import (
 from easyCrystallography.Components.Lattice import PeriodicLattice
 from easyCrystallography.Components.Specie import Specie
 from easyCrystallography.Components.AtomicDisplacement import AtomicDisplacement
+from easyCrystallography.Components.Susceptibility import MagneticSusceptibility
 
 
 class Site(ecSite):
@@ -37,6 +38,25 @@ class Site(ecSite):
         interface: Optional = None,
         **kwargs,
     ):
+
+        if "msp" in kwargs.keys():
+            msp = kwargs.pop("msp")
+            if isinstance(msp, str):
+                msp = MagneticSusceptibility(msp)
+            for parameter in msp.get_parameters:
+                if parameter.name in kwargs.keys():
+                    new_option = kwargs.pop(parameter.name)
+                    parameter.value = new_option
+            kwargs["msp"] = msp
+
+        if adp is not None:
+            if isinstance(adp, str):
+                adp = AtomicDisplacement(adp)
+            for parameter in adp.get_parameters():
+                if parameter.name in kwargs.keys():
+                    new_option = kwargs.pop(parameter.name)
+                    parameter.value = new_option
+
         super(Site, self).__init__(
             label=label,
             specie=specie,
@@ -44,15 +64,10 @@ class Site(ecSite):
             fract_x=fract_x,
             fract_y=fract_y,
             fract_z=fract_z,
-            adp=AtomicDisplacement.default(),
+            adp=adp,
+            **kwargs,
         )
         self.interface = interface
-        if adp is not None:
-            if isinstance(adp, str):
-                adp = AtomicDisplacement.from_pars(
-                    adp, interface=self.interface, **kwargs
-                )
-            self.adp = adp
 
 
 class PeriodicSite(ecPeriodicSite):

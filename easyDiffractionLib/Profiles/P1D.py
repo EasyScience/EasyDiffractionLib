@@ -5,7 +5,7 @@ from copy import deepcopy
 from typing import TypeVar, List
 
 from easyCore.Datasets.xarray import xr
-from easyCore.Objects.Base import BaseObj, Parameter
+from easyCore.Objects.ObjectClasses import BaseObj, Parameter
 from easyCore.Utils.json import MontyDecoder
 from easyDiffractionLib.Profiles.common import JobSetup, _DataClassBase
 from easyDiffractionLib.components.polarization import PolarizedBeam

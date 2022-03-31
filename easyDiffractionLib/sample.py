@@ -4,7 +4,7 @@ __version__ = '0.0.1'
 import os, tempfile
 from typing import Union, ClassVar
 
-from easyCore.Objects.Base import BaseObj
+from easyCore.Objects.ObjectClasses import BaseObj
 from easyCore.Utils.UndoRedo import property_stack_deco
 
 from easyDiffractionLib import Phase, Phases

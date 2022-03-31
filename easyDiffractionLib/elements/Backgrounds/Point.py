@@ -6,7 +6,7 @@ from typing import Union, List
 
 from easyCore import np
 from easyCore.Objects.Groups import BaseCollection
-from easyCore.Objects.Base import Parameter, Descriptor, BaseObj
+from easyCore.Objects.ObjectClasses import Parameter, Descriptor, BaseObj
 
 
 class BackgroundPoint(BaseObj):

@@ -1,7 +1,7 @@
 __author__ = 'github.com/wardsimon'
 __version__ = '0.0.1'
 
-from easyCore.Objects.Base import BaseObj, Parameter
+from easyCore.Objects.ObjectClasses import BaseObj, Parameter
 from copy import deepcopy
 from easyCore.Utils.json import MontyDecoder
 from easyDiffractionLib.elements.Backgrounds.Background import BackgroundContainer

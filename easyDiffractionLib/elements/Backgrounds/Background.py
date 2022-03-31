@@ -5,7 +5,7 @@ from abc import abstractmethod
 from typing import Union, List
 
 from easyCore import np
-from easyCore.Objects.Base import Descriptor
+from easyCore.Objects.Variable import Descriptor
 from easyCore.Objects.Groups import BaseCollection
 
 

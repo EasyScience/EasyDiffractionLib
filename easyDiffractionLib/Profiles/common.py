@@ -6,7 +6,7 @@ import tempfile
 from typing import Union, TypeVar
 
 from easyCore.Utils.UndoRedo import property_stack_deco
-from easyCore.Objects.Base import BaseObj
+from easyCore.Objects.ObjectClasses import BaseObj
 from easyDiffractionLib import Phases, Phase
 from easyCore.Datasets.xarray import xr
 

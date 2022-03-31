@@ -1,0 +1,50 @@
+data_phase1
+
+_space_group_name_H-M_ref "F d -3 m"
+_space_group_IT_coordinate_system_code 2
+
+_cell_length_a 10.26355
+_cell_length_b 10.26355
+_cell_length_c 10.26355
+_cell_angle_alpha 90.00
+_cell_angle_beta 90.00
+_cell_angle_gamma 90.00
+
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+_atom_site_adp_type
+_atom_site_u_iso_or_equiv
+_atom_site_multiplicity
+Ho1   Ho3+   0.500000   0.500000   0.500000   1.0   Uiso   0.0   16 
+Ti1   Ti3+   0.000000   0.000000   0.000000   1.0   Uiso   0.0   16  
+O1    O2-    0.329600   0.125000   0.125000   1.0   Uiso   0.0   48  
+O2    O2-    0.375000   0.375000   0.375000   1.0   Uiso   0.0   8   
+
+loop_
+_atom_site_scat_label
+_atom_site_scat_Lande
+_atom_site_scat_kappa
+Ho1   2.0   1.0  
+
+loop_
+_atom_site_susceptibility_label
+_atom_site_susceptibility_chi_type
+_atom_site_susceptibility_chi_11
+_atom_site_susceptibility_chi_22
+_atom_site_susceptibility_chi_33
+_atom_site_susceptibility_chi_12
+_atom_site_susceptibility_chi_13
+_atom_site_susceptibility_chi_23
+Ho1   Cani   3.281(18)   3.28100   3.28100   3.712(16)   3.71200   3.71200  
+
+loop_
+_phase_label
+_phase_scale
+_phase_igsize
+phase1   0.024678(78)   0.0  

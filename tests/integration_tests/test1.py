@@ -19,6 +19,11 @@ sample = Sample(
     phases=phase, parameters=Instrument1DCWParameters.default(), interface=calculator
 )
 
+from easyCrystallography.Components.Susceptibility import MagneticSusceptibility
+
+msp = MagneticSusceptibility("Cani")
+sample.phases[0].atoms[0]._add_component("msp", msp)
+sample.phases[0].atoms[0].interface = calculator
 # sample.phase.cell.length_a = 5
 sample.parameters.wavelength = 1.25
 # print(S)

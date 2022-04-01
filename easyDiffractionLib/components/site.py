@@ -44,7 +44,7 @@ class Site(ecSite):
             msp = kwargs.pop("msp")
             if isinstance(msp, str):
                 msp = MagneticSusceptibility(msp)
-            for parameter in msp.get_parameters:
+            for parameter in msp.get_parameters():
                 if parameter.name in kwargs.keys():
                     new_option = kwargs.pop(parameter.name)
                     parameter.value = new_option

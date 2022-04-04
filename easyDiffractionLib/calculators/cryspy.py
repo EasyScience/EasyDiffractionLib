@@ -298,7 +298,7 @@ class Cryspy:
 
         return self.do_calc_setup(scale, this_x_array, pol_fn)
 
-    def powder_1d_tof_calculate(self, x_array: np.ndarray, pol_fn) -> np.ndarray:
+    def powder_1d_tof_calculate(self, x_array: np.ndarray, pol_fn=None) -> np.ndarray:
         """
         For a given x calculate the corresponding y
         :param x_array: array of data points to be calculated

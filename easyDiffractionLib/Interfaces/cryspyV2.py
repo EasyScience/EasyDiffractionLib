@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.2"
 
 from abc import ABCMeta
-from typing import Callable, Optional, TYPE_CHECKING, Type, List, Union, TypeVar
+from typing import Callable, Optional, TYPE_CHECKING, List, Union
 
 from numpy import ndarray
 
@@ -25,6 +24,7 @@ from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
 from easyDiffractionLib.calculators.cryspy import Cryspy as Cryspy_calc
 
 from easyDiffractionLib.Interfaces.types import (
+    interfaceMixInMeta,
     Powder as Powder_type,
     SingleCrystal as SingleCrystal_type,
     CW as CW_type,
@@ -32,56 +32,16 @@ from easyDiffractionLib.Interfaces.types import (
     Pol as Pol_type,
     UPol as UPol_type,
     Neutron as Neutron_type,
-    _Type,
 )
 
 if TYPE_CHECKING:
-    from easyCore.Objects.ObjectClasses import BasedBase
-
-    Model = TypeVar("Model", bound=BasedBase)
-    Mixin = TypeVar("Mixin", bound=_Type)
+    from easyCore.Utils.typing import B
 
 
-class MixInCryspy(_Type):
+class CryspyBase(Neutron_type, metaclass=ABCMeta):
     """
-    MixIn base for the cryspy interface. All components are based on this, so that they can be combined easily.
-    """
-
-    calculator: Cryspy_calc
-    _borg = borg
-
-    def create(self: Mixin, model: Model):
-        """
-        Sequentially call all create function for MixIn objects.
-        """
-        cls = self.__class__
-        # Get all classes AFTER this one
-        cls_s = cls.__mro__[0 : cls.__mro__.index(MixInCryspy)]
-        r_list = []
-
-        for cls_ in cls_s:
-            if hasattr(cls_, "create"):
-                r = cls_.create(self, model, master=True)
-                if r is not None and isinstance(r, list):
-                    r_list += r
-        return r_list
-
-    @staticmethod
-    def _identify(obj: Model, as_str: bool = False) -> Union[int, str]:
-        """
-        Helper function to identify objects.
-        """
-        obj_id = borg.map.convert_id_to_key(obj)
-        if as_str:
-            obj_id = str(obj_id)
-        return obj_id
-
-
-class CryspyBase(MixInCryspy, Neutron_type, metaclass=ABCMeta):
-    """
-    This is  the base mixin interface for the cryspy calculator. In this class we deal with the creation of the base
-    crystal structure. No calculation is performed from this class, it only creates the crystal structure and inherits
-    all the experiment types from the plugins.
+    In this class we deal with the creation of the base crystal structure. No calculation is performed from this class,
+    it only creates the crystal structure and inherits all the experiment types from the plugins.
     """
 
     _sample_link = {"cif_str": "cif_str"}
@@ -109,8 +69,9 @@ class CryspyBase(MixInCryspy, Neutron_type, metaclass=ABCMeta):
         "Bani": "b_iso_or_equiv",
     }
     _subsets = []
+    _borg = borg
 
-    def __init__(self, calculator: Optional = None):
+    def __init__(self, calculator: Optional[Cryspy_calc] = None):
         """
         Initialise the calculator.
         :param calculator: Cryspy instance
@@ -135,7 +96,7 @@ class CryspyBase(MixInCryspy, Neutron_type, metaclass=ABCMeta):
         if not is_abstract:
             cls._subsets.append(cls)
 
-    def create(self, model: Model, master: bool = False) -> List[ItemContainer]:
+    def create(self, model: B) -> List[ItemContainer]:
         """
         Create the crystal structure. This deals with interfacing with `Lattice`, `SpaceGroup` `Site`, `Phase`, and
         `Phases`.
@@ -143,9 +104,6 @@ class CryspyBase(MixInCryspy, Neutron_type, metaclass=ABCMeta):
         :param master: If master we call the mixin create function
         :return: List of links
         """
-        if not master:
-            return MixInCryspy.create(self, model)
-
         r_list = []
         t_ = type(model)
         model_key = self._identify(model)
@@ -190,6 +148,7 @@ class CryspyBase(MixInCryspy, Neutron_type, metaclass=ABCMeta):
         elif issubclass(t_, Phase):
             ident = str(model_key) + "_phase"
             self.calculator.createPhase(ident)
+            _ = self.calculator.createEmptyCrystal(model.name, key=model_key)
             self.calculator.assignCell_toCrystal(self._identify(model.cell), model_key)
             self.calculator.assignSpaceGroup_toCrystal(
                 self._identify(model._spacegroup), model_key
@@ -282,16 +241,23 @@ class CryspyBase(MixInCryspy, Neutron_type, metaclass=ABCMeta):
     def get_total_y_for_phases(self) -> tuple[ndarray, ndarray]:
         return self.calculator.get_total_y_for_phases()
 
+    @staticmethod
+    def _identify(obj: B, as_str: bool = False) -> Union[int, str]:
+        """
+        Helper function to identify objects.
+        """
+        obj_id = borg.map.convert_id_to_key(obj)
+        if as_str:
+            obj_id = str(obj_id)
+        return obj_id
+
 
 class Powder(Powder_type):
     """
     Class to handle powder calculations. In this instance Powder1DParameters is passed to the calculator.
     """
 
-    def create(self, model: Model, master: bool = False) -> List[ItemContainer]:
-        if not master:
-            return MixInCryspy.create(self, model)
-
+    def create(self, model: B) -> List[ItemContainer]:
         r_list = []
         t_ = type(model)
 
@@ -323,9 +289,7 @@ class CW(CW_type):
         "wavelength": "wavelength",
     }
 
-    def create(self, model: Model, master: bool = False) -> List[ItemContainer]:
-        if not master:
-            return MixInCryspy.create(self, model)
+    def create(self, model: B) -> List[ItemContainer]:
         r_list = []
         t_ = type(model)
         model_key = self._identify(model)
@@ -364,10 +328,7 @@ class TOF(TOF_type):
 
     _instrument_tof_link = {k: k for k in Instrument1DTOFParameters._defaults.keys()}
 
-    def create(self, model: Model, master: bool = False) -> List[ItemContainer]:
-        if not master:
-            return MixInCryspy.create(self, model)
-
+    def create(self, model: B) -> List[ItemContainer]:
         r_list = []
         t_ = type(model)
         model_key = self._identify(model)
@@ -424,10 +385,7 @@ class POL(Pol_type):
         "efficiency": "efficiency",
     }
 
-    def create(self, model: Model, master: bool = False) -> List[ItemContainer]:
-        if not master:
-            return MixInCryspy.create(self, model)
-
+    def create(self, model: B) -> List[ItemContainer]:
         r_list = []
         t_ = type(model)
         model_key = self._identify(model)
@@ -516,18 +474,17 @@ class POL(Pol_type):
 
 
 class UPol(UPol_type):
-    def create(self, model: Model, master: bool = False) -> List[ItemContainer]:
-        if not master:
-            return MixInCryspy.create(self, model)
+    def create(self, model: B) -> List[ItemContainer]:
         r_list = []
         return r_list
 
 
+#
+# Now define the classes that implement the different types of models.
+#
+@interfaceMixInMeta
 class CryspyCW(CryspyBase, CW, Powder, UPol):
-    def create(self, model: Model, master: bool = False) -> List[ItemContainer]:
-        if not master:
-            return MixInCryspy.create(self, model)
-
+    def create(self, model: B) -> List[ItemContainer]:
         r_list = []
         t_ = type(model)
         model_key = self._identify(model)
@@ -541,11 +498,9 @@ class CryspyCW(CryspyBase, CW, Powder, UPol):
         return r_list
 
 
+@interfaceMixInMeta
 class CryspyTOF(CryspyBase, TOF, Powder, UPol):
-    def create(self, model: Model, master: bool = False) -> List[ItemContainer]:
-        if not master:
-            return MixInCryspy.create(self, model)
-
+    def create(self, model: B) -> List[ItemContainer]:
         r_list = []
         t_ = type(model)
         model_key = self._identify(model)
@@ -559,11 +514,9 @@ class CryspyTOF(CryspyBase, TOF, Powder, UPol):
         return r_list
 
 
+@interfaceMixInMeta
 class CryspyCWPol(CryspyBase, CW, Powder, POL):
-    def create(self, model: Model, master: bool = False) -> List[ItemContainer]:
-        if not master:
-            return MixInCryspy.create(self, model)
-
+    def create(self, model: B) -> List[ItemContainer]:
         r_list = []
         t_ = type(model)
         model_key = self._identify(model)
@@ -577,11 +530,9 @@ class CryspyCWPol(CryspyBase, CW, Powder, POL):
         return r_list
 
 
+@interfaceMixInMeta
 class CryspyTOFPol(CryspyBase, TOF, Powder, POL):
-    def create(self, model: Model, master: bool = False) -> List[ItemContainer]:
-        if not master:
-            return MixInCryspy.create(self, model)
-
+    def create(self, model: B) -> List[ItemContainer]:
         r_list = []
         t_ = type(model)
         model_key = self._identify(model)
@@ -595,8 +546,10 @@ class CryspyTOFPol(CryspyBase, TOF, Powder, POL):
         return r_list
 
 
+##
+## This is the main class which is called, implementing one of the above classes.
+##
 class CryspyV2(InterfaceTemplate):
-
     name = "CrysPyV2"
 
     feature_available = {
@@ -628,11 +581,11 @@ class CryspyV2(InterfaceTemplate):
             FEATURES=CryspyV2.feature_available,
         )
 
-    def create(self, model: Model):
+    def create(self, model: B):
         cls = self._get_constructor(CryspyBase._subsets, model)
         if cls is not None and cls is not self._internal.__class__:
             self._internal = cls(calculator=self.calculator)
-        return self._internal.create(model, master=True)
+        return self._internal.create(model)
 
     def __call__(self, *args, **kwargs) -> np.ndarray:
         if self._internal is not None:

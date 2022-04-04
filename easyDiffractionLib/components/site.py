@@ -26,6 +26,9 @@ from easyCrystallography.Components.AtomicDisplacement import AtomicDisplacement
 from easyCrystallography.Components.Susceptibility import MagneticSusceptibility
 
 
+if TYPE_CHECKING:
+    from easyCore.Utils.typing import iF
+
 class Site(ecSite):
     def __init__(
         self,
@@ -36,7 +39,7 @@ class Site(ecSite):
         fract_y: Optional[Union[float, Parameter]] = None,
         fract_z: Optional[Union[float, Parameter]] = None,
         adp: Optional[Union[str, AtomicDisplacement]] = None,
-        interface: Optional = None,
+        interface: Optional[iF] = None,
         **kwargs,
     ):
 
@@ -57,6 +60,7 @@ class Site(ecSite):
                 if parameter.name in kwargs.keys():
                     new_option = kwargs.pop(parameter.name)
                     parameter.value = new_option
+            kwargs["adp"] = adp
 
         super(Site, self).__init__(
             label=label,
@@ -65,7 +69,6 @@ class Site(ecSite):
             fract_x=fract_x,
             fract_y=fract_y,
             fract_z=fract_z,
-            adp=adp,
             **kwargs,
         )
         self.interface = interface

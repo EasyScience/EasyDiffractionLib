@@ -45,7 +45,6 @@ class Site(ecSite):
     ):
 
         if msp is not None:
-            msp = kwargs.pop("msp")
             if isinstance(msp, str):
                 msp = MagneticSusceptibility(msp)
             for parameter in msp.get_parameters():

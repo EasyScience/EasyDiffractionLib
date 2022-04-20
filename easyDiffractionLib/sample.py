@@ -6,6 +6,7 @@ from typing import Union, ClassVar
 
 from easyCore.Objects.ObjectClasses import BaseObj
 from easyCore.Utils.UndoRedo import property_stack_deco
+from easyCrystallography.Structures.Phase import Phases as ecPhases
 
 from easyDiffractionLib import Phase, Phases
 from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters, Instrument1DTOFParameters
@@ -28,7 +29,9 @@ class Sample(BaseObj):
             phases = Phases('Phases', phases)
         elif phases is None:
             phases = Phases('Phases')
-
+        elif isinstance(phases, ecPhases):
+            if len(phases) > 0:
+                phases = Phases('Phases', phases[0])
         if not isinstance(phases, Phases):
             raise AttributeError('`phases` must be a Crystal or Crystals')
 

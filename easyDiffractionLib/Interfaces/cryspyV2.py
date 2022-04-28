@@ -205,13 +205,13 @@ class CryspyBase(Neutron_type, metaclass=ABCMeta):
         ident = self._identify(phase_obj, as_str=True) + "_phase"
         self.calculator.removePhase(self._identify(phases_obj), ident)
 
-    def fit_func(self, x_array: np.ndarray) -> np.ndarray:
+    def fit_func(self, x_array: np.ndarray, *args, **kwargs) -> np.ndarray:
         """
         Function to perform a fit. This is the base function for the fit, but others might be subclassed.
         :param x_array: points to be calculated at
         :return: calculated points
         """
-        return self.calculator.calculate(x_array)
+        return self.calculator.calculate(x_array, *args, **kwargs)
 
     def get_hkl(
         self,
@@ -599,13 +599,13 @@ class CryspyV2(InterfaceTemplate):
         if self._internal is not None:
             self._internal.remove_atom(phase, atom)
 
-    def fit_func(self, x_array: np.ndarray) -> Union[np.ndarray, None]:
+    def fit_func(self, x_array: np.ndarray, *args, **kwargs) -> Union[np.ndarray, None]:
         if self._internal is not None:
-            return self._internal.fit_func(x_array)
+            return self._internal.fit_func(x_array, *args, **kwargs)
 
-    def get_hkl(self, x_array: np.ndarray = None, idx: Optional[int] = None) -> dict:
+    def get_hkl(self, x_array: np.ndarray = None, idx: Optional[int] = None, phase_name=None, encoded_name=False) -> dict:
         if self._internal is not None:
-            return self._internal.get_hkl(x_array, idx)
+            return self._internal.get_hkl(x_array, idx, phase_name, encoded_name)
 
     def get_calculated_y_for_phase(self, idx: Optional[int] = None) -> list:
         if self._internal is not None:

@@ -144,9 +144,16 @@ class Powder1DParameters(BaseObj):
         zero_shift = _decoder.process_decoded(defaults["zero_shift"])
         scale = _decoder.process_decoded(defaults["scale"])
         backgrounds = BackgroundContainer()
+        # remove dict entries so kwargs can be passed to __init__
+        if 'zero_shift' in defaults:
+            del defaults["zero_shift"]
+        if 'scale' in defaults:
+            del defaults["scale"]
+        if 'backgrounds' in defaults:
+            backgrounds = BackgroundContainer()
+            del defaults["backgrounds"]
 
-        return cls(zero_shift=zero_shift, scale=scale, backgrounds=backgrounds)
-
+        return cls(zero_shift=zero_shift, scale=scale, backgrounds=backgrounds, **defaults)
 
 class PolPowder1DParameters(Powder1DParameters):
     _defaults = {
@@ -155,6 +162,7 @@ class PolPowder1DParameters(Powder1DParameters):
             "polarization": 0.0,
         },
     }
+    _defaults.update(Powder1DParameters._defaults)
 
     def __init__(
         self,

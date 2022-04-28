@@ -47,17 +47,16 @@ class Sample(BaseObj):
         self._update_bases(Powder)
         self._update_bases(Neutron)
 
-        if isinstance(pattern, Pattern1D):
+        if getattr(pattern, '__old_class__', pattern.__class__) == Pattern1D:
             from easyDiffractionLib.Interfaces.types import UPol
             self._update_bases(UPol)
-        elif isinstance(pattern, Pattern1D_Pol):
+        elif getattr(pattern, '__old_class__', pattern.__class__) == Pattern1D_Pol:
             from easyDiffractionLib.Interfaces.types import Pol
             self._update_bases(Pol)
-
-        if isinstance(parameters, Instrument1DCWParameters):
-            from easyDiffractionLib.Interfaces.types import CW
-            self._update_bases(CW)
-        elif isinstance(parameters, Instrument1DTOFParameters):
+        if getattr(parameters, '__old_class__', parameters.__class__) == Instrument1DCWParameters:
+             from easyDiffractionLib.Interfaces.types import CW
+             self._update_bases(CW)
+        if getattr(parameters, '__old_class__', parameters.__class__) == Instrument1DTOFParameters:
             from easyDiffractionLib.Interfaces.types import TOF
             self._update_bases(TOF)
 

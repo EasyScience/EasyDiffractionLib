@@ -249,14 +249,15 @@ class Cryspy(InterfaceTemplate):
         elif t_.__name__ == "Sample":  # This is legacy mode. Boo
             tt_ = type(model.parameters)
             base = "powder1D"
+
             if issubclass(tt_, Instrument1DCWParameters):
                 base += "CW"
             elif issubclass(tt_, Instrument1DTOFParameters):
                 base += "TOF"
-            elif issubclass(tt_, Instrument1DCWPolParameters):
-                base += "pol"
             else:
                 raise AttributeError("Unknown EXP type")
+            if issubclass(tt_, Instrument1DCWPolParameters):
+                base += "pol"
             self.__createModel(model_key, base)
         else:
             if self._borg.debug:

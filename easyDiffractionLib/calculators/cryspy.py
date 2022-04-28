@@ -61,9 +61,9 @@ class Cryspy:
     def createModel(self, model_id: str, model_type: str = "powder1DCW"):
         model = {"background": cryspy.PdBackgroundL(), "phase": self.phases}
         self.polarized = False
-        if model_type.endswith("Pol"):
+        if model_type.endswith("pol"):
             self.polarized = True
-            model_type = model_type.split("Pol")[0]
+            model_type = model_type.split("pol")[0]
         cls = cryspy.Pd
         if model_type == "powder1DTOF":
             cls = cryspy.TOF

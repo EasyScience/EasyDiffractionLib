@@ -460,17 +460,17 @@ class POL(Pol_type):
     def fit_func(
         self,
         x_array: np.ndarray,
-        method: Optional[Callable[[np.ndarray, np.ndarray], np.ndarray]] = None,
+        pol_fn: Optional[Callable[[np.ndarray, np.ndarray], np.ndarray]] = None,
     ) -> np.ndarray:
         """
         In this case we need to know how to deal with the polarization channels.
-        :param method: How to combine the two chanels
+        :param pol_fn: How to combine the two chanels
         :param x_array: points to be calculated at
         :return: calculated points
         """
-        if method is None:
-            method = self.up_plus_down
-        return self.calculator.calculate(x_array, method)
+        if pol_fn is None:
+            pol_fn = self.up_plus_down
+        return self.calculator.calculate(x_array, pol_fn)
 
 
 class UPol(UPol_type):

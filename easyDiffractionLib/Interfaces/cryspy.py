@@ -283,7 +283,7 @@ class Cryspy(InterfaceTemplate):
         ident = str(self.__identify(phase_obj)) + "_phase"
         self.calculator.removePhase(self.__identify(phases_obj), ident)
 
-    def fit_func(self, x_array: np.ndarray) -> np.ndarray:
+    def fit_func(self, x_array: np.ndarray, *args, **kwargs) -> np.ndarray:
         """
         Function to perform a fit
         :param x_array: points to be calculated at
@@ -291,7 +291,7 @@ class Cryspy(InterfaceTemplate):
         :return: calculated points
         :rtype: np.ndarray
         """
-        return self.calculator.calculate(x_array)
+        return self.calculator.calculate(x_array, *args, **kwargs)
 
     def get_hkl(
         self, x_array: np.ndarray = None, idx=None, phase_name=None, encoded_name=False

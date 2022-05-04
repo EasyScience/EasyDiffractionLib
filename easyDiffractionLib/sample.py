@@ -53,10 +53,10 @@ class Sample(BaseObj):
         elif getattr(pattern, '__old_class__', pattern.__class__) == Pattern1D_Pol:
             from easyDiffractionLib.Interfaces.types import Pol
             self._update_bases(Pol)
-        if getattr(parameters, '__old_class__', parameters.__class__) == Instrument1DCWParameters:
+        if isinstance(parameters, Instrument1DCWParameters):
              from easyDiffractionLib.Interfaces.types import CW
              self._update_bases(CW)
-        if getattr(parameters, '__old_class__', parameters.__class__) == Instrument1DTOFParameters:
+        elif isinstance(parameters, Instrument1DTOFParameters):
             from easyDiffractionLib.Interfaces.types import TOF
             self._update_bases(TOF)
 

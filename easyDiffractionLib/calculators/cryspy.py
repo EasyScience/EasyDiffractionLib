@@ -240,8 +240,20 @@ class Cryspy:
         value = getattr(item, value_key)
         return value
 
-    def createPolarization(self, key: str = "pol_beam") -> str:
+    def createPolarization(self, key: str = "polarized_beam") -> str:
         item = cryspy.DiffrnRadiation()
+        self.storage[key] = item
+        return key
+
+    def createChi2(self, key: str = "chi2") -> str:
+        item = cryspy.Chi2()
+
+        # test
+        item.sum = False
+        item.diff = False
+        item.up = True
+        item.down = True
+
         self.storage[key] = item
         return key
 
@@ -270,7 +282,7 @@ class Cryspy:
             setattr(resolution, r_key, kwargs[key])
 
     def powder_1d_calculate(
-        self, x_array: np.ndarray, pol_fn: Optional[Callable] = None
+        self, x_array: np.ndarray, **kwargs
     ) -> np.ndarray:
         """
         For a given x calculate the corresponding y
@@ -279,10 +291,23 @@ class Cryspy:
         :return: points calculated at `x`
         :rtype: np.ndarray
         """
-
+        pol_fn = None
         for key_inner in ["pd_instr_resolution", "setup"]:
             if not hasattr(self.model, key_inner):
                 setattr(self.model, key_inner, self.storage[key_inner])
+
+        if self.polarized:
+            if 'pol_fn' in kwargs.keys():
+                pol_fn = kwargs['pol_fn']
+            if not hasattr(self.model, "diffrn_radiation"):
+                setattr(self.model, "diffrn_radiation", self.storage["polarized_beam"])
+            if not hasattr(self.model, "chi2"):
+                setattr(self.model, "chi2", self.storage["chi2"])
+            if 'pol_refinement' in kwargs:
+                self.model.chi2.Sum = kwargs['pol_refinement']['Sum']
+                self.model.chi2.Diff = kwargs['pol_refinement']['Diff']
+                self.model.chi2.Up = kwargs['pol_refinement']['Up']
+                self.model.chi2.Down = kwargs['pol_refinement']['Down']
 
         if self.pattern is None:
             scale = 1.0
@@ -423,7 +448,7 @@ class Cryspy:
         # return returned_deps
 
     def calculate(
-        self, x_array: np.ndarray, pol_fn: Optional[Callable] = None
+        self, x_array: np.ndarray, **kwargs
     ) -> np.ndarray:
         """
         For a given x calculate the corresponding y
@@ -434,13 +459,11 @@ class Cryspy:
         """
         res = np.zeros_like(x_array)
         self.additional_data["ivar"] = res
-        args = [x_array]
-        if pol_fn is not None:
-            args.append(pol_fn)
+        args = x_array
         if self.type == "powder1DCW":
-            return self.powder_1d_calculate(*args)
+            return self.powder_1d_calculate(args, **kwargs)
         if self.type == "powder1DTOF":
-            return self.powder_1d_tof_calculate(*args)
+            return self.powder_1d_tof_calculate(args, **kwargs)
         return res
 
     def get_phase_components(self, phase_name: str) -> List[np.ndarray]:

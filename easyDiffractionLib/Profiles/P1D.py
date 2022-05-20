@@ -157,10 +157,11 @@ class Powder1DParameters(BaseObj):
 
 class PolPowder1DParameters(Powder1DParameters):
     _defaults = {
-        "beam": {
-            "efficiency": 1.0,
-            "polarization": 0.0,
-        },
+        # "beam": {
+        #     "efficiency": 1.0,
+        #     "polarization": 0.0,
+        # },
+        "beam": PolarizedBeam._defaults,
     }
     _defaults.update(Powder1DParameters._defaults)
 

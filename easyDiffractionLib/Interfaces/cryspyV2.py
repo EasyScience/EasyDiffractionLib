@@ -376,6 +376,12 @@ class POL(Pol_type):
         "polarization": "polarization",
         "efficiency": "efficiency",
     }
+    _chi2_link = {
+        "sum": "sum",
+        "diff": "diff",
+        "up": "up",
+        "down": "down",
+    }
 
     def create(self, model: B) -> List[ItemContainer]:
         r_list = []
@@ -389,6 +395,15 @@ class POL(Pol_type):
                 ItemContainer(
                     p_key,
                     self._polarization_link,
+                    self.calculator.genericReturn,
+                    self.calculator.genericUpdate,
+                )
+            )
+            p_key = self.calculator.createChi2()
+            r_list.append(
+                ItemContainer(
+                    p_key,
+                    self._chi2_link,
                     self.calculator.genericReturn,
                     self.calculator.genericUpdate,
                 )
@@ -525,6 +540,24 @@ class CryspyCWPol(CryspyBase, CW, Powder, POL):
             "powder1DCWpol",
             "Npowder1DCWpol",
         ]:
+            p_key = self.calculator.createPolarization()
+            r_list.append(
+                ItemContainer(
+                    p_key,
+                    self._polarization_link,
+                    self.calculator.genericReturn,
+                    self.calculator.genericUpdate,
+                )
+            )
+            p_key = self.calculator.createChi2()
+            r_list.append(
+                ItemContainer(
+                    p_key,
+                    self._chi2_link,
+                    self.calculator.genericReturn,
+                    self.calculator.genericUpdate,
+                )
+            )
             self._createModel(model_key, base)
         return r_list
 

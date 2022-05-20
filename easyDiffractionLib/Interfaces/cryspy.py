@@ -58,10 +58,18 @@ class Cryspy(InterfaceTemplate):
         "polarization": "polarization",
         "efficiency": "efficiency",
     }
+    _chi2_link = {
+        "sum": "sum",
+        "diff": "diff",
+        "up": "up",
+        "down": "down",
+    }
 
     _instrument_tof_link = {k: k for k in Instrument1DTOFParameters._defaults.keys()}
 
     name = "CrysPy"
+
+    saved_kwargs = {}
 
     feature_available = {
         "Npowder1DCWunp": True,
@@ -170,6 +178,15 @@ class Cryspy(InterfaceTemplate):
                     self.calculator.genericUpdate,
                 )
             )
+            p_key = self.calculator.createChi2()
+            r_list.append(
+                ItemContainer(
+                    p_key,
+                    self._chi2_link,
+                    self.calculator.genericReturn,
+                    self.calculator.genericUpdate,
+                )
+            )
         elif issubclass(t_, Lattice):
             l_key = self.calculator.createCell(model_key)
             keys = self._crystal_link.copy()
@@ -258,6 +275,24 @@ class Cryspy(InterfaceTemplate):
                 raise AttributeError("Unknown EXP type")
             if issubclass(tt_, Instrument1DCWPolParameters):
                 base += "pol"
+                p_key = self.calculator.createPolarization()
+                r_list.append(
+                    ItemContainer(
+                        p_key,
+                        self._polarization_link,
+                        self.calculator.genericReturn,
+                        self.calculator.genericUpdate,
+                    )
+                )
+                p_key = self.calculator.createChi2()
+                r_list.append(
+                    ItemContainer(
+                        p_key,
+                        self._chi2_link,
+                        self.calculator.genericReturn,
+                        self.calculator.genericUpdate,
+                    )
+                )
             self.__createModel(model_key, base)
         else:
             if self._borg.debug:
@@ -291,6 +326,11 @@ class Cryspy(InterfaceTemplate):
         :return: calculated points
         :rtype: np.ndarray
         """
+        # apply cryspy kwargs now, since lmfit strips them
+        for arg in self.saved_kwargs:
+            if arg not in kwargs:
+                kwargs[arg] = self.saved_kwargs[arg]
+
         return self.calculator.calculate(x_array, *args, **kwargs)
 
     def get_hkl(

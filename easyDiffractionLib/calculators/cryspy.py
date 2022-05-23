@@ -304,10 +304,10 @@ class Cryspy:
             if not hasattr(self.model, "chi2"):
                 setattr(self.model, "chi2", self.storage["chi2"])
             if 'pol_refinement' in kwargs:
-                self.model.chi2.Sum = kwargs['pol_refinement']['Sum']
-                self.model.chi2.Diff = kwargs['pol_refinement']['Diff']
-                self.model.chi2.Up = kwargs['pol_refinement']['Up']
-                self.model.chi2.Down = kwargs['pol_refinement']['Down']
+                self.model.chi2.sum = kwargs['pol_refinement']['sum']
+                self.model.chi2.diff = kwargs['pol_refinement']['diff']
+                self.model.chi2.up = kwargs['pol_refinement']['up']
+                self.model.chi2.down = kwargs['pol_refinement']['down']
 
         if self.pattern is None:
             scale = 1.0

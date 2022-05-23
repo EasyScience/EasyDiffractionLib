@@ -18,6 +18,7 @@ class PolarizedBeam(BaseObj):
             'value': 1.0,
             'min': 0.0,
             'max': 1.0,
+            "fixed": True,
         },
         'efficiency':   {
             '@module':  'easyCore.Objects.Variable',
@@ -27,6 +28,7 @@ class PolarizedBeam(BaseObj):
             'value':    1.0,
             'min':      0.0,
             'max':      1.0,
+            "fixed": True,
         },
     }
 

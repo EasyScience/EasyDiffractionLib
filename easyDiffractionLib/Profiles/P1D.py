@@ -141,8 +141,9 @@ class Powder1DParameters(BaseObj):
     @classmethod
     def default(cls):
         defaults = deepcopy(cls._defaults)
-        zero_shift = _decoder.process_decoded(defaults["zero_shift"])
-        scale = _decoder.process_decoded(defaults["scale"])
+        defaults = _decoder.process_decoded(defaults)
+        zero_shift = defaults["zero_shift"]
+        scale = defaults["scale"]
         backgrounds = BackgroundContainer()
         # remove dict entries so kwargs can be passed to __init__
         if 'zero_shift' in defaults:
@@ -150,14 +151,14 @@ class Powder1DParameters(BaseObj):
         if 'scale' in defaults:
             del defaults["scale"]
         if 'backgrounds' in defaults:
-            backgrounds = BackgroundContainer()
             del defaults["backgrounds"]
 
         return cls(zero_shift=zero_shift, scale=scale, backgrounds=backgrounds, **defaults)
 
 class PolPowder1DParameters(Powder1DParameters):
     _defaults = {
-        "beam": PolarizedBeam._defaults,
+        "polarization" : PolarizedBeam._defaults['polarization'],
+        "efficiency" : PolarizedBeam._defaults['efficiency']
     }
     _defaults.update(Powder1DParameters._defaults)
 
@@ -166,7 +167,8 @@ class PolPowder1DParameters(Powder1DParameters):
         zero_shift: Parameter,
         scale: Parameter,
         backgrounds: BackgroundContainer,
-        beam: PolarizedBeam,
+        polarization: Parameter,
+        efficiency: Parameter,
         interface=None,
         **kwargs
     ):
@@ -175,7 +177,8 @@ class PolPowder1DParameters(Powder1DParameters):
             scale=scale,
             backgrounds=backgrounds,
             interface=interface,
-            beam=beam,
+            polarization=polarization,
+            efficiency=efficiency,
             **kwargs
         )
 
@@ -194,7 +197,8 @@ class PolPowder1DParameters(Powder1DParameters):
             zero_shift=zero_shift,
             scale=scale,
             backgrounds=backgrounds,
-            beam=beam,
+            polarization=polarization,
+            efficiency=efficiency,
             interface=interface,
         )
 

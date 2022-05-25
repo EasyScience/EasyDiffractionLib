@@ -132,7 +132,7 @@ class Atoms(ecAtoms):
         if not has_msp:
             # initialize msp so as_dict doesn't throw a fit
             for item in self:
-                msp = MagneticSusceptibility("Cani")
+                msp = MagneticSusceptibility("Ciso")
                 item.msp = msp
         add_loops = []
         msp_types = [item.msp.msp_type.raw_value for item in self if hasattr(item, 'msp')]

@@ -29,10 +29,12 @@ class Sample(BaseObj):
             phases = Phases('Phases', phases)
         elif phases is None:
             phases = Phases('Phases')
+        elif isinstance(phases, Phases):
+            pass
         elif isinstance(phases, ecPhases):
             if len(phases) > 0:
                 phases = Phases('Phases', phases[0])
-        if not isinstance(phases, Phases):
+        else:
             raise AttributeError('`phases` must be a Crystal or Crystals')
 
         if parameters is None:

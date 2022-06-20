@@ -3,7 +3,6 @@ from __future__ import annotations
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
-from copy import deepcopy
 from typing import TypeVar, List, Optional, Union, TYPE_CHECKING, ClassVar
 
 from easyCore.Datasets.xarray import xr
@@ -75,29 +74,17 @@ class Powder1DPolExp(Powder1DExp):
 class Powder1DParameters(BaseObj):
     _name = "1DPowderProfile"
     _defaults = {
-        "zero_shift":  {
-            "@module":  "easyCore.Objects.Variable",
-            "@class":   "Parameter",
-            "@version": "0.0.1",
-            "name":     "zero_shift",
-            "units":    "degree",
-            "value":    0.0,
-            "fixed":    True,
+        "zero_shift": {
+            "name": "zero_shift",
+            "units": "degree",
+            "value": 0.0,
+            "fixed": True,
         },
-        "scale":       {
-            "@module":  "easyCore.Objects.Variable",
-            "@class":   "Parameter",
-            "@version": "0.0.1",
-            "name":     "scale",
-            "value":    1,
-            "fixed":    True,
-            "enabled":  False,
-        },
-        "backgrounds": {
-            "@module":  "easyDiffractionLib.elements.Backgrounds.Background",
-            "@class":   "BackgroundContainer",
-            "@version": "0.0.1",
-            "data":     [],
+        "scale": {
+            "name": "scale",
+            "value": 1,
+            "fixed": True,
+            "enabled": False,
         },
     }
 
@@ -106,21 +93,18 @@ class Powder1DParameters(BaseObj):
     backgrounds: ClassVar[BackgroundContainer]
 
     def __init__(
-            self,
-            zero_shift: Optional[Union[Parameter, float]] = None,
-            scale: Optional[Union[Parameter, float]] = None,
-            backgrounds: Optional[BackgroundContainer] = None,
-            interface: Optional[iF] = None,
-            **kwargs
+        self,
+        zero_shift: Optional[Union[Parameter, float]] = None,
+        scale: Optional[Union[Parameter, float]] = None,
+        backgrounds: Optional[BackgroundContainer] = None,
+        interface: Optional[iF] = None,
+        **kwargs,
     ):
         super().__init__(
             self.__class__.__name__,
-            zero_shift=Parameter.from_dict(
-                self._defaults['zero_shift']
-            ),
-            scale=Parameter.from_dict(self._defaults['scale']),
+            **{k: Parameter(**self._defaults[k]) for k in self._defaults.keys()},
             backgrounds=BackgroundContainer(),
-            **kwargs
+            **kwargs,
         )
         if zero_shift is not None:
             self.zero_shift = zero_shift
@@ -138,29 +122,29 @@ class PolPowder1DParameters(Powder1DParameters):
     efficiency: ClassVar[Parameter]
 
     _defaults = {
-        "polarization": PolarizedBeam._defaults['polarization'],
-        "efficiency":   PolarizedBeam._defaults['efficiency']
+        "polarization": PolarizedBeam._defaults["polarization"],
+        "efficiency": PolarizedBeam._defaults["efficiency"],
     }
     _defaults.update(Powder1DParameters._defaults)
 
     def __init__(
-            self,
-            zero_shift: Optional[Union[Parameter, float]] = None,
-            scale: Optional[Union[Parameter, float]] = None,
-            backgrounds: Optional[BackgroundContainer] = None,
-            polarization: Optional[Union[Parameter, float]] = None,
-            efficiency: Optional[Union[Parameter, float]] = None,
-            interface: Optional[iF] = None,
-            **kwargs
+        self,
+        zero_shift: Optional[Union[Parameter, float]] = None,
+        scale: Optional[Union[Parameter, float]] = None,
+        backgrounds: Optional[BackgroundContainer] = None,
+        polarization: Optional[Union[Parameter, float]] = None,
+        efficiency: Optional[Union[Parameter, float]] = None,
+        interface: Optional[iF] = None,
+        **kwargs,
     ):
         super().__init__(
             zero_shift=zero_shift,
             scale=scale,
             backgrounds=backgrounds,
             interface=interface,
-            polarization=Parameter.from_dict(self._defaults['polarization']),
-            efficiency=Parameter.from_dict(self._defaults['efficiency']),
-            **kwargs
+            polarization=Parameter(**self._defaults["polarization"]),
+            efficiency=Parameter(**self._defaults["efficiency"]),
+            **kwargs,
         )
 
         if polarization is not None:
@@ -172,54 +156,36 @@ class PolPowder1DParameters(Powder1DParameters):
 class Instrument1DCWParameters(BaseObj):
     _name = "InstrumentalParameters"
     _defaults = {
-        "wavelength":   {
-            "@module":  "easyCore.Objects.Variable",
-            "@class":   "Parameter",
-            "@version": "0.0.1",
-            "name":     "wavelength",
-            "units":    "angstrom",
-            "value":    1.54056,
-            "fixed":    True,
+        "wavelength": {
+            "name": "wavelength",
+            "units": "angstrom",
+            "value": 1.54056,
+            "fixed": True,
         },
         "resolution_u": {
-            "@module":  "easyCore.Objects.Variable",
-            "@class":   "Parameter",
-            "@version": "0.0.1",
-            "name":     "resolution_u",
-            "value":    0.0002,
-            "fixed":    True,
+            "name": "resolution_u",
+            "value": 0.0002,
+            "fixed": True,
         },
         "resolution_v": {
-            "@module":  "easyCore.Objects.Variable",
-            "@class":   "Parameter",
-            "@version": "0.0.1",
-            "name":     "resolution_v",
-            "value":    -0.0002,
-            "fixed":    True,
+            "name": "resolution_v",
+            "value": -0.0002,
+            "fixed": True,
         },
         "resolution_w": {
-            "@module":  "easyCore.Objects.Variable",
-            "@class":   "Parameter",
-            "@version": "0.0.1",
-            "name":     "resolution_w",
-            "value":    0.012,
-            "fixed":    True,
+            "name": "resolution_w",
+            "value": 0.012,
+            "fixed": True,
         },
         "resolution_x": {
-            "@module":  "easyCore.Objects.Variable",
-            "@class":   "Parameter",
-            "@version": "0.0.1",
-            "name":     "resolution_x",
-            "value":    0.0,
-            "fixed":    True,
+            "name": "resolution_x",
+            "value": 0.0,
+            "fixed": True,
         },
         "resolution_y": {
-            "@module":  "easyCore.Objects.Variable",
-            "@class":   "Parameter",
-            "@version": "0.0.1",
-            "name":     "resolution_y",
-            "value":    0.0,
-            "fixed":    True,
+            "name": "resolution_y",
+            "value": 0.0,
+            "fixed": True,
         },
     }
 
@@ -231,23 +197,18 @@ class Instrument1DCWParameters(BaseObj):
     resolution_y: ClassVar[Parameter]
 
     def __init__(
-            self,
-            wavelength: Optional[Union[Parameter, float]] = None,
-            resolution_u: Optional[Union[Parameter, float]] = None,
-            resolution_v: Optional[Union[Parameter, float]] = None,
-            resolution_w: Optional[Union[Parameter, float]] = None,
-            resolution_x: Optional[Union[Parameter, float]] = None,
-            resolution_y: Optional[Union[Parameter, float]] = None,
-            interface: Optional[iF] = None,
+        self,
+        wavelength: Optional[Union[Parameter, float]] = None,
+        resolution_u: Optional[Union[Parameter, float]] = None,
+        resolution_v: Optional[Union[Parameter, float]] = None,
+        resolution_w: Optional[Union[Parameter, float]] = None,
+        resolution_x: Optional[Union[Parameter, float]] = None,
+        resolution_y: Optional[Union[Parameter, float]] = None,
+        interface: Optional[iF] = None,
     ):
         super(Instrument1DCWParameters, self).__init__(
             name=self.__class__.__name__,
-            wavelength=Parameter.from_dict(self._defaults['wavelength']),
-            resolution_u=Parameter.from_dict(self._defaults['resolution_u']),
-            resolution_v=Parameter.from_dict(self._defaults['resolution_v']),
-            resolution_w=Parameter.from_dict(self._defaults['resolution_w']),
-            resolution_x=Parameter.from_dict(self._defaults['resolution_x']),
-            resolution_y=Parameter.from_dict(self._defaults['resolution_y'])
+            **{k: Parameter(**self._defaults[k]) for k in self._defaults.keys()},
         )
 
         if wavelength is not None:
@@ -272,115 +233,76 @@ class Instrument1DTOFParameters(BaseObj):
     _name = "InstrumentalParameters"
     _defaults = {
         "ttheta_bank": {
-            "@module":  "easyCore.Objects.Variable",
-            "@class":   "Parameter",
-            "@version": "0.0.1",
-            "name":     "ttheta_bank",
-            "units":    "deg",
-            "value":    145.00,
-            "fixed":    True,
+            "name": "ttheta_bank",
+            "units": "deg",
+            "value": 145.00,
+            "fixed": True,
         },
-        "dtt1":        {
-            "@module":  "easyCore.Objects.Variable",
-            "@class":   "Parameter",
-            "@version": "0.0.1",
-            "name":     "dtt1",
-            "units":    "deg",
-            "value":    6167.24700,
-            "fixed":    True,
+        "dtt1": {
+            "name": "dtt1",
+            "units": "deg",
+            "value": 6167.24700,
+            "fixed": True,
         },
-        "dtt2":        {
-            "@module":  "easyCore.Objects.Variable",
-            "@class":   "Parameter",
-            "@version": "0.0.1",
-            "name":     "dtt2",
-            "units":    "deg",
-            "value":    -2.28000,
-            "fixed":    True,
+        "dtt2": {
+            "name": "dtt2",
+            "units": "deg",
+            "value": -2.28000,
+            "fixed": True,
         },
-        "sigma0":      {
-            "@module":  "easyCore.Objects.Variable",
-            "@class":   "Parameter",
-            "@version": "0.0.1",
-            "name":     "sigma0",
-            "value":    0.409,
-            "fixed":    True,
+        "sigma0": {
+            "name": "sigma0",
+            "value": 0.409,
+            "fixed": True,
         },
-        "sigma1":      {
-            "@module":  "easyCore.Objects.Variable",
-            "@class":   "Parameter",
-            "@version": "0.0.1",
-            "name":     "sigma1",
-            "value":    8.118,
-            "fixed":    True,
+        "sigma1": {
+            "name": "sigma1",
+            "value": 8.118,
+            "fixed": True,
         },
-        "sigma2":      {
-            "@module":  "easyCore.Objects.Variable",
-            "@class":   "Parameter",
-            "@version": "0.0.1",
-            "name":     "sigma2",
-            "value":    0.0,
-            "fixed":    True,
-            "enabled":  False,
+        "sigma2": {
+            "name": "sigma2",
+            "value": 0.0,
+            "fixed": True,
+            "enabled": False,
         },
-        "gamma0":      {
-            "@module":  "easyCore.Objects.Variable",
-            "@class":   "Parameter",
-            "@version": "0.0.1",
-            "name":     "gamma0",
-            "value":    0.0,
-            "fixed":    True,
-            "enabled":  False,
+        "gamma0": {
+            "name": "gamma0",
+            "value": 0.0,
+            "fixed": True,
+            "enabled": False,
         },
-        "gamma1":      {
-            "@module":  "easyCore.Objects.Variable",
-            "@class":   "Parameter",
-            "@version": "0.0.1",
-            "name":     "gamma1",
-            "value":    0.0,
-            "fixed":    True,
-            "enabled":  False,
+        "gamma1": {
+            "name": "gamma1",
+            "value": 0.0,
+            "fixed": True,
+            "enabled": False,
         },
-        "gamma2":      {
-            "@module":  "easyCore.Objects.Variable",
-            "@class":   "Parameter",
-            "@version": "0.0.1",
-            "name":     "gamma2",
-            "value":    0.0,
-            "fixed":    True,
-            "enabled":  False,
+        "gamma2": {
+            "name": "gamma2",
+            "value": 0.0,
+            "fixed": True,
+            "enabled": False,
         },
-        "alpha0":      {
-            "@module":  "easyCore.Objects.Variable",
-            "@class":   "Parameter",
-            "@version": "0.0.1",
-            "name":     "alpha0",
-            "value":    0.0,
-            "fixed":    True,
+        "alpha0": {
+            "name": "alpha0",
+            "value": 0.0,
+            "fixed": True,
         },
-        "alpha1":      {
-            "@module":  "easyCore.Objects.Variable",
-            "@class":   "Parameter",
-            "@version": "0.0.1",
-            "name":     "alpha1",
-            "value":    0.29710,
-            "fixed":    True,
+        "alpha1": {
+            "name": "alpha1",
+            "value": 0.29710,
+            "fixed": True,
         },
-        "beta0":       {
-            "@module":  "easyCore.Objects.Variable",
-            "@class":   "Parameter",
-            "@version": "0.0.1",
-            "name":     "beta0",
-            "value":    0.04182,
-            "fixed":    True,
+        "beta0": {
+            "name": "beta0",
+            "value": 0.04182,
+            "fixed": True,
         },
-        "beta1":       {
-            "@module":  "easyCore.Objects.Variable",
-            "@class":   "Parameter",
-            "@version": "0.0.1",
-            "name":     "beta1",
-            "value":    0.00224,
-            "fixed":    True,
+        "beta1": {
+            "name": "beta1",
+            "value": 0.00224,
+            "fixed": True,
         },
     }
 
@@ -399,37 +321,25 @@ class Instrument1DTOFParameters(BaseObj):
     beta1: ClassVar[Parameter]
 
     def __init__(
-            self,
-            ttheta_bank: Optional[Union[Parameter, float]] = None,
-            dtt1: Optional[Union[Parameter, float]] = None,
-            dtt2: Optional[Union[Parameter, float]] = None,
-            sigma0: Optional[Union[Parameter, float]] = None,
-            sigma1: Optional[Union[Parameter, float]] = None,
-            sigma2: Optional[Union[Parameter, float]] = None,
-            gamma0: Optional[Union[Parameter, float]] = None,
-            gamma1: Optional[Union[Parameter, float]] = None,
-            gamma2: Optional[Union[Parameter, float]] = None,
-            alpha0: Optional[Union[Parameter, float]] = None,
-            alpha1: Optional[Union[Parameter, float]] = None,
-            beta0: Optional[Union[Parameter, float]] = None,
-            beta1: Optional[Union[Parameter, float]] = None,
-            interface=None,
+        self,
+        ttheta_bank: Optional[Union[Parameter, float]] = None,
+        dtt1: Optional[Union[Parameter, float]] = None,
+        dtt2: Optional[Union[Parameter, float]] = None,
+        sigma0: Optional[Union[Parameter, float]] = None,
+        sigma1: Optional[Union[Parameter, float]] = None,
+        sigma2: Optional[Union[Parameter, float]] = None,
+        gamma0: Optional[Union[Parameter, float]] = None,
+        gamma1: Optional[Union[Parameter, float]] = None,
+        gamma2: Optional[Union[Parameter, float]] = None,
+        alpha0: Optional[Union[Parameter, float]] = None,
+        alpha1: Optional[Union[Parameter, float]] = None,
+        beta0: Optional[Union[Parameter, float]] = None,
+        beta1: Optional[Union[Parameter, float]] = None,
+        interface: Optional[iF] = None,
     ):
         super().__init__(
             self.__class__.__name__,
-            ttheta_bank=Parameter.from_dict(self._defaults['ttheta_bank']),
-            dtt1=Parameter.from_dict(self._defaults['dtt1']),
-            dtt2=Parameter.from_dict(self._defaults['dtt2']),
-            sigma0=Parameter.from_dict(self._defaults['sigma0']),
-            sigma1=Parameter.from_dict(self._defaults['sigma1']),
-            sigma2=Parameter.from_dict(self._defaults['sigma2']),
-            gamma0=Parameter.from_dict(self._defaults['gamma0']),
-            gamma1=Parameter.from_dict(self._defaults['gamma1']),
-            gamma2=Parameter.from_dict(self._defaults['gamma2']),
-            alpha0=Parameter.from_dict(self._defaults['alpha0']),
-            alpha1=Parameter.from_dict(self._defaults['alpha1']),
-            beta0=Parameter.from_dict(self._defaults['beta0']),
-            beta1=Parameter.from_dict(self._defaults['beta1'])
+            **{k: Parameter(**self._defaults[k]) for k in self._defaults.keys()},
         )
 
         if ttheta_bank is not None:

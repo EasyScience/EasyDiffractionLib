@@ -1,9 +1,9 @@
-__author__ = 'github.com/wardsimon'
-__version__ = '0.0.1'
+__author__ = "github.com/wardsimon"
+__version__ = "0.0.1"
 
 import os
 import tempfile
-from typing import Union, TypeVar
+from typing import Union, TypeVar, ClassVar
 
 from easyCore.Utils.UndoRedo import property_stack_deco
 from easyCore.Objects.ObjectClasses import BaseObj
@@ -11,7 +11,7 @@ from easyDiffractionLib import Phases, Phase
 from easyCore.Datasets.xarray import xr
 
 
-DataClassBaseType = TypeVar('DataClassBaseType', bound='_DataClassBase')
+DataClassBaseType = TypeVar("DataClassBaseType", bound="_DataClassBase")
 
 
 class _DataClassBase:
@@ -20,7 +20,6 @@ class _DataClassBase:
 
 
 class DataContainer:
-
     def __init__(self, sim_store: DataClassBaseType, exp_store: DataClassBaseType):
         self._simulations = sim_store
         self._experiments = exp_store
@@ -52,44 +51,59 @@ class DataContainer:
 
 
 class JobSetup:
-    def __init__(self, datastore_classes,
-                 instrumental_parameter_class,
-                 pattern_class):
+    def __init__(self, datastore_classes, instrumental_parameter_class, pattern_class):
         self.datastore_classes = datastore_classes
         self.instrumental_parameter_class = instrumental_parameter_class
         self.pattern_class = pattern_class
 
 
 class _PowderBase(BaseObj):
-    def __init__(self,
-                 name: str = '',
-                 job_type=None,
-                 datastore: xr.Dataset = None,
-                 phases: Union[Phase, Phases] = None,
-                 parameters=None,
-                 pattern=None,
-                 interface=None):
+
+    _phases = ClassVar[Phases]
+    _parameters = ClassVar[BaseObj]
+    _pattern = ClassVar[BaseObj]
+
+    _REDIRECT = {
+        "phases": lambda obj: obj._phases,
+        "parameters": lambda obj: obj._parameters,
+        "pattern": lambda obj: obj._pattern,
+    }
+
+    def __init__(
+        self,
+        name: str = "",
+        job_type=None,
+        datastore: xr.Dataset = None,
+        phases: Union[Phase, Phases] = None,
+        parameters=None,
+        pattern=None,
+        interface=None,
+    ):
         if isinstance(phases, Phase):
-            phases = Phases('Phases', phases)
+            phases = Phases("Phases", phases)
         elif phases is None:
-            phases = Phases('Phases')
+            phases = Phases("Phases")
 
         if not isinstance(phases, Phases):
-            raise AttributeError('`phases` must be a Crystal or Crystals')
+            raise AttributeError("`phases` must be a Crystal or Crystals")
 
         if parameters is None:
-            parameters = job_type.pattern_class.default()
+            parameters = job_type.pattern_class()
 
         if pattern is None:
-            pattern = job_type.instrumental_parameter_class.default()
+            pattern = job_type.instrumental_parameter_class()
 
-        super(_PowderBase, self).__init__(name, _phases=phases, _parameters=parameters, _pattern=pattern)
+        super(_PowderBase, self).__init__(
+            name, _phases=phases, _parameters=parameters, _pattern=pattern
+        )
 
         self.__constituting_classes = job_type
         self.__dataset = datastore
-        self.datastore = DataContainer.prepare(self.__dataset, *job_type.datastore_classes)
+        self.datastore = DataContainer.prepare(
+            self.__dataset, *job_type.datastore_classes
+        )
 
-        self.filename = os.path.join(tempfile.gettempdir(), 'easydiffraction_temp.cif')
+        self.filename = os.path.join(tempfile.gettempdir(), "easydiffraction_temp.cif")
         self.output_index = None
         self.interface = interface
 
@@ -103,7 +117,10 @@ class _PowderBase(BaseObj):
         self._pattern.backgrounds.append(background)
 
     def remove_background(self, background):
-        if background.linked_experiment.raw_value in self._pattern.backgrounds.linked_experiments:
+        if (
+            background.linked_experiment.raw_value
+            in self._pattern.backgrounds.linked_experiments
+        ):
             del self._pattern.backgrounds[background.linked_experiment.raw_value]
         else:
             raise ValueError
@@ -120,12 +137,13 @@ class _PowderBase(BaseObj):
     @property_stack_deco
     def phases(self, value):
         if isinstance(value, Phase):
-            value = Phases('Phases', value)
+            value = Phases("Phases", value)
         if not isinstance(value, Phases):
             raise ValueError
         self._phases = value
         self._borg.map.add_edge(self, value)
         self._phases.interface = self.interface
+
     @property
     def parameters(self):
         return self._parameters
@@ -142,7 +160,7 @@ class _PowderBase(BaseObj):
 
     def as_dict(self, skip: list = None) -> dict:
         d = super(_PowderBase, self).as_dict(skip=skip)
-        del d['_phases']
-        del d['_parameters']
-        del d['_pattern']
+        del d["_phases"]
+        del d["_parameters"]
+        del d["_pattern"]
         return d

@@ -1,10 +1,18 @@
+from __future__ import annotations
+
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
-from typing import Optional
+from typing import Optional, Union, TYPE_CHECKING
 
 from easyCrystallography.Structures.Phase import Phase as ecPhase, Phases as ecPhases
 from .site import Site, Atoms
+
+if TYPE_CHECKING:
+    from easyCore.Objects.Variable import Parameter
+    from easyCore.Utils.typing import iF
+    from easyCrystallography.Components.Lattice import Lattice, PeriodicLattice
+    from easyCrystallography.Components.SpaceGroup import SpaceGroup
 
 
 class Phase(ecPhase):
@@ -13,17 +21,17 @@ class Phase(ecPhase):
 
     def __init__(
         self,
-        name,
-        spacegroup=None,
-        cell=None,
-        atoms=None,
-        scale=None,
-        interface=None,
-        enforce_sym=True,
-        **kwargs
+        name: str,
+        spacegroup: Optional[Union[SpaceGroup, str]] = None,
+        cell: Optional[Union[Lattice, PeriodicLattice]] = None,
+        atoms: Optional[Atoms] = None,
+        scale: Optional[Parameter] = None,
+        interface: Optional[iF] = None,
+        enforce_sym: bool = True,
+        **kwargs,
     ):
         super(Phase, self).__init__(
-            name, spacegroup, cell, atoms, scale, enforce_sym=enforce_sym
+            name, spacegroup, cell, atoms, scale, enforce_sym=enforce_sym, **kwargs
         )
         self.interface = interface
 
@@ -57,4 +65,4 @@ class Phases(ecPhases):
 
     @classmethod
     def from_cif_file(cls, filename, phase_class: Optional = None):
-        return super(Phases, cls).from_cif_file(filename, phase_class=Phase)
+        return super(Phases, cls).from_cif_file(filename)

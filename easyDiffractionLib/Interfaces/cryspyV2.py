@@ -493,6 +493,7 @@ class UPol(UPol_type):
         """
         return self.calculator.calculate(x_array, *args, **kwargs)
 
+
 #
 # Now define the classes that implement the different types of models.
 #
@@ -617,6 +618,8 @@ class CryspyV2(InterfaceTemplate):
         cls = self._get_constructor(CryspyBase._subsets, model)
         if cls is not None and cls is not self._internal.__class__:
             self._internal = cls(calculator=self.calculator)
+        else:
+            raise NotImplementedError("No such model is available yet.")
         return self._internal.create(model)
 
     def __call__(self, *args, **kwargs) -> np.ndarray:
@@ -643,7 +646,13 @@ class CryspyV2(InterfaceTemplate):
         if self._internal is not None:
             return self._internal.fit_func(x_array, *args, **kwargs)
 
-    def get_hkl(self, x_array: np.ndarray = None, idx: Optional[int] = None, phase_name=None, encoded_name=False) -> dict:
+    def get_hkl(
+        self,
+        x_array: np.ndarray = None,
+        idx: Optional[int] = None,
+        phase_name=None,
+        encoded_name=False,
+    ) -> dict:
         if self._internal is not None:
             return self._internal.get_hkl(x_array, idx, phase_name, encoded_name)
 

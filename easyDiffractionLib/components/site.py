@@ -134,6 +134,7 @@ class Atoms(ecAtoms):
             for item in self:
                 msp = MagneticSusceptibility("Ciso")
                 item.msp = msp
+                item.msp.default = True
         add_loops = []
         msp_types = [item.msp.msp_type.raw_value for item in self if hasattr(item, 'msp')]
         if all(msp_types):
@@ -143,6 +144,7 @@ class Atoms(ecAtoms):
                     if not hasattr(item, 'msp'):
                         msp_item = MagneticSusceptibility(msp_types[0])
                         item.msp = msp_item
+                        item.msp.default = False
                     loops.append(getattr(item, 'msp').to_star(item.label))
                 msp_loop = StarLoop.from_StarSections(loops)
                 main_loop = main_loop.join(msp_loop, "label")
@@ -155,6 +157,7 @@ class Atoms(ecAtoms):
                     else:
                         msp = MagneticSusceptibility(msp_types[0])
                         item.msp = msp
+                        item.msp.default = False
                         entries.append(msp.to_star(item.label))
                 add_loops.append(StarLoop.from_StarSections(entries))
         else:

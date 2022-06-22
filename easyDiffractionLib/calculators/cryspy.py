@@ -127,13 +127,13 @@ class Cryspy:
     ) -> str:
         sg_split = name_hm_alt.split(":")
         opts = {"name_hm_alt": sg_split[0]}
-        # if len(sg_split) > 1:
-        #     opts['it_coordinate_system_code'] = sg_split[1]
-        # try:
-        #     sg = cryspy.SpaceGroup(**opts)
-        # except Exception as e:
-        sg = cryspy.SpaceGroup(**opts)
-        # print(e)
+        if len(sg_split) > 1:
+            opts["it_coordinate_system_code"] = sg_split[1]
+        try:
+            sg = cryspy.SpaceGroup(**opts)
+        except Exception as e:
+            print(e)
+            sg = cryspy.SpaceGroup(**{"name_hm_alt": sg_split[0]})
         self.storage[key] = sg
         return key
 
@@ -281,9 +281,7 @@ class Cryspy:
         for r_key in kwargs.keys():
             setattr(resolution, r_key, kwargs[key])
 
-    def powder_1d_calculate(
-        self, x_array: np.ndarray, **kwargs
-    ) -> np.ndarray:
+    def powder_1d_calculate(self, x_array: np.ndarray, **kwargs) -> np.ndarray:
         """
         For a given x calculate the corresponding y
         :param x_array: array of data points to be calculated
@@ -297,17 +295,17 @@ class Cryspy:
                 setattr(self.model, key_inner, self.storage[key_inner])
 
         if self.polarized:
-            if 'pol_fn' in kwargs.keys():
-                pol_fn = kwargs['pol_fn']
+            if "pol_fn" in kwargs.keys():
+                pol_fn = kwargs["pol_fn"]
             if not hasattr(self.model, "diffrn_radiation"):
                 setattr(self.model, "diffrn_radiation", self.storage["polarized_beam"])
             if not hasattr(self.model, "chi2"):
                 setattr(self.model, "chi2", self.storage["chi2"])
-            if 'pol_refinement' in kwargs:
-                self.model.chi2.sum = kwargs['pol_refinement']['sum']
-                self.model.chi2.diff = kwargs['pol_refinement']['diff']
-                self.model.chi2.up = kwargs['pol_refinement']['up']
-                self.model.chi2.down = kwargs['pol_refinement']['down']
+            if "pol_refinement" in kwargs:
+                self.model.chi2.sum = kwargs["pol_refinement"]["sum"]
+                self.model.chi2.diff = kwargs["pol_refinement"]["diff"]
+                self.model.chi2.up = kwargs["pol_refinement"]["up"]
+                self.model.chi2.down = kwargs["pol_refinement"]["down"]
 
         if self.pattern is None:
             scale = 1.0
@@ -447,9 +445,7 @@ class Cryspy:
         )
         # return returned_deps
 
-    def calculate(
-        self, x_array: np.ndarray, **kwargs
-    ) -> np.ndarray:
+    def calculate(self, x_array: np.ndarray, **kwargs) -> np.ndarray:
         """
         For a given x calculate the corresponding y
         :param x_array: array of data points to be calculated

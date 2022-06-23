@@ -29,6 +29,7 @@ from easyCrystallography.Components.Susceptibility import MagneticSusceptibility
 if TYPE_CHECKING:
     from easyCore.Utils.typing import iF
 
+
 class Site(ecSite):
     def __init__(
         self,
@@ -136,23 +137,25 @@ class Atoms(ecAtoms):
                 item.msp = msp
                 item.msp.default = True
         add_loops = []
-        msp_types = [item.msp.msp_type.raw_value for item in self if hasattr(item, 'msp')]
+        msp_types = [
+            item.msp.msp_type.raw_value for item in self if hasattr(item, "msp")
+        ]
         if all(msp_types):
             if msp_types[0] in ["Cani", "Ciso"]:
                 loops = []
                 for item in self:
-                    if not hasattr(item, 'msp'):
+                    if not hasattr(item, "msp"):
                         msp_item = MagneticSusceptibility(msp_types[0])
                         item.msp = msp_item
                         item.msp.default = False
-                    loops.append(getattr(item, 'msp').to_star(item.label))
+                    loops.append(getattr(item, "msp").to_star(item.label))
                 msp_loop = StarLoop.from_StarSections(loops)
                 main_loop = main_loop.join(msp_loop, "label")
             else:
                 pass
                 entries = []
                 for item in self:
-                    if hasattr(item, 'msp'):
+                    if hasattr(item, "msp"):
                         entries.append(item.msp.to_star(item.label))
                     else:
                         msp = MagneticSusceptibility(msp_types[0])
@@ -163,5 +166,7 @@ class Atoms(ecAtoms):
         else:
             raise NotImplementedError("Multiple types of MSP are not supported")
         return add_loops
+
+
 class PeriodicAtoms(ecPeriodicAtoms):
     _SITE_CLASS = PeriodicSite

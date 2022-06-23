@@ -411,7 +411,7 @@ class POL(Pol_type):
         # We have already created a Site in cryspy, now add the MSP
         elif issubclass(t_, Site) or issubclass(t_, Site_base):
             msp_type = model.msp.msp_type.raw_value
-            pars = model.get_parameters()
+            pars = model.msp.get_parameters()
             msp_pars = {par.name: par.raw_value for par in pars}
             ref_name = self.calculator.attachMSP(model_key, msp_type, msp_pars)
             r_list.append(
@@ -492,6 +492,7 @@ class UPol(UPol_type):
         :return: calculated points
         """
         return self.calculator.calculate(x_array, *args, **kwargs)
+
 
 #
 # Now define the classes that implement the different types of models.
@@ -643,7 +644,13 @@ class CryspyV2(InterfaceTemplate):
         if self._internal is not None:
             return self._internal.fit_func(x_array, *args, **kwargs)
 
-    def get_hkl(self, x_array: np.ndarray = None, idx: Optional[int] = None, phase_name=None, encoded_name=False) -> dict:
+    def get_hkl(
+        self,
+        x_array: np.ndarray = None,
+        idx: Optional[int] = None,
+        phase_name=None,
+        encoded_name=False,
+    ) -> dict:
         if self._internal is not None:
             return self._internal.get_hkl(x_array, idx, phase_name, encoded_name)
 

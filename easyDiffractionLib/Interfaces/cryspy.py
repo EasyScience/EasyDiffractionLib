@@ -222,7 +222,7 @@ class Cryspy(InterfaceTemplate):
             )
             if hasattr(model, "msp"):
                 msp_type = model.msp.msp_type.raw_value
-                pars = model.get_parameters()
+                pars = model.msp.get_parameters()
                 msp_pars = {par.name: par.raw_value for par in pars}
                 ref_name = self.calculator.attachMSP(model_key, msp_type, msp_pars)
                 r_list.append(

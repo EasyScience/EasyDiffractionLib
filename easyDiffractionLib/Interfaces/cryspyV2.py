@@ -468,6 +468,7 @@ class POL(Pol_type):
         self,
         x_array: np.ndarray,
         pol_fn: Optional[Callable[[np.ndarray, np.ndarray], np.ndarray]] = None,
+        **kwargs,
     ) -> np.ndarray:
         """
         In this case we need to know how to deal with the polarization channels.
@@ -477,7 +478,7 @@ class POL(Pol_type):
         """
         if pol_fn is None:
             pol_fn = self.up_plus_down
-        return self.calculator.calculate(x_array, pol_fn)
+        return self.calculator.calculate(x_array, pol_fn=pol_fn, **kwargs)
 
 
 class UPol(UPol_type):

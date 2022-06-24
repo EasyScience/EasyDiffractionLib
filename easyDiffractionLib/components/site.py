@@ -74,6 +74,20 @@ class Site(ecSite):
         )
         self.interface = interface
 
+    def add_adp(self, adp_type: Union[str, AtomicDisplacement], **kwargs):
+        if isinstance(adp_type, str):
+            adp_type = AtomicDisplacement(adp_type, **kwargs)
+        self._add_component("adp", adp_type)
+        if self.interface is not None:
+            self.interface.generate_bindings()
+
+    def add_msp(self, msp_type: Union[str, MagneticSusceptibility], **kwargs):
+        if isinstance(msp_type, str):
+            msp_type = MagneticSusceptibility(msp_type, **kwargs)
+        self._add_component("msp", msp_type)
+        if self.interface is not None:
+            self.interface.generate_bindings()
+
 
 class PeriodicSite(ecPeriodicSite):
     @classmethod

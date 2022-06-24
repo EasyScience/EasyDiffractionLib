@@ -178,8 +178,6 @@ class Cryspy:
         msp = cryspy.AtomSiteSusceptibility(chi_type=msp_name, **msp_args)
         ref_name = str(atom_name) + "_" + msp_name
         self.storage[ref_name] = msp
-        # TODO: I do not know if this is the right way to do this
-        setattr(atom, "susceptibility", msp)
         return ref_name
 
     def assignAtom_toCrystal(self, atom_label: str, crystal_name: str):
@@ -378,8 +376,38 @@ class Cryspy:
         phase_lists = []
         profiles = []
         peak_dat = []
+        storage_invert = {v: k for k, v in self.storage.items()}
         for crystal in crystals:
             phasesL = cryspy.PhaseL()
+            atoms = crystal.atom_site
+            pol_atoms = []
+            ass = []
+            for atom in atoms:
+                i = None
+                l = str(storage_invert[atom]) + "_Cani"
+                if l in self.storage.keys():
+                    i = self.storage[l]
+                l = str(storage_invert[atom]) + "_Ciso"
+                if l in self.storage.keys():
+                    i = self.storage[l]
+                if i is not None:
+                    i.label = atom.label
+                    pol_atoms.append(i)
+                    ii = cryspy.AtomSiteScat()
+                    ii.label = atom.label
+                    ass.append(ii)
+            if pol_atoms:
+                asl = cryspy.AtomSiteSusceptibilityL()
+                asl.items = pol_atoms
+                sl = cryspy.AtomSiteScatL()
+                sl.items = ass
+                setattr(crystal, "atom_site_susceptibility", asl)
+                setattr(crystal, "atom_site_scat", sl)
+            else:
+                if hasattr(crystal, "atom_site_susceptibility"):
+                    delattr(crystal, "atom_site_susceptibility")
+                if hasattr(crystal, "atom_site_scat"):
+                    delattr(crystal, "atom_site_scat")
             idx = [
                 idx
                 for idx, item in enumerate(self.phases.items)

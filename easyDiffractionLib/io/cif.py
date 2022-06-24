@@ -635,7 +635,7 @@ class CifParser:
                             # Add to an atom
                             if current_atom_label in atoms.atom_labels:
                                 idx2 = atoms.atom_labels.index(current_atom_label)
-                                atoms[idx2].adp = adps
+                                atoms[idx2]._add_component("adp", adps)
                         else:
                             raise AttributeError
                     break
@@ -736,7 +736,7 @@ class CifParser:
                             # Add to an atom
                             if current_atom_label in atoms.atom_labels:
                                 idx2 = atoms.atom_labels.index(current_atom_label)
-                                atoms[idx2].msp = msps
+                                atoms[idx2]._add_component("msp", msps)
                         else:
                             raise AttributeError
                     break

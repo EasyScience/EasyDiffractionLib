@@ -648,7 +648,7 @@ class CifParser:
         fields = ["atom_site_susceptibility_label", "atom_site_susceptibility_chi_type"]
         msp_types = {
             "Ciso": ["chi"],
-            "Cani": ["chi_11", "chi_12", "chi_13", "chi_22", "chi_23", "chi_33"],
+            "Cani": ["chi_11", "chi_22", "chi_33", "chi_12", "chi_13", "chi_23"],
         }
         found = False
         for loop in loops:

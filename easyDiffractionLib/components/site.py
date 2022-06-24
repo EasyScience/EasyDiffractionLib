@@ -40,11 +40,10 @@ class Site(ecSite):
         fract_y: Optional[Union[float, Parameter]] = None,
         fract_z: Optional[Union[float, Parameter]] = None,
         adp: Optional[Union[str, AtomicDisplacement]] = None,
-        msp: Optional[Union[str, MagneticSusceptibility]] = None,
         interface: Optional[iF] = None,
         **kwargs,
     ):
-
+        msp = kwargs.get("msp", None)
         if msp is not None:
             if isinstance(msp, str):
                 msp = MagneticSusceptibility(msp)
@@ -142,44 +141,51 @@ class Atoms(ecAtoms):
 
     def add_msp(self, main_loop, add_loops):
 
-        msps = [hasattr(item, "msp") for item in self]
-        has_msp = any(msps)
-        if not has_msp:
-            # initialize msp so as_dict doesn't throw a fit
-            for item in self:
-                msp = MagneticSusceptibility("Ciso")
-                item.msp = msp
-                item.msp.default = True
-        add_loops = []
-        msp_types = [
-            item.msp.msp_type.raw_value for item in self if hasattr(item, "msp")
-        ]
-        if all(msp_types):
-            if msp_types[0] in ["Cani", "Ciso"]:
-                loops = []
-                for item in self:
-                    if not hasattr(item, "msp"):
-                        msp_item = MagneticSusceptibility(msp_types[0])
-                        item.msp = msp_item
-                        item.msp.default = False
-                    loops.append(getattr(item, "msp").to_star(item.label))
-                msp_loop = StarLoop.from_StarSections(loops)
-                main_loop = main_loop.join(msp_loop, "label")
-            else:
-                pass
-                entries = []
-                for item in self:
-                    if hasattr(item, "msp"):
-                        entries.append(item.msp.to_star(item.label))
-                    else:
-                        msp = MagneticSusceptibility(msp_types[0])
-                        item.msp = msp
-                        item.msp.default = False
-                        entries.append(msp.to_star(item.label))
-                add_loops.append(StarLoop.from_StarSections(entries))
-        else:
-            raise NotImplementedError("Multiple types of MSP are not supported")
-        return add_loops
+        # msps = [hasattr(item, "msp") for item in self]
+        # has_msp = any(msps)
+        loops = []
+        # if has_msp:
+        for item in self:
+            if hasattr(item, "msp"):
+                loops.append(getattr(item, "msp").to_star(item.label))
+        if loops:
+            add_loops.append(StarLoop.from_StarSections(loops))
+        # if not has_msp:
+        #     # initialize msp so as_dict doesn't throw a fit
+        #     for item in self:
+        #         msp = MagneticSusceptibility("Ciso")
+        #         item.msp = msp
+        #         item.msp.default = True
+        # add_loops = []
+        # msp_types = [
+        #     item.msp.msp_type.raw_value for item in self if hasattr(item, "msp")
+        # ]
+        # if all(msp_types):
+        #     if msp_types[0] in ["Cani", "Ciso"]:
+        #         loops = []
+        #         for item in self:
+        #             if not hasattr(item, "msp"):
+        #                 msp_item = MagneticSusceptibility(msp_types[0])
+        #                 item.msp = msp_item
+        #                 item.msp.default = False
+        #             loops.append(getattr(item, "msp").to_star(item.label))
+        #         msp_loop = StarLoop.from_StarSections(loops)
+        #         main_loop = main_loop.join(msp_loop, "label")
+        #     else:
+        #         pass
+        #         entries = []
+        #         for item in self:
+        #             if hasattr(item, "msp"):
+        #                 entries.append(item.msp.to_star(item.label))
+        #             else:
+        #                 msp = MagneticSusceptibility(msp_types[0])
+        #                 item.msp = msp
+        #                 item.msp.default = False
+        #                 entries.append(msp.to_star(item.label))
+        #         add_loops.append(StarLoop.from_StarSections(entries))
+        # else:
+        #     raise NotImplementedError("Multiple types of MSP are not supported")
+        # return add_loops
 
 
 class PeriodicAtoms(ecPeriodicAtoms):

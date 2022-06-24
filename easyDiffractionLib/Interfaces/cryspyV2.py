@@ -410,6 +410,8 @@ class POL(Pol_type):
             )
         # We have already created a Site in cryspy, now add the MSP
         elif issubclass(t_, Site) or issubclass(t_, Site_base):
+            if not hasattr(model, "msp"):
+                return r_list
             msp_type = model.msp.msp_type.raw_value
             pars = model.msp.get_parameters()
             msp_pars = {par.name: par.raw_value for par in pars}

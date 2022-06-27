@@ -212,7 +212,7 @@ class Cryspy:
 
         if cls_type == "powder1DCW":
             setup = cryspy.Setup(
-                wavelength=self.conditions["wavelength"], offset_ttheta=0
+                wavelength=self.conditions["wavelength"], offset_ttheta=0, field=0
             )
         elif cls_type == "powder1DTOF":
             setup = cryspy.TOFParameters(

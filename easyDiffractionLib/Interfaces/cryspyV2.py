@@ -376,6 +376,11 @@ class POL(Pol_type):
         "polarization": "polarization",
         "efficiency": "efficiency",
     }
+
+    _field_link = {
+        'magnetic_field': 'field'
+    }
+
     _chi2_link = {
         "sum": "sum",
         "diff": "diff",
@@ -424,6 +429,16 @@ class POL(Pol_type):
                     self.calculator.genericUpdate,
                 )
             )
+        elif issubclass(t_, Powder1DParameters):
+            if hasattr(model, 'field'):
+                r_list.append(
+                    ItemContainer(
+                        'setup',
+                        self._field_link,
+                        self.calculator.genericReturn,
+                        self.calculator.genericUpdate,
+                    )
+                )
         return r_list
 
     @staticmethod

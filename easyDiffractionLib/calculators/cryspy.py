@@ -13,7 +13,7 @@ import functools
 
 warnings.filterwarnings("ignore")
 
-normalization = 500.0
+normalization = 1.0
 
 
 class Cryspy:

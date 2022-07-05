@@ -206,6 +206,14 @@ class CFML:
             if name in self.additional_data["phases"].keys():
                 del self.additional_data["phases"][name]
 
+    def get_component(self, component_name=None):
+        data = None
+        if component_name is None:
+            data = self.additional_data.copy()
+        elif component_name in self.additional_data:
+            data = self.additional_data[component_name].copy()
+        return data
+
     def get_phase_components(self, phase_name):
         data = None
         if phase_name in self.additional_data["phase_names"]:

@@ -199,6 +199,9 @@ class CFML(InterfaceTemplate):
     def get_phase_components(self, phase_name):
         return None
 
+    def get_component(self, component_name):
+        return self.calculator.get_component(component_name)
+
     def get_calculated_y_for_phase(self, phase_idx: int) -> list:
         return self.calculator.get_calculated_y_for_phase(phase_idx)
 

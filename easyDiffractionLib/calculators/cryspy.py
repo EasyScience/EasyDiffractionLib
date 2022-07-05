@@ -534,6 +534,14 @@ class Cryspy:
             phase_name = list(self.current_crystal.values())[idx]
         return self.additional_data["phases"][phase_name]["hkl"]
 
+    def get_component(self, component_name=None) -> Optional[dict]:
+        data = None
+        if component_name is None:
+            data = self.additional_data.copy()
+        elif component_name in self.additional_data:
+            data = self.additional_data[component_name].copy()
+        return data
+
     @staticmethod
     def nonPolarized_update(crystals, profiles, peak_dat, scales, x_str):
         dependent = np.array([profile.intensity_total for profile in profiles])
@@ -586,12 +594,6 @@ class Cryspy:
                 }
             )
         return dependent, output
-
-    def get_phase_components(self, phase_name: str) -> Optional[dict]:
-        data = None
-        if phase_name in self.additional_data["phase_names"]:
-            data = self.additional_data[phase_name].copy()
-        return data
 
 
 def _do_run(

@@ -164,6 +164,9 @@ class GSASII(InterfaceTemplate):
     def get_phase_components(self, phase_name):
         return None
 
+    def get_component(self, component_name):
+        return None
+
     @staticmethod
     def __identify(obj):
         return borg.map.convert_id_to_key(obj)

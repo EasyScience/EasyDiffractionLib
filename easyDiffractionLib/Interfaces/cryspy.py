@@ -351,6 +351,9 @@ class Cryspy(InterfaceTemplate):
         data = self.calculator.get_phase_components(phase_name)
         return data
 
+    def get_component(self, component_name):
+        return self.calculator.get_component(component_name)
+
     def __createModel(self, model, model_type):
         self.calculator.createModel(model, model_type)
 

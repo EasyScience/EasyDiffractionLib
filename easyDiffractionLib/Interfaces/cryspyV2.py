@@ -217,6 +217,9 @@ class CryspyBase(Neutron_type, metaclass=ABCMeta):
         """
         return self.calculator.get_hkl(idx, phase_name, encoded_name)
 
+    def get_component(self, component_name):
+        return self.calculator.get_component(component_name)
+
     def get_phase_components(self, phase_name: str) -> dict:
         """
         Get all the components of a phase as specified by the phase name.

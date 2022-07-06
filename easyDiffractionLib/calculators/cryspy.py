@@ -585,8 +585,8 @@ class Cryspy:
                         "profile": scales[idx] * dependent[idx, :] / normalization,
                         "components": {
                             "total": dependent[idx, :],
-                            "up": up[idx, :],
-                            "down": down[idx, :],
+                            "up": scales[idx] * up[idx, :] / normalization,
+                            "down": scales[idx] * down[idx, :] / normalization,
                         },
                         "profile_scale": scales[idx],
                         "func": func,

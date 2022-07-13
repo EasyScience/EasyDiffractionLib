@@ -54,7 +54,8 @@ class GSASII(InterfaceTemplate):
     }
 
     feature_available = {
-        'Npowder1DCW': True
+        'Npowder1DCW': True,
+        'Npowder1DCWunp': True
     }
 
     name = 'GSASII'
@@ -108,7 +109,7 @@ class GSASII(InterfaceTemplate):
                                         self.dump_cif))
         elif issubclass(t_, Phases):
             self._phase = model
-        elif t_.__name__ in ['Powder1DCW', 'powder1DCW', 'Npowder1DCW']:
+        elif t_.__name__ in ['Powder1DCW', 'powder1DCW', 'Npowder1DCW', 'Npowder1DCWunp']:
         #     #TODO Check to see if parameters and pattern should be initialized here.
             self.__createModel(model_key, 'powder1DCW')
         elif issubclass(t_, Sample):

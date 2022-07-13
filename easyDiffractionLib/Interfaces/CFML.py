@@ -53,7 +53,7 @@ class CFML(InterfaceTemplate):
     }
     _pattern_link = {"scale": "scale", "x_offset": "x_offset"}
 
-    feature_available = {"Npowder1DCW": True}
+    feature_available = {"Npowder1DCW": True, "Npowder1DCWunp": True}
 
     name = "CrysFML"
 
@@ -123,7 +123,7 @@ class CFML(InterfaceTemplate):
             self.calculator.add_phase(str(model_key), model.name)
         elif issubclass(t_, Sample):
             self.__createModel(model)
-        elif t_.__name__ in ["Powder1DCW", "powder1DCW", "Npowder1DCW"]:
+        elif t_.__name__ in ["Powder1DCW", "powder1DCW", "Npowder1DCW", "Npowder1DCWunp"]:
             self.__createModel(model)
         else:
             if self._borg.debug:

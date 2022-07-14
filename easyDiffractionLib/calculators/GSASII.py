@@ -18,6 +18,9 @@ class GSASII:
         self.filename = filename
         self.background = None
         self.pattern = None
+        self.res = None
+        self.this_x_array = None
+        self.bg = None
         self.hkl_dict = {
             'ttheta': np.empty(0),
             'h': np.empty(0),
@@ -72,10 +75,10 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
             scale = 1.0
             offset = 0
         else:
-            scale = self.pattern.scale.raw_value / 1000.0
+            scale = self.pattern.scale.raw_value
             offset = self.pattern.zero_shift.raw_value
 
-        this_x_array = x_array + offset
+        self.this_x_array = x_array + offset
 
         gpx = G2sc.G2Project(newgpx=os.path.join(self.prm_dir_path, 'easydiffraction_temp.gpx'))  # create a project
 
@@ -88,8 +91,8 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
                                fmthint='CIF')
 
         # step 2, setup: add a simulated histogram and link it to the previous phase(s)
-        x_min = this_x_array[0]
-        x_max = this_x_array[-1]
+        x_min = self.this_x_array[0]
+        x_max = self.this_x_array[-1]
         n_points = np.prod(x_array.shape)
         x_step = (x_max - x_min)/(n_points - 1)
         histogram0 = gpx.add_simulated_powder_histogram(f"{phase_name} simulation",
@@ -145,20 +148,26 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
         }
 
         if len(self.pattern.backgrounds) == 0:
-            bg = np.zeros_like(this_x_array)
+            self.bg = np.zeros_like(self.this_x_array)
         else:
-            bg = self.pattern.backgrounds[0].calculate(this_x_array)
+            self.bg = self.pattern.backgrounds[0].calculate(self.this_x_array)
 
-        res = scale * ycalc + bg
+        self.res = scale * ycalc + self.bg
 
         np.set_printoptions(precision=3)
         if borg.debug:
             print(f"y_calc: {res}")
 
-        return res
+        return self.res
 
     def get_hkl(self, x_array: np.ndarray = None, idx=None, phase_name=None, encoded_name=False) -> dict:
         hkl_dict = self.hkl_dict
         if x_array is not None:
             pass
         return hkl_dict
+
+    def get_calculated_y_for_phase(self, phase_idx: int):
+        return self.res - self.bg
+
+    def get_total_y_for_phases(self):
+        return self.this_x_array, self.res - self.bg

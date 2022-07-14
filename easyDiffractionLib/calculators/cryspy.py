@@ -2,10 +2,13 @@ __author__ = "github.com/wardsimon"
 __version__ = "0.0.3"
 
 import time
-from typing import Tuple, Optional, Any, Callable, List, Dict
+from typing import Tuple, Optional, Any, Callable, List, Dict, Union
 
 import cryspy
 import warnings
+
+from numpy import ndarray
+
 from easyCore import np, borg
 
 # from pathos import multiprocessing as mp
@@ -279,7 +282,10 @@ class Cryspy:
         for r_key in kwargs.keys():
             setattr(resolution, r_key, kwargs[key])
 
-    def powder_1d_calculate(self, x_array: np.ndarray, **kwargs) -> np.ndarray:
+    def powder_1d_calculate(
+        self, x_array: np.ndarray, full_return: bool = False, **kwargs
+    ):
+
         """
         For a given x calculate the corresponding y
         :param x_array: array of data points to be calculated
@@ -317,9 +323,14 @@ class Cryspy:
         if borg.debug:
             print("CALLING FROM Cryspy\n----------------------")
 
-        return self.do_calc_setup(scale, this_x_array, pol_fn)
+        results, additional = self.do_calc_setup(scale, this_x_array, pol_fn)
+        if full_return:
+            return results, additional
+        return results
 
-    def powder_1d_tof_calculate(self, x_array: np.ndarray, pol_fn=None) -> np.ndarray:
+    def powder_1d_tof_calculate(
+        self, x_array: np.ndarray, pol_fn=None, full_return: bool = False
+    ):
         """
         For a given x calculate the corresponding y
         :param x_array: array of data points to be calculated
@@ -354,11 +365,14 @@ class Cryspy:
 
         if borg.debug:
             print("CALLING FROM Cryspy\n----------------------")
-        return self.do_calc_setup(scale, this_x_array, pol_fn)
+        results, additional = self.do_calc_setup(scale, this_x_array, pol_fn)
+        if full_return:
+            return results, additional
+        return results
 
     def do_calc_setup(
         self, scale: float, this_x_array: np.ndarray, pol_fn: Callable
-    ) -> np.ndarray:
+    ) -> Tuple[np.ndarray, dict]:
         if len(self.pattern.backgrounds) == 0:
             bg = np.zeros_like(this_x_array)
         else:
@@ -470,7 +484,7 @@ class Cryspy:
                 [s["profile"] for s in self.additional_data["phases"].values()], axis=0
             )
             + self.additional_data["background"]
-        )
+        ), self.additional_data
         # return returned_deps
 
     def calculate(self, x_array: np.ndarray, **kwargs) -> np.ndarray:
@@ -489,6 +503,23 @@ class Cryspy:
         if self.type == "powder1DTOF":
             return self.powder_1d_tof_calculate(args, **kwargs)
         return res
+
+    def full_calculate(self, x_array: np.ndarray, **kwargs) -> Tuple[np.ndarray, dict]:
+        """
+        For a given x calculate the corresponding y
+        :param x_array: array of data points to be calculated
+        :type x_array: np.ndarray
+        :return: points calculated at `x`
+        :rtype: np.ndarray
+        """
+        res = np.zeros_like(x_array)
+        self.additional_data["ivar"] = res
+        args = x_array
+        if self.type == "powder1DCW":
+            return self.powder_1d_calculate(args, full_return=True, **kwargs)
+        if self.type == "powder1DTOF":
+            return self.powder_1d_tof_calculate(args, full_return=True, **kwargs)
+        return res, dict()
 
     def get_phase_components(self, phase_name: str) -> List[np.ndarray]:
         data = None

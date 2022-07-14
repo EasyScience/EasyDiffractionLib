@@ -168,15 +168,16 @@ class Cryspy(InterfaceTemplate):
         elif issubclass(t_, Powder1DParameters):
             # These parameters do not link directly to cryspy objects.
             self.calculator.pattern = model
-            if hasattr(model, 'field'):
+            if hasattr(model, "field"):
                 r_list.append(
                     ItemContainer(
-                        'setup',
-                        {"magnetic_field": 'field'},
+                        "setup",
+                        {"magnetic_field": "field"},
                         self.calculator.genericReturn,
                         self.calculator.genericUpdate,
                     )
                 )
+                self.calculator.polarized = True
         elif issubclass(t_, PolarizedBeam):
             p_key = self.calculator.createPolarization()
             r_list.append(

@@ -682,3 +682,15 @@ class CryspyV2(InterfaceTemplate):
     def get_total_y_for_phases(self) -> list:
         if self._internal is not None:
             return self._internal.get_total_y_for_phases()
+
+    def get_component(self, component_name):
+        if self._internal is not None:
+            return self._internal.get_component(component_name)
+
+    def get_phase_components(self, phase_name: str) -> dict:
+        """
+        Get all the components of a phase as specified by the phase name.
+        """
+        if self._internal is not None:
+            data = self._internal.get_phase_components(phase_name)
+            return data

@@ -152,10 +152,13 @@ class CFML:
             _ = self.calculate(x_array)
 
         # Collate and return
-        if phase_name is None:
-            known_phases = list(self.known_phases.values())
-            phase_name = known_phases[idx]
-        phase_data = self.additional_data.get(phase_name, {})
+        #if phase_name is None:
+        #    known_phases = list(self.known_phases.values())
+        #    phase_name = known_phases[idx]
+        #phase_data = self.additional_data.get(phase_name, {})
+        # Temp fix to get phase_data
+        full_phase_name = self.additional_data['phase_names'][idx]
+        phase_data = self.additional_data['phases'].get(full_phase_name)
         return phase_data.get(
             "hkl",
             {

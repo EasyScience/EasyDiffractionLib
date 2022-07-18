@@ -83,27 +83,33 @@ class JobBase_1D(_PowderBase):
         return self.datastore.store[sim_name].plot()
 
     def add_experiment(self, experiment_name, file_path):
-        data_x, data_y, data_e = np.loadtxt(file_path, unpack=True)
+        data = np.loadtxt(file_path, unpack=True)
         coord_name = self.name + "_" + experiment_name + "_" + self._x_axis_name
 
-        self.datastore.store.easyCore.add_coordinate(coord_name, data_x)
-        self.datastore.store.easyCore.add_variable(
-            self.name + "_" + experiment_name + "_I", [coord_name], data_y
-        )
-        self.datastore.store.easyCore.sigma_attach(
-            self.name + "_" + experiment_name + "_I", data_e
-        )
+        self.datastore.store.easyCore.add_coordinate(coord_name, data[0])
+
+        j = 0
+        for i in range(1, len(data), 2):
+            data_y = data[i]
+            data_e = data[i + 1]
+            self.datastore.store.easyCore.add_variable(
+                self.name + "_" + experiment_name + f"_I{j}", [coord_name], data_y
+            )
+            self.datastore.store.easyCore.sigma_attach(
+                self.name + "_" + experiment_name + f"_I{j}", data_e
+            )
+            j += 1
         # self._experiments[]
 
-    def simulate_experiment(self, experiment_name=None, **kwargs):
+    def simulate_experiment(self, experiment_name=None, name_post="", **kwargs):
         tth_name = self.name + "_" + experiment_name + "_" + self._x_axis_name
         tth = self.datastore.store[tth_name]
         return self.create_simulation(
-            tth, simulation_name=self.name + "_" + experiment_name, **kwargs
+            tth, simulation_name=self.name + "_" + experiment_name + name_post, **kwargs
         )
 
-    def plot_experiment(self, experiment_name=None):
-        dataarray_name = self.name + "_" + experiment_name + "_I"
+    def plot_experiment(self, experiment_name=None, index=0):
+        dataarray_name = self.name + "_" + experiment_name + f"_I{index}"
         return self.datastore.store[dataarray_name].plot()
 
     def fit_experiment(self, experiment_name, fitter=None, **kwargs):
@@ -146,11 +152,11 @@ class PolPowder1DCW(JobBase_1D):
         )
         self._x_axis_name = "tth"
 
-    def simulate_experiment(self, experiment_name=None, pol_fn=None):
+    def simulate_experiment(self, experiment_name=None, name_post="", pol_fn=None):
         if pol_fn is None:
             pol_fn = lambda up, down: up + down
         return super(PolPowder1DCW, self).simulate_experiment(
-            experiment_name, pol_fn=pol_fn
+            experiment_name, name_post, pol_fn=pol_fn
         )
 
     def create_simulation(self, tth, simulation_name=None, pol_fn=None, **kwargs):

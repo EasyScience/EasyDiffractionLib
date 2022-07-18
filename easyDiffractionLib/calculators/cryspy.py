@@ -377,6 +377,7 @@ class Cryspy:
             bg = np.zeros_like(this_x_array)
         else:
             bg = self.pattern.backgrounds[0].calculate(this_x_array)
+        new_bg = bg
 
         num_crys = len(self.current_crystal.keys())
 
@@ -459,33 +460,31 @@ class Cryspy:
                 phase_scales,
                 x_str,
             )
+
+            new_bg = pol_fn(bg, bg)  # Scale the bg for the components requested
         else:
             dependents, additional_data = self.nonPolarized_update(
                 crystals, profiles, peak_dat, phase_scales, x_str
             )
         self.additional_data["phases"].update(additional_data)
         self.additional_data["global_scale"] = scale
-        self.additional_data["background"] = bg
+        self.additional_data["background"] = new_bg
+        self.additional_data["f_background"] = bg
         self.additional_data["ivar_run"] = this_x_array
         self.additional_data["phase_names"] = list(additional_data.keys())
         self.additional_data["type"] = self.type
 
-        # just the sum of all phases
-        dependent_output = scale * np.sum(dependents, axis=0) + bg
-
-        scaled_dependents = [scale * dep for dep in dependents]
-        self.additional_data["components"] = scaled_dependents
+        scaled_dependents = [scale * dep / normalization for dep in dependents]
         self.additional_data["components"] = scaled_dependents
 
-        if borg.debug:
-            print(f"y_calc: {dependent_output}")
-        return (
+        total_profile = (
             np.sum(
                 [s["profile"] for s in self.additional_data["phases"].values()], axis=0
             )
-            + self.additional_data["background"]
-        ), self.additional_data
-        # return returned_deps
+            + new_bg
+        )
+
+        return total_profile, self.additional_data
 
     def calculate(self, x_array: np.ndarray, **kwargs) -> np.ndarray:
         """
@@ -624,6 +623,7 @@ class Cryspy:
                     }
                 }
             )
+
         return dependent, output
 
 

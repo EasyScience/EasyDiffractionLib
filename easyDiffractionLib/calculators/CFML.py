@@ -120,8 +120,10 @@ class CFML:
             )
             dependents.append(dependent)
             self.additional_data["phases"].update(additional_data)
-        for cif in cifs:
-            os.remove(cif)
+        # This causes issues on windows, so commenting out.
+        # Macos/Linux don't seem to need it as well, but leaving just in case.
+        # for cif in cifs:
+        #     os.remove(cif)
         self.additional_data["global_scale"] = scale
         self.additional_data["background"] = bg
         self.additional_data["ivar_run"] = this_x_array

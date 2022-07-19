@@ -1,18 +1,15 @@
+from __future__ import annotations
+
 #  SPDX-FileCopyrightText: 2022 easyCrystallography contributors  <crystallography@easyscience.software>
 #  SPDX-License-Identifier: BSD-3-Clause
 #  © 2022 Contributors to the easyCore project <https://github.com/easyScience/easyCrystallography>
 #
-
-from __future__ import annotations
-
 __author__ = "github.com/wardsimon"
 __version__ = "0.2.0"
 
-from easyCore import np
 from easyCore.Objects.ObjectClasses import Descriptor, Parameter, BaseObj
 from easyCore.Objects.Groups import BaseCollection
 from typing import List, Union, ClassVar, TypeVar, Optional, TYPE_CHECKING
-from easyCore.Utils.io.star import StarLoop
 
 from easyCrystallography.Components.Site import (
     Site as ecSite,
@@ -30,6 +27,16 @@ if TYPE_CHECKING:
     from easyCore.Utils.typing import iF
 
 
+def _option_parser(obj, cls, name, kwargs):
+    if isinstance(obj, str):
+        obj = cls(obj)
+    for parameter in obj.get_parameters():
+        if parameter.name in kwargs.keys():
+            new_option = kwargs.pop(parameter.name)
+            parameter.value = new_option
+    kwargs[name] = obj
+
+
 class Site(ecSite):
     def __init__(
         self,
@@ -45,22 +52,24 @@ class Site(ecSite):
     ):
         msp = kwargs.get("msp", None)
         if msp is not None:
-            if isinstance(msp, str):
-                msp = MagneticSusceptibility(msp)
-            for parameter in msp.get_parameters():
-                if parameter.name in kwargs.keys():
-                    new_option = kwargs.pop(parameter.name)
-                    parameter.value = new_option
-            kwargs["msp"] = msp
+            _option_parser(msp, MagneticSusceptibility, "msp", kwargs)
+            # if isinstance(msp, str):
+            #     msp = MagneticSusceptibility(msp)
+            # for parameter in msp.get_parameters():
+            #     if parameter.name in kwargs.keys():
+            #         new_option = kwargs.pop(parameter.name)
+            #         parameter.value = new_option
+            # kwargs["msp"] = msp
 
         if adp is not None:
-            if isinstance(adp, str):
-                adp = AtomicDisplacement(adp)
-            for parameter in adp.get_parameters():
-                if parameter.name in kwargs.keys():
-                    new_option = kwargs.pop(parameter.name)
-                    parameter.value = new_option
-            kwargs["adp"] = adp
+            _option_parser(adp, AtomicDisplacement, "adp", kwargs)
+            # if isinstance(adp, str):
+            #     adp = AtomicDisplacement(adp)
+            # for parameter in adp.get_parameters():
+            #     if parameter.name in kwargs.keys():
+            #         new_option = kwargs.pop(parameter.name)
+            #         parameter.value = new_option
+            # kwargs["adp"] = adp
 
         super(Site, self).__init__(
             label=label,
@@ -100,92 +109,7 @@ class PeriodicSite(ecPeriodicSite):
 
 
 class Atoms(ecAtoms):
-
     _SITE_CLASS = Site
-
-    def to_star(self) -> List[StarLoop]:
-        add_loops = []
-        main_loop = super(Atoms, self).to_star()[0]
-
-        self.add_adp(main_loop, add_loops)
-        self.add_msp(main_loop, add_loops)
-
-        loops = [main_loop, *add_loops]
-
-        return loops
-
-    def add_adp(self, main_loop, add_loops):
-
-        adps = [hasattr(item, "adp") for item in self]
-        has_adp = any(adps)
-        if not has_adp:
-            return [main_loop]
-        add_loops = []
-        adp_types = [item.adp.adp_type.raw_value for item in self]
-        if all(adp_types):
-            if adp_types[0] in ["Uiso", "Biso"]:
-                main_loop = main_loop.join(
-                    StarLoop.from_StarSections(
-                        [getattr(item, "adp").to_star(item.label) for item in self]
-                    ),
-                    "label",
-                )
-            else:
-                entries = []
-                for item in self:
-                    entries.append(item.adp.to_star(item.label))
-                add_loops.append(StarLoop.from_StarSections(entries))
-        else:
-            raise NotImplementedError("Multiple types of ADP are not supported")
-        return add_loops
-
-    def add_msp(self, main_loop, add_loops):
-
-        # msps = [hasattr(item, "msp") for item in self]
-        # has_msp = any(msps)
-        loops = []
-        # if has_msp:
-        for item in self:
-            if hasattr(item, "msp"):
-                loops.append(getattr(item, "msp").to_star(item.label))
-        if loops:
-            add_loops.append(StarLoop.from_StarSections(loops))
-        # if not has_msp:
-        #     # initialize msp so as_dict doesn't throw a fit
-        #     for item in self:
-        #         msp = MagneticSusceptibility("Ciso")
-        #         item.msp = msp
-        #         item.msp.default = True
-        # add_loops = []
-        # msp_types = [
-        #     item.msp.msp_type.raw_value for item in self if hasattr(item, "msp")
-        # ]
-        # if all(msp_types):
-        #     if msp_types[0] in ["Cani", "Ciso"]:
-        #         loops = []
-        #         for item in self:
-        #             if not hasattr(item, "msp"):
-        #                 msp_item = MagneticSusceptibility(msp_types[0])
-        #                 item.msp = msp_item
-        #                 item.msp.default = False
-        #             loops.append(getattr(item, "msp").to_star(item.label))
-        #         msp_loop = StarLoop.from_StarSections(loops)
-        #         main_loop = main_loop.join(msp_loop, "label")
-        #     else:
-        #         pass
-        #         entries = []
-        #         for item in self:
-        #             if hasattr(item, "msp"):
-        #                 entries.append(item.msp.to_star(item.label))
-        #             else:
-        #                 msp = MagneticSusceptibility(msp_types[0])
-        #                 item.msp = msp
-        #                 item.msp.default = False
-        #                 entries.append(msp.to_star(item.label))
-        #         add_loops.append(StarLoop.from_StarSections(entries))
-        # else:
-        #     raise NotImplementedError("Multiple types of MSP are not supported")
-        # return add_loops
 
 
 class PeriodicAtoms(ecPeriodicAtoms):

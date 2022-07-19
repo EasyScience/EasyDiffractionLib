@@ -4,7 +4,7 @@ __version__ = "0.0.1"
 from abc import ABCMeta, abstractmethod
 from typing import Tuple, List
 from easyCore import np, borg
-from easyCore.Utils.json import MSONable
+from easyCore.Objects.core import ComponentSerializer
 
 exp_type_strings = {
     'radiation_options':   ['N', 'X'],
@@ -15,7 +15,7 @@ exp_type_strings = {
 }
 
 
-class InterfaceTemplate(MSONable, metaclass=ABCMeta):
+class InterfaceTemplate(ComponentSerializer, metaclass=ABCMeta):
     """
     This class is a template and defines all properties that an interface should have.
     """

@@ -3,7 +3,7 @@ __version__ = "0.0.1"
 
 import os
 import tempfile
-from typing import Union, TypeVar
+from typing import Union, TypeVar, ClassVar
 
 from easyCore.Utils.UndoRedo import property_stack_deco
 from easyCore.Objects.ObjectClasses import BaseObj
@@ -58,6 +58,17 @@ class JobSetup:
 
 
 class _PowderBase(BaseObj):
+
+    _phases = ClassVar[Phases]
+    _parameters = ClassVar[BaseObj]
+    _pattern = ClassVar[BaseObj]
+
+    _REDIRECT = {
+        "phases": lambda obj: obj._phases,
+        "parameters": lambda obj: obj._parameters,
+        "pattern": lambda obj: obj._pattern,
+    }
+
     def __init__(
         self,
         name: str = "",
@@ -184,6 +195,7 @@ class _PowderBase(BaseObj):
         del d["_parameters"]
         del d["_pattern"]
         return d
+
 
     def _update_bases(self, new_base):
         base_class = getattr(self, "__old_class__", self.__class__)

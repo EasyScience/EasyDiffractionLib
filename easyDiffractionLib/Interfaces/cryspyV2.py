@@ -380,9 +380,7 @@ class POL(Pol_type):
         "efficiency": "efficiency",
     }
 
-    _field_link = {
-        'magnetic_field': 'field'
-    }
+    _field_link = {"magnetic_field": "field"}
 
     _chi2_link = {
         "sum": "sum",
@@ -433,10 +431,10 @@ class POL(Pol_type):
                 )
             )
         elif issubclass(t_, Powder1DParameters):
-            if hasattr(model, 'field'):
+            if hasattr(model, "field"):
                 r_list.append(
                     ItemContainer(
-                        'setup',
+                        "setup",
                         self._field_link,
                         self.calculator.genericReturn,
                         self.calculator.genericUpdate,
@@ -500,6 +498,21 @@ class POL(Pol_type):
             pol_fn = self.up_plus_down
         return self.calculator.calculate(x_array, pol_fn=pol_fn, **kwargs)
 
+    def full_callback(
+        self,
+        x_array: np.ndarray,
+        pol_fn: Optional[Callable[[np.ndarray, np.ndarray], np.ndarray]] = None,
+        **kwargs,
+    ) -> np.ndarray:
+        """
+        Calculate the polarization components.
+        :param x_array: points to be calculated at
+        :return: calculated points
+        """
+        if pol_fn is None:
+            pol_fn = self.up_plus_down
+        return self.calculator.full_calculate(x_array, pol_fn=pol_fn, **kwargs)
+
 
 class UPol(UPol_type):
     def create(self, model: B) -> List[ItemContainer]:
@@ -513,6 +526,14 @@ class UPol(UPol_type):
         :return: calculated points
         """
         return self.calculator.calculate(x_array, *args, **kwargs)
+
+    def full_callback(self, x_array: np.ndarray, *args, **kwargs) -> np.ndarray:
+        """
+        Function to perform a fit.
+        :param x_array: points to be calculated at
+        :return: calculated points
+        """
+        return self.calculator.full_calculate(x_array, *args, **kwargs)
 
 
 #
@@ -615,6 +636,7 @@ class CryspyV2(InterfaceTemplate):
     def __init__(self):
         self.calculator = Cryspy_calc()
         self._internal = None
+        self._last_callback = {}
 
     @staticmethod
     def feature_checker(
@@ -639,11 +661,12 @@ class CryspyV2(InterfaceTemplate):
         cls = self._get_constructor(CryspyBase._subsets, model)
         if cls is not None and cls is not self._internal.__class__:
             self._internal = cls(calculator=self.calculator)
-        return self._internal.create(model)
+        if self._internal is not None:
+            return self._internal.create(model)
+        return []
 
     def __call__(self, *args, **kwargs) -> np.ndarray:
-        if self._internal is not None:
-            return self._internal.fit_func(*args, **kwargs)
+        return self.fit_func(*args, **kwargs)
 
     def link_atom(self, phase: Phase, atom: Union[Site, Site_base]) -> None:
         if self._internal is not None:
@@ -663,7 +686,10 @@ class CryspyV2(InterfaceTemplate):
 
     def fit_func(self, x_array: np.ndarray, *args, **kwargs) -> Union[np.ndarray, None]:
         if self._internal is not None:
-            return self._internal.fit_func(x_array, *args, **kwargs)
+            calculation, self._last_callback = self._internal.full_callback(
+                x_array, *args, **kwargs
+            )
+            return calculation
 
     def get_hkl(
         self,

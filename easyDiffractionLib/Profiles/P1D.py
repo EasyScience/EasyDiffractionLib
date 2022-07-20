@@ -3,7 +3,7 @@ from __future__ import annotations
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
-from typing import TypeVar, List, Optional, Union, TYPE_CHECKING, ClassVar
+from typing import TypeVar, List, Optional, Union, TYPE_CHECKING, ClassVar, Tuple
 
 from easyCore.Datasets.xarray import xr
 from easyCore.Objects.ObjectClasses import BaseObj, Parameter
@@ -118,31 +118,13 @@ class Powder1DParameters(BaseObj):
 
 
 class PolPowder1DParameters(Powder1DParameters):
-    polarization: ClassVar[Parameter]
-    efficiency: ClassVar[Parameter]
+    # polarization: ClassVar[Parameter]
+    # efficiency: ClassVar[Parameter]
     field: ClassVar[Parameter]
+    beam: ClassVar[PolarizedBeam]
 
     _defaults = {
-        "field": {
-            'name': 'magnetic_field',
-            'value': 1.0,
-            'units': 'T',
-            'fixed': True
-        },
-        "polarization": {
-            "name":  "polarization",
-            "value": 1.0,
-            "min":   0.0,
-            "max":   1.0,
-            "fixed": True,
-        },
-        "efficiency":   {
-            "name":  "efficiency",
-            "value": 1.0,
-            "min":   0.0,
-            "max":   1.0,
-            "fixed": True,
-        },
+        "field": {"name": "magnetic_field", "value": 1.0, "units": "T", "fixed": True},
     }
     _defaults.update(Powder1DParameters._defaults)
 
@@ -151,26 +133,48 @@ class PolPowder1DParameters(Powder1DParameters):
         zero_shift: Optional[Union[Parameter, float]] = None,
         scale: Optional[Union[Parameter, float]] = None,
         backgrounds: Optional[BackgroundContainer] = None,
-        polarization: Optional[Union[Parameter, float]] = None,
-        efficiency: Optional[Union[Parameter, float]] = None,
+        beam: Optional[Union[PolarizedBeam, Tuple[float, float]]] = None,
         field: Optional[Union[Parameter, float]] = None,
         interface: Optional[iF] = None,
         **kwargs,
     ):
+        polarization = None
+        if "polarization" in kwargs.keys():
+            polarization = kwargs.pop("polarization")
+        efficiency = None
+        if "efficiency" in kwargs.keys():
+            efficiency = kwargs.pop("efficiency")
+
+        if beam is None:
+            beam = PolarizedBeam(polarization=polarization, efficiency=efficiency)
+        if isinstance(beam, tuple):
+            beam = PolarizedBeam(*beam)
+        else:
+            if polarization is not None:
+                beam.polarization = polarization
+            if efficiency is not None:
+                beam.efficiency = efficiency
+
+        kwargs["beam"] = beam
+
         super().__init__(
             zero_shift=zero_shift,
             scale=scale,
             backgrounds=backgrounds,
             **kwargs,
         )
-
-        if polarization is not None:
-            self.polarization = polarization
-        if efficiency is not None:
-            self.efficiency = efficiency
         if field is not None:
             self.field = field
+
         self.interface = interface
+
+    @property
+    def polarization(self):
+        return self.beam.polarization
+
+    @property
+    def efficiency(self):
+        return self.beam.efficiency
 
 
 class Instrument1DCWParameters(BaseObj):

@@ -82,6 +82,24 @@ class JobBase_1D(_PowderBase):
             )
         return self.datastore.store[sim_name].plot()
 
+    def add_experiment_data(self, x, y, e, experiment_name="None"):
+
+        coord_name = self.name + "_" + experiment_name + "_" + self._x_axis_name
+        self.datastore.store.easyCore.add_coordinate(coord_name, x)
+
+        j = 0
+        for i in range(0, len(y)):
+            data_y = y[i]
+            data_e = e[i]
+            self.datastore.store.easyCore.add_variable(
+                self.name + "_" + experiment_name + f"_I{j}", [coord_name], data_y
+            )
+            self.datastore.store.easyCore.sigma_attach(
+                self.name + "_" + experiment_name + f"_I{j}", data_e
+            )
+            j += 1
+
+
     def add_experiment(self, experiment_name, file_path):
         data = np.loadtxt(file_path, unpack=True)
         coord_name = self.name + "_" + experiment_name + "_" + self._x_axis_name

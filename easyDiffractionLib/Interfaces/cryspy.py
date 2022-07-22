@@ -210,8 +210,8 @@ class Cryspy(InterfaceTemplate):
                 )
             )
         elif issubclass(t_, SpaceGroup):
-            s_key = self.calculator.createSpaceGroup(key=model_key, name_hm_alt="P 1")
-            keys = {"_space_group_HM_name": "name_hm_alt"}
+            s_key = self.calculator.createSpaceGroup(key=model_key, name_hm_alt=model.hermann_mauguin)
+            keys = {"hermann_mauguin": "name_hm_alt"}
             r_list.append(
                 ItemContainer(
                     s_key,

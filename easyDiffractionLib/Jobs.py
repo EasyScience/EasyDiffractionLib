@@ -6,13 +6,6 @@ from easyDiffractionLib.Profiles.common import _PowderBase
 from easyDiffractionLib.interface import InterfaceFactory
 from easyCore.Fitting.Fitting import Fitter
 
-try:
-    import hvplot.xarray  # noqa
-
-    USE_HVPLOT = True
-except ImportError:
-    USE_HVPLOT = False
-
 
 class JobBase_1D(_PowderBase):
     def __init__(

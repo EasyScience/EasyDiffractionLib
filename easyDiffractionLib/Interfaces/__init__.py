@@ -12,6 +12,13 @@ except ImportError:
     # TODO make this a proper message (use logging?)
     print('Warning: CrysPy is not installed')
 
+
+# try:
+#     from easyDiffractionLib.Interfaces.cryspyV2 import CryspyBase  # noqa: F401
+# except ImportError:
+#     # TODO make this a proper message (use logging?)
+#     print('Warning: CrysPy is not installed')
+
 try:
     from easyDiffractionLib.Interfaces.CFML import CFML  # noqa: F401
 except ImportError:

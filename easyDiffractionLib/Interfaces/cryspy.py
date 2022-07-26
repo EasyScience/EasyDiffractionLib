@@ -1,17 +1,21 @@
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.2"
 
+from typing import List, Callable
 
 from easyCore import borg, np
 from easyCore.Objects.Inferface import ItemContainer
+from easyCrystallography.Components.Site import Site as Site_base
 from easyDiffractionLib import Lattice, SpaceGroup, Site, Phase, Phases
 from easyDiffractionLib.Profiles.P1D import (
     Instrument1DCWParameters,
     Instrument1DTOFParameters,
+    Instrument1DCWPolParameters,
     Powder1DParameters,
 )
+from easyDiffractionLib.components.polarization import PolarizedBeam
 from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
-from easyDiffractionLib.Calculators.cryspy import Cryspy as Cryspy_calc
+from easyDiffractionLib.calculators.cryspy import Cryspy as Cryspy_calc
 
 
 class Cryspy(InterfaceTemplate):
@@ -51,12 +55,28 @@ class Cryspy(InterfaceTemplate):
         "resolution_y": "y",
         "wavelength": "wavelength",
     }
+    _polarization_link = {
+        "polarization": "polarization",
+        "efficiency": "efficiency",
+    }
+    _chi2_link = {
+        "sum": "sum",
+        "diff": "diff",
+        "up": "up",
+        "down": "down",
+    }
 
     _instrument_tof_link = {k: k for k in Instrument1DTOFParameters._defaults.keys()}
 
     name = "CrysPy"
 
-    feature_available = {"Npowder1DCW": True, "Npowder1DTOF": True}
+    saved_kwargs = {}
+
+    feature_available = {
+        "Npowder1DCWunp": True,
+        "Npowder1DTOFunp": True,
+        "Npowder1DCWpol": True,
+    }
 
     def __init__(self):
         self.calculator = Cryspy_calc()
@@ -67,6 +87,7 @@ class Cryspy(InterfaceTemplate):
         exp_type="CW",
         sample_type="powder",
         dimensionality="1D",
+        polarization="unp",
         test_str=None,
     ):
         return InterfaceTemplate.features(
@@ -74,6 +95,7 @@ class Cryspy(InterfaceTemplate):
             exp_type=exp_type,
             sample_type=sample_type,
             dimensionality=dimensionality,
+            polarization=polarization,
             test_str=test_str,
             FEATURES=Cryspy.feature_available,
         )
@@ -147,6 +169,35 @@ class Cryspy(InterfaceTemplate):
         elif issubclass(t_, Powder1DParameters):
             # These parameters do not link directly to cryspy objects.
             self.calculator.pattern = model
+            if hasattr(model, "field"):
+                r_list.append(
+                    ItemContainer(
+                        "setup",
+                        {"magnetic_field": "field"},
+                        self.calculator.genericReturn,
+                        self.calculator.genericUpdate,
+                    )
+                )
+                self.calculator.polarized = True
+        elif issubclass(t_, PolarizedBeam):
+            p_key = self.calculator.createPolarization()
+            r_list.append(
+                ItemContainer(
+                    p_key,
+                    self._polarization_link,
+                    self.calculator.genericReturn,
+                    self.calculator.genericUpdate,
+                )
+            )
+            p_key = self.calculator.createChi2()
+            r_list.append(
+                ItemContainer(
+                    p_key,
+                    self._chi2_link,
+                    self.calculator.genericReturn,
+                    self.calculator.genericUpdate,
+                )
+            )
         elif issubclass(t_, Lattice):
             l_key = self.calculator.createCell(model_key)
             keys = self._crystal_link.copy()
@@ -169,7 +220,7 @@ class Cryspy(InterfaceTemplate):
                     self.calculator.updateSpacegroup,
                 )
             )
-        elif issubclass(t_, Site):
+        elif issubclass(t_, Site) or issubclass(t_, Site_base):
             a_key = self.calculator.createAtom(model_key)
             keys = self._atom_link.copy()
             r_list.append(
@@ -180,6 +231,19 @@ class Cryspy(InterfaceTemplate):
                     lambda x, **y: self.calculator.genericUpdate(a_key, **y),
                 )
             )
+            if hasattr(model, "msp"):
+                msp_type = model.msp.msp_type.raw_value
+                pars = model.msp.get_parameters()
+                msp_pars = {par.name: par.raw_value for par in pars}
+                ref_name = self.calculator.attachMSP(model_key, msp_type, msp_pars)
+                r_list.append(
+                    ItemContainer(
+                        ref_name,
+                        {par.name: par.name for par in pars},
+                        self.calculator.genericReturn,
+                        self.calculator.genericUpdate,
+                    )
+                )
         elif issubclass(t_, Phase):
             ident = str(model_key) + "_phase"
             self.calculator.createPhase(ident)
@@ -211,12 +275,36 @@ class Cryspy(InterfaceTemplate):
             #     #TODO Check to see if parameters and pattern should be initialized here.
             self.__createModel(model_key, "powder1DTOF")
         elif t_.__name__ == "Sample":  # This is legacy mode. Boo
-            if issubclass(type(model.parameters), Instrument1DCWParameters):
-                self.__createModel(model_key, "powder1DCW")
-            elif issubclass(type(model.parameters), Instrument1DTOFParameters):
-                self.__createModel(model_key, "powder1DTOF")
+            tt_ = type(model.parameters)
+            base = "powder1D"
+
+            if issubclass(tt_, Instrument1DCWParameters):
+                base += "CW"
+            elif issubclass(tt_, Instrument1DTOFParameters):
+                base += "TOF"
             else:
                 raise AttributeError("Unknown EXP type")
+            if issubclass(tt_, Instrument1DCWPolParameters):
+                base += "pol"
+                p_key = self.calculator.createPolarization()
+                r_list.append(
+                    ItemContainer(
+                        p_key,
+                        self._polarization_link,
+                        self.calculator.genericReturn,
+                        self.calculator.genericUpdate,
+                    )
+                )
+                p_key = self.calculator.createChi2()
+                r_list.append(
+                    ItemContainer(
+                        p_key,
+                        self._chi2_link,
+                        self.calculator.genericReturn,
+                        self.calculator.genericUpdate,
+                    )
+                )
+            self.__createModel(model_key, base)
         else:
             if self._borg.debug:
                 print(f"I'm a: {type(model)}")
@@ -241,7 +329,7 @@ class Cryspy(InterfaceTemplate):
         ident = str(self.__identify(phase_obj)) + "_phase"
         self.calculator.removePhase(self.__identify(phases_obj), ident)
 
-    def fit_func(self, x_array: np.ndarray) -> np.ndarray:
+    def fit_func(self, x_array: np.ndarray, *args, **kwargs) -> np.ndarray:
         """
         Function to perform a fit
         :param x_array: points to be calculated at
@@ -249,14 +337,54 @@ class Cryspy(InterfaceTemplate):
         :return: calculated points
         :rtype: np.ndarray
         """
-        return self.calculator.calculate(x_array)
+        # apply cryspy kwargs now, since lmfit strips them
+        for arg in self.saved_kwargs:
+            if arg not in kwargs:
+                kwargs[arg] = self.saved_kwargs[arg]
 
-    def get_hkl(self, x_array: np.ndarray = None, idx=None, phase_name=None, encoded_name=False) -> dict:
+        return self.calculator.calculate(x_array, *args, **kwargs)
+
+    def generate_pol_fit_func(
+        self,
+        x_array: np.ndarray,
+        spin_up: np.ndarray,
+        spin_down: np.ndarray,
+        components: List[Callable],
+    ) -> Callable:
+        num_components = len(components)
+        dummy_x = np.repeat(x_array[..., np.newaxis], num_components, axis=x_array.ndim)
+        calculated_y = np.array(
+            [fun(spin_up, spin_down) for fun in components]
+        ).swapaxes(0, x_array.ndim)
+
+        def pol_fit_fuction(dummy_x: np.ndarray, **kwargs) -> np.ndarray:
+            results, results_dict = self.calculator.full_calculate(
+                x_array, pol_fn=components[0], **kwargs
+            )
+            phases = list(results_dict["phases"].keys())[0]
+            up, down = (
+                results_dict["phases"][phases]["components"]["up"],
+                results_dict["phases"][phases]["components"]["down"],
+            )
+            bg = results_dict["f_background"]
+            sim_y = np.array(
+                [fun(up, down) + fun(bg, bg) for fun in components]
+            ).swapaxes(0, x_array.ndim)
+            return sim_y.flatten()
+
+        return dummy_x.flatten(), calculated_y.flatten(), pol_fit_fuction
+
+    def get_hkl(
+        self, x_array: np.ndarray = None, idx=None, phase_name=None, encoded_name=False
+    ) -> dict:
         return self.calculator.get_hkl(idx, phase_name, encoded_name)
 
     def get_phase_components(self, phase_name):
         data = self.calculator.get_phase_components(phase_name)
         return data
+
+    def get_component(self, component_name):
+        return self.calculator.get_component(component_name)
 
     def __createModel(self, model, model_type):
         self.calculator.createModel(model, model_type)

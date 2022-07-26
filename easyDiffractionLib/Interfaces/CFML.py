@@ -2,6 +2,7 @@ __author__ = "github.com/wardsimon"
 __version__ = "0.0.2"
 
 import os
+import glob
 from easyCore import borg, np
 from easyCore.Objects.Inferface import ItemContainer
 
@@ -9,7 +10,7 @@ from easyDiffractionLib import Lattice, SpaceGroup, Site, Phases, Phase
 
 from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
 from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters, Powder1DParameters
-from easyDiffractionLib.Calculators.CFML import CFML as CFML_calc
+from easyDiffractionLib.calculators.CFML import CFML as CFML_calc
 
 
 class CFML(InterfaceTemplate):
@@ -52,7 +53,7 @@ class CFML(InterfaceTemplate):
     }
     _pattern_link = {"scale": "scale", "x_offset": "x_offset"}
 
-    feature_available = {"Npowder1DCW": True}
+    feature_available = {"Npowder1DCW": True, "Npowder1DCWunp": True}
 
     name = "CrysFML"
 
@@ -122,7 +123,7 @@ class CFML(InterfaceTemplate):
             self.calculator.add_phase(str(model_key), model.name)
         elif issubclass(t_, Sample):
             self.__createModel(model)
-        elif t_.__name__ in ["Powder1DCW", "powder1DCW", "Npowder1DCW"]:
+        elif t_.__name__ in ["Powder1DCW", "powder1DCW", "Npowder1DCW", "Npowder1DCWunp"]:
             self.__createModel(model)
         else:
             if self._borg.debug:
@@ -159,6 +160,8 @@ class CFML(InterfaceTemplate):
     def dump_cif(self, *args, **kwargs):
         if self._filename is None:
             return
+        # delete preexising cif files
+        self.remove_cif()
         with open(self._filename, "w") as fid:
             fid.write(str(self._phase.cif))
         base, file = os.path.split(self._filename)
@@ -167,6 +170,20 @@ class CFML(InterfaceTemplate):
         for idx, phase in enumerate(self._phase):
             with open(f"{os.path.join(base, file)}_{idx}.{ext}", "w") as fid:
                 fid.write(str(phase.cif))
+
+    def remove_cif(self):
+        if self._filename is None:
+            return
+        base, file = os.path.split(self._filename)
+        ext = file[-3:]
+        file = file[:-4]
+        file_wildcarded = os.path.join(base, file) + '_*.' + ext
+        fileList = glob.glob(file_wildcarded)
+        for f in fileList:
+            try:
+                os.remove(f)
+            except OSError:
+                pass
 
     def __createModel(self, model):
         self._filename = model.filename
@@ -181,6 +198,9 @@ class CFML(InterfaceTemplate):
 
     def get_phase_components(self, phase_name):
         return None
+
+    def get_component(self, component_name):
+        return self.calculator.get_component(component_name)
 
     def get_calculated_y_for_phase(self, phase_idx: int) -> list:
         return self.calculator.get_calculated_y_for_phase(phase_idx)

@@ -4,7 +4,7 @@ __version__ = "0.0.2"
 from easyCore import borg, np
 from ..Interfaces.interfaceTemplate import InterfaceTemplate
 from easyCore.Objects.Inferface import ItemContainer
-from ..Calculators.GSASII import GSASII as GSAS_calc
+from ..calculators.GSASII import GSASII as GSAS_calc
 from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters, Powder1DParameters
 from easyDiffractionLib import Lattice, SpaceGroup, Site, Phases
 
@@ -54,7 +54,8 @@ class GSASII(InterfaceTemplate):
     }
 
     feature_available = {
-        'Npowder1DCW': True
+        'Npowder1DCW': True,
+        'Npowder1DCWunp': True
     }
 
     name = 'GSASII'
@@ -108,7 +109,7 @@ class GSASII(InterfaceTemplate):
                                         self.dump_cif))
         elif issubclass(t_, Phases):
             self._phase = model
-        elif t_.__name__ in ['Powder1DCW', 'powder1DCW', 'Npowder1DCW']:
+        elif t_.__name__ in ['Powder1DCW', 'powder1DCW', 'Npowder1DCW', 'Npowder1DCWunp']:
         #     #TODO Check to see if parameters and pattern should be initialized here.
             self.__createModel(model_key, 'powder1DCW')
         elif issubclass(t_, Sample):
@@ -163,6 +164,15 @@ class GSASII(InterfaceTemplate):
 
     def get_phase_components(self, phase_name):
         return None
+
+    def get_component(self, component_name):
+        return None
+
+    def get_calculated_y_for_phase(self, phase_idx: int) -> list:
+        return self.calculator.get_calculated_y_for_phase(phase_idx)
+
+    def get_total_y_for_phases(self) -> list:
+        return self.calculator.get_total_y_for_phases()
 
     @staticmethod
     def __identify(obj):

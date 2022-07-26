@@ -1,6 +1,6 @@
 cryspy @ git+https://github.com/ikibalin/cryspy.git@bravis_type_fix
 --extra-index-url https://easyscience.github.io/pypi
-easysciencecore @ git+https://github.com/easyScience/easyCore.git
-easycrystallography @ git+https://github.com/easyScience/easyCrystallography.git@develop
+easysciencecore==0.2.3
+easycrystallography==0.1.3
 cfml==0.0.1
 gsasii==0.0.1

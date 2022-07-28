@@ -5,9 +5,9 @@ from easyCore import np
 from easyDiffractionLib.sample import Sample
 from easyDiffractionLib import Phases
 from easyDiffractionLib.interface import InterfaceFactory
-from easyDiffractionLib.Elements.Experiments.Experiment import Pars1D
-from easyDiffractionLib.Elements.Experiments.Pattern import Pattern1D
-from easyDiffractionLib.Elements.Backgrounds.Point import PointBackground, BackgroundPoint
+from easyDiffractionLib.elements.Experiments.Experiment import Pars1D
+from easyDiffractionLib.elements.Experiments.Pattern import Pattern1D
+from easyDiffractionLib.elements.Backgrounds.Point import PointBackground, BackgroundPoint
 
 from easyCore.Fitting.Fitting import Fitter
 from easyCore.Datasets.xarray import xr

@@ -11,14 +11,18 @@ import matplotlib.pyplot as plt
 
 
 calculator = Calculator()
-calculator.switch('CrysPy')
+calculator.switch("CrysPyV2")
 
-atom = Site.from_pars(label="Cl1",
-                      specie='Cl',
-                      fract_x=0.1250,
-                      fract_y=0.1670,
-                      fract_z=0.1070)
-atom.add_adp('Uiso', Uiso=0.0)
+atom = Site(
+    label="Cl1",
+    specie="Cl",
+    fract_x=0.1250,
+    fract_y=0.1670,
+    fract_z=0.1070,
+    adp="Uiso",
+    Uiso=0.0,
+    msp="Cani",
+)
 
 phase = Phase(name="p1")
 phase.spacegroup.space_group_HM_name = "P 42/n c m"
@@ -42,7 +46,8 @@ pattern = Powder1DParameters.default()
 pattern.zero_shift = 0.0
 pattern.scale = 100.0
 
-S = Sample(phases=phases, parameters=parameters, pattern=pattern, calculator=calculator)
+S = Sample(phases=phases, parameters=parameters, pattern=pattern)
+S.interface = calculator
 
 x_data = np.linspace(1, 120, 500)
 y_data = calculator.fit_func(x_data)
@@ -62,12 +67,12 @@ parameters.dtt2 = -2.28000
 parameters.ttheta_bank = 145.00
 pattern.zero_shift = 0.0
 pattern.scale = 100.0
+#
+# tof_str = 'Npowder1DTOF'
+# interfaces = calculator.interface_compatability(tof_str)
+# calculator.switch(interfaces[0])
 
-tof_str = 'Npowder1DTOF'
-interfaces = calculator.interface_compatability(tof_str)
-calculator.switch(interfaces[0])
-
-S = Sample(phases=phases, parameters=parameters, pattern=pattern, calculator=calculator)
+S = Sample(phases=phases, parameters=parameters, pattern=pattern, interface=calculator)
 
 x_data = np.linspace(5000, 60000, 500)
 y_data = calculator.fit_func(x_data)

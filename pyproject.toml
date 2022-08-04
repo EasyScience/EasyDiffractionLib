@@ -13,7 +13,7 @@ repo = 'easyDiffractionLib'
 
 [tool.poetry]
 name = "easyDiffraction"
-version = "0.0.5"
+version = "0.0.7"
 description = 'Making diffraction data analysis and modelling easy.'
 license = "BSD-3-Clause"
 authors = ["Simon Ward",  "Andrew Sazonov"]
@@ -30,13 +30,21 @@ classifiers = [
 include = ["CHANGELOG.md"]
 packages = [ { include = "easyDiffractionLib" } ]
 
+[[tool.poetry.source]]
+name = "easyRepo"
+url = "https://easyscience.github.io/pypi/"
+default = false
+
 [tool.poetry.dependencies]
-python = "^3.8, <3.9"
+python = "^3.8, <3.11"
 cryspy = { git = 'https://github.com/ikibalin/cryspy.git', rev = 'bravis_type_fix' }
-CFML = '^0.0.1'
-GSASII = '^0.0.1'
 easyScienceCore = '>=0.2.3'
-easyCrystallography = { git = 'https://github.com/easyScience/easyCrystallography.git', rev = 'master' } #'>=0.1.2'
+easyCrystallography = '>=0.1.2'
+CFML = {version = '^0.0.1', optional=true}
+GSASII = {version = '^0.0.1', optional=true}
+
+[tool.poetry.extras]
+additional = ["CFML", "GSASII"]
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1"
@@ -48,10 +56,10 @@ bokeh = "^2.4.0"
 [tool.poetry.scripts]
 easyDiffractionLib = "easyDiffractionLib.main:main"
 
-[[tool.poetry.source]]
-name = "easyScience"
-url = "https://easyscience.github.io/pypi/"
-secondary = true
+#[[tool.poetry.source]]
+#name = "easyScience"
+#url = "https://easyscience.github.io/pypi/"
+#secondary = true
 
 [tool.tox]
 legacy_tox_ini = """

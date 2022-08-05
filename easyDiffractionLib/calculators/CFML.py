@@ -20,6 +20,11 @@ class CFML:
         self.storage = {}
 
     def createConditions(self, job_type="N"):
+
+        job = 1  # Default for Neutrons
+        if job_type == "X":
+            job = 1  # This is xrays
+
         self.conditions = {
             "lamb": 1.54,
             "u_resolution": 0.01,
@@ -28,6 +33,7 @@ class CFML:
             "x_resolution": 0.0,
             "y_resolution": 0.0,
             "z_resolution": 0.0,
+            "job": job,
         }
 
     def conditionsUpdate(self, _, **kwargs):
@@ -141,7 +147,9 @@ class CFML:
             + self.additional_data["background"]
         )
 
-    def get_hkl(self, x_array: np.ndarray = None, idx=0, phase_name=None, encoded_name=False) -> dict:
+    def get_hkl(
+        self, x_array: np.ndarray = None, idx=0, phase_name=None, encoded_name=False
+    ) -> dict:
 
         # Do we need to re-run a calculation to get the HKL's
         do_run = False
@@ -152,13 +160,13 @@ class CFML:
             _ = self.calculate(x_array)
 
         # Collate and return
-        #if phase_name is None:
+        # if phase_name is None:
         #    known_phases = list(self.known_phases.values())
         #    phase_name = known_phases[idx]
-        #phase_data = self.additional_data.get(phase_name, {})
+        # phase_data = self.additional_data.get(phase_name, {})
         # Temp fix to get phase_data
-        full_phase_name = self.additional_data['phase_names'][idx]
-        phase_data = self.additional_data['phases'].get(full_phase_name)
+        full_phase_name = self.additional_data["phase_names"][idx]
+        phase_data = self.additional_data["phases"].get(full_phase_name)
         return phase_data.get(
             "hkl",
             {

@@ -276,12 +276,16 @@ class CW(CW_type):
     """
 
     _instrument_link = {
+        "wavelength": "wavelength",
         "resolution_u": "u",
         "resolution_v": "v",
         "resolution_w": "w",
         "resolution_x": "x",
         "resolution_y": "y",
-        "wavelength": "wavelength",
+        "reflex_asymmetry_p1": "p1",
+        "reflex_asymmetry_p2": "p2",
+        "reflex_asymmetry_p3": "p3",
+        "reflex_asymmetry_p4": "p4"
     }
 
     def create(self, model: B) -> List[ItemContainer]:
@@ -292,15 +296,29 @@ class CW(CW_type):
         # Link the Instrumental parameters to the calculator.
         if issubclass(t_, Instrument1DCWParameters):
             self.calculator.createModel(model_key, "powder1DCW")
-            # These parameters are linked to the Resolution and Setup cryspy objects
+
+            # These parameters are linked to the Resolution, Peak Asymmetry and Setup cryspy objects
             res_key = self.calculator.createResolution()
+            asymm_key = self.calculator.createReflexAsymmetry()
             setup_key = self.calculator.createSetup()
+
             keys = self._instrument_link.copy()
-            keys.pop("wavelength")
+            res_keys = {k: v for k, v in keys.items() if 'resolution' in k}
+            asymm_keys = {k: v for k, v in keys.items() if 'reflex_asymmetry' in k}
+            setup_keys = {k: v for k, v in keys.items() if 'wavelength' in k}
+
             r_list.append(
                 ItemContainer(
                     res_key,
-                    keys,
+                    res_keys,
+                    self.calculator.genericReturn,
+                    self.calculator.genericUpdate,
+                )
+            )
+            r_list.append(
+                ItemContainer(
+                    asymm_key,
+                    asymm_keys,
                     self.calculator.genericReturn,
                     self.calculator.genericUpdate,
                 )
@@ -308,11 +326,12 @@ class CW(CW_type):
             r_list.append(
                 ItemContainer(
                     setup_key,
-                    {"wavelength": self._instrument_link["wavelength"]},
+                    setup_keys,
                     self.calculator.genericReturn,
                     self.calculator.genericUpdate,
                 )
             )
+
         return r_list
 
 

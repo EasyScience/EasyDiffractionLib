@@ -211,6 +211,26 @@ class Instrument1DCWParameters(BaseObj):
             "value": 0.0,
             "fixed": True,
         },
+        "reflex_asymmetry_p1": {
+            "name": "reflex_asymmetry_p1",
+            "value": 0.0,
+            "fixed": True,
+        },
+        "reflex_asymmetry_p2": {
+            "name": "reflex_asymmetry_p2",
+            "value": 0.0,
+            "fixed": True,
+        },
+        "reflex_asymmetry_p3": {
+            "name": "reflex_asymmetry_p3",
+            "value": 0.0,
+            "fixed": True,
+        },
+        "reflex_asymmetry_p4": {
+            "name": "reflex_asymmetry_p4",
+            "value": 0.0,
+            "fixed": True,
+        }
     }
 
     wavelength: ClassVar[Parameter]
@@ -219,6 +239,10 @@ class Instrument1DCWParameters(BaseObj):
     resolution_w: ClassVar[Parameter]
     resolution_x: ClassVar[Parameter]
     resolution_y: ClassVar[Parameter]
+    reflex_asymmetry_p1: ClassVar[Parameter]
+    reflex_asymmetry_p2: ClassVar[Parameter]
+    reflex_asymmetry_p3: ClassVar[Parameter]
+    reflex_asymmetry_p4: ClassVar[Parameter]
 
     def __init__(
         self,
@@ -228,6 +252,10 @@ class Instrument1DCWParameters(BaseObj):
         resolution_w: Optional[Union[Parameter, float]] = None,
         resolution_x: Optional[Union[Parameter, float]] = None,
         resolution_y: Optional[Union[Parameter, float]] = None,
+        reflex_asymmetry_p1: Optional[Union[Parameter, float]] = None,
+        reflex_asymmetry_p2: Optional[Union[Parameter, float]] = None,
+        reflex_asymmetry_p3: Optional[Union[Parameter, float]] = None,
+        reflex_asymmetry_p4: Optional[Union[Parameter, float]] = None,
         interface: Optional[iF] = None,
     ):
         super(Instrument1DCWParameters, self).__init__(
@@ -249,6 +277,14 @@ class Instrument1DCWParameters(BaseObj):
             self.resolution_x = resolution_x
         if resolution_y is not None:
             self.resolution_y = resolution_y
+        if reflex_asymmetry_p1 is not None:
+            self.reflex_asymmetry_p1 = reflex_asymmetry_p1
+        if reflex_asymmetry_p2 is not None:
+            self.reflex_asymmetry_p2 = reflex_asymmetry_p2
+        if reflex_asymmetry_p3 is not None:
+            self.reflex_asymmetry_p3 = reflex_asymmetry_p3
+        if reflex_asymmetry_p4 is not None:
+            self.reflex_asymmetry_p4 = reflex_asymmetry_p4
         self.name = self._name
         self.interface = interface
 

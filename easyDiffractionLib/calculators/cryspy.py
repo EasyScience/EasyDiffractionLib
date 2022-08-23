@@ -25,6 +25,7 @@ class Cryspy:
         self.conditions = {
             "wavelength": 1.25,
             "resolution": {"u": 0.001, "v": 0.001, "w": 0.001, "x": 0.000, "y": 0.000},
+            "reflex_asymmetry": {"p1": 0.0, "p2": 0.0, "p3": 0.0, "p4": 0.0}
         }
         self.conditions_TOF = {
             "ttheta_bank": 0,
@@ -281,6 +282,19 @@ class Cryspy:
         resolution = self.storage[key]
         for r_key in kwargs.keys():
             setattr(resolution, r_key, kwargs[key])
+
+    def createReflexAsymmetry(self) -> str:
+        key = "pd_instr_reflex_asymmetry"
+        reflex_asymmetry = cryspy.PdInstrReflexAsymmetry(**self.conditions["reflex_asymmetry"])
+        self.storage[key] = reflex_asymmetry
+        if self.model is not None:
+            setattr(self.model, key, reflex_asymmetry)
+        return key
+
+    def updateReflexAsymmetry(self, key: str, **kwargs):
+        reflex_asymmetry = self.storage[key]
+        for r_key in kwargs.keys():
+            setattr(reflex_asymmetry, r_key, kwargs[key])
 
     def powder_1d_calculate(
         self, x_array: np.ndarray, full_return: bool = False, **kwargs

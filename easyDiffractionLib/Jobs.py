@@ -140,7 +140,7 @@ class JobBase_1D(_PowderBase):
             fitter = Fitter(self, self.interface.fit_func)
         return self.datastore.store[dataarray_name].easyCore.fit(fitter)
 
-    def pattern_from_cif(self, block):
+    def pattern_from_cif_block(self, block):
         # Various pattern parameters
         value = block.find_value("_diffrn_radiation_polarization")
         if value is not None:
@@ -155,7 +155,7 @@ class JobBase_1D(_PowderBase):
         if value is not None:
             self.pattern.field = float(value)
 
-    def parameters_from_cif(self, block):
+    def parameters_from_cif_block(self, block):
        # Various instrumental parameters
         value = block.find_value("_setup_wavelength")
         if value is not None:
@@ -188,7 +188,7 @@ class JobBase_1D(_PowderBase):
         if value is not None:
             self.parameters.reflex_asymmetry_p4 = float(value)
 
-    def phase_parameters_from_cif(self, block):
+    def phase_parameters_from_cif_block(self, block):
          # Get phase parameters
         sample_phase_labels = self.phases.phase_names 
         experiment_phase_labels = list(block.find_loop("_phase_label"))
@@ -197,7 +197,7 @@ class JobBase_1D(_PowderBase):
             if phase_label in sample_phase_labels:
                 self.phases[phase_label].scale = phase_scale
 
-    def data_from_cif(self, block, experiment_name):
+    def data_from_cif_block(self, block, experiment_name):
         # data points
         data_x = np.fromiter(block.find_loop("_pd_meas_2theta"), float)
         data_y = []
@@ -225,7 +225,7 @@ class JobBase_1D(_PowderBase):
                 self.name + "_" + experiment_name + f"_I{i}", data_e[i]
             )
 
-    def background_from_cif(self, block, experiment_name):
+    def background_from_cif_block(self, block, experiment_name):
         # The background
         background_2thetas = np.fromiter(block.find_loop("_pd_background_2theta"), float)
         background_intensities = np.fromiter(block.find_loop("_pd_background_intensity"), float)
@@ -234,17 +234,26 @@ class JobBase_1D(_PowderBase):
             bkg.append(BackgroundPoint.from_pars(x, y))
 
         self.set_background(bkg)
-    def load_cif(self, file_url, experiment_name=None):
 
+    def from_cif_file(self, file_url, experiment_name=None):
+        """
+        Load a CIF file and extract the experiment data.
+        This includes
+        - the pattern parameters
+        - the instrumental parameters
+        - the phase parameters
+        - the data points
+        - the background
+        """
         block = cif.read(file_url).sole_block()
 
         if experiment_name is None:
             experiment_name = block.name
-        self.pattern_from_cif(block)
-        self.parameters_from_cif(block)
-        self.phase_parameters_from_cif(block)
-        self.data_from_cif(block, experiment_name)
-        self.background_from_cif(block, experiment_name)
+        self.pattern_from_cif_block(block)
+        self.parameters_from_cif_block(block)
+        self.phase_parameters_from_cif_block(block)
+        self.data_from_cif_block(block, experiment_name)
+        self.background_from_cif_block(block, experiment_name)
 
 class Powder1DCW(JobBase_1D):
     def __init__(
@@ -311,7 +320,7 @@ class Powder1DTOF(JobBase_1D):
         self._x_axis_name = "time"
 
 
-def get_job_class_from_file(file_url):
+def get_job_type_from_file(file_url):
     block = cif.read(file_url).sole_block()
     job_type = "Powder1DCW"
     # Check if powder1DCWpol

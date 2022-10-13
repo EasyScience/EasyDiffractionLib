@@ -21,6 +21,7 @@ except ImportError:
 
 try:
     from easyDiffractionLib.Interfaces.CFML import CFML  # noqa: F401
+    from easyDiffractionLib.Interfaces.CFML_X import CFML as CFML_X  # noqa: F401
 except ImportError:
     # TODO make this a proper message (use logging?)
     print('Warning: CrysFML is not installed')

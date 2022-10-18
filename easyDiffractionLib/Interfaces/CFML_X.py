@@ -53,7 +53,7 @@ class CFML(InterfaceTemplate):
     }
     _pattern_link = {"scale": "scale", "x_offset": "x_offset"}
 
-    feature_available = {"Xpowder1DCW": True, "Xpowder1DCWunp": True}
+    feature_available = {"Xpowder1DCW": True, "Xpowder1DCWunp": True, "Npowder1DCW": True, "Npowder1DCWunp": True}
 
     name = "CrysFML - Xray"
 

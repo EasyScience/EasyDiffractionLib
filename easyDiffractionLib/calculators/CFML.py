@@ -18,6 +18,7 @@ class CFML:
         self.known_phases = {}
         self.additional_data = {"phases": {}}
         self.storage = {}
+        self.this_x_array = None
 
     def createConditions(self, job_type="N"):
         self.conditions = {
@@ -37,7 +38,31 @@ class CFML:
     def conditionsReturn(self, _, name):
         return self.conditions.get(name)
 
-    def calculate(self, x_array: np.ndarray) -> np.ndarray:
+    def calculate_x_array(self, x_array):
+        '''
+        Pre-calculate a bunch of state variables to speed up the calculation
+        Calculating the bg is a bit slow, so we do it once here
+        '''
+        if self.pattern is None:
+            self.scale = 1.0
+            self.offset = 0
+        else:
+            self.scale = self.pattern.scale.raw_value
+            self.offset = self.pattern.zero_shift.raw_value
+
+        self.this_x_array = x_array + self.offset
+
+        # Experiment/Instrument/Simulation parameters
+        self.x_min = self.this_x_array[0]
+        self.x_max = self.this_x_array[-1]
+        self.num_points = np.prod(x_array.shape)
+        self.x_step = (self.x_max - self.x_min) / (self.num_points - 1)
+        if len(self.pattern.backgrounds) == 0:
+            self.bg = np.zeros_like(self.this_x_array)
+        else:
+            self.bg = self.pattern.backgrounds[0].calculate(self.this_x_array)
+
+    def calculate(self, x_array: np.ndarray, is_fitting=True) -> np.ndarray:
         """
         For a given x calculate the corresponding y
         :param x_array: array of data points to be calculated
@@ -48,25 +73,8 @@ class CFML:
         if self.filename is None:
             raise AttributeError
 
-        if self.pattern is None:
-            scale = 1.0
-            offset = 0
-        else:
-            scale = self.pattern.scale.raw_value
-            offset = self.pattern.zero_shift.raw_value
-
-        this_x_array = x_array + offset
-
-        # Experiment/Instrument/Simulation parameters
-        x_min = this_x_array[0]
-        x_max = this_x_array[-1]
-        num_points = np.prod(x_array.shape)
-        x_step = (x_max - x_min) / (num_points - 1)
-
-        if len(self.pattern.backgrounds) == 0:
-            bg = np.zeros_like(this_x_array)
-        else:
-            bg = self.pattern.backgrounds[0].calculate(this_x_array)
+        if self.this_x_array is None:
+            self.calculate_x_array(x_array)
 
         dependents = []
 
@@ -83,8 +91,8 @@ class CFML:
             atom_list = cif_file.atom_list
             job_info = cif_file.job_info
 
-            job_info.range_2theta = (x_min, x_max)
-            job_info.theta_step = x_step
+            job_info.range_2theta = (self.x_min, self.x_max)
+            job_info.theta_step = self.x_step
             job_info.u_resolution = self.conditions["u_resolution"]
             job_info.v_resolution = self.conditions["v_resolution"]
             job_info.w_resolution = self.conditions["w_resolution"]
@@ -116,7 +124,8 @@ class CFML:
             phase_scale = self.getPhaseScale(key)
 
             dependent, additional_data = self.nonPolarized_update(
-                item, diffraction_pattern, reflection_list, job_info, scales=phase_scale
+                item, diffraction_pattern, reflection_list, job_info, scales=phase_scale,
+                is_fitting=is_fitting
             )
             dependents.append(dependent)
             self.additional_data["phases"].update(additional_data)
@@ -124,15 +133,15 @@ class CFML:
         # Macos/Linux don't seem to need it as well, but leaving just in case.
         # for cif in cifs:
         #     os.remove(cif)
-        self.additional_data["global_scale"] = scale
-        self.additional_data["background"] = bg
-        self.additional_data["ivar_run"] = this_x_array
+        self.additional_data["global_scale"] = self.scale
+        self.additional_data["background"] = self.bg
+        self.additional_data["ivar_run"] = self.this_x_array
         self.additional_data["ivar"] = x_array
-        self.additional_data["components"] = [scale * dep + bg for dep in dependents]
+        self.additional_data["components"] = [self.scale * dep + self.bg for dep in dependents]
         self.additional_data["phase_names"] = list(self.known_phases.items())
         self.additional_data["type"] = "powder1DCW"
 
-        dependent_output = scale * np.sum(dependents, axis=0) + bg
+        dependent_output = self.scale * np.sum(dependents, axis=0) + self.bg
 
         if borg.debug:
             print(f"y_calc: {dependent_output}")
@@ -173,26 +182,30 @@ class CFML:
 
     @staticmethod
     def nonPolarized_update(
-        crystal_name, diffraction_pattern, reflection_list, job_info, scales=1
+        crystal_name, diffraction_pattern, reflection_list, job_info, scales=1,
+        is_fitting=False
     ):
         dependent = diffraction_pattern.ycalc
 
-        hkltth = np.array(
-            [
-                [*reflection_list[i].hkl, reflection_list[i].stl]
-                for i in range(reflection_list.nref)
-            ]
-        )
-
-        output = {
-            crystal_name: {
-                "hkl": {
+        hkl = {}
+        if not is_fitting:
+            hkltth = np.array(
+                [
+                    [*reflection_list[i].hkl, reflection_list[i].stl]
+                    for i in range(reflection_list.nref)
+                ]
+            )
+            hkl = {
                     "ttheta": np.rad2deg(np.arcsin(hkltth[:, 3] * job_info.lambdas[0]))
                     * 2,
                     "h": hkltth[:, 0],
                     "k": hkltth[:, 1],
                     "l": hkltth[:, 2],
-                },
+                  }
+
+        output = {
+            crystal_name: {
+                "hkl": hkl,
                 "profile": scales * dependent,
                 "components": {"total": dependent},
                 "profile_scale": scales,

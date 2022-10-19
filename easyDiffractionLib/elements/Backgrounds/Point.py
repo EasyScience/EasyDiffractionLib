@@ -101,6 +101,7 @@ class PointBackground(Background):
         :param kwargs: Any additional kwargs
         """
         super(PointBackground, self).__init__('point_background', *args, linked_experiment=linked_experiment, **kwargs)
+        self.x_points = self.x_sorted_points # do it just once, since it doesn't change and evaluation is expensive
 
     def calculate(self, x_array: np.ndarray) -> np.ndarray:
         """
@@ -118,7 +119,8 @@ class PointBackground(Background):
         # y = np.zeros_like(reduced_x)
 
         # low_x = x_array.flat[0] - 1e-10
-        x_points = self.x_sorted_points
+
+        x_points = self.x_points
         if not len(x_points):
             return np.zeros_like(x_array)
         # low_y = 0
@@ -173,7 +175,7 @@ class PointBackground(Background):
         :return: Sorted x-values
         :rtype: np.ndarray
         """
-        x = np.array([item.x.raw_value for item in self])
+        x = np.array([item.x.raw_value for item in self])  # *** EXPENSIVE ****
         x.sort()
         return x
 
@@ -185,8 +187,8 @@ class PointBackground(Background):
         :return: Sorted y-values
         :rtype: np.ndarray
         """
-        idx = np.array([item.x.raw_value for item in self]).argsort()
-        y = np.array([item.y.raw_value for item in self])
+        idx = np.array(self.x_points).argsort()
+        y = np.array([item.y.raw_value for item in self])  # *** EXPENSIVE ****
         return y[idx]
 
     @property
@@ -208,7 +210,7 @@ class PointBackground(Background):
         """
         if not isinstance(item, BackgroundPoint):
             raise TypeError('Item must be a BackgroundPoint')
-        if item.x.raw_value in self.x_sorted_points:
+        if item.x.raw_value in self.x_points:
             raise AttributeError(f'An BackgroundPoint at {item.x.raw_value} already exists.')
         super(PointBackground, self).append(item)
 

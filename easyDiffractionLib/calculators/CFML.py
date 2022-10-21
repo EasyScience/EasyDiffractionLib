@@ -94,7 +94,7 @@ class CFML:
             job_info.w_resolution = self.conditions["w_resolution"]
             job_info.x_resolution = self.conditions["x_resolution"]
             job_info.y_resolution = self.conditions["y_resolution"]
-            job_info.set_pattern_types(self.conditions["pattern_type"])
+            job_info.pattern_type = self.conditions["pattern_type"]
             job_info.lambdas = (self.conditions["lamb"], self.conditions["lamb"])
             job_info.bkg = 0.0
 
@@ -109,7 +109,7 @@ class CFML:
                 )
 
                 diffraction_pattern = CFML_api.DiffractionPattern(
-                    job_info, reflection_list, cell.reciprocal_cell_vol
+                    job_info, reflection_list, scale
                 )
             except Exception as e:
                 for cif in cifs:

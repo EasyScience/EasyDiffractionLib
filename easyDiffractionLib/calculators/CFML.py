@@ -21,6 +21,9 @@ class CFML:
         self.this_x_array = None
 
     def createConditions(self, job_type="N"):
+        pattern_type = 'NEUT_2THE       '
+        if job_type == "X":
+            pattern_type = 'XRAY_2THE       '
         self.conditions = {
             "lamb": 1.54,
             "u_resolution": 0.01,
@@ -29,6 +32,7 @@ class CFML:
             "x_resolution": 0.0,
             "y_resolution": 0.0,
             "z_resolution": 0.0,
+            "pattern_type": pattern_type,
         }
 
     def conditionsUpdate(self, _, **kwargs):
@@ -98,6 +102,8 @@ class CFML:
             job_info.w_resolution = self.conditions["w_resolution"]
             job_info.x_resolution = self.conditions["x_resolution"]
             job_info.y_resolution = self.conditions["y_resolution"]
+            job_info.y_resolution = self.conditions["y_resolution"]
+            job_info.pattern_type = self.conditions["pattern_type"]
             job_info.lambdas = (self.conditions["lamb"], self.conditions["lamb"])
             job_info.bkg = 0.0
 
@@ -112,7 +118,7 @@ class CFML:
                 )
 
                 diffraction_pattern = CFML_api.DiffractionPattern(
-                    job_info, reflection_list, cell.reciprocal_cell_vol
+                    job_info, reflection_list, self.scale
                 )
             except Exception as e:
                 for cif in cifs:

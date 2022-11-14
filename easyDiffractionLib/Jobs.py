@@ -321,15 +321,52 @@ class Powder1DTOF(JobBase_1D):
 
 
 def get_job_type_from_file(file_url):
+    '''
+    Get the job type from a CIF file.
+
+    Based on keywords in the CIF file, the job type is determined.
+    '''
     block = cif.read(file_url).sole_block()
     job_type = "Powder1DCW"
     # Check if powder1DCWpol
-    value = block.find_value("_diffrn_radiation_polarization")
-    if value is not None:
+    value_cwpol = block.find_value("_diffrn_radiation_polarization")
+    value_tof = block.find_value("_pd_meas_time_of_flight")
+    value_cw = block.find_value("_pd_meas_2theta")
+
+    if value_cwpol is not None:
         job_type = "PolPowder1DCW"
-    # Check if powder1DTOFunp
-    # ...
-    # Check if powder1DTOFpol
-    # ...
+    elif value_tof is not None:
+        job_type = "Powder1DTOF"
+    elif value_cw is not None:
+        job_type = "Powder1DCW"
+    else:
+        raise ValueError("Could not determine job type from file.")
     return job_type
 
+def get_job_from_file(file_url, exp_name="job", phases=None):
+    '''
+    Get the job from a CIF file.
+
+    Based on keywords in the CIF file, the job type is determined,
+    the job is created and the data is loaded from the CIF file.
+    '''
+    block = cif.read(file_url).sole_block()
+    datastore = xr.Dataset()
+    # Check if powder1DCWpol
+    value_cwpol = block.find_value("_diffrn_radiation_polarization")
+    value_tof = block.find_value("_pd_meas_time_of_flight")
+    value_cw = block.find_value("_pd_meas_2theta")
+
+    if value_cwpol is not None:
+        job = PolPowder1DCW(exp_name, datastore, phases)
+    elif value_tof is not None:
+        job = Powder1DTOF(exp_name, datastore, phases)
+    elif value_cw is not None:
+        job = Powder1DCW(exp_name, datastore, phases)
+    else:
+        raise ValueError("Could not determine job type from file.")
+
+    # Load the data
+    job.from_cif_file(file_url, exp_name)
+
+    return datastore, job

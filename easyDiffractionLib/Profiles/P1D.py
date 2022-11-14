@@ -26,19 +26,6 @@ class Powder1DSim(_DataClassBase):
     def add_simulation(self, simulation_name, simulation):
         self._dataset[self._simulation_prefix + simulation_name] = simulation
 
-    # @property
-    # def simulations(self) -> xr.Dataset:
-    #     temp_dataset = xr.Dataset()
-    #     for sim in self.simulation_names:
-    #         temp_dataset[sim] = self._dataset[sim]
-    #     return temp_dataset
-    #
-    # @property
-    # def simulation_names(self) -> List[str]:
-    #     sims = [a for a in self._dataset.variables.keys() if a.startswith(self._simulation_prefix)]
-    #     return sims
-
-
 class Powder1DExp(_DataClassBase):
     def __init__(self, dataset, simulation_prefix):
         super(Powder1DExp, self).__init__(dataset)

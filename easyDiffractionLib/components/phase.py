@@ -1,6 +1,7 @@
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
+from typing import Optional
 from easyCrystallography.Structures.Phase import Phase as ecPhase, Phases as ecPhases
 from .site import Site, Atoms
 
@@ -52,3 +53,7 @@ class Phases(ecPhases):
         if self.interface is not None:
             self.interface().remove_phase(self, item)
         super(Phases, self).__delitem__(key)
+
+    @classmethod
+    def from_cif_file(cls, filename, phase_class: Optional = None):
+        return super(Phases, cls).from_cif_file(filename, phase_class=Phase)

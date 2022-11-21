@@ -55,5 +55,6 @@ class Phases(ecPhases):
         super(Phases, self).__delitem__(key)
 
     @classmethod
-    def from_cif_file(cls, filename, phase_class: Optional = None):
-        return super(Phases, cls).from_cif_file(filename, phase_class=Phase)
+    def from_cif_file(cls, filename):
+        return super(Phases, cls).from_cif_file(filename)
+

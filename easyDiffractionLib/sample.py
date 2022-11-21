@@ -45,6 +45,8 @@ class Sample(BaseObj):
             phases = Phases("Phases")
         elif isinstance(phases, Phases):
             pass
+        elif isinstance(phases, list):
+            phases = Phases("Phases", phases[0])
         elif isinstance(phases, ecPhases):
             if len(phases) > 0:
                 phases = Phases("Phases", phases[0])

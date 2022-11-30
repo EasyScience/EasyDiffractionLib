@@ -57,4 +57,3 @@ class Phases(ecPhases):
     @classmethod
     def from_cif_file(cls, filename):
         return super(Phases, cls).from_cif_file(filename)
-

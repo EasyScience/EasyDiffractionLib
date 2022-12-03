@@ -39,7 +39,7 @@ default = false
 python = "^3.8, <3.11"
 cryspy = { git = 'https://github.com/ikibalin/cryspy.git', rev = 'bravis_type_fix' }
 # easyScience
-easyScienceCore = { git = 'https://github.com/easyScience/easyCore.git', rev = 'io_serialization' }
+easyScienceCore = { git = 'https://github.com/easyScience/easyCore.git', rev = 'pre-release-fixes' }
 easyCrystallography = { git = 'https://github.com/easyScience/easyCrystallography.git', rev = 'io_rework' }
 
 CFML = {version = '^0.0.1', optional=true}

@@ -452,3 +452,41 @@ Polarized1DClasses = JobSetup(
 Polarized1DTOFClasses = JobSetup(
     [Powder1DSim, Powder1DExp], PolPowder1DParameters, Instrument1DTOFParameters
 )
+
+class PDFParameters(Instrument1DCWParameters):
+# class PDFParameters(BaseObj):
+    _name = "PDFProfile"
+    _defaults = {
+        "qmax": {
+            "name": "Q_max",
+            "units": "1/Angstrom",
+            "value": 30.0,
+            "fixed": True,
+        },
+        "qdamp": {
+            "name": "Q_damp",
+            "value": 0.01,
+            "fixed": True,
+            "enabled": False,
+        },
+    }
+
+    qmax: ClassVar[Parameter]
+    qdamp: ClassVar[Parameter]
+
+    def __init__(
+        self,
+        qmax: Optional[Union[Parameter, float]] = None,
+        qdamp: Optional[Union[Parameter, float]] = None,
+        interface: Optional[iF] = None,
+        **kwargs,
+    ):
+        super(Instrument1DCWParameters, self).__init__(self.__class__.__name__)
+
+        if qmax is not None:
+            self.qmax = qmax
+        if qdamp is not None:
+            self.qdamp = qdamp
+
+        self.name = self._name
+        self.interface = interface

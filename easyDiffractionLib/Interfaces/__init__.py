@@ -31,5 +31,9 @@ except ImportError:
     # TODO make this a proper message (use logging?)
     print('Warning: GSAS-2 is not installed')
 
+try:
+    from easyDiffractionLib.Interfaces.pdffit2 import Pdffit2  # noqa: F401
+except ImportError:
+    print('Warning: PdfFit2 is not installed')
 
 from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate

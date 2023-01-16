@@ -37,7 +37,27 @@ x_data = data[:, 0]
 y_data = calculator.fit_func(x_data)
 
 
-# plotting
+# fitting
+# params to optimize
+S.pattern.scale.fixed = False
+S.pattern.zero_shift.fixed = False
+#S.parameters.resolution_u.fixed = False
+#S.parameters.resolution_v.fixed = False
+#S.parameters.resolution_w.fixed = False
+
+fitter = Fitter(S, calculator.fit_func)
+
+result = fitter.fit(x_data, data[:, 1], 
+                    method='least_squares', minimizer_kwargs={'diff_step': 1e-5})
+
+print("The fit has been successful: {}".format(result.success))  
+print("The gooodness of fit (chi2) is: {}".format(result.reduced_chi))
+print(S.pattern.scale)
+print(S.pattern.zero_shift)
+
+
+y_data = calculator.fit_func(x_data)
+
 import pylab
 # obtain data from PdfFit calculator object
 r = x_data
@@ -58,5 +78,3 @@ pylab.title('Fit of nickel to x-ray experimental PDF')
 
 # display plot window, this must be the last command in the script
 pylab.show()
-
-

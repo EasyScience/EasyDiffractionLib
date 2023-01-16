@@ -116,20 +116,19 @@ class Pdffit2(InterfaceTemplate):
         r_list = []
         t_ = type(model)
         model_key = self.__identify(model)
-        print("Creating model: ", t_)
 
         # if issubclass(t_, PDFParameters):
         #     self.calculator.conditionsSet(model)
 
         if issubclass(t_, PDFParameters):
-            # self.calculator.createConditions(job_type="N")
+            self.calculator.conditionsSet(model)
             keys = self._instrument_link.copy()
             r_list.append(
                 ItemContainer(
                     model_key,
                     keys,
-                    self.calculator.get_value,
-                    self.calculator.updateCif,
+                    self.get_value,
+                    self.updateCif,
                 )
             )
         elif issubclass(t_, Lattice):
@@ -191,7 +190,8 @@ class Pdffit2(InterfaceTemplate):
 
 def readGRData(filename):
     """
-    Read PDF experimental data from the .gr file
+    Read PDF experimental data from the .gr file.
+    This uses `loadData` method from the pdffit2 package.
 
     :param filename: The filename
     :return: The data as an nx4 array with columns: x, y, dy, dx

@@ -25,8 +25,10 @@ class JobBase_1D(_PowderBase):
         phases=None,
         parameters=None,
         pattern=None,
+        interface=None,
     ):
-        interface = InterfaceFactory()
+        if interface is None:
+            interface = InterfaceFactory()
         super(JobBase_1D, self).__init__(
             name,
             profileClass,
@@ -263,11 +265,12 @@ class Powder1DCW(JobBase_1D):
         phases=None,
         parameters=None,
         pattern=None,
+        interface=None,
     ):
         from easyDiffractionLib.Profiles.P1D import Unpolarized1DClasses
 
         super(Powder1DCW, self).__init__(
-            name, Unpolarized1DClasses, datastore, phases, parameters, pattern
+            name, Unpolarized1DClasses, datastore, phases, parameters, pattern, interface
         )
         self._x_axis_name = "tth"
 
@@ -280,11 +283,12 @@ class PolPowder1DCW(JobBase_1D):
         phases=None,
         parameters=None,
         pattern=None,
+        interface=None,
     ):
         from easyDiffractionLib.Profiles.P1D import Polarized1DClasses
 
         super(PolPowder1DCW, self).__init__(
-            name, Polarized1DClasses, datastore, phases, parameters, pattern
+            name, Polarized1DClasses, datastore, phases, parameters, pattern, interface
         )
         self._x_axis_name = "tth"
 

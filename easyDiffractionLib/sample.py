@@ -154,13 +154,6 @@ class Sample(BaseObj):
         self._parameters = value
         self._parameters.interface = self._interface
 
-    def update_bindings(self):
-        if not self.interface.current_interface.feature_checker(
-            test_str=self.exp_type_str
-        ):
-            raise AssertionError("The interface is not suitable for this experiment")
-        self.generate_bindings()
-
     @property
     def pattern(self):
         return self._pattern

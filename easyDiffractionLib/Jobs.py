@@ -257,6 +257,10 @@ class JobBase_1D(_PowderBase):
         self.data_from_cif_block(block, experiment_name)
         self.background_from_cif_block(block, experiment_name)
 
+    def update_bindings(self):
+        self.interface.generate_bindings(self)
+        self.generate_bindings()
+
 class Powder1DCW(JobBase_1D):
     def __init__(
         self,

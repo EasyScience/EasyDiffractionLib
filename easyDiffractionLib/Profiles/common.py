@@ -9,6 +9,7 @@ from easyCore.Utils.UndoRedo import property_stack_deco
 from easyCore.Objects.ObjectClasses import BaseObj
 from easyDiffractionLib import Phases, Phase
 from easyCore.Datasets.xarray import xr
+from easyCore.Objects.core import ComponentSerializer
 
 
 DataClassBaseType = TypeVar("DataClassBaseType", bound="_DataClassBase")
@@ -19,7 +20,7 @@ class _DataClassBase:
         self._dataset = dataset
 
 
-class DataContainer:
+class DataContainer(ComponentSerializer):
     def __init__(self, sim_store: DataClassBaseType, exp_store: DataClassBaseType):
         self._simulations = sim_store
         self._experiments = exp_store
@@ -49,6 +50,11 @@ class DataContainer:
     def add_variable(self, variable_name, variable_coordinates, values):
         self.store.easyCore.add_variable(variable_name, variable_coordinates, values)
 
+    # def as_dict(self, skip: list = []) -> dict:
+    #     this_dict = super(DataContainer, self).as_dict(self)
+    #     this_dict['items'] = [
+    #         item.as_dict() for item in self.items if hasattr(item, 'as_dict')
+    #     ]
 
 class JobSetup:
     def __init__(self, datastore_classes, instrumental_parameter_class, pattern_class):
@@ -180,9 +186,12 @@ class _PowderBase(BaseObj):
 
     def as_dict(self, skip: list = None) -> dict:
         d = super(_PowderBase, self).as_dict(skip=skip)
-        del d["_phases"]
-        del d["_parameters"]
-        del d["_pattern"]
+        if '_phases' in d:
+            del d['_phases']
+        if '_parameters' in d:
+            del d['_parameters']
+        if '_pattern' in d:
+            del d['_pattern']
         return d
 
     def _update_bases(self, new_base):

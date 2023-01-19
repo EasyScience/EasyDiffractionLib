@@ -74,6 +74,9 @@ class JobBase_1D(_PowderBase):
         else:
             simulation_name = self.name + "_" + simulation_name
         self.datastore._simulations.add_simulation(simulation_name, y)
+        # fitter expects ndarrays
+        if type(y) == xr.DataArray:
+            y = y.values
         return y
 
     def plot_simulation(self, simulation_name=None):

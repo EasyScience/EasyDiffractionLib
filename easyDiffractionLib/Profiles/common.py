@@ -21,6 +21,7 @@ class _DataClassBase:
 
 
 class DataContainer(ComponentSerializer):
+
     def __init__(self, sim_store: DataClassBaseType, exp_store: DataClassBaseType):
         self._simulations = sim_store
         self._experiments = exp_store
@@ -35,9 +36,26 @@ class DataContainer(ComponentSerializer):
             def __init__(self):
                 super(Simulation, self).__init__(dataset)
 
+            def as_dict(self, skip=None):
+                """
+                :return: Json-able dictionary representation.
+                """
+                d = {"@module": self.__class__.__module__,
+                    "@class": self.__class__.__name__}
+                d["simulations"] = self._dataset.as_dict()
+                return d
+
         class Experiment(experiment_class):
             def __init__(self, sim_prefix):
                 super(Experiment, self).__init__(dataset, sim_prefix)
+            def as_dict(self, skip=None):
+                """
+                :return: Json-able dictionary representation.
+                """
+                d = {"@module": self.__class__.__module__,
+                    "@class": self.__class__.__name__}
+                d["simulations"] = self._dataset.as_dict()
+                return d
 
         s = Simulation()
         e = Experiment(s._simulation_prefix)
@@ -50,11 +68,23 @@ class DataContainer(ComponentSerializer):
     def add_variable(self, variable_name, variable_coordinates, values):
         self.store.easyCore.add_variable(variable_name, variable_coordinates, values)
 
-    # def as_dict(self, skip: list = []) -> dict:
-    #     this_dict = super(DataContainer, self).as_dict(self)
-    #     this_dict['items'] = [
-    #         item.as_dict() for item in self.items if hasattr(item, 'as_dict')
-    #     ]
+    def as_dict(self, skip=None):
+        """
+        :return: Json-able dictionary representation.
+        """
+        d = {"@module": self.__class__.__module__,
+             "@class": self.__class__.__name__}
+        d["simulations"] = self._simulations.as_dict()
+        d["experiments"] = self._experiments.as_dict()
+        return d
+
+    @classmethod
+    def from_dict(cls, d):
+        """
+        :param d: Dict representation.
+        :return: Species.
+        """
+        return cls(d["simulations"], d["experiments"])
 
 class JobSetup:
     def __init__(self, datastore_classes, instrumental_parameter_class, pattern_class):
@@ -184,15 +214,9 @@ class _PowderBase(BaseObj):
     def pattern(self):
         return self._pattern
 
-    def as_dict(self, skip: list = None) -> dict:
-        d = super(_PowderBase, self).as_dict(skip=skip)
-        if '_phases' in d:
-            del d['_phases']
-        if '_parameters' in d:
-            del d['_parameters']
-        if '_pattern' in d:
-            del d['_pattern']
-        return d
+    def as_dict(self, skip: list = []) -> dict:
+        this_dict = super(_PowderBase, self).as_dict(skip=skip)
+        return this_dict
 
     def _update_bases(self, new_base):
         base_class = getattr(self, "__old_class__", self.__class__)

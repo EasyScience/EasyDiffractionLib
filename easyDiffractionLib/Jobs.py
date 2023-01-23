@@ -268,7 +268,7 @@ class Powder1DCW(JobBase_1D):
     def __init__(
         self,
         name: str,
-        datastore: xr.Dataset,
+        datastore: xr.Dataset = xr.Dataset(),
         phases=None,
         parameters=None,
         pattern=None,

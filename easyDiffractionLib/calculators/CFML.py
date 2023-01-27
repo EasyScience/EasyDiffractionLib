@@ -62,10 +62,8 @@ class CFML:
         x_max = this_x_array[-1]
         num_points = np.prod(x_array.shape)
         x_step = (x_max - x_min) / (num_points - 1)
-
-        if len(self.pattern.backgrounds) == 0:
-            bg = np.zeros_like(this_x_array)
-        else:
+        bg = np.zeros_like(this_x_array)
+        if self.pattern is not None and len(self.pattern.backgrounds) > 0:
             bg = self.pattern.backgrounds[0].calculate(this_x_array)
 
         dependents = []

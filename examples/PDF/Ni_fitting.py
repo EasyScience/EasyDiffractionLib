@@ -39,11 +39,14 @@ y_data = calculator.fit_func(x_data)
 
 # fitting
 # params to optimize
+S.phases[0].cell.length_a.fixed = False
+S.phases[0].scale.fixed = False
 S.pattern.scale.fixed = False
-S.pattern.zero_shift.fixed = False
-#S.parameters.resolution_u.fixed = False
-#S.parameters.resolution_v.fixed = False
-#S.parameters.resolution_w.fixed = False
+
+l_old = S.phases[0].cell.length_a.raw_value
+s_old = S.phases[0].scale.raw_value
+p_old = S.pattern.scale.raw_value
+
 
 fitter = Fitter(S, calculator.fit_func)
 
@@ -52,8 +55,12 @@ result = fitter.fit(x_data, data[:, 1],
 
 print("The fit has been successful: {}".format(result.success))  
 print("The gooodness of fit (chi2) is: {}".format(result.reduced_chi))
-print(S.pattern.scale)
-print(S.pattern.zero_shift)
+
+print("The optimized parameters are:")
+print("{} -> {}".format(l_old, S.phases[0].cell.length_a.raw_value))
+print("{} -> {}".format(s_old, S.phases[0].scale.raw_value))
+print("{} -> {}".format(p_old, S.pattern.scale.raw_value))
+
 
 
 y_data = calculator.fit_func(x_data)

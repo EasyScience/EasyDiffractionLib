@@ -44,6 +44,8 @@ easyCrystallography = { git = 'https://github.com/easyScience/easyCrystallograph
 
 CFML = {version = '^0.0.1', optional=true}
 GSASII = {version = '^0.0.1', optional=true}
+diffpy.pdffit2 = "^1.2.0"
+diffpy.utils = "^3.0.0"
 
 [tool.poetry.extras]
 additional = ["CFML", "GSASII"]

@@ -92,6 +92,10 @@ class BackgroundContainer(BaseCollection):
         """
         Constructor, with a link to an interface.
         """
+        # Remove the data key word argument if it is empty
+        # This can happen if the object is created from a json file with no background points
+        if 'data' in kwargs and not kwargs['data']:
+            kwargs.pop('data')
         super(BackgroundContainer, self).__init__('background', *args, **kwargs)
         self.interface = interface
 

@@ -123,7 +123,7 @@ class CryspyBase(Neutron_type, metaclass=ABCMeta):
         # Interface with Spacegroup
         elif issubclass(t_, SpaceGroup):
             s_key = self.calculator.createSpaceGroup(key=model_key, name_hm_alt="P 1")
-            keys = {"_space_group_HM_name": "name_hm_alt"}
+            keys = {"hermann_mauguin": "name_hm_alt"}
             r_list.append(
                 ItemContainer(
                     s_key,
@@ -598,6 +598,7 @@ class CryspyCWPol(CryspyBase, CW, Powder, POL):
         model_key = self._identify(model)
         base = "powder1DCWpol"
         if t_.__name__ == "Sample" or t_.__name__ in [
+            "PolPowder1DCW",
             "Powder1DCWpol",
             "powder1DCWpol",
             "Npowder1DCWpol",
@@ -739,3 +740,22 @@ class CryspyV2(InterfaceTemplate):
         if self._internal is not None:
             data = self._internal.get_phase_components(phase_name)
             return data
+
+    def full_callback(
+        self,
+        x_array: np.ndarray,
+        pol_fn: Optional[Callable[[np.ndarray, np.ndarray], np.ndarray]] = None,
+        **kwargs,
+    ) -> np.ndarray:
+        """
+        Calculate the polarization components.
+        :param x_array: points to be calculated at
+        :return: calculated points
+        """
+        if pol_fn is None:
+            pol_fn = self.up_plus_down
+        result = None
+        if self.calculator is not None:
+            result = self.calculator.full_calculate(x_array, pol_fn=pol_fn, **kwargs)
+        return result
+

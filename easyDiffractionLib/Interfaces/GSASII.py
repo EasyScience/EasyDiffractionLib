@@ -110,8 +110,8 @@ class GSASII(InterfaceTemplate):
         elif issubclass(t_, Phases):
             self._phase = model
         elif t_.__name__ in ['Powder1DCW', 'powder1DCW', 'Npowder1DCW', 'Npowder1DCWunp']:
-        #     #TODO Check to see if parameters and pattern should be initialized here.
-            self.__createModel(model_key, 'powder1DCW')
+            #TODO Check to see if parameters and pattern should be initialized here.
+            self.__createModel(model)
         elif issubclass(t_, Sample):
             self.__createModel(model)
         else:

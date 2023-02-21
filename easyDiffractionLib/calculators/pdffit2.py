@@ -1,7 +1,12 @@
+import os
 from easyCore import np
+
 from diffpy.pdffit2 import PdfFit as pdf_calc
 from diffpy.structure.parsers.p_cif import P_cif as cif_parser
+from diffpy.pdffit2 import redirect_stdout
 
+# silence the C++ engine output
+redirect_stdout(open(os.path.devnull, 'w'))
 
 class Pdffit2:
 

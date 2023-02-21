@@ -441,12 +441,14 @@ Polarized1DTOFClasses = JobSetup(
 )
 
 class PDFParameters(Instrument1DCWParameters):
-# class PDFParameters(BaseObj):
-    _name = "PDFProfile"
+
+    qmax: ClassVar[Parameter]
+    qdamp: ClassVar[Parameter]
+
     _defaults = {
         "qmax": {
             "name": "Q_max",
-            "units": "1/Angstrom",
+            "units": "1/angstrom",
             "value": 30.0,
             "fixed": True,
         },
@@ -457,23 +459,42 @@ class PDFParameters(Instrument1DCWParameters):
             "enabled": False,
         },
     }
-
-    qmax: ClassVar[Parameter]
-    qdamp: ClassVar[Parameter]
+    _defaults.update(Instrument1DCWParameters._defaults)
 
     def __init__(
         self,
+        wavelength: Optional[Union[Parameter, float]] = None,
+        resolution_u: Optional[Union[Parameter, float]] = None,
+        resolution_v: Optional[Union[Parameter, float]] = None,
+        resolution_w: Optional[Union[Parameter, float]] = None,
+        resolution_x: Optional[Union[Parameter, float]] = None,
+        resolution_y: Optional[Union[Parameter, float]] = None,
+        reflex_asymmetry_p1: Optional[Union[Parameter, float]] = None,
+        reflex_asymmetry_p2: Optional[Union[Parameter, float]] = None,
+        reflex_asymmetry_p3: Optional[Union[Parameter, float]] = None,
+        reflex_asymmetry_p4: Optional[Union[Parameter, float]] = None,
         qmax: Optional[Union[Parameter, float]] = None,
         qdamp: Optional[Union[Parameter, float]] = None,
         interface: Optional[iF] = None,
         **kwargs,
     ):
-        super(Instrument1DCWParameters, self).__init__(self.__class__.__name__)
 
+        super().__init__(
+            wavelength=wavelength,
+            resolution_u=resolution_u,
+            resolution_v=resolution_v,
+            resolution_w=resolution_w,
+            resolution_x=resolution_x,
+            resolution_y=resolution_y,
+            reflex_asymmetry_p1=reflex_asymmetry_p1,
+            reflex_asymmetry_p2=reflex_asymmetry_p2,
+            reflex_asymmetry_p3=reflex_asymmetry_p3,
+            reflex_asymmetry_p4=reflex_asymmetry_p4,
+            **kwargs,
+        )
         if qmax is not None:
             self.qmax = qmax
         if qdamp is not None:
             self.qdamp = qdamp
 
-        self.name = self._name
         self.interface = interface

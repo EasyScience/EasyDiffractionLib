@@ -38,23 +38,21 @@ class Pdffit2:
         P.add_structure(structure)
 
         # extract conditions from the model
-        qmax = self.model.qmax
-        qdamp = self.model.qdamp
+        qmax = self.model.qmax.raw_value
+        qdamp = self.model.qdamp.raw_value
 
         stype = self.type
 
         # Errors
         noise_array = np.zeros(len(x_array))
 
-        print("QMAX: ", qmax)
-        print("QDAMP: ", qdamp)
         # P.read_data_string(x_array, stype, qmax, qdamp)
         # Assign the data to the pdf calculator
         P.read_data_lists(stype, qmax, qdamp, list(x_array), list(noise_array))
 
         P.calc()
 
-        pdf = P.getpdf_fit()
+        pdf = np.array(P.getpdf_fit())
 
         return pdf
 

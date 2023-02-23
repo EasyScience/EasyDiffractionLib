@@ -2,7 +2,6 @@
 import os
 
 from easyCore.Fitting.Fitting import Fitter
-from easyDiffractionLib.sample import Sample
 from easyDiffractionLib import Phases
 from easyDiffractionLib.Jobs import Powder1DCW
 from easyDiffractionLib.interface import InterfaceFactory as Calculator
@@ -45,11 +44,13 @@ y_data = job.create_simulation(x_data)
 parameters.qdamp.fixed = False
 job.phases[0].cell.length_a.fixed = False
 job.phases[0].scale.fixed = False
-
+job.phases[0].atoms[0].adp.Uiso.fixed = False
 
 l_old = job.phases[0].cell.length_a.raw_value
 s_old = job.phases[0].scale.raw_value
 q_old = parameters.qdamp.raw_value
+u_iso = job.phases[0].atoms[0].adp.Uiso.raw_value
+
 fit_parameters = job.get_fit_parameters()
 
 result = fitter.fit(x_data, data[:, 1], 
@@ -62,6 +63,7 @@ print("The optimized parameters are:")
 print("{} -> {}".format(l_old, job.phases[0].cell.length_a.raw_value))
 print("{} -> {}".format(s_old, job.phases[0].scale.raw_value))
 print("{} -> {}".format(q_old, parameters.qdamp.raw_value))
+print("{} -> {}".format(u_iso, job.phases[0].atoms[0].adp.Uiso.raw_value))
 
 
 y_data = calculator.fit_func(x_data)

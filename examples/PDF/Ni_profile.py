@@ -2,7 +2,6 @@
 import os
 
 from easyCore.Fitting.Fitting import Fitter
-from easyDiffractionLib.sample import Sample
 from easyDiffractionLib import Phases
 from easyDiffractionLib.interface import InterfaceFactory as Calculator
 from easyDiffractionLib.Profiles.P1D import PDFParameters
@@ -10,12 +9,12 @@ from easyDiffractionLib.Jobs import Powder1DCW
 from easyDiffractionLib.Interfaces.pdffit2 import readGRData
 
 
-data_fname = "D:\\projects\\easyScience\\easyDiffractionLib\\examples\\PDF\\Ni-xray.gr"
-# data_fname = os.path.realpath('Ni-xray.gr')
+# data_fname = "D:\\projects\\easyScience\\easyDiffractionLib\\examples\\PDF\\Ni-xray.gr"
+data_fname = os.path.realpath('Ni-xray.gr')
 data = readGRData(data_fname)
 
-phase_cif_name = "D:\\projects\\easyScience\\easyDiffractionLib\\examples\\PDF\\Ni.cif"
-# phase_cif_name = "Ni.cif"
+# phase_cif_name = "D:\\projects\\easyScience\\easyDiffractionLib\\examples\\PDF\\Ni.cif"
+phase_cif_name = "Ni.cif"
 phases = Phases.from_cif_file(phase_cif_name)
 
 parameters = PDFParameters()

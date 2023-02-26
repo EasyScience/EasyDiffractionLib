@@ -27,29 +27,37 @@ job = Powder1DCW('Ni', parameters=parameters, phases=phases, interface=calculato
 fitter = Fitter(job, calculator.fit_func)
 
 parameters = job.parameters
-parameters.qmax = 70
-parameters.qdamp = 0.01
+# initial values to not be too far from optimized ones
+parameters.qmax = 30
+parameters.qdamp = 0.063043
 parameters.wavelength = 1.9122
+parameters.delta2 = 2.253193
+parameters.delta1 = 0.0
 
 pattern = job.pattern
-pattern.zero_shift = 0.16
-pattern.scale = 1.4473
+# pattern.zero_shift = 0.16
+pattern.zero_shift = 0.0
+job.phases[0].atoms[0].adp.Uiso = 0.005445
+job.phases[0].scale = 0.366013
 
 x_data = data[:, 0]
 
-y_data = job.create_simulation(x_data)
-
-# fitting
-# params to optimize
-parameters.qdamp.fixed = False
+# define params to optimize
+pattern.zero_shift.fixed = False
 job.phases[0].cell.length_a.fixed = False
 job.phases[0].scale.fixed = False
 job.phases[0].atoms[0].adp.Uiso.fixed = False
+
+parameters.qdamp.fixed = True
+parameters.delta1.fixed = True
+parameters.delta2.fixed = True
 
 l_old = job.phases[0].cell.length_a.raw_value
 s_old = job.phases[0].scale.raw_value
 q_old = parameters.qdamp.raw_value
 u_iso = job.phases[0].atoms[0].adp.Uiso.raw_value
+d1_old = parameters.delta1.raw_value
+d2_old = parameters.delta2.raw_value
 
 fit_parameters = job.get_fit_parameters()
 
@@ -60,10 +68,12 @@ print("The fit has been successful: {}".format(result.success))
 print("The gooodness of fit (chi2) is: {}".format(result.reduced_chi))
 
 print("The optimized parameters are:")
-print("{} -> {}".format(l_old, job.phases[0].cell.length_a.raw_value))
-print("{} -> {}".format(s_old, job.phases[0].scale.raw_value))
-print("{} -> {}".format(q_old, parameters.qdamp.raw_value))
-print("{} -> {}".format(u_iso, job.phases[0].atoms[0].adp.Uiso.raw_value))
+print("Length_a: {} -> {}".format(l_old, job.phases[0].cell.length_a.raw_value))
+print("scale: {} -> {}".format(s_old, job.phases[0].scale.raw_value))
+print("qdamp: {} -> {}".format(q_old, parameters.qdamp.raw_value))
+print("Uiso: {} -> {}".format(u_iso, job.phases[0].atoms[0].adp.Uiso.raw_value))
+print("delta1: {} -> {}".format(d1_old, parameters.delta1.raw_value))
+print("delta2: {} -> {}".format(d2_old, parameters.delta2.raw_value))
 
 
 y_data = calculator.fit_func(x_data)
@@ -77,8 +87,8 @@ Gfit = y_data
 Gdiff = pylab.array(Gobs) - pylab.array(Gfit)
 Gdiff_baseline = -10
 
-# pylab.plot(r, Gobs, 'ko')
-pylab.plot(r, Gobs, '.')
+# pylab.plot(r, Gobs, '.')
+pylab.plot(r, Gobs, 'r-')
 pylab.plot(r, Gfit, 'b-')
 pylab.plot(r, Gdiff + Gdiff_baseline, 'r-')
 

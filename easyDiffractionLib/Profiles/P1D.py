@@ -458,6 +458,17 @@ class PDFParameters(Instrument1DCWParameters):
             "fixed": True,
             "enabled": False,
         },
+
+        "delta1": {
+            "name": "delta1",
+            "value": 0.0,
+            "fixed": True,
+        },
+        "delta2": {
+            "name": "delta2",
+            "value": 0.0,
+            "fixed": True,
+        },
     }
     _defaults.update(Instrument1DCWParameters._defaults)
 
@@ -475,6 +486,8 @@ class PDFParameters(Instrument1DCWParameters):
         reflex_asymmetry_p4: Optional[Union[Parameter, float]] = None,
         qmax: Optional[Union[Parameter, float]] = None,
         qdamp: Optional[Union[Parameter, float]] = None,
+        delta1: Optional[Union[Parameter, float]] = None,
+        delta2: Optional[Union[Parameter, float]] = None,
         interface: Optional[iF] = None,
         **kwargs,
     ):
@@ -496,5 +509,9 @@ class PDFParameters(Instrument1DCWParameters):
             self.qmax = qmax
         if qdamp is not None:
             self.qdamp = qdamp
+        if delta1 is not None:
+            self.delta1 = delta1
+        if delta2 is not None:
+            self.delta2 = delta2
 
         self.interface = interface

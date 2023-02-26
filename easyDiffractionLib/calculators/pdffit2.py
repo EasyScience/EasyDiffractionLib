@@ -15,8 +15,11 @@ class Pdffit2:
         self.conditions = {
             "qmax": 30.0,
             "qdamp": 0.01,
+            "delta1": 0.0,
+            "delta2": 0.0,
         }
         self.background = None
+        self.phases = None
         self.storage = {}
         self.current_crystal = {}
         self.model = None
@@ -45,8 +48,23 @@ class Pdffit2:
         # extract conditions from the model
         qmax = self.model.qmax.raw_value
         qdamp = self.model.qdamp.raw_value
+        delta1 = self.model.delta1.raw_value
+        delta2 = self.model.delta2.raw_value
 
         stype = self.type
+
+        # scale
+        scale = self.phases[0].scale.raw_value
+        P.setvar("pscale", scale)
+        P.setvar("delta1", delta1)
+        P.setvar("delta2", delta2)
+
+        # set the Uiso (current limitation to isotropic ADP)
+        for i_atom, atom in enumerate(self.phases[0].atoms):
+            Uiso = atom.adp.Uiso.raw_value
+            for i in range(1,4):
+                u_str = "u{}{}({})".format(i, i, i_atom+1)
+                P.setvar(u_str, Uiso)
 
         # Errors
         noise_array = np.zeros(len(x_array))

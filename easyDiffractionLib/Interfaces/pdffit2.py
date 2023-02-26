@@ -11,9 +11,6 @@ from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
 from easyDiffractionLib.calculators.pdffit2 import Pdffit2 as Pdffit2_calc
 from easyDiffractionLib import Lattice, SpaceGroup, Site, Phases, Phase
 from easyDiffractionLib.Profiles.P1D import (
-    Instrument1DCWParameters,
-    Instrument1DTOFParameters,
-    Instrument1DCWPolParameters,
     Powder1DParameters,
     PDFParameters,
 )
@@ -35,11 +32,6 @@ class Pdffit2(InterfaceTemplate):
         "Npdf1DTOFunp": True,
         "Npdf1DCWpol": True,
     }
-
-    # _instrument_link = {
-    #     "qmax": "qmax",
-    #     "qdamp": "qdamp",
-    # }
 
     _crystal_link = {
         "length_a": "length_a",
@@ -117,9 +109,6 @@ class Pdffit2(InterfaceTemplate):
         t_ = type(model)
         model_key = self.__identify(model)
 
-        # if issubclass(t_, PDFParameters):
-        #     self.calculator.conditionsSet(model)
-
         if issubclass(t_, PDFParameters):
             self.calculator.conditionsSet(model)
             keys = self._instrument_link.copy()
@@ -145,9 +134,13 @@ class Pdffit2(InterfaceTemplate):
 
         elif issubclass(t_, Phases):
             self._phase = model
+            self.calculator.phases = model
 
         elif issubclass(t_, Sample):
             self.updateCif()
+
+        elif issubclass(t_, Powder1DParameters):
+            self.calculator.pattern = model
 
         return r_list
 

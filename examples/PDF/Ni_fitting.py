@@ -35,29 +35,20 @@ parameters.delta2 = 2.253193
 parameters.delta1 = 0.0
 
 pattern = job.pattern
-# pattern.zero_shift = 0.16
-pattern.zero_shift = 0.0
 job.phases[0].atoms[0].adp.Uiso = 0.005445
 job.phases[0].scale = 0.366013
+job.phases[0].cell.length_a = 3.52
 
 x_data = data[:, 0]
 
 # define params to optimize
-pattern.zero_shift.fixed = False
 job.phases[0].cell.length_a.fixed = False
 job.phases[0].scale.fixed = False
-job.phases[0].atoms[0].adp.Uiso.fixed = False
+job.phases[0].atoms[0].adp.Uiso.fixed = True
 
-parameters.qdamp.fixed = True
-parameters.delta1.fixed = True
-parameters.delta2.fixed = True
-
-l_old = job.phases[0].cell.length_a.raw_value
-s_old = job.phases[0].scale.raw_value
-q_old = parameters.qdamp.raw_value
-u_iso = job.phases[0].atoms[0].adp.Uiso.raw_value
-d1_old = parameters.delta1.raw_value
-d2_old = parameters.delta2.raw_value
+parameters.qdamp.fixed = False
+parameters.delta1.fixed = False
+parameters.delta2.fixed = False
 
 fit_parameters = job.get_fit_parameters()
 
@@ -68,13 +59,8 @@ print("The fit has been successful: {}".format(result.success))
 print("The gooodness of fit (chi2) is: {}".format(result.reduced_chi))
 
 print("The optimized parameters are:")
-print("Length_a: {} -> {}".format(l_old, job.phases[0].cell.length_a.raw_value))
-print("scale: {} -> {}".format(s_old, job.phases[0].scale.raw_value))
-print("qdamp: {} -> {}".format(q_old, parameters.qdamp.raw_value))
-print("Uiso: {} -> {}".format(u_iso, job.phases[0].atoms[0].adp.Uiso.raw_value))
-print("delta1: {} -> {}".format(d1_old, parameters.delta1.raw_value))
-print("delta2: {} -> {}".format(d2_old, parameters.delta2.raw_value))
-
+for param in fit_parameters:
+    print("{}: {}".format(param.name, param.raw_value))
 
 y_data = calculator.fit_func(x_data)
 
@@ -90,7 +76,7 @@ Gdiff_baseline = -10
 # pylab.plot(r, Gobs, '.')
 pylab.plot(r, Gobs, 'r-')
 pylab.plot(r, Gfit, 'b-')
-pylab.plot(r, Gdiff + Gdiff_baseline, 'r-')
+pylab.plot(r, Gdiff + Gdiff_baseline, 'y-')
 
 pylab.xlabel(u'r (Å)')
 pylab.ylabel(u'G (Å$^{-2}$)')

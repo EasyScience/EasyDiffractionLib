@@ -456,7 +456,6 @@ class PDFParameters(Instrument1DCWParameters):
             "name": "Q_damp",
             "value": 0.01,
             "fixed": True,
-            "enabled": False,
         },
 
         "delta1": {

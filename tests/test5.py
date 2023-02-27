@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 
 
 calculator = Calculator()
-calculator.switch("CrysPyV2")
+calculator.switch("CrysPy")
 
 def pol_sum(a, b):
     # Which component needs bringing back from cryspy?

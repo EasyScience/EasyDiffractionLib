@@ -645,7 +645,7 @@ class CryspyTOFPol(CryspyBase, TOF, Powder, POL):
 ## This is the main class which is called, implementing one of the above classes.
 ##
 class CryspyV2(InterfaceTemplate):
-    name = "CrysPyV2"
+    name = "CrysPy"
 
     feature_available = {
         "Npowder1DCWunp": True,

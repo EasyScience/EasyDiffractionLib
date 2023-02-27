@@ -25,11 +25,11 @@ except ImportError:
     # TODO make this a proper message (use logging?)
     print('Warning: CrysFML is not installed')
 
-try:
-    from easyDiffractionLib.Interfaces.GSASII import GSASII  # noqa: F401
-except ImportError:
-    # TODO make this a proper message (use logging?)
-    print('Warning: GSAS-2 is not installed')
+# try:
+#     from easyDiffractionLib.Interfaces.GSASII import GSASII  # noqa: F401
+# except ImportError:
+#     # TODO make this a proper message (use logging?)
+#     print('Warning: GSAS-2 is not installed')
 
 try:
     from easyDiffractionLib.Interfaces.pdffit2 import Pdffit2  # noqa: F401

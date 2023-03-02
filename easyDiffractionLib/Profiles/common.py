@@ -63,9 +63,8 @@ class DataContainer(ComponentSerializer):
         return cls(s, e)
 
     def add_coordinate(self, coordinate_name, coordinate_values):
-        if coordinate_name in self.store.easyCore._obj.coords and \
-            self.store.easyCore._obj.coords[coordinate_name].size != len(coordinate_values):
-            self.store.easyCore.remove_coordinate(coordinate_name)
+        if coordinate_name in self.store.easyCore._obj.coords:
+            self.store.easyCore._obj = self.store.easyCore._obj.drop_dims(coordinate_name)
         self.store.easyCore.add_coordinate(coordinate_name, coordinate_values)
 
     def add_variable(self, variable_name, variable_coordinates, values):

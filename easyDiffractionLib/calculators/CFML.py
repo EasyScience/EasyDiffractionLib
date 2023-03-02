@@ -181,16 +181,24 @@ class CFML:
                 for i in range(reflection_list.nref)
             ]
         )
-
-        output = {
-            crystal_name: {
-                "hkl": {
+        if hkltth:
+            hkl_dict = {
                     "ttheta": np.rad2deg(np.arcsin(hkltth[:, 3] * job_info.lambdas[0]))
                     * 2,
                     "h": hkltth[:, 0],
                     "k": hkltth[:, 1],
                     "l": hkltth[:, 2],
-                },
+                }
+        else:
+            hkl_dict = {
+                    "ttheta": np.array([]),
+                    "h": np.array([]),
+                    "k": np.array([]),
+                    "l": np.array([]),
+                }
+        output = {
+            crystal_name: {
+                "hkl": hkl_dict,
                 "profile": scales * dependent,
                 "components": {"total": dependent},
                 "profile_scale": scales,

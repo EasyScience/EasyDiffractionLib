@@ -37,6 +37,7 @@ class JobBase_1D(_PowderBase):
         )
         self._x_axis_name = ""
         self._y_axis_prefix = "Intensity_"
+        self.job_number = 0
         if phases is not None and self.phases != phases:
             self.phases = phases
 
@@ -56,6 +57,17 @@ class JobBase_1D(_PowderBase):
                 + "_"
                 + self._x_axis_name
             )
+            if coord_name in self.datastore.store and \
+                len(self.datastore.store[coord_name]) != len(tth):
+                self.datastore.store.easyCore.remove_coordinate(coord_name)
+                self.job_number += 1
+                coord_name = (
+                    self.datastore._simulations._simulation_prefix
+                    + self.name
+                    + str(self.job_number)
+                    + "_"
+                    + self._x_axis_name
+                )
             self.datastore.add_coordinate(coord_name, tth)
             self.datastore.store[coord_name].name = self._x_axis_name
         else:

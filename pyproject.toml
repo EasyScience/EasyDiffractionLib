@@ -50,7 +50,7 @@ GSASII = {version = '^0.0.1', optional=true}
 "diffpy.utils" = {version = "^3.0.0", optional=true}
 
 [tool.poetry.extras]
-additional = ["CFML", "GSASII"]
+additional = ["CFML", "GSASII", "diffpy.pdffit2"]
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1"

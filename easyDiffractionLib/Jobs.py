@@ -40,6 +40,8 @@ class JobBase_1D(_PowderBase):
         self.job_number = 0
         if phases is not None and self.phases != phases:
             self.phases = phases
+        # The following assignment is necessary for proper binding
+        self.interface = interface
 
     @property
     def simulation_data(self):

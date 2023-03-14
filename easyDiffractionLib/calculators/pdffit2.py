@@ -17,6 +17,7 @@ class Pdffit2:
             "qdamp": 0.01,
             "delta1": 0.0,
             "delta2": 0.0,
+            "qbroad": 0.0,
         }
         self.background = None
         self.phases = None
@@ -50,6 +51,7 @@ class Pdffit2:
         qdamp = self.model.qdamp.raw_value
         delta1 = self.model.delta1.raw_value
         delta2 = self.model.delta2.raw_value
+        qbroad = self.model.qbroad.raw_value
 
         stype = self.type
 
@@ -72,6 +74,8 @@ class Pdffit2:
         # P.read_data_string(x_array, stype, qmax, qdamp)
         # Assign the data to the pdf calculator
         P.read_data_lists(stype, qmax, qdamp, list(x_array), list(noise_array))
+        # qbroad must be set after read_data_string
+        P.setvar("qbroad", qbroad)
 
         P.calc()
 

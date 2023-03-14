@@ -457,7 +457,11 @@ class PDFParameters(Instrument1DCWParameters):
             "value": 0.01,
             "fixed": True,
         },
-
+        "qbroad": {
+            "name": "qbroad",
+            "value": 0.0,
+            "fixed": True,
+        },
         "delta1": {
             "name": "delta1",
             "value": 0.0,
@@ -487,6 +491,7 @@ class PDFParameters(Instrument1DCWParameters):
         qdamp: Optional[Union[Parameter, float]] = None,
         delta1: Optional[Union[Parameter, float]] = None,
         delta2: Optional[Union[Parameter, float]] = None,
+        qbroad: Optional[Union[Parameter, float]] = None,
         interface: Optional[iF] = None,
         **kwargs,
     ):
@@ -512,5 +517,7 @@ class PDFParameters(Instrument1DCWParameters):
             self.delta1 = delta1
         if delta2 is not None:
             self.delta2 = delta2
+        if qbroad is not None:
+            self.qbroad = qbroad
 
         self.interface = interface

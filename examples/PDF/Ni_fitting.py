@@ -30,6 +30,10 @@ parameters = job.parameters
 # initial values to not be too far from optimized ones
 parameters.qmax = 30
 parameters.qdamp = 0.063043
+parameters.qbroad = 0.1
+# let's limit the range of qbroad
+parameters.qbroad.min = 0.0
+parameters.qbroad.max = 0.5
 parameters.wavelength = 1.9122
 parameters.delta2 = 2.253193
 parameters.delta1 = 0.0
@@ -49,6 +53,7 @@ job.phases[0].atoms[0].adp.Uiso.fixed = True
 parameters.qdamp.fixed = False
 parameters.delta1.fixed = False
 parameters.delta2.fixed = False
+parameters.qbroad.fixed = False
 
 fit_parameters = job.get_fit_parameters()
 
@@ -64,23 +69,23 @@ for param in fit_parameters:
 
 y_data = calculator.fit_func(x_data)
 
-import pylab
 # obtain data from PdfFit calculator object
-r = x_data
 Gobs = data[:, 1]
 Gfit = y_data
-
-Gdiff = pylab.array(Gobs) - pylab.array(Gfit)
+Gdiff = Gobs - Gfit
 Gdiff_baseline = -10
 
-# pylab.plot(r, Gobs, '.')
-pylab.plot(r, Gobs, 'r-')
-pylab.plot(r, Gfit, 'b-')
-pylab.plot(r, Gdiff + Gdiff_baseline, 'y-')
+Gdiff_show = Gdiff/5.0 + Gdiff_baseline
 
-pylab.xlabel(u'r (Å)')
-pylab.ylabel(u'G (Å$^{-2}$)')
-pylab.title('Fit of nickel to x-ray experimental PDF')
+from bokeh.io import show
+from bokeh.plotting import figure
 
-# display plot window, this must be the last command in the script
-pylab.show()
+fig = figure()
+fig.xaxis.axis_label = 'r (Å)'
+fig.yaxis.axis_label = r"$$G (Å^{-2})\$$"
+fig.title.text = 'Fit of nickel to x-ray experimental PDF'
+
+fig.line(x_data, Gobs, legend_label='G(r) Data', color='steelblue', line_width=2)
+fig.line(x_data, Gfit, legend_label='G(r) Fit', color='orangered', line_width=2)
+fig.line(x_data, Gdiff_show, legend_label='G(r) Diff', color='grey', line_width=2)
+show(fig)

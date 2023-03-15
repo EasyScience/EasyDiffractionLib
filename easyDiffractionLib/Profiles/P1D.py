@@ -458,7 +458,7 @@ class PDFParameters(Instrument1DCWParameters):
             "fixed": True,
         },
         "qbroad": {
-            "name": "qbroad",
+            "name": "Q_broad",
             "value": 0.0,
             "fixed": True,
         },

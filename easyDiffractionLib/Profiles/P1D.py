@@ -464,11 +464,13 @@ class PDFParameters(Instrument1DCWParameters):
         },
         "delta1": {
             "name": "delta1",
+            "units": "angstrom",
             "value": 0.0,
             "fixed": True,
         },
         "delta2": {
             "name": "delta2",
+            "units": "angstrom**2",
             "value": 0.0,
             "fixed": True,
         },

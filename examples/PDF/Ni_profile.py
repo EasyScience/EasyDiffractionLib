@@ -33,7 +33,7 @@ parameters.qbroad = 0.0
 parameters.wavelength = 0.126514
 parameters.delta2 = 2.253193
 parameters.delta1 = 0.0
-parameters.spdiameter = 64.0
+parameters.spdiameter = 0.0
 
 pattern = job.pattern
 # pattern.zero_shift = 0.16

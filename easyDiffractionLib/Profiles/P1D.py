@@ -478,8 +478,8 @@ class PDFParameters(Instrument1DCWParameters):
         "spdiameter": {
             "name": "spdiameter",
             "units": "angstrom",
-            "min": 1.0,
-            "value": 8.0,
+            "min": 0.0,
+            "value": 0.0,
             "fixed": True,
         },
     }

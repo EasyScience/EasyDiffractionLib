@@ -18,7 +18,7 @@ class Pdffit2:
             "delta1": 0.0,
             "delta2": 0.0,
             "qbroad": 0.0,
-            "spdiameter": 8.0,
+            "spdiameter": 0.0,
         }
         self.background = None
         self.phases = None

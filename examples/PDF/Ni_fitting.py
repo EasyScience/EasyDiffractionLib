@@ -37,7 +37,7 @@ parameters.qbroad.max = 0.5
 parameters.wavelength = 0.126514
 parameters.delta2 = 2.253193
 parameters.delta1 = 0.0
-parameters.spdiameter = 8.0
+parameters.spdiameter = 0.0
 
 pattern = job.pattern
 job.phases[0].atoms[0].adp.Uiso = 0.005445
@@ -55,7 +55,6 @@ parameters.qdamp.fixed = False
 parameters.delta1.fixed = False
 parameters.delta2.fixed = False
 parameters.qbroad.fixed = False
-parameters.spdiameter.fixed = False
 
 fit_parameters = job.get_fit_parameters()
 

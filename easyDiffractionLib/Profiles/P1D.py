@@ -475,6 +475,13 @@ class PDFParameters(Instrument1DCWParameters):
             "value": 0.0,
             "fixed": True,
         },
+        "spdiameter": {
+            "name": "spdiameter",
+            "units": "angstrom",
+            "min": 1.0,
+            "value": 8.0,
+            "fixed": True,
+        },
     }
     _defaults.update(Instrument1DCWParameters._defaults)
 
@@ -495,6 +502,7 @@ class PDFParameters(Instrument1DCWParameters):
         delta1: Optional[Union[Parameter, float]] = None,
         delta2: Optional[Union[Parameter, float]] = None,
         qbroad: Optional[Union[Parameter, float]] = None,
+        spdiameter: Optional[Union[Parameter, float]] = None,
         interface: Optional[iF] = None,
         **kwargs,
     ):
@@ -522,5 +530,7 @@ class PDFParameters(Instrument1DCWParameters):
             self.delta2 = delta2
         if qbroad is not None:
             self.qbroad = qbroad
+        if spdiameter is not None:
+            self.spdiameter = spdiameter
 
         self.interface = interface

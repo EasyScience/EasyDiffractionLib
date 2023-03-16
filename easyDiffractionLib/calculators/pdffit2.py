@@ -18,6 +18,7 @@ class Pdffit2:
             "delta1": 0.0,
             "delta2": 0.0,
             "qbroad": 0.0,
+            "spdiameter": 8.0,
         }
         self.background = None
         self.phases = None
@@ -52,6 +53,7 @@ class Pdffit2:
         delta1 = self.model.delta1.raw_value
         delta2 = self.model.delta2.raw_value
         qbroad = self.model.qbroad.raw_value
+        spdiameter = self.model.spdiameter.raw_value
 
         stype = self.type
 
@@ -60,6 +62,7 @@ class Pdffit2:
         P.setvar("pscale", scale)
         P.setvar("delta1", delta1)
         P.setvar("delta2", delta2)
+        P.setvar("spdiameter", spdiameter)
 
         # set the Uiso (current limitation to isotropic ADP)
         for i_atom, atom in enumerate(self.phases[0].atoms):

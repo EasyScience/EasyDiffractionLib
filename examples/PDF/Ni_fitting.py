@@ -85,7 +85,7 @@ fig.xaxis.axis_label = 'r (Å)'
 fig.yaxis.axis_label = r"$$G (Å^{-2})\$$"
 fig.title.text = 'Fit of nickel to x-ray experimental PDF'
 
-fig.line(x_data, Gobs, legend_label='G(r) Data', color='steelblue', line_width=2)
+fig.scatter(x_data, Gobs, legend_label='G(r) Data', fill_alpha=0., line_color='steelblue', marker='circle')
 fig.line(x_data, Gfit, legend_label='G(r) Fit', color='orangered', line_width=2)
 fig.line(x_data, Gdiff_show, legend_label='G(r) Diff', color='grey', line_width=2)
 show(fig)

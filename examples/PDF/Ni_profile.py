@@ -30,7 +30,7 @@ parameters = job.parameters
 parameters.qmax = 30
 parameters.qdamp = 0.063043
 parameters.qbroad = 0.0
-parameters.wavelength = 1.9122
+parameters.wavelength = 0.126514
 parameters.delta2 = 2.253193
 parameters.delta1 = 0.0
 

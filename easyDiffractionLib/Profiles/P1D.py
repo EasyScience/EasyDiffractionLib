@@ -454,6 +454,7 @@ class PDFParameters(Instrument1DCWParameters):
         },
         "qdamp": {
             "name": "Q_damp",
+            "units": "1/angstrom",
             "value": 0.01,
             "fixed": True,
         },

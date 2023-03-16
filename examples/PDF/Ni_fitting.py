@@ -34,7 +34,7 @@ parameters.qbroad = 0.1
 # let's limit the range of qbroad
 parameters.qbroad.min = 0.0
 parameters.qbroad.max = 0.5
-parameters.wavelength = 1.9122
+parameters.wavelength = 0.126514
 parameters.delta2 = 2.253193
 parameters.delta1 = 0.0
 

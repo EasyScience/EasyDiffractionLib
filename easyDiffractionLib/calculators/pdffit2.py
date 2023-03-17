@@ -66,6 +66,8 @@ class Pdffit2:
 
         # set the Uiso (current limitation to isotropic ADP)
         for i_atom, atom in enumerate(self.phases[0].atoms):
+            if not hasattr(atom, "adp"):
+                continue
             Uiso = atom.adp.Uiso.raw_value
             for i in range(1,4):
                 u_str = "u{}{}({})".format(i, i, i_atom+1)

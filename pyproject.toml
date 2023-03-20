@@ -43,15 +43,11 @@ cryspy = { git = 'https://github.com/ikibalin/cryspy.git', rev = 'bravis_type_fi
 # easyCrystallography = "^0.3.0"
 easyScienceCore = { git = 'https://github.com/easyScience/easyCore.git', rev = 'master' }
 easyCrystallography = { git = 'https://github.com/easyScience/easyCrystallography.git', rev = 'master' }
-
 pycifrw = "^4.4.1"
-CFML = {version = '^0.0.1', optional=true}
+CFML = '^0.0.1'
 GSASII = {version = '^0.0.1', optional=true}
-"diffpy.pdffit2" = {version = "0.0.0", optional=true}
-"diffpy.utils" = {version = "^3.0.0", optional=true}
-
-[tool.poetry.extras]
-additional = ["CFML", "GSASII", "diffpy.pdffit2"]
+"diffpy.pdffit2" = "0.0.0"
+"diffpy.utils" = "^3.0.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1"

@@ -90,17 +90,14 @@ class CFML:
             job_info.y_resolution = self.conditions["y_resolution"]
             job_info.lambdas = (self.conditions["lamb"], self.conditions["lamb"])
             job_info.bkg = 0.0
-
             # Calculations
             try:
                 reflection_list = CFML_api.ReflectionList(
                     cell, space_group, True, job_info
                 )
-
                 reflection_list.compute_structure_factors(
                     space_group, atom_list, job_info
                 )
-
                 diffraction_pattern = CFML_api.DiffractionPattern(
                     job_info, reflection_list, cell.reciprocal_cell_vol
                 )
@@ -181,7 +178,8 @@ class CFML:
                 for i in range(reflection_list.nref)
             ]
         )
-        if hkltth:
+
+        if len(hkltth) > 1:
             hkl_dict = {
                     "ttheta": np.rad2deg(np.arcsin(hkltth[:, 3] * job_info.lambdas[0]))
                     * 2,

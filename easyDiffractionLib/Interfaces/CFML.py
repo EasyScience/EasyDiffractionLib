@@ -162,14 +162,21 @@ class CFML(InterfaceTemplate):
             return
         # delete preexising cif files
         self.remove_cif()
+        # naive and silly workaround for something mysterious happening in easyCrystallography
+        content = str(self._phase.cif)
+        content = content.replace("H-M_ref", "H-M_alt")
         with open(self._filename, "w") as fid:
-            fid.write(str(self._phase.cif))
+            # fid.write(str(self._phase.cif))
+            fid.write(content)
         base, file = os.path.split(self._filename)
         ext = file[-3:]
         file = file[:-4]
         for idx, phase in enumerate(self._phase):
+            content = str(phase.cif)
+            content = content.replace("H-M_ref", "H-M_alt")
             with open(f"{os.path.join(base, file)}_{idx}.{ext}", "w") as fid:
-                fid.write(str(phase.cif))
+                #fid.write(str(phase.cif))
+                fid.write(content)
 
     def remove_cif(self):
         if self._filename is None:

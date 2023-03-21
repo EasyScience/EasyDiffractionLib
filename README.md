@@ -6,7 +6,7 @@
 **easydiffractionLib** is a Python library which provides:
 * Scripting interface to simulate and analyse neutron diffraction patterns.
 * Multiple optimization algorithms to minimize models to experimental data: [Lmfit](https://lmfit.github.io/lmfit-py/), [Bumps](https://github.com/bumps/bumps) and [DFO_LS](https://github.com/numericalalgorithmsgroup/dfols).
-* Multiple calculation engines: [CrysPy](https://github.com/ikibalin/cryspy), [CrysFML](https://www.ill.eu/sites/fullprof/php/programs24b7.html?pagina=Crysfml), [GSAS-II](https://subversion.xray.aps.anl.gov/trac/pyGSAS).
+* Multiple calculation engines: [CrysPy](https://github.com/ikibalin/cryspy), [CrysFML](https://www.ill.eu/sites/fullprof/php/programs24b7.html?pagina=Crysfml).
 
 **easydiffractionLib** is the foundation of [**easyDiffraction**](https://github.com/easyScience/easyDiffraction), an intuitive application which endeavors simplifying and accelerating the analysis of diffraction experiments.
 

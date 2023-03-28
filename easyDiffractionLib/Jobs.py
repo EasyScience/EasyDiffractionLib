@@ -5,15 +5,12 @@ from gemmi import cif
 from easyCore.Datasets.xarray import xr, np
 from easyDiffractionLib.Profiles.common import _PowderBase
 from easyDiffractionLib.elements.Backgrounds.Point import PointBackground, BackgroundPoint
+from easyDiffractionLib.Profiles.P1D import (
+    Instrument1DCWPolParameters,
+    Instrument1DTOFParameters,
+)
 from easyDiffractionLib.interface import InterfaceFactory
 from easyCore.Fitting.Fitting import Fitter
-
-try:
-    import hvplot.xarray  # noqa
-
-    USE_HVPLOT = True
-except ImportError:
-    USE_HVPLOT = False
 
 
 class JobBase_1D(_PowderBase):
@@ -25,8 +22,10 @@ class JobBase_1D(_PowderBase):
         phases=None,
         parameters=None,
         pattern=None,
+        interface=None,
     ):
-        interface = InterfaceFactory()
+        if interface is None:
+            interface = InterfaceFactory()
         super(JobBase_1D, self).__init__(
             name,
             profileClass,
@@ -38,8 +37,11 @@ class JobBase_1D(_PowderBase):
         )
         self._x_axis_name = ""
         self._y_axis_prefix = "Intensity_"
-        if phases is not None:
+        self.job_number = 0
+        if phases is not None and self.phases != phases:
             self.phases = phases
+        # The following assignment is necessary for proper binding
+        self.interface = interface
 
     @property
     def simulation_data(self):
@@ -57,6 +59,17 @@ class JobBase_1D(_PowderBase):
                 + "_"
                 + self._x_axis_name
             )
+            if coord_name in self.datastore.store and \
+                len(self.datastore.store[coord_name]) != len(tth):
+                self.datastore.store.easyCore.remove_coordinate(coord_name)
+                self.job_number += 1
+                coord_name = (
+                    self.datastore._simulations._simulation_prefix
+                    + self.name
+                    + str(self.job_number)
+                    + "_"
+                    + self._x_axis_name
+                )
             self.datastore.add_coordinate(coord_name, tth)
             self.datastore.store[coord_name].name = self._x_axis_name
         else:
@@ -72,6 +85,9 @@ class JobBase_1D(_PowderBase):
         else:
             simulation_name = self.name + "_" + simulation_name
         self.datastore._simulations.add_simulation(simulation_name, y)
+        # fitter expects ndarrays
+        if type(y) == xr.DataArray:
+            y = y.values
         return y
 
     def plot_simulation(self, simulation_name=None):
@@ -210,8 +226,8 @@ class JobBase_1D(_PowderBase):
         if not np.any(data_y[0]):
             data_y[0] = np.fromiter(block.find_loop("_pd_meas_intensity"), float)
             data_e[0] = np.fromiter(block.find_loop("_pd_meas_intensity_sigma"), float)
-            data_y[1] = np.zeros(len(data_y))
-            data_e[1] = np.zeros(len(data_e))
+            data_y[1] = np.zeros(len(data_y[0]))
+            data_e[1] = np.zeros(len(data_e[0]))
 
         coord_name = self.name + "_" + experiment_name + "_" + self._x_axis_name
 
@@ -253,21 +269,28 @@ class JobBase_1D(_PowderBase):
         self.parameters_from_cif_block(block)
         self.phase_parameters_from_cif_block(block)
         self.data_from_cif_block(block, experiment_name)
-        self.background_from_cif_block(block, experiment_name)
+        # TODO: allow this to be optional for the Lib, since the App does it explicitly
+        # self.background_from_cif_block(block, experiment_name)
+
+    def update_bindings(self):
+        self.generate_bindings()
+        #self.interface.generate_bindings(self)
+
 
 class Powder1DCW(JobBase_1D):
     def __init__(
         self,
         name: str,
-        datastore: xr.Dataset,
+        datastore: xr.Dataset = xr.Dataset(),
         phases=None,
         parameters=None,
         pattern=None,
+        interface=None,
     ):
         from easyDiffractionLib.Profiles.P1D import Unpolarized1DClasses
 
         super(Powder1DCW, self).__init__(
-            name, Unpolarized1DClasses, datastore, phases, parameters, pattern
+            name, Unpolarized1DClasses, datastore, phases, parameters, pattern, interface
         )
         self._x_axis_name = "tth"
 
@@ -276,15 +299,19 @@ class PolPowder1DCW(JobBase_1D):
     def __init__(
         self,
         name: str,
-        datastore: xr.Dataset,
+        datastore: xr.Dataset = xr.Dataset(),
         phases=None,
         parameters=None,
         pattern=None,
+        interface=None,
     ):
         from easyDiffractionLib.Profiles.P1D import Polarized1DClasses
 
+        if parameters is None:
+            parameters = Instrument1DCWPolParameters()
+
         super(PolPowder1DCW, self).__init__(
-            name, Polarized1DClasses, datastore, phases, parameters, pattern
+            name, Polarized1DClasses, datastore, phases, parameters, pattern, interface
         )
         self._x_axis_name = "tth"
 
@@ -307,15 +334,19 @@ class Powder1DTOF(JobBase_1D):
     def __init__(
         self,
         name: str,
-        datastore: xr.Dataset,
+        datastore: xr.Dataset = xr.Dataset(),
         phases=None,
         parameters=None,
         pattern=None,
+        interface=None,
     ):
         from easyDiffractionLib.Profiles.P1D import Unpolarized1DTOFClasses
 
+        if parameters is None:
+            parameters = Instrument1DTOFParameters()
+
         super(Powder1DTOF, self).__init__(
-            name, Unpolarized1DTOFClasses, datastore, phases, parameters, pattern
+            name, Unpolarized1DTOFClasses, datastore, phases, parameters, pattern, interface
         )
         self._x_axis_name = "time"
 
@@ -343,7 +374,7 @@ def get_job_type_from_file(file_url):
         raise ValueError("Could not determine job type from file.")
     return job_type
 
-def get_job_from_file(file_url, exp_name="job", phases=None):
+def get_job_from_file(file_url, exp_name="job", phases=None, interface=None):
     '''
     Get the job from a CIF file.
 
@@ -355,14 +386,14 @@ def get_job_from_file(file_url, exp_name="job", phases=None):
     # Check if powder1DCWpol
     value_cwpol = block.find_value("_diffrn_radiation_polarization")
     value_tof = block.find_value("_pd_meas_time_of_flight")
-    value_cw = block.find_value("_pd_meas_2theta")
+    value_cw = block.find_value("_setup_wavelength")
 
     if value_cwpol is not None:
-        job = PolPowder1DCW(exp_name, datastore, phases)
+        job = PolPowder1DCW(exp_name, datastore, phases, interface=interface)
     elif value_tof is not None:
-        job = Powder1DTOF(exp_name, datastore, phases)
+        job = Powder1DTOF(exp_name, datastore, phases, interface=interface)
     elif value_cw is not None:
-        job = Powder1DCW(exp_name, datastore, phases)
+        job = Powder1DCW(exp_name, datastore, phases, interface=interface)
     else:
         raise ValueError("Could not determine job type from file.")
 

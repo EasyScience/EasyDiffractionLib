@@ -21,6 +21,12 @@ from easyDiffractionLib.Profiles.P1D import PolPowder1DParameters as Pattern1D_P
 
 class Sample(BaseObj):
 
+    _REDIRECT = {
+        "phases": lambda obj: getattr(obj, '_phases'),
+        "parameters": lambda obj: getattr(obj, '_parameters'),
+        "pattern": lambda obj: getattr(obj, '_pattern')
+    }
+
     _phases: ClassVar[Phases]
     _parameters: ClassVar
     _pattern: ClassVar
@@ -39,6 +45,8 @@ class Sample(BaseObj):
             phases = Phases("Phases")
         elif isinstance(phases, Phases):
             pass
+        elif isinstance(phases, list):
+            phases = Phases("Phases", phases[0])
         elif isinstance(phases, ecPhases):
             if len(phases) > 0:
                 phases = Phases("Phases", phases[0])
@@ -146,23 +154,9 @@ class Sample(BaseObj):
         self._parameters = value
         self._parameters.interface = self._interface
 
-    def update_bindings(self):
-        if not self.interface.current_interface.feature_checker(
-            test_str=self.exp_type_str
-        ):
-            raise AssertionError("The interface is not suitable for this experiment")
-        self.generate_bindings()
-
     @property
     def pattern(self):
         return self._pattern
-
-    def as_dict(self, skip: list = None) -> dict:
-        d = super(Sample, self).as_dict(skip=skip)
-        del d["_phases"]
-        del d["_parameters"]
-        del d["_pattern"]
-        return d
 
     @property
     def exp_type_str(self) -> str:

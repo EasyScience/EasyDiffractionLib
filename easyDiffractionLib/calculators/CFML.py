@@ -62,10 +62,8 @@ class CFML:
         x_max = this_x_array[-1]
         num_points = np.prod(x_array.shape)
         x_step = (x_max - x_min) / (num_points - 1)
-
-        if len(self.pattern.backgrounds) == 0:
-            bg = np.zeros_like(this_x_array)
-        else:
+        bg = np.zeros_like(this_x_array)
+        if self.pattern is not None and len(self.pattern.backgrounds) > 0:
             bg = self.pattern.backgrounds[0].calculate(this_x_array)
 
         dependents = []
@@ -92,17 +90,14 @@ class CFML:
             job_info.y_resolution = self.conditions["y_resolution"]
             job_info.lambdas = (self.conditions["lamb"], self.conditions["lamb"])
             job_info.bkg = 0.0
-
             # Calculations
             try:
                 reflection_list = CFML_api.ReflectionList(
                     cell, space_group, True, job_info
                 )
-
                 reflection_list.compute_structure_factors(
                     space_group, atom_list, job_info
                 )
-
                 diffraction_pattern = CFML_api.DiffractionPattern(
                     job_info, reflection_list, cell.reciprocal_cell_vol
                 )
@@ -184,15 +179,24 @@ class CFML:
             ]
         )
 
-        output = {
-            crystal_name: {
-                "hkl": {
+        if len(hkltth) > 1:
+            hkl_dict = {
                     "ttheta": np.rad2deg(np.arcsin(hkltth[:, 3] * job_info.lambdas[0]))
                     * 2,
                     "h": hkltth[:, 0],
                     "k": hkltth[:, 1],
                     "l": hkltth[:, 2],
-                },
+                }
+        else:
+            hkl_dict = {
+                    "ttheta": np.array([]),
+                    "h": np.array([]),
+                    "k": np.array([]),
+                    "l": np.array([]),
+                }
+        output = {
+            crystal_name: {
+                "hkl": hkl_dict,
                 "profile": scales * dependent,
                 "components": {"total": dependent},
                 "profile_scale": scales,

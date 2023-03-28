@@ -40,6 +40,12 @@ jobs:
       with:
         python-version: 3.8
 
+    - name: Enable extra repository
+      shell: bash
+      run: |
+        pip config --user set global.extra-index-url https://easyscience.github.io/pypi/
+        pip config --user set global.trusted-host easyscience.github.io
+
     - name: Some logging
       shell: bash
       run: |

@@ -1,11 +1,10 @@
 __author__ = 'github.com/wardsimon'
 __version__ = '0.0.1'
 
-from easyCore.Objects.ObjectClasses import BaseObj, Parameter
 from copy import deepcopy
-from easyCore.Utils.json import MontyDecoder
+from typing import ClassVar, Optional, Union
+from easyCore.Objects.ObjectClasses import BaseObj, Parameter
 from easyDiffractionLib.elements.Backgrounds.Background import BackgroundContainer
-_decoder = MontyDecoder()
 
 
 class Pattern1D(BaseObj):
@@ -36,36 +35,21 @@ class Pattern1D(BaseObj):
         }
     }
 
+    zero_shift: ClassVar[Parameter]
+    scale: ClassVar[Parameter]
+    backgrounds: ClassVar[BackgroundContainer]
+
     def __init__(self,
-                 zero_shift: Parameter,
-                 scale: Parameter,
-                 backgrounds: BackgroundContainer,
+                 zero_shift: Optional[Union[Parameter, float]] = None,
+                 scale: Optional[Union[Parameter, float]] = None,
+                 backgrounds: Optional[BackgroundContainer] = None,
                  interface=None):
         super().__init__(self.__class__.__name__,
-                         zero_shift=zero_shift, scale=scale,
-                         backgrounds=backgrounds)
+                         zero_shift=Parameter.from_dict(self._defaults['zero_shift']),
+                         scale=Parameter.from_dict(self._defaults['scale']),
+                         backgrounds=BackgroundContainer())
         self.name = self._name
         self.interface = interface
-
-    @classmethod
-    def from_pars(cls,
-                  zero_shift: float = _defaults['zero_shift']['value'],
-                  scale: float = _defaults['scale']['value']
-                  ):
-        defaults = deepcopy(cls._defaults)
-        defaults['zero_shift']['value'] = zero_shift
-        zero_shift = _decoder.process_decoded(defaults['zero_shift'])
-        defaults['scale']['value'] = scale
-        scale = _decoder.process_decoded(defaults['scale'])
-        backgrounds = BackgroundContainer()
-        return cls(zero_shift=zero_shift, scale=scale, backgrounds=backgrounds)
-
-    @classmethod
-    def default(cls):
-        defaults = deepcopy(cls._defaults)
-        zero_shift = _decoder.process_decoded(defaults['zero_shift'])
-        scale = _decoder.process_decoded(defaults['scale'])
-        backgrounds = BackgroundContainer()
 
         return cls(zero_shift=zero_shift, scale=scale, backgrounds=backgrounds)
 

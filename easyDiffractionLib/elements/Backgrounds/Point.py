@@ -100,6 +100,8 @@ class PointBackground(Background):
         :type linked_experiment: str
         :param kwargs: Any additional kwargs
         """
+        if linked_experiment is None:
+            linked_experiment = 'default'
         super(PointBackground, self).__init__('point_background', *args, linked_experiment=linked_experiment, **kwargs)
 
     def calculate(self, x_array: np.ndarray) -> np.ndarray:

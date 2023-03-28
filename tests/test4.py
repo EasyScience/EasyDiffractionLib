@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 
 calculator = Calculator()
-calculator.switch("CrysPyV2")
+calculator.switch("CrysPy")
 
 atom = Site(
     label="Cl1",

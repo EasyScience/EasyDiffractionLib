@@ -13,10 +13,10 @@ repo = 'easyDiffractionLib'
 
 [tool.poetry]
 name = "easyDiffraction"
-version = "0.0.7"
+version = "0.0.9"
 description = 'Making diffraction data analysis and modelling easy.'
 license = "BSD-3-Clause"
-authors = ["Simon Ward",  "Andrew Sazonov"]
+authors = ["Simon Ward",  "Andrew Sazonov", "Piotr Rozyczko"]
 readme = "README.md"
 homepage = "https://github.com/easyScience/easyDiffractionLib"
 documentation = "https://github.com/easyScience/easyDiffractionLib"
@@ -38,20 +38,23 @@ default = false
 [tool.poetry.dependencies]
 python = "^3.8, <3.11"
 cryspy = { git = 'https://github.com/ikibalin/cryspy.git', rev = 'bravis_type_fix' }
-easyScienceCore = '>=0.2.3'
-easyCrystallography = '>=0.1.2'
-CFML = {version = '^0.0.1', optional=true}
-GSASII = {version = '^0.0.1', optional=true}
-
-[tool.poetry.extras]
-additional = ["CFML", "GSASII"]
+# easyScience
+easyScienceCore = "^0.3.0"
+easyCrystallography = "^0.3.0"
+# easyScienceCore = { git = 'https://github.com/easyScience/easyCore.git', rev = 'master' }
+# easyCrystallography = { git = 'https://github.com/easyScience/easyCrystallography.git', rev = 'master' }
+pycifrw = "^4.4.1"
+CFML = '^0.0.1'
+# GSASII = {version = '^0.0.1', optional=true}
+"diffpy.pdffit2" = "0.0.0"
+"diffpy.utils" = "^3.0.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1"
 toml = "^0.10"
 requests = '^2.24'
-py3Dmol = "^1.7.0"
-bokeh = "^2.4.0"
+py3Dmol = "^2.0.1"
+bokeh = "^3.0.3"
 
 [tool.poetry.scripts]
 easyDiffractionLib = "easyDiffractionLib.main:main"

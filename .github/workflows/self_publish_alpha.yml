@@ -20,7 +20,6 @@ jobs:
     - uses: Gr1N/setup-poetry@v7
     - name: Install and build
       run: |
-        poetry version patch
         poetry build
 
     - name: Set name variable

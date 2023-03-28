@@ -56,6 +56,34 @@ class Pars1D(BaseObj):
             'name': 'resolution_y',
             'value': 0.0,
             'fixed': True
+        },
+        'reflex_asymmetry_p1': {
+            '@module': 'easyCore.Objects.Base',
+            '@class': 'Parameter',
+            'name': 'reflex_asymmetry_p1',
+            'value': 0.0,
+            'fixed': True
+        },
+        'reflex_asymmetry_p2': {
+            '@module': 'easyCore.Objects.Base',
+            '@class': 'Parameter',
+            'name': 'reflex_asymmetry_p2',
+            'value': 0.0,
+            'fixed': True
+        },
+        'reflex_asymmetry_p3': {
+            '@module': 'easyCore.Objects.Base',
+            '@class': 'Parameter',
+            'name': 'reflex_asymmetry_p3',
+            'value': 0.0,
+            'fixed': True
+        },
+        'reflex_asymmetry_p4': {
+            '@module': 'easyCore.Objects.Base',
+            '@class': 'Parameter',
+            'name': 'reflex_asymmetry_p4',
+            'value': 0.0,
+            'fixed': True
         }
     }
 
@@ -63,11 +91,15 @@ class Pars1D(BaseObj):
                  wavelength: Parameter,
                  resolution_u: Parameter, resolution_v: Parameter, resolution_w: Parameter,
                  resolution_x: Parameter, resolution_y: Parameter,
+                 reflex_asymmetry_p1: Parameter, reflex_asymmetry_p2: Parameter,
+                 reflex_asymmetry_p3: Parameter, reflex_asymmetry_p4: Parameter,
                  interface=None):
         super().__init__(self.__class__.__name__,
                          wavelength=wavelength,
                          resolution_u=resolution_u, resolution_v=resolution_v, resolution_w=resolution_w,
-                         resolution_x=resolution_x, resolution_y=resolution_y)
+                         resolution_x=resolution_x, resolution_y=resolution_y,
+                         reflex_asymmetry_p1=reflex_asymmetry_p1, reflex_asymmetry_p2=reflex_asymmetry_p2,
+                         reflex_asymmetry_p3=reflex_asymmetry_p3, reflex_asymmetry_p4=reflex_asymmetry_p4)
         self.name = self._name
         self.interface = interface
 
@@ -78,7 +110,11 @@ class Pars1D(BaseObj):
                   resolution_v: float = _defaults['resolution_v']['value'],
                   resolution_w: float = _defaults['resolution_w']['value'],
                   resolution_x: float = _defaults['resolution_x']['value'],
-                  resolution_y: float = _defaults['resolution_y']['value']
+                  resolution_y: float = _defaults['resolution_y']['value'],
+                  reflex_asymmetry_p1: float = _defaults['reflex_asymmetry_p1']['value'],
+                  reflex_asymmetry_p2: float = _defaults['reflex_asymmetry_p2']['value'],
+                  reflex_asymmetry_p3: float = _defaults['reflex_asymmetry_p3']['value'],
+                  reflex_asymmetry_p4: float = _defaults['reflex_asymmetry_p4']['value']
                   ):
         defaults = deepcopy(cls._defaults)
         defaults['wavelength']['value'] = wavelength
@@ -93,9 +129,19 @@ class Pars1D(BaseObj):
         resolution_x = _decoder.process_decoded(defaults['resolution_x'])
         defaults['resolution_y']['value'] = resolution_y
         resolution_y = _decoder.process_decoded(defaults['resolution_y'])
+        defaults['reflex_asymmetry_p1']['value'] = reflex_asymmetry_p1
+        reflex_asymmetry_p1 = _decoder.process_decoded(defaults['reflex_asymmetry_p1'])
+        defaults['reflex_asymmetry_p2']['value'] = reflex_asymmetry_p2
+        reflex_asymmetry_p2 = _decoder.process_decoded(defaults['reflex_asymmetry_p2'])
+        defaults['reflex_asymmetry_p3']['value'] = reflex_asymmetry_p3
+        reflex_asymmetry_p3 = _decoder.process_decoded(defaults['reflex_asymmetry_p3'])
+        defaults['reflex_asymmetry_p4']['value'] = reflex_asymmetry_p4
+        reflex_asymmetry_p4 = _decoder.process_decoded(defaults['reflex_asymmetry_p4'])
         return cls(wavelength=wavelength,
                    resolution_u=resolution_u, resolution_v=resolution_v, resolution_w=resolution_w,
-                   resolution_x=resolution_x, resolution_y=resolution_y)
+                   resolution_x=resolution_x, resolution_y=resolution_y,
+                   reflex_asymmetry_p1=reflex_asymmetry_p1, reflex_asymmetry_p2=reflex_asymmetry_p2,
+                   reflex_asymmetry_p3=reflex_asymmetry_p3, reflex_asymmetry_p4=reflex_asymmetry_p4)
 
     @classmethod
     def default(cls):
@@ -106,6 +152,12 @@ class Pars1D(BaseObj):
         resolution_w = _decoder.process_decoded(defaults['resolution_w'])
         resolution_x = _decoder.process_decoded(defaults['resolution_x'])
         resolution_y = _decoder.process_decoded(defaults['resolution_y'])
+        reflex_asymmetry_p1 = _decoder.process_decoded(defaults['reflex_asymmetry_p1'])
+        reflex_asymmetry_p2 = _decoder.process_decoded(defaults['reflex_asymmetry_p2'])
+        reflex_asymmetry_p3 = _decoder.process_decoded(defaults['reflex_asymmetry_p3'])
+        reflex_asymmetry_p4 = _decoder.process_decoded(defaults['reflex_asymmetry_p4'])
         return cls(wavelength=wavelength,
                    resolution_u=resolution_u, resolution_v=resolution_v, resolution_w=resolution_w,
-                   resolution_x=resolution_x, resolution_y=resolution_y)
+                   resolution_x=resolution_x, resolution_y=resolution_y,
+                   reflex_asymmetry_p1=reflex_asymmetry_p1, reflex_asymmetry_p2=reflex_asymmetry_p2,
+                   reflex_asymmetry_p3=reflex_asymmetry_p3, reflex_asymmetry_p4=reflex_asymmetry_p4)

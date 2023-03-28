@@ -76,8 +76,8 @@ class Background(BaseCollection):
         """
         pass
 
-    def as_dict(self, skip: list = None) -> dict:
-        d = super(Background, self).as_dict(skip=skip)
+    def _modify_dict(self, skip: list = None) -> dict:
+        d = {}
         d['linked_experiment'] = self._linked_experiment.raw_value
         return d
 
@@ -92,6 +92,10 @@ class BackgroundContainer(BaseCollection):
         """
         Constructor, with a link to an interface.
         """
+        # Remove the data key word argument if it is empty
+        # This can happen if the object is created from a json file with no background points
+        if 'data' in kwargs and not kwargs['data']:
+            kwargs.pop('data')
         super(BackgroundContainer, self).__init__('background', *args, **kwargs)
         self.interface = interface
 

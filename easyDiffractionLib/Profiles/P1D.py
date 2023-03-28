@@ -26,19 +26,6 @@ class Powder1DSim(_DataClassBase):
     def add_simulation(self, simulation_name, simulation):
         self._dataset[self._simulation_prefix + simulation_name] = simulation
 
-    # @property
-    # def simulations(self) -> xr.Dataset:
-    #     temp_dataset = xr.Dataset()
-    #     for sim in self.simulation_names:
-    #         temp_dataset[sim] = self._dataset[sim]
-    #     return temp_dataset
-    #
-    # @property
-    # def simulation_names(self) -> List[str]:
-    #     sims = [a for a in self._dataset.variables.keys() if a.startswith(self._simulation_prefix)]
-    #     return sims
-
-
 class Powder1DExp(_DataClassBase):
     def __init__(self, dataset, simulation_prefix):
         super(Powder1DExp, self).__init__(dataset)
@@ -211,6 +198,26 @@ class Instrument1DCWParameters(BaseObj):
             "value": 0.0,
             "fixed": True,
         },
+        "reflex_asymmetry_p1": {
+            "name": "reflex_asymmetry_p1",
+            "value": 0.0,
+            "fixed": True,
+        },
+        "reflex_asymmetry_p2": {
+            "name": "reflex_asymmetry_p2",
+            "value": 0.0,
+            "fixed": True,
+        },
+        "reflex_asymmetry_p3": {
+            "name": "reflex_asymmetry_p3",
+            "value": 0.0,
+            "fixed": True,
+        },
+        "reflex_asymmetry_p4": {
+            "name": "reflex_asymmetry_p4",
+            "value": 0.0,
+            "fixed": True,
+        }
     }
 
     wavelength: ClassVar[Parameter]
@@ -219,6 +226,10 @@ class Instrument1DCWParameters(BaseObj):
     resolution_w: ClassVar[Parameter]
     resolution_x: ClassVar[Parameter]
     resolution_y: ClassVar[Parameter]
+    reflex_asymmetry_p1: ClassVar[Parameter]
+    reflex_asymmetry_p2: ClassVar[Parameter]
+    reflex_asymmetry_p3: ClassVar[Parameter]
+    reflex_asymmetry_p4: ClassVar[Parameter]
 
     def __init__(
         self,
@@ -228,6 +239,10 @@ class Instrument1DCWParameters(BaseObj):
         resolution_w: Optional[Union[Parameter, float]] = None,
         resolution_x: Optional[Union[Parameter, float]] = None,
         resolution_y: Optional[Union[Parameter, float]] = None,
+        reflex_asymmetry_p1: Optional[Union[Parameter, float]] = None,
+        reflex_asymmetry_p2: Optional[Union[Parameter, float]] = None,
+        reflex_asymmetry_p3: Optional[Union[Parameter, float]] = None,
+        reflex_asymmetry_p4: Optional[Union[Parameter, float]] = None,
         interface: Optional[iF] = None,
     ):
         super(Instrument1DCWParameters, self).__init__(
@@ -249,6 +264,14 @@ class Instrument1DCWParameters(BaseObj):
             self.resolution_x = resolution_x
         if resolution_y is not None:
             self.resolution_y = resolution_y
+        if reflex_asymmetry_p1 is not None:
+            self.reflex_asymmetry_p1 = reflex_asymmetry_p1
+        if reflex_asymmetry_p2 is not None:
+            self.reflex_asymmetry_p2 = reflex_asymmetry_p2
+        if reflex_asymmetry_p3 is not None:
+            self.reflex_asymmetry_p3 = reflex_asymmetry_p3
+        if reflex_asymmetry_p4 is not None:
+            self.reflex_asymmetry_p4 = reflex_asymmetry_p4
         self.name = self._name
         self.interface = interface
 
@@ -416,3 +439,98 @@ Polarized1DClasses = JobSetup(
 Polarized1DTOFClasses = JobSetup(
     [Powder1DSim, Powder1DExp], PolPowder1DParameters, Instrument1DTOFParameters
 )
+
+class PDFParameters(Instrument1DCWParameters):
+
+    qmax: ClassVar[Parameter]
+    qdamp: ClassVar[Parameter]
+
+    _defaults = {
+        "qmax": {
+            "name": "Q_max",
+            "units": "1/angstrom",
+            "value": 30.0,
+            "fixed": True,
+        },
+        "qdamp": {
+            "name": "Q_damp",
+            "units": "1/angstrom",
+            "value": 0.01,
+            "fixed": True,
+        },
+        "qbroad": {
+            "name": "Q_broad",
+            "value": 0.0,
+            "fixed": True,
+        },
+        "delta1": {
+            "name": "delta1",
+            "units": "angstrom",
+            "value": 0.0,
+            "fixed": True,
+        },
+        "delta2": {
+            "name": "delta2",
+            "units": "angstrom**2",
+            "value": 0.0,
+            "fixed": True,
+        },
+        "spdiameter": {
+            "name": "spdiameter",
+            "units": "angstrom",
+            "min": 0.0,
+            "value": 0.0,
+            "fixed": True,
+        },
+    }
+    _defaults.update(Instrument1DCWParameters._defaults)
+
+    def __init__(
+        self,
+        wavelength: Optional[Union[Parameter, float]] = None,
+        resolution_u: Optional[Union[Parameter, float]] = None,
+        resolution_v: Optional[Union[Parameter, float]] = None,
+        resolution_w: Optional[Union[Parameter, float]] = None,
+        resolution_x: Optional[Union[Parameter, float]] = None,
+        resolution_y: Optional[Union[Parameter, float]] = None,
+        reflex_asymmetry_p1: Optional[Union[Parameter, float]] = None,
+        reflex_asymmetry_p2: Optional[Union[Parameter, float]] = None,
+        reflex_asymmetry_p3: Optional[Union[Parameter, float]] = None,
+        reflex_asymmetry_p4: Optional[Union[Parameter, float]] = None,
+        qmax: Optional[Union[Parameter, float]] = None,
+        qdamp: Optional[Union[Parameter, float]] = None,
+        delta1: Optional[Union[Parameter, float]] = None,
+        delta2: Optional[Union[Parameter, float]] = None,
+        qbroad: Optional[Union[Parameter, float]] = None,
+        spdiameter: Optional[Union[Parameter, float]] = None,
+        interface: Optional[iF] = None,
+        **kwargs,
+    ):
+
+        super().__init__(
+            wavelength=wavelength,
+            resolution_u=resolution_u,
+            resolution_v=resolution_v,
+            resolution_w=resolution_w,
+            resolution_x=resolution_x,
+            resolution_y=resolution_y,
+            reflex_asymmetry_p1=reflex_asymmetry_p1,
+            reflex_asymmetry_p2=reflex_asymmetry_p2,
+            reflex_asymmetry_p3=reflex_asymmetry_p3,
+            reflex_asymmetry_p4=reflex_asymmetry_p4,
+            **kwargs,
+        )
+        if qmax is not None:
+            self.qmax = qmax
+        if qdamp is not None:
+            self.qdamp = qdamp
+        if delta1 is not None:
+            self.delta1 = delta1
+        if delta2 is not None:
+            self.delta2 = delta2
+        if qbroad is not None:
+            self.qbroad = qbroad
+        if spdiameter is not None:
+            self.spdiameter = spdiameter
+
+        self.interface = interface

@@ -44,7 +44,7 @@ easyCrystallography = "^0.3.0"
 # easyScienceCore = { git = 'https://github.com/easyScience/easyCore.git', rev = 'master' }
 # easyCrystallography = { git = 'https://github.com/easyScience/easyCrystallography.git', rev = 'master' }
 pycifrw = "^4.4.1"
-CFML = '^0.0.1'
+CFML = '^0.0.3'
 # GSASII = {version = '^0.0.1', optional=true}
 "diffpy.pdffit2" = "0.0.0"
 "diffpy.utils" = "^3.0.0"

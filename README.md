@@ -95,7 +95,7 @@ We absolutely welcome contributions. **easyDiffractionLib** is maintained by the
 
 <!---Release--->
 
-[31]: https://img.shields.io/badge/release-v0.0.1--alpha-orange
+[31]: https://img.shields.io/badge/release-v0.0.9--alpha-orange
 
 [32]: https://img.shields.io/pypi/v/easyScienceCore.svg
 

@@ -8,6 +8,7 @@ from easyDiffractionLib.elements.Backgrounds.Point import PointBackground, Backg
 from easyDiffractionLib.Profiles.P1D import (
     Instrument1DCWPolParameters,
     Instrument1DTOFParameters,
+    PDFParameters
 )
 from easyDiffractionLib.interface import InterfaceFactory
 from easyCore.Fitting.Fitting import Fitter
@@ -349,6 +350,26 @@ class Powder1DTOF(JobBase_1D):
             name, Unpolarized1DTOFClasses, datastore, phases, parameters, pattern, interface
         )
         self._x_axis_name = "time"
+
+class Powder1DPDF(JobBase_1D):
+    def __init__(
+        self,
+        name: str,
+        datastore: xr.Dataset = xr.Dataset(),
+        phases=None,
+        parameters=None,
+        pattern=None,
+        interface=None,
+    ):
+        from easyDiffractionLib.Profiles.P1D import Unpolarized1DPDFClasses
+
+        if parameters is None:
+            parameters = PDFParameters()
+
+        super(Powder1DPDF, self).__init__(
+            name, Unpolarized1DPDFClasses, datastore, phases, parameters, pattern, interface
+        )
+        self._x_axis_name = "r"
 
 
 def get_job_type_from_file(file_url):

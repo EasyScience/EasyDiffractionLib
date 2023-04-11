@@ -28,9 +28,12 @@ class Pdffit2(InterfaceTemplate):
     name = 'Pdffit2'
 
     feature_available = {
-        "Npdf1DCWunp": True,
-        "Npdf1DTOFunp": True,
-        "Npdf1DCWpol": True,
+        # "Npdf1DCWunp": True,
+        # "Npdf1DTOFunp": True,
+        # "Npdf1DCWpol": True,
+        "Npowder1DPDF": True,
+        "Npowder1DPDFunp": True,
+        "Npowder1DPDFpol": True,
     }
 
     _crystal_link = {
@@ -157,7 +160,7 @@ class Pdffit2(InterfaceTemplate):
     def get_calculated_y_for_phase(self, phase_id: int):
         pass
     def get_hkl(self, x_array: np.ndarray = None, idx=None, phase_name=None, encoded_name=False):
-        pass
+        return {}
     def get_total_y_for_phases(self):
         pass
     def link_atom(self, crystal_obj, atom):

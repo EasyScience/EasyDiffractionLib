@@ -8,7 +8,7 @@ from easyCore.Objects.core import ComponentSerializer
 
 exp_type_strings = {
     'radiation_options':   ['N', 'X'],
-    'exp_type_options':    ['CW', 'TOF'],
+    'exp_type_options':    ['CW', 'TOF', 'PDF'],
     'dimensional_options': ['1D', '2D'],
     'sample_options':      ['powder', 'single'],
     'polarization_options': ['unp', 'pol']

@@ -6,7 +6,9 @@ from diffpy.structure.parsers.p_cif import P_cif as cif_parser
 from diffpy.pdffit2 import redirect_stdout
 
 # silence the C++ engine output
-redirect_stdout(open(os.path.devnull, 'w'))
+
+# temporarily disable so errors can be seen
+# redirect_stdout(open(os.path.devnull, 'w'))
 
 class Pdffit2:
 

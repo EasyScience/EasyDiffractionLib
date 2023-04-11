@@ -423,23 +423,6 @@ class Instrument1DTOFParameters(BaseObj):
 class Instrument1DCWPolParameters(Instrument1DCWParameters):
     pass
 
-
-Unpolarized1DClasses = JobSetup(
-    [Powder1DSim, Powder1DExp], Powder1DParameters, Instrument1DCWParameters
-)
-
-Unpolarized1DTOFClasses = JobSetup(
-    [Powder1DSim, Powder1DExp], Powder1DParameters, Instrument1DTOFParameters
-)
-
-Polarized1DClasses = JobSetup(
-    [Powder1DSim, Powder1DExp], PolPowder1DParameters, Instrument1DCWParameters
-)
-
-Polarized1DTOFClasses = JobSetup(
-    [Powder1DSim, Powder1DExp], PolPowder1DParameters, Instrument1DTOFParameters
-)
-
 class PDFParameters(Instrument1DCWParameters):
 
     qmax: ClassVar[Parameter]
@@ -534,3 +517,23 @@ class PDFParameters(Instrument1DCWParameters):
             self.spdiameter = spdiameter
 
         self.interface = interface
+
+Unpolarized1DClasses = JobSetup(
+    [Powder1DSim, Powder1DExp], Powder1DParameters, Instrument1DCWParameters
+)
+
+Unpolarized1DTOFClasses = JobSetup(
+    [Powder1DSim, Powder1DExp], Powder1DParameters, Instrument1DTOFParameters
+)
+
+Polarized1DClasses = JobSetup(
+    [Powder1DSim, Powder1DExp], PolPowder1DParameters, Instrument1DCWParameters
+)
+
+Polarized1DTOFClasses = JobSetup(
+    [Powder1DSim, Powder1DExp], PolPowder1DParameters, Instrument1DTOFParameters
+)
+
+Unpolarized1DPDFClasses = JobSetup(
+    [Powder1DSim, Powder1DExp], Powder1DParameters, PDFParameters
+)

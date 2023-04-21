@@ -361,7 +361,8 @@ def get_job_type_from_file(file_url):
     job_type = "Powder1DCW"
     # Check if powder1DCWpol
     value_cwpol = block.find_value("_diffrn_radiation_polarization")
-    value_tof = block.find_value("_pd_meas_time_of_flight")
+    # value_tof = block.find_value("_pd_meas_time_of_flight")
+    value_tof = block.find_loop("_tof_meas_time")  or block.find_loop("_pd_meas_time_of_flight")
     value_cw = block.find_value("_pd_meas_2theta")
 
     if value_cwpol is not None:
@@ -385,7 +386,8 @@ def get_job_from_file(file_url, exp_name="job", phases=None, interface=None):
     datastore = xr.Dataset()
     # Check if powder1DCWpol
     value_cwpol = block.find_value("_diffrn_radiation_polarization")
-    value_tof = block.find_value("_pd_meas_time_of_flight")
+    # value_tof = block.find_value("_pd_meas_time_of_flight")
+    value_tof = block.find_loop("_tof_meas_time")  or block.find_loop("_pd_meas_time_of_flight")
     value_cw = block.find_value("_setup_wavelength")
 
     if value_cwpol is not None:

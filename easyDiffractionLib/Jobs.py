@@ -252,6 +252,26 @@ class JobBase_1D(_PowderBase):
         self.set_background(bkg)
 
     def from_cif_file(self, file_url, experiment_name=None):
+            """
+            Load a CIF file into the experiment.
+            """
+            block = cif.read(file_url).sole_block()
+
+            if experiment_name is None:
+                experiment_name = block.name
+            self.from_cif_block(block, experiment_name=experiment_name)
+
+    def from_cif_string(self, cif_string, experiment_name=None):
+        """
+        Load a CIF string into the experiment.
+        """
+        block = cif.read_string(cif_string).sole_block()
+
+        if experiment_name is None:
+            experiment_name = block.name
+        self.from_cif_block(block, experiment_name=experiment_name)
+
+    def from_cif_block(self, block, experiment_name=None):
         """
         Load a CIF file and extract the experiment data.
         This includes
@@ -261,8 +281,6 @@ class JobBase_1D(_PowderBase):
         - the data points
         - the background
         """
-        block = cif.read(file_url).sole_block()
-
         if experiment_name is None:
             experiment_name = block.name
         self.pattern_from_cif_block(block)
@@ -274,7 +292,6 @@ class JobBase_1D(_PowderBase):
 
     def update_bindings(self):
         self.generate_bindings()
-        #self.interface.generate_bindings(self)
 
 
 class Powder1DCW(JobBase_1D):

@@ -367,6 +367,54 @@ class Powder1DTOF(JobBase_1D):
         )
         self._x_axis_name = "time"
 
+    def parameters_from_cif_block(self, block):
+       # Various instrumental parameters
+        value = block.find_value("_tof_parameters_zero")
+        if value is not None:
+            self.pattern.zero_shift = float(value)
+        value = block.find_value("_setup_wavelength")
+        if value is not None:
+            self.parameters.wavelength = float(value)
+        value = block.find_value("_tof_parameters_dtt1")
+        if value is not None:
+            self.parameters.dtt1 = float(value)
+        value = block.find_value("_tof_parameters_dtt2")
+        if value is not None:
+            self.parameters.dtt2 = float(value)
+        value = block.find_value("_tof_parameters_2theta_bank")
+        if value is not None:
+            self.parameters.ttheta_bank = float(value)
+        value = block.find_value("_tof_profile_sigma0")
+        if value is not None:
+            self.parameters.sigma0 = float(value)
+        value = block.find_value("_tof_profile_sigma1")
+        if value is not None:
+            self.parameters.sigma1 = float(value)
+        value = block.find_value("_tof_profile_sigma2")
+        if value is not None:
+            self.parameters.sigma2 = float(value)
+        value = block.find_value("_tof_profile_gamma0")
+        if value is not None:
+            self.parameters.gamma0 = float(value)
+        value = block.find_value("_tof_profile_gamma1")
+        if value is not None:
+            self.parameters.gamma1 = float(value)
+        value = block.find_value("_tof_profile_gamma2")
+        if value is not None:
+            self.parameters.gamma2 = float(value)
+        value = block.find_value("_tof_profile_alpha0")
+        if value is not None:
+            self.parameters.alpha0 = float(value)
+        value = block.find_value("_tof_profile_alpha1")
+        if value is not None:
+            self.parameters.alpha1 = float(value)
+        value = block.find_value("_tof_profile_beta0")
+        if value is not None:
+            self.parameters.beta0 = float(value)
+        value = block.find_value("_tof_profile_beta1")
+        if value is not None:
+            self.parameters.beta1 = float(value)
+
 
 def get_job_type_from_file(file_url):
     '''

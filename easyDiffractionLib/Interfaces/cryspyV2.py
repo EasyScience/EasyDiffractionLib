@@ -710,6 +710,9 @@ class CryspyV2(InterfaceTemplate):
                 x_array, *args, **kwargs
             )
             return calculation
+        
+    def set_exp_cif(self, cif: str) -> None:
+        self.calculator.set_exp_cif(cif)
 
     def generate_pol_fit_func(
         self,

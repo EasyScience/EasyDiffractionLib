@@ -457,7 +457,7 @@ def get_job_from_file(file_url, exp_name="job", phases=None, interface=None):
 
     if value_cwpol is not None:
         job = PolPowder1DCW(exp_name, datastore, phases, interface=interface)
-    elif value_tof is not None:
+    elif value_tof:# is not None:
         job = Powder1DTOF(exp_name, datastore, phases, interface=interface)
     elif value_cw is not None:
         job = Powder1DCW(exp_name, datastore, phases, interface=interface)

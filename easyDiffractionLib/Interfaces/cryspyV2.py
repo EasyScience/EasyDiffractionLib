@@ -555,9 +555,6 @@ class UPol(UPol_type):
         return self.calculator.full_calculate(x_array, *args, **kwargs)
 
 
-#
-# Now define the classes that implement the different types of models.
-#
 @interfaceMixInMeta
 class CryspyCW(CryspyBase, CW, Powder, UPol):
     def create(self, model: B) -> List[ItemContainer]:

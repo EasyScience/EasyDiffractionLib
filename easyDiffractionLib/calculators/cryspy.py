@@ -70,21 +70,13 @@ class Cryspy:
         self.createCrystal_fromCifStr(value)
 
     def set_exp_cif(self, value: str):
-        print("\nset_exp_cif called ****")
         if value == self.experiment_cif:
             return
         self.experiment_cif = value
-        exp_obj = cryspy.str_to_globaln(self.experiment_cif)
+        self.exp_obj = cryspy.str_to_globaln(self.experiment_cif)
         if self._cryspyObject is None:
             self._cryspyObject = cryspy.str_to_globaln(self.cif_str)
-        self._cryspyObject.items.append(exp_obj.items[0])
 
-        self._cryspyDict = self._cryspyObject.get_dictionary()
-        self._edDict = createEdDict(self._cryspyObject, self._cryspyDict)
-        print("\ncryspyDict: ", list(self._cryspyDict.keys()))
-        print("\nedDict: ", list(self._edDict.keys()))
-        self._first_experiment_name = list(self._edDict['experiments'][0].keys())[0]
-        print("\nExperiment name: ", self._first_experiment_name)
 
     def createModel(self, model_id: str, model_type: str = "powder1DCW"):
         model = {"background": cryspy.PdBackgroundL(), "phase": self.phases}
@@ -108,10 +100,6 @@ class Cryspy:
         print("\nAssignPhase called ****")
         phase = self.storage[phase_name]
         self.phases.items.append(phase)
-        #self._cryspyObject = cryspy.str_to_globaln(self.cif_str)
-
-        #self._cryspyDict = self._cryspyObject.get_dictionary()
-        #self._edDict = createEdDict(self._cryspyObject, self._cryspyDict)
 
     def removePhase(self, model_name: str, phase_name: str):
         phase = self.storage[phase_name]
@@ -474,7 +462,7 @@ class Cryspy:
             phasesL.items.append(self.phases.items[idx])
             phase_lists.append(phasesL)
             profile, peak = self._do_run(
-                self.model, self.polarized, this_x_array, crystal, phasesL
+                self.model, self.polarized, this_x_array, crystal, phasesL, bg
             )
             profiles.append(profile)
             peak_dat.append(peak)
@@ -626,10 +614,10 @@ class Cryspy:
                 {
                     crystals[idx].data_name: {
                         "hkl": {
-                            # x_str: getattr(peak_dat[idx], "numpy_" + x_str),
-                            # "h": peak_dat[idx].numpy_index_h,
-                            # "k": peak_dat[idx].numpy_index_k,
-                            # "l": peak_dat[idx].numpy_index_l,
+                            x_str: peak_dat[idx][x_str+'_hkl'],
+                            "h": peak_dat[idx]['index_hkl'][0],
+                            "k": peak_dat[idx]['index_hkl'][1],
+                            "l": peak_dat[idx]['index_hkl'][2],
                         },
                         "profile": scales[idx] * dependent[idx, :] / normalization,
                         "components": {"total": dependent[idx, :]},
@@ -651,10 +639,10 @@ class Cryspy:
                 {
                     crystals[idx].data_name: {
                         "hkl": {
-                            # x_str: getattr(peak_dat[idx], "numpy_" + x_str),
-                            # "h": peak_dat[idx].numpy_index_h,
-                            # "k": peak_dat[idx].numpy_index_k,
-                            # "l": peak_dat[idx].numpy_index_l,
+                            x_str: peak_dat[idx][x_str+'_hkl'],
+                            "h": peak_dat[idx]['index_hkl'][0],
+                            "k": peak_dat[idx]['index_hkl'][1],
+                            "l": peak_dat[idx]['index_hkl'][2],
                         },
                         "profile": scales[idx] * dependent[idx, :] / normalization,
                         "components": {
@@ -676,155 +664,46 @@ class Cryspy:
     x_array,
     crystals,
     phase_list,
+    bg
     ):
         idx = [
             idx for idx, item in enumerate(model.items) if isinstance(item, cryspy.PhaseL)
         ][0]
         model.items[idx] = phase_list
-        #result1 = model.calc_profile(
-        #    x_array, [crystals], flag_internal=True, flag_polarized=polarized
-        #)
-        # start = x_array[0]
-        # end = x_array[-1]
-        # step = (end - start) / (len(x_array) -1)
 
-        # result1 = cryspy.simulation_pd(
-        #     [crystals],
-        #     start,
-        #     end,
-        #     step,
-        #     flag_polarized=polarized
-        # )
-        # add pd object to cryspy
-        # setattr(self._cryspyObject, "pd", self.model)
-        # setattr(self.model, 'data_name', 'pd')
-        # excluded_points = np.full(len(x_array), True)
-        # setattr(self.model['setup'], 'excluded_points', excluded_points)
-        # self._cryspyObject.items.append(self.model)
-        # self._cryspyDict = self._cryspyObject.get_dictionary()
-        # self._cryspyDict['pd_pd']['excluded_points'] = excluded_points
-        # self._cryspyDict['pd_pd']['ttheta'] = x_array
+        excluded_points = np.full(len(x_array), True)
+        setattr(self.model['setup'], 'excluded_points', excluded_points)
+        setattr(self.model['setup'], 'ttheta', x_array)
+        data_name = crystals.data_name
+        setattr(self.model, 'data_name', data_name) # or just 'pd'
+
+        if self._cryspyObject is None:
+            self._cryspyObject = cryspy.str_to_globaln(self.cif_str)
+        # append experiment to the main cryspy object
+        self._cryspyObject.items.append(self.model)
+
+        # convert cryspy object to dictionary
+        self._cryspyDict = self._cryspyObject.get_dictionary()
+        exp_name = "pd_" + data_name.lower()
+
+        # add missing keys to the dictionary
+        self._cryspyDict[exp_name]['excluded_points'] = excluded_points
+        self._cryspyDict[exp_name]['ttheta'] = x_array
+
+        self._cryspyDict[exp_name]['background_ttheta'] = x_array
+        self._cryspyDict[exp_name]['background_intensity'] = bg
+        # interestingly, experimental signal is required, although not used for simple profile calc
+        self._cryspyDict[exp_name]['signal_exp'] = np.array([np.zeros(len(x_array)), np.zeros(len(x_array))])
+
         rhochi_calc_chi_sq_by_dictionary(self._cryspyDict,
                                         dict_in_out=self._cryspyInOutDict,
                                         flag_use_precalculated_data=False,
                                         flag_calc_analytical_derivatives=False)
-        print("DONE")
-        print(list(self._cryspyDict.keys()))
-        print(list(self._cryspyInOutDict.keys()))
-        yArray = self._cryspyInOutDict[f'pd_{self._first_experiment_name}']['signal_plus']
+
+        yArray = self._cryspyInOutDict[exp_name]['signal_plus']
 
         # result2 = model.d_internal_val["peak_" + crystals.data_name]
         result1 = yArray
-        result2 = None
-        # should we return the whole pd_sim_1d object or just the profile?
-        # currently returning profile as 'pd_proc' attribute
-        return result1, result2
+        result2 = self._cryspyInOutDict[exp_name]['dict_in_out_' + data_name.lower()]
 
-def createEdDict(cryspy_obj, cryspy_dict):
-    phase_names = [name.replace('crystal_', '') for name in cryspy_dict.keys() if name.startswith('crystal_')]
-    experiment_names = [name.replace('pd_', '') for name in cryspy_dict.keys() if name.startswith('pd_')]
-    if not experiment_names:
-        # TOF
-        experiment_names = [name.replace('data_', '') for name in cryspy_dict.keys() if name.startswith('data_')]
-    ed_dict = {}
-    for data_block in cryspy_obj.items:
-        data_block_name = data_block.data_name.lower()
-        # Phase datablock
-        if data_block_name in phase_names:
-            ed_dict['phases'] = []
-            ed_phase = {data_block_name: {}}
-            cryspy_phase = data_block.items
-            for item in cryspy_phase:
-                # Space group section
-                if type(item) == cryspy.C_item_loop_classes.cl_2_space_group.SpaceGroup:
-                    ed_phase[data_block_name]['_space_group_name_H-M_alt'] = item.name_hm_alt
-                # Cell section
-                elif type(item) == cryspy.C_item_loop_classes.cl_1_cell.Cell:
-                    ed_phase[data_block_name]['_cell_length_a'] = item.length_a
-                    ed_phase[data_block_name]['_cell_length_b'] = item.length_b
-                    ed_phase[data_block_name]['_cell_length_c'] = item.length_c
-                    ed_phase[data_block_name]['_cell_angle_alpha'] = item.angle_alpha
-                    ed_phase[data_block_name]['_cell_angle_beta'] = item.angle_beta
-                    ed_phase[data_block_name]['_cell_angle_gamma'] = item.angle_gamma
-                # Atoms section
-                elif type(item) == cryspy.C_item_loop_classes.cl_1_atom_site.AtomSiteL:
-                    ed_atoms = []
-                    cryspy_atoms = item.items
-                    for cryspy_atom in cryspy_atoms:
-                        ed_atom = {}
-                        ed_atom['_label'] = cryspy_atom.label
-                        ed_atom['_type_symbol'] = cryspy_atom.type_symbol
-                        ed_atom['_fract_x'] = cryspy_atom.fract_x
-                        ed_atom['_fract_y'] = cryspy_atom.fract_y
-                        ed_atom['_fract_z'] = cryspy_atom.fract_z
-                        ed_atom['_occupancy'] = cryspy_atom.occupancy
-                        ed_atom['_adp_type'] = cryspy_atom.adp_type
-                        if hasattr(cryspy_atom, 'b_iso_or_equiv'):
-                            ed_atom['_B_iso_or_equiv'] = cryspy_atom.b_iso_or_equiv
-                        ed_atom['_multiplicity'] = cryspy_atom.multiplicity
-                        ed_atom['_Wyckoff_symbol'] = cryspy_atom.wyckoff_symbol
-                        ed_atoms.append(ed_atom)
-                    ed_phase[data_block_name]['_atom_site'] = ed_atoms
-            ed_dict['phases'].append(ed_phase)
-            # Experiment datablock
-        if data_block_name in experiment_names:
-            ed_dict['experiments'] = []
-            ed_experiment = {data_block_name: {}}
-            cryspy_experiment = data_block.items
-            for item in cryspy_experiment:
-                # Ranges section
-                if type(item) == cryspy.C_item_loop_classes.cl_1_range.Range:
-                    ed_experiment[data_block_name]['_pd_meas_2theta_range_min'] = item.ttheta_min
-                    ed_experiment[data_block_name]['_pd_meas_2theta_range_max'] = item.ttheta_max
-                    ed_experiment[data_block_name]['_pd_meas_2theta_range_inc'] = 0.05  # NEED FIX
-                # Setup section
-                elif type(item) == cryspy.C_item_loop_classes.cl_1_setup.Setup:
-                    ed_experiment[data_block_name]['_diffrn_radiation_probe'] = item.radiation.replace('neutrons', 'neutron').replace('X-rays', 'x-ray')
-                    ed_experiment[data_block_name]['_diffrn_radiation_wavelength'] = item.wavelength
-                    ed_experiment[data_block_name]['_pd_meas_2theta_offset'] = item.offset_ttheta
-                # Instrument resolution section
-                elif type(item) == cryspy.C_item_loop_classes.cl_1_pd_instr_resolution.PdInstrResolution:
-                    ed_experiment[data_block_name]['_pd_instr_resolution_u'] = item.u
-                    ed_experiment[data_block_name]['_pd_instr_resolution_v'] = item.v
-                    ed_experiment[data_block_name]['_pd_instr_resolution_w'] = item.w
-                    ed_experiment[data_block_name]['_pd_instr_resolution_x'] = item.x
-                    ed_experiment[data_block_name]['_pd_instr_resolution_y'] = item.y
-                # Peak assymetries section
-                elif type(item) == cryspy.C_item_loop_classes.cl_1_pd_instr_reflex_asymmetry.PdInstrReflexAsymmetry:
-                    ed_experiment[data_block_name]['_pd_instr_reflex_asymmetry_p1'] = item.p1
-                    ed_experiment[data_block_name]['_pd_instr_reflex_asymmetry_p2'] = item.p2
-                    ed_experiment[data_block_name]['_pd_instr_reflex_asymmetry_p3'] = item.p3
-                    ed_experiment[data_block_name]['_pd_instr_reflex_asymmetry_p4'] = item.p4
-                # Phases section
-                elif type(item) == cryspy.C_item_loop_classes.cl_1_phase.PhaseL:
-                    ed_phases = []
-                    cryspy_phases = item.items
-                    for cryspy_phase in cryspy_phases:
-                        ed_phase = {}
-                        ed_phase['_label'] = cryspy_phase.label
-                        ed_phase['_scale'] = cryspy_phase.scale
-                        ed_phases.append(ed_phase)
-                    ed_experiment[data_block_name]['_phase'] = ed_phases
-                # Background section
-                elif type(item) == cryspy.C_item_loop_classes.cl_1_pd_background.PdBackgroundL:
-                    ed_bkg_points = []
-                    cryspy_bkg_points = item.items
-                    for cryspy_bkg_point in cryspy_bkg_points:
-                        ed_bkg_point = {}
-                        ed_bkg_point['_2theta'] = cryspy_bkg_point.ttheta
-                        ed_bkg_point['_intensity'] = cryspy_bkg_point.intensity
-                        ed_bkg_points.append(ed_bkg_point)
-                    ed_experiment[data_block_name]['_pd_background'] = ed_bkg_points
-                # Measured data section
-                elif type(item) == cryspy.C_item_loop_classes.cl_1_pd_meas.PdMeasL:
-                    ed_meas_points = []
-                    cryspy_meas_points = item.items
-                    for cryspy_meas_point in cryspy_meas_points:
-                        ed_meas_point = {}
-                        ed_meas_point['_2theta'] = cryspy_meas_point.ttheta
-                        ed_meas_point['_intensity'] = cryspy_meas_point.intensity
-                        ed_meas_point['_intensity_sigma'] = cryspy_meas_point.intensity_sigma
-                        ed_meas_points.append(ed_meas_point)
-                    ed_experiment[data_block_name]['_pd_meas'] = ed_meas_points
-            ed_dict['experiments'].append(ed_experiment)
-    return ed_dict
+        return result1, result2

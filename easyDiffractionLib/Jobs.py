@@ -38,6 +38,7 @@ class JobBase_1D(_PowderBase):
         self._x_axis_name = ""
         self._y_axis_prefix = "Intensity_"
         self.job_number = 0
+        self.cif_string = ""
         if phases is not None and self.phases != phases:
             self.phases = phases
         # The following assignment is necessary for proper binding
@@ -255,11 +256,13 @@ class JobBase_1D(_PowderBase):
             """
             Load a CIF file into the experiment.
             """
-            block = cif.read(file_url).sole_block()
-
-            if experiment_name is None:
-                experiment_name = block.name
-            self.from_cif_block(block, experiment_name=experiment_name)
+            # content
+            cif_string = ""
+            with open(file_url, "r") as f:
+                cif_string = f.read()
+            self.cif_string = cif_string
+            self.from_cif_string(cif_string, experiment_name=experiment_name)
+            self.interface._InterfaceFactoryTemplate__interface_obj.set_exp_cif(self.cif_string)
 
     def from_cif_string(self, cif_string, experiment_name=None):
         """
@@ -288,8 +291,31 @@ class JobBase_1D(_PowderBase):
         self.phase_parameters_from_cif_block(block)
         self.data_from_cif_block(block, experiment_name)
         # TODO: allow this to be optional for the Lib, since the App does it explicitly
-        # self.background_from_cif_block(block, experiment_name)
+        self.background_from_cif_block(block, experiment_name)
 
+    def as_cif(self):
+        '''
+        Returns a CIF representation of the experiment.
+        (pattern, background, instrument, data points etc.)
+        '''
+        # header
+        is_tof = isinstance(self, Powder1DTOF)
+        is_pol = isinstance(self, PolPowder1DCW)
+        cif = "data_" + self.name + "\n\n"
+        if is_tof:
+            cif += tof_param_as_cif(pattern=self.pattern, parameters=self.parameters) + "\n\n"
+        else:
+            cif += cw_param_as_cif(parameters=self.parameters, pattern=self.pattern)+  "\n\n"
+
+        if is_pol:
+            cif += polar_param_as_cif(pattern=self.pattern) + "\n\n"
+
+        background = self.pattern.backgrounds[0]
+        cif += phases_as_cif(phases=self.phases) + "\n\n"
+        cif += background_as_cif(background=background, is_tof=is_tof) + "\n\n"
+        cif += exp_data_as_cif(data=self.datastore, is_tof=is_tof, is_pol=is_pol) + "\n\n"
+        return cif
+    
     def update_bindings(self):
         self.generate_bindings()
 
@@ -468,3 +494,131 @@ def get_job_from_file(file_url, exp_name="job", phases=None, interface=None):
     job.from_cif_file(file_url, exp_name)
 
     return datastore, job
+
+
+def phases_as_cif(phases=None):
+    '''
+    Returns a CIF representation of the phases names and scales.
+    '''
+    cif_phase = "loop_\n"
+    cif_phase += "_phase_label\n"
+    cif_phase += "_phase_scale\n"
+    cif_phase += "_phase_igsize\n"
+    for phase in phases:
+        cif_phase += phase.name + " " + str(phase.scale.raw_value) + " 0.0\n"
+    return cif_phase
+
+def exp_data_as_cif(data=None, is_tof=False, is_pol=False):
+    '''
+    Returns a CIF representation of the experimental datapoints x,y,e.
+    '''
+    if data is None:
+        return ""
+
+    # for both sim and exp
+    cif_exp_data = "_range_2theta_min " + str(data.x[0]) + "\n"
+    cif_exp_data += "_range_2theta_max " + str(data.x[-1]) + "\n"
+    cif_exp_data += "_setup_radiation neutrons\n"
+
+    # only when exp present
+    cif_exp_data += "\nloop_"
+
+    if is_tof():
+        cif_exp_data += "\n_tof_meas_time"
+        cif_prefix = "_tof_"
+    else:
+        cif_exp_data += "\n_pd_meas_2theta"
+        cif_prefix = "_pd_"
+
+    if is_pol():
+        cif_exp_data += "\n" + \
+                        cif_prefix + "meas_intensity_up\n" + \
+                        cif_prefix + "meas_intensity_up_sigma\n" + \
+                        cif_prefix + "meas_intensity_down\n" + \
+                        cif_prefix + "meas_intensity_down_sigma"
+    else:
+        cif_exp_data += "\n" + \
+                        cif_prefix + "meas_intensity\n" + \
+                        cif_prefix + "meas_intensity_sigma"
+
+    for i in range(len(data.x)):
+        cif_exp_data += "\n" + str(data.x[i]) + " "
+        if is_pol():
+            cif_exp_data += str(data.y[i]) + " " + \
+                str(data.e[i]) + " " + \
+                str(data.yb[i]) + " " + \
+                str(data.eb[i])
+        else:
+            cif_exp_data += str(data.y[i]) + " " + \
+                str(data.e[i])
+
+    return cif_exp_data
+
+def background_as_cif(background=None, is_tof=False):
+    '''
+    Returns a CIF representation of the background.
+    '''
+    cif_background = ""
+    if background is None:
+        return cif_background
+
+    if is_tof():
+        cif_background += "\nloop_\n_tof_background_time\n_tof_background_intensity"
+    else:
+        cif_background += "\nloop_ \n_pd_background_2theta\n_pd_background_intensity"
+    # background = self.parent.l_background._background_as_obj
+    for i in range(len(background.data)):
+        cif_background += "\n" + str(background.data[i].x.raw_value) + " " + str(background.data[i].y.raw_value)
+    return cif_background
+
+def cw_param_as_cif(parameters=None, pattern=None):
+    '''
+    Returns a CIF representation of the CW instrument parameters
+    '''
+    cif_ipar_data = ""
+    cif_ipar_data += "\n_setup_wavelength " + str(parameters.wavelength.raw_value)
+    cif_ipar_data += "\n_setup_offset_2theta  " + str(pattern.zero_shift.raw_value)
+    cif_ipar_data += "\n"
+    cif_ipar_data += "\n_pd_instr_resolution_u " + str(parameters.resolution_u.raw_value)
+    cif_ipar_data += "\n_pd_instr_resolution_v " + str(parameters.resolution_v.raw_value)
+    cif_ipar_data += "\n_pd_instr_resolution_w " + str(parameters.resolution_w.raw_value)
+    cif_ipar_data += "\n_pd_instr_resolution_x " + str(parameters.resolution_x.raw_value)
+    cif_ipar_data += "\n_pd_instr_resolution_y " + str(parameters.resolution_y.raw_value)
+    cif_ipar_data += "\n"
+    cif_ipar_data += "\n_pd_instr_reflex_asymmetry_p1 " + str(parameters.reflex_asymmetry_p1.raw_value)
+    cif_ipar_data += "\n_pd_instr_reflex_asymmetry_p2 " + str(parameters.reflex_asymmetry_p2.raw_value)
+    cif_ipar_data += "\n_pd_instr_reflex_asymmetry_p3 " + str(parameters.reflex_asymmetry_p3.raw_value)
+    cif_ipar_data += "\n_pd_instr_reflex_asymmetry_p4 " + str(parameters.reflex_asymmetry_p4.raw_value)
+    return cif_ipar_data
+
+def polar_param_as_cif(pattern=None):
+    cif_pat_data = ""
+    cif_pat_data += "\n_diffrn_radiation_polarization " + str(pattern.beam.polarization.raw_value)
+    cif_pat_data += "\n_diffrn_radiation_efficiency " + str(pattern.efficiency.raw_value)
+    cif_pat_data += "\n_setup_field " + str(pattern.field.raw_value)
+    # cif_pat_data += "\n_chi2_sum " + str(self._refine_sum)
+    # cif_pat_data += "\n_chi2_diff " + str(self._refine_diff)
+    # cif_pat_data += "\n_chi2_up " + str(self._refine_up)
+    # cif_pat_data += "\n_chi2_down " + str(self._refine_down)
+    return cif_pat_data
+
+def tof_param_as_cif(pattern=None, parameters=None):
+    '''
+    Returns a CIF representation of the TOF instrument parameters
+    '''
+    cif_tof_data = ""
+    cif_tof_data += "\n_tof_parameters_zero " + str(pattern.zero_shift.raw_value)
+    cif_tof_data += "\n_tof_parameters_dtt1 " + str(parameters.dtt1.raw_value)
+    cif_tof_data += "\n_tof_parameters_dtt2 " + str(parameters.dtt2.raw_value)
+    cif_tof_data += "\n_tof_parameters_2theta_bank " + str(parameters.ttheta_bank.raw_value)
+    cif_tof_data += "\n_tof_profile_sigma0 " + str(parameters.sigma0.raw_value)
+    cif_tof_data += "\n_tof_profile_sigma1 " + str(parameters.sigma1.raw_value)
+    cif_tof_data += "\n_tof_profile_sigma2 " + str(parameters.sigma2.raw_value)
+    cif_tof_data += "\n_tof_profile_gamma0 " + str(parameters.gamma0.raw_value)
+    cif_tof_data += "\n_tof_profile_gamma1 " + str(parameters.gamma1.raw_value)
+    cif_tof_data += "\n_tof_profile_gamma2 " + str(parameters.gamma2.raw_value)
+    cif_tof_data += "\n_tof_profile_alpha0 " + str(parameters.alpha0.raw_value)
+    cif_tof_data += "\n_tof_profile_alpha1 " + str(parameters.alpha1.raw_value)
+    cif_tof_data += "\n_tof_profile_beta0 " + str(parameters.beta0.raw_value)
+    cif_tof_data += "\n_tof_profile_beta1 " + str(parameters.beta1.raw_value)
+    return cif_tof_data

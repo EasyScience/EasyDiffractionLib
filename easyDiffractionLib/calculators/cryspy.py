@@ -59,6 +59,7 @@ class Cryspy:
         self._cryspyObject = None
         self.experiment_cif = ""
         self._first_experiment_name = ""
+        self.exp_obj = None
 
     @property
     def cif_str(self) -> str:
@@ -97,7 +98,6 @@ class Cryspy:
         return key
 
     def assignPhase(self, model_name: str, phase_name: str):
-        print("\nAssignPhase called ****")
         phase = self.storage[phase_name]
         self.phases.items.append(phase)
 
@@ -605,9 +605,7 @@ class Cryspy:
 
     @staticmethod
     def nonPolarized_update(crystals, profiles, peak_dat, scales, x_str):
-        # dependent = np.array([profile.numpy_intensity for profile in profiles])
         dependent = np.array(profiles)
-
         output = {}
         for idx, profile in enumerate(profiles):
             output.update(
@@ -659,51 +657,61 @@ class Cryspy:
         return dependent, output
 
     def _do_run(self,
-    model,
-    polarized,
-    x_array,
-    crystals,
-    phase_list,
-    bg
-    ):
+                model,
+                polarized,
+                x_array,
+                crystals,
+                phase_list,
+                bg
+                ):
         idx = [
             idx for idx, item in enumerate(model.items) if isinstance(item, cryspy.PhaseL)
         ][0]
         model.items[idx] = phase_list
 
-        excluded_points = np.full(len(x_array), True)
-        setattr(self.model['setup'], 'excluded_points', excluded_points)
-        setattr(self.model['setup'], 'ttheta', x_array)
         data_name = crystals.data_name
-        setattr(self.model, 'data_name', data_name) # or just 'pd'
+        setattr(self.model, 'data_name', data_name)
 
         if self._cryspyObject is None:
             self._cryspyObject = cryspy.str_to_globaln(self.cif_str)
-        # append experiment to the main cryspy object
-        self._cryspyObject.items.append(self.model)
 
-        # convert cryspy object to dictionary
-        self._cryspyDict = self._cryspyObject.get_dictionary()
-        exp_name = "pd_" + data_name.lower()
+        phase_obj = self._cryspyObject
+        # phase -> dict
+        phase_dict = phase_obj.get_dictionary()
+        phase_name = list(phase_dict.keys())[0]
 
-        # add missing keys to the dictionary
-        self._cryspyDict[exp_name]['excluded_points'] = excluded_points
-        self._cryspyDict[exp_name]['ttheta'] = x_array
+        # model -> dict
+        experiment_dict_model = self.model.get_dictionary()
+        if self.exp_obj is None:
+            ttheta = x_array
+        else:
+            experiment_dict_cif = self.exp_obj.get_dictionary()
+            ttheta = experiment_dict_cif['pd_pd']['ttheta']
 
-        self._cryspyDict[exp_name]['background_ttheta'] = x_array
-        self._cryspyDict[exp_name]['background_intensity'] = bg
+        exp_name_model = experiment_dict_model['type_name']
+        self._cryspyDict = {phase_name: phase_dict[phase_name], exp_name_model: experiment_dict_model}
+
+        excluded_points = np.full(len(ttheta), False)
+        self._cryspyDict[exp_name_model]['excluded_points'] = excluded_points
+        self._cryspyDict[exp_name_model]['ttheta'] = ttheta
+
+        self._cryspyDict[exp_name_model]['background_ttheta'] = ttheta
+        self._cryspyDict[exp_name_model]['background_intensity'] = bg
+        self._cryspyDict[exp_name_model]['flags_background_intensity'] = np.full(len(ttheta), False)
+        self._cryspyDict[exp_name_model]['asymmetry_parameters'] = np.zeros(4)
+        self._cryspyDict[exp_name_model]['flags_asymmetry_parameters'] = np.full(4, False)
         # interestingly, experimental signal is required, although not used for simple profile calc
-        self._cryspyDict[exp_name]['signal_exp'] = np.array([np.zeros(len(x_array)), np.zeros(len(x_array))])
+        self._cryspyDict[exp_name_model]['signal_exp'] = np.array([np.zeros(len(ttheta)), np.zeros(len(ttheta))])
+
 
         rhochi_calc_chi_sq_by_dictionary(self._cryspyDict,
                                         dict_in_out=self._cryspyInOutDict,
                                         flag_use_precalculated_data=False,
                                         flag_calc_analytical_derivatives=False)
 
-        yArray = self._cryspyInOutDict[exp_name]['signal_plus']
+        yArray = self._cryspyInOutDict[exp_name_model]['signal_plus']
 
-        # result2 = model.d_internal_val["peak_" + crystals.data_name]
         result1 = yArray
-        result2 = self._cryspyInOutDict[exp_name]['dict_in_out_' + data_name.lower()]
+        result2 = self._cryspyInOutDict[exp_name_model]['dict_in_out_' + data_name.lower()]
 
         return result1, result2

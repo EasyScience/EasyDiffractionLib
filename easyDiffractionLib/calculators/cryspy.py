@@ -672,8 +672,9 @@ class Cryspy:
         data_name = crystals.data_name
         setattr(self.model, 'data_name', data_name)
 
-        if self._cryspyObject is None:
-            self._cryspyObject = cryspy.str_to_globaln(self.cif_str)
+        # we need to redo this in case of project reset
+        # might be problematic for multiphase cifs, so needs revisiting
+        self._cryspyObject = cryspy.str_to_globaln(self.cif_str)
 
         phase_obj = self._cryspyObject
         # phase -> dict

@@ -684,7 +684,7 @@ class Cryspy:
         # model -> dict
         experiment_dict_model = self.model.get_dictionary()
         if self.exp_obj is None:
-            ttheta = x_array
+            ttheta = x_array * np.pi/180 # needs recasting into radians
         else:
             experiment_dict_cif = self.exp_obj.get_dictionary()
             ttheta = experiment_dict_cif['pd_pd']['ttheta']

@@ -394,6 +394,10 @@ class Cryspy:
         self.model["tof_parameters"].zero = offset
         this_x_array = x_array
 
+        # background
+        self.model["tof_background"].time_max = this_x_array[-1]
+        # self.model.numpy_time = np.array(this_x_array)
+
         if borg.debug:
             print("CALLING FROM Cryspy\n----------------------")
         results, additional = self.do_calc_setup(scale, this_x_array, pol_fn)
@@ -681,10 +685,15 @@ class Cryspy:
         phase_dict = phase_obj.get_dictionary()
         phase_name = list(phase_dict.keys())[0]
 
+        is_tof = False
+        if self.model.PREFIX.lower() == 'tof':
+            is_tof = True
         # model -> dict
         experiment_dict_model = self.model.get_dictionary()
         if self.exp_obj is None:
-            ttheta = x_array * np.pi/180 # needs recasting into radians
+            ttheta = x_array
+            if not is_tof:
+                ttheta = ttheta * np.pi/180 # needs recasting into radians
         else:
             experiment_dict_cif = self.exp_obj.get_dictionary()
             ttheta = experiment_dict_cif['pd_pd']['ttheta']
@@ -695,6 +704,8 @@ class Cryspy:
         excluded_points = np.full(len(ttheta), False)
         self._cryspyDict[exp_name_model]['excluded_points'] = excluded_points
         self._cryspyDict[exp_name_model]['ttheta'] = ttheta
+
+        self._cryspyDict[exp_name_model]['time'] = np.array(ttheta) # required for TOF
 
         self._cryspyDict[exp_name_model]['background_ttheta'] = ttheta
         self._cryspyDict[exp_name_model]['background_intensity'] = bg

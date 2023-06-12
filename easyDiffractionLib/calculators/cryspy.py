@@ -62,8 +62,8 @@ class Cryspy:
         self.exp_obj = None
 
     @property
-    def cif_str(self) -> str:
-        key = list(self.current_crystal.keys())[0]
+    def cif_str(self, index=0) -> str:
+        key = list(self.current_crystal.keys())[index]
         return self.storage[key].to_cif()
 
     @cif_str.setter
@@ -677,9 +677,8 @@ class Cryspy:
         data_name = crystals.data_name
         setattr(self.model, 'data_name', data_name)
 
-        # we need to redo this in case of project reset
-        # might be problematic for multiphase cifs, so needs revisiting
-        self._cryspyObject = cryspy.str_to_globaln(self.cif_str)
+        # crystals holds the current phase
+        self._cryspyObject = cryspy.str_to_globaln(crystals.to_cif())
 
         phase_obj = self._cryspyObject
         # phase -> dict

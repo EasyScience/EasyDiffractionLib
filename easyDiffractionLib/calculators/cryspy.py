@@ -609,7 +609,7 @@ class Cryspy:
 
     @staticmethod
     def nonPolarized_update(crystals, profiles, peak_dat, scales, x_str):
-        dependent = np.array(profiles)
+        dependent = np.array([profile[0] for profile in profiles])
         output = {}
         for idx, profile in enumerate(profiles):
             output.update(
@@ -631,8 +631,9 @@ class Cryspy:
 
     @staticmethod
     def polarized_update(func, crystals, profiles, peak_dat, scales, x_str):
-        up = np.array([profile.intensity_plus_net for profile in profiles])
-        down = np.array([profile.intensity_minus_net for profile in profiles])
+        up = np.array([profile[0] for profile in profiles])
+        down = np.array([profile[1] for profile in profiles])
+
         dependent = np.array([func(u, d) for u, d in zip(up, down)])
 
         output = {}
@@ -690,13 +691,13 @@ class Cryspy:
             is_tof = True
         # model -> dict
         experiment_dict_model = self.model.get_dictionary()
-        if self.exp_obj is None:
-            ttheta = x_array
-            if not is_tof:
-                ttheta = ttheta * np.pi/180 # needs recasting into radians
-        else:
-            experiment_dict_cif = self.exp_obj.get_dictionary()
-            ttheta = experiment_dict_cif['pd_pd']['ttheta']
+
+        ttheta = x_array
+        if self.exp_obj is not None:
+            ttheta = np.array(self.exp_obj[0]['pd_meas'].ttheta)
+
+        if not is_tof:
+            ttheta = ttheta * np.pi/180
 
         exp_name_model = experiment_dict_model['type_name']
         self._cryspyDict = {phase_name: phase_dict[phase_name], exp_name_model: experiment_dict_model}
@@ -721,9 +722,10 @@ class Cryspy:
                                         flag_use_precalculated_data=False,
                                         flag_calc_analytical_derivatives=False)
 
-        yArray = self._cryspyInOutDict[exp_name_model]['signal_plus']
+        y_plus = self._cryspyInOutDict[exp_name_model]['signal_plus']
+        y_minus = self._cryspyInOutDict[exp_name_model]['signal_minus']
 
-        result1 = yArray
+        result1 = y_plus, y_minus
         result2 = self._cryspyInOutDict[exp_name_model]['dict_in_out_' + data_name.lower()]
 
         return result1, result2

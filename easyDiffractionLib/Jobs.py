@@ -290,7 +290,6 @@ class JobBase_1D(_PowderBase):
         self.parameters_from_cif_block(block)
         self.phase_parameters_from_cif_block(block)
         self.data_from_cif_block(block, experiment_name)
-        # TODO: allow this to be optional for the Lib, since the App does it explicitly
         self.background_from_cif_block(block, experiment_name)
 
     def as_cif(self):

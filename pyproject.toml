@@ -37,7 +37,7 @@ default = false
 
 [tool.poetry.dependencies]
 python = "^3.8, <3.11"
-cryspy = { git = 'https://github.com/ikibalin/cryspy.git', rev = 'bravis_type_fix' }
+cryspy = { git = 'https://github.com/ikibalin/cryspy.git', rev = 'beta' }
 # easyScience
 easyScienceCore = "^0.3.0"
 # easyCrystallography = "^0.3.0"

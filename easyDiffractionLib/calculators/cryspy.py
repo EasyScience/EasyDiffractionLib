@@ -19,7 +19,7 @@ import functools
 
 warnings.filterwarnings("ignore")
 
-normalization = 1.0
+normalization = 0.5
 
 
 class Cryspy:
@@ -328,8 +328,9 @@ class Cryspy:
         for key_inner in ["pd_instr_resolution", "setup"]:
             if not hasattr(self.model, key_inner):
                 setattr(self.model, key_inner, self.storage[key_inner])
-
+        norm = normalization
         if self.polarized:
+            norm = 1.0
             if "pol_fn" in kwargs.keys():
                 pol_fn = kwargs["pol_fn"]
             if not hasattr(self.model, "diffrn_radiation"):
@@ -346,7 +347,7 @@ class Cryspy:
             scale = 1.0
             offset = 0
         else:
-            scale = self.pattern.scale.raw_value / normalization
+            scale = self.pattern.scale.raw_value / norm
             offset = self.pattern.zero_shift.raw_value
 
         this_x_array = x_array + offset
@@ -485,7 +486,9 @@ class Cryspy:
         x_str = "ttheta"
         if self.type == "powder1DTOF":
             x_str = "time"
+        norm = normalization
         if self.polarized:
+            norm = 1.0
             # TODO *REPLACE PLACEHOLDER FN*
             dependents, additional_data = self.polarized_update(
                 pol_fn,
@@ -509,7 +512,7 @@ class Cryspy:
         self.additional_data["phase_names"] = list(additional_data.keys())
         self.additional_data["type"] = self.type
 
-        scaled_dependents = [scale * dep / normalization for dep in dependents]
+        scaled_dependents = [scale * dep / norm for dep in dependents]
         self.additional_data["components"] = scaled_dependents
 
         total_profile = (
@@ -647,11 +650,11 @@ class Cryspy:
                             "k": peak_dat[idx]['index_hkl'][1],
                             "l": peak_dat[idx]['index_hkl'][2],
                         },
-                        "profile": scales[idx] * dependent[idx, :] / normalization,
+                        "profile": scales[idx] * dependent[idx, :],
                         "components": {
                             "total": dependent[idx, :],
-                            "up": scales[idx] * up[idx, :] / normalization,
-                            "down": scales[idx] * down[idx, :] / normalization,
+                            "up": scales[idx] * up[idx, :],
+                            "down": scales[idx] * down[idx, :],
                         },
                         "profile_scale": scales[idx],
                         "func": func,

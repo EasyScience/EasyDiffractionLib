@@ -244,8 +244,15 @@ class JobBase_1D(_PowderBase):
 
     def background_from_cif_block(self, block, experiment_name):
         # The background
-        background_2thetas = np.fromiter(block.find_loop("_pd_background_2theta"), float)
-        background_intensities = np.fromiter(block.find_loop("_pd_background_intensity"), float)
+        is_tof = isinstance(self, Powder1DTOF)
+        if is_tof:
+            x_label = "_tof_background_time"
+            y_label = "_tof_background_intensity"
+        else:
+            x_label = "_pd_background_2theta"
+            y_label = "_pd_background_intensity"
+        background_2thetas = np.fromiter(block.find_loop(x_label), float)
+        background_intensities = np.fromiter(block.find_loop(y_label), float)
         bkg = PointBackground(linked_experiment=experiment_name)
         for (x, y) in zip(background_2thetas, background_intensities):
             bkg.append(BackgroundPoint.from_pars(x, y))

@@ -691,12 +691,10 @@ class Cryspy:
         # model -> dict
         experiment_dict_model = self.model.get_dictionary()
 
-        ttheta = x_array
-        if self.exp_obj is not None:
-            ttheta = np.array(self.exp_obj[0]['pd_meas'].ttheta)
-
-        if not is_tof:
-            ttheta = ttheta * np.pi/180
+        if is_tof:
+            ttheta = x_array
+        else:
+            ttheta = x_array * np.pi/180 # needs recasting into radians for CW
 
         exp_name_model = experiment_dict_model['type_name']
         self._cryspyDict = {phase_name: phase_dict[phase_name], exp_name_model: experiment_dict_model}

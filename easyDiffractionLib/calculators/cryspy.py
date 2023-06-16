@@ -276,7 +276,6 @@ class Cryspy:
         return key
 
     def createResolution(self, cls_type: Optional[str] = None) -> str:
-
         if cls_type is None:
             cls_type = self.type
         if cls_type == "powder1DCW":
@@ -323,7 +322,7 @@ class Cryspy:
         :rtype: np.ndarray
         """
         pol_fn = None
-        for key_inner in ["pd_instr_resolution", "setup"]:
+        for key_inner in ["pd_instr_resolution", "pd_instr_reflex_asymmetry", "setup"]:
             if not hasattr(self.model, key_inner):
                 setattr(self.model, key_inner, self.storage[key_inner])
         norm = normalization
@@ -678,11 +677,6 @@ class Cryspy:
         data_name = crystals.data_name
         setattr(self.model, 'data_name', data_name)
 
-        key = "pd_instr_reflex_asymmetry"
-        reflex_asymmetry = cryspy.PdInstrReflexAsymmetry(**self.conditions["reflex_asymmetry"])
-        self.storage[key] = reflex_asymmetry
-        setattr(self.model, key, reflex_asymmetry)
-
         # crystals holds the current phase
         self._cryspyObject = cryspy.str_to_globaln(crystals.to_cif())
 
@@ -714,9 +708,6 @@ class Cryspy:
         self._cryspyDict[exp_name_model]['background_ttheta'] = ttheta
         self._cryspyDict[exp_name_model]['background_intensity'] = bg
         self._cryspyDict[exp_name_model]['flags_background_intensity'] = np.full(len(ttheta), False)
-        # if 'asymmetry_parameters' not in self._cryspyDict[exp_name_model]:
-        #     self._cryspyDict[exp_name_model]['asymmetry_parameters'] = np.zeros(4)
-        #     self._cryspyDict[exp_name_model]['flags_asymmetry_parameters'] = np.full(4, False)
 
         # interestingly, experimental signal is required, although not used for simple profile calc
         self._cryspyDict[exp_name_model]['signal_exp'] = np.array([np.zeros(len(ttheta)), np.zeros(len(ttheta))])

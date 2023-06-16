@@ -78,7 +78,6 @@ class Cryspy:
         if self._cryspyObject is None:
             self._cryspyObject = cryspy.str_to_globaln(self.cif_str)
 
-
     def createModel(self, model_id: str, model_type: str = "powder1DCW"):
         model = {"background": cryspy.PdBackgroundL(), "phase": self.phases}
         self.polarized = False
@@ -277,10 +276,8 @@ class Cryspy:
         return key
 
     def createResolution(self, cls_type: Optional[str] = None) -> str:
-
         if cls_type is None:
             cls_type = self.type
-
         if cls_type == "powder1DCW":
             key = "pd_instr_resolution"
             resolution = cryspy.PdInstrResolution(**self.conditions["resolution"])
@@ -325,7 +322,7 @@ class Cryspy:
         :rtype: np.ndarray
         """
         pol_fn = None
-        for key_inner in ["pd_instr_resolution", "setup"]:
+        for key_inner in ["pd_instr_resolution", "pd_instr_reflex_asymmetry", "setup"]:
             if not hasattr(self.model, key_inner):
                 setattr(self.model, key_inner, self.storage[key_inner])
         norm = normalization
@@ -711,8 +708,7 @@ class Cryspy:
         self._cryspyDict[exp_name_model]['background_ttheta'] = ttheta
         self._cryspyDict[exp_name_model]['background_intensity'] = bg
         self._cryspyDict[exp_name_model]['flags_background_intensity'] = np.full(len(ttheta), False)
-        self._cryspyDict[exp_name_model]['asymmetry_parameters'] = np.zeros(4)
-        self._cryspyDict[exp_name_model]['flags_asymmetry_parameters'] = np.full(4, False)
+
         # interestingly, experimental signal is required, although not used for simple profile calc
         self._cryspyDict[exp_name_model]['signal_exp'] = np.array([np.zeros(len(ttheta)), np.zeros(len(ttheta))])
 

@@ -295,7 +295,7 @@ class CW(CW_type):
 
         # Link the Instrumental parameters to the calculator.
         if issubclass(t_, Instrument1DCWParameters):
-            self.calculator.createModel(model_key, "powder1DCW")
+            # self.calculator.createModel(model_key, "powder1DCW")
 
             # These parameters are linked to the Resolution, Peak Asymmetry and Setup cryspy objects
             res_key = self.calculator.createResolution()
@@ -331,7 +331,7 @@ class CW(CW_type):
                     self.calculator.genericUpdate,
                 )
             )
-
+            self.calculator.createModel(model_key, "powder1DCW")
         return r_list
 
 

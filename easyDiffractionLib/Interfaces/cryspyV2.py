@@ -11,7 +11,7 @@ from numpy import ndarray
 from easyCore import borg, np
 from easyCore.Objects.Inferface import ItemContainer
 from easyCrystallography.Components.Site import Site as Site_base
-from easycrystallography.Components.AtomicDisplacement import Anisotropic as Anisotropic_base
+from easyCrystallography.Components.AtomicDisplacement import Anisotropic as Anisotropic_base
 
 from easyDiffractionLib import Lattice, SpaceGroup, Site, Phase, Phases
 from easyDiffractionLib.Profiles.P1D import (
@@ -146,18 +146,20 @@ class CryspyBase(Neutron_type, metaclass=ABCMeta):
             )
         # Now do anisotropic ADP
         elif issubclass(t_, Anisotropic_base):
-            adp_type = model.adp.adp_type.raw_value
-            pars = model.adp.get_parameters()
-            adp_pars = {par.name: par.raw_value for par in pars}
-            ref_name = self.calculator.attachADP(model_key, adp_type, adp_pars)
-            r_list.append(
-                ItemContainer(
-                    ref_name,
-                    {par.name: par.name for par in pars},
-                    self.calculator.genericReturn,
-                    self.calculator.genericUpdate,
+            if model.isAni:
+                adp_type = model.adp_type.raw_value
+                print("ADP ATTACHED TO CRYSPY MODEL")
+                pars = model.get_parameters()
+                adp_pars = {par.name: par.raw_value for par in pars}
+                ref_name = self.calculator.attachADP(model_key, adp_type, adp_pars)
+                r_list.append(
+                    ItemContainer(
+                        ref_name,
+                        {par.name: par.name for par in pars},
+                        self.calculator.genericReturn,
+                        self.calculator.genericUpdate,
+                    )
                 )
-            )
         # Interface with the phase object
         elif issubclass(t_, Phase):
             ident = str(model_key) + "_phase"

@@ -269,7 +269,8 @@ class JobBase_1D(_PowderBase):
                 cif_string = f.read()
             self.cif_string = cif_string
             self.from_cif_string(cif_string, experiment_name=experiment_name)
-            self.interface._InterfaceFactoryTemplate__interface_obj.set_exp_cif(self.cif_string)
+            if hasattr(self.interface._InterfaceFactoryTemplate__interface_obj,"set_exp_cif"):
+                self.interface._InterfaceFactoryTemplate__interface_obj.set_exp_cif(self.cif_string)
 
     def from_cif_string(self, cif_string, experiment_name=None):
         """

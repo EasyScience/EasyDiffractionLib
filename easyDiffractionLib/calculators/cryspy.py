@@ -349,6 +349,9 @@ class Cryspy:
 
         this_x_array = x_array + offset
 
+        if 'excluded_points' in kwargs:
+            setattr(self.model, 'excluded_points', kwargs['excluded_points'])
+
         if borg.debug:
             print("CALLING FROM Cryspy\n----------------------")
 
@@ -699,8 +702,8 @@ class Cryspy:
         exp_name_model = experiment_dict_model['type_name']
         self._cryspyDict = {phase_name: phase_dict[phase_name], exp_name_model: experiment_dict_model}
 
-        excluded_points = np.full(len(ttheta), False)
-        self._cryspyDict[exp_name_model]['excluded_points'] = excluded_points
+        # excluded_points = np.full(len(ttheta), False)
+        # self._cryspyDict[exp_name_model]['excluded_points'] = excluded_points
         self._cryspyDict[exp_name_model]['ttheta'] = ttheta
 
         self._cryspyDict[exp_name_model]['time'] = np.array(ttheta) # required for TOF

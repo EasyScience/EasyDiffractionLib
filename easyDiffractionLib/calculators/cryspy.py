@@ -702,8 +702,12 @@ class Cryspy:
         exp_name_model = experiment_dict_model['type_name']
         self._cryspyDict = {phase_name: phase_dict[phase_name], exp_name_model: experiment_dict_model}
 
-        # excluded_points = np.full(len(ttheta), False)
-        # self._cryspyDict[exp_name_model]['excluded_points'] = excluded_points
+        excluded_points = np.full(len(ttheta), False)
+        if hasattr(self.model, 'excluded_points'):
+            excluded_points = self.model.excluded_points
+        print("Excluded points: ", np.count_nonzero(excluded_points))
+        print(" out of ", len(excluded_points), " points.")
+        self._cryspyDict[exp_name_model]['excluded_points'] = excluded_points
         self._cryspyDict[exp_name_model]['ttheta'] = ttheta
 
         self._cryspyDict[exp_name_model]['time'] = np.array(ttheta) # required for TOF

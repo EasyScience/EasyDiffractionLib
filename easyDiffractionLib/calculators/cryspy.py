@@ -201,6 +201,12 @@ class Cryspy:
         self.storage[ref_name] = msp
         return ref_name
 
+    def attachADP(self, atom_name: str, adp_args: Dict[str, float]):
+        adp = cryspy.AtomSiteAniso(**adp_args)
+        ref_name = str(atom_name) + "_" + "Uani"
+        self.storage[ref_name] = adp
+        return ref_name
+    
     def assignAtom_toCrystal(self, atom_label: str, crystal_name: str):
         crystal = self.storage[crystal_name]
         atom = self.storage[atom_label]

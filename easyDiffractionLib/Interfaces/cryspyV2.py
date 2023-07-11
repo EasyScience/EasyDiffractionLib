@@ -295,7 +295,7 @@ class CW(CW_type):
 
         # Link the Instrumental parameters to the calculator.
         if issubclass(t_, Instrument1DCWParameters):
-            self.calculator.createModel(model_key, "powder1DCW")
+            # self.calculator.createModel(model_key, "powder1DCW")
 
             # These parameters are linked to the Resolution, Peak Asymmetry and Setup cryspy objects
             res_key = self.calculator.createResolution()
@@ -331,7 +331,7 @@ class CW(CW_type):
                     self.calculator.genericUpdate,
                 )
             )
-
+            self.calculator.createModel(model_key, "powder1DCW")
         return r_list
 
 
@@ -555,9 +555,6 @@ class UPol(UPol_type):
         return self.calculator.full_calculate(x_array, *args, **kwargs)
 
 
-#
-# Now define the classes that implement the different types of models.
-#
 @interfaceMixInMeta
 class CryspyCW(CryspyBase, CW, Powder, UPol):
     def create(self, model: B) -> List[ItemContainer]:
@@ -710,6 +707,9 @@ class CryspyV2(InterfaceTemplate):
                 x_array, *args, **kwargs
             )
             return calculation
+        
+    def set_exp_cif(self, cif: str) -> None:
+        self.calculator.set_exp_cif(cif)
 
     def generate_pol_fit_func(
         self,

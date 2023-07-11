@@ -5,6 +5,9 @@ import time
 from typing import Tuple, Optional, Any, Callable, List, Dict, Union
 
 import cryspy
+from cryspy.procedure_rhochi.rhochi_by_dictionary import \
+    rhochi_calc_chi_sq_by_dictionary
+
 import warnings
 
 from numpy import ndarray
@@ -16,7 +19,7 @@ import functools
 
 warnings.filterwarnings("ignore")
 
-normalization = 1.0
+normalization = 0.5
 
 
 class Cryspy:
@@ -52,15 +55,28 @@ class Cryspy:
         self.type = "powder1DCW"
         self.additional_data = {"phases": {}}
         self.polarized = False
+        self._cryspyInOutDict = {}
+        self._cryspyObject = None
+        self.experiment_cif = ""
+        self._first_experiment_name = ""
+        self.exp_obj = None
 
     @property
-    def cif_str(self) -> str:
-        key = list(self.current_crystal.keys())[0]
+    def cif_str(self, index=0) -> str:
+        key = list(self.current_crystal.keys())[index]
         return self.storage[key].to_cif()
 
     @cif_str.setter
     def cif_str(self, value: str):
         self.createCrystal_fromCifStr(value)
+
+    def set_exp_cif(self, value: str):
+        if value == self.experiment_cif:
+            return
+        self.experiment_cif = value
+        self.exp_obj = cryspy.str_to_globaln(self.experiment_cif)
+        if self._cryspyObject is None:
+            self._cryspyObject = cryspy.str_to_globaln(self.cif_str)
 
     def createModel(self, model_id: str, model_type: str = "powder1DCW"):
         model = {"background": cryspy.PdBackgroundL(), "phase": self.phases}
@@ -260,10 +276,8 @@ class Cryspy:
         return key
 
     def createResolution(self, cls_type: Optional[str] = None) -> str:
-
         if cls_type is None:
             cls_type = self.type
-
         if cls_type == "powder1DCW":
             key = "pd_instr_resolution"
             resolution = cryspy.PdInstrResolution(**self.conditions["resolution"])
@@ -308,11 +322,12 @@ class Cryspy:
         :rtype: np.ndarray
         """
         pol_fn = None
-        for key_inner in ["pd_instr_resolution", "setup"]:
+        for key_inner in ["pd_instr_resolution", "pd_instr_reflex_asymmetry", "setup"]:
             if not hasattr(self.model, key_inner):
                 setattr(self.model, key_inner, self.storage[key_inner])
-
+        norm = normalization
         if self.polarized:
+            norm = 1.0
             if "pol_fn" in kwargs.keys():
                 pol_fn = kwargs["pol_fn"]
             if not hasattr(self.model, "diffrn_radiation"):
@@ -329,10 +344,13 @@ class Cryspy:
             scale = 1.0
             offset = 0
         else:
-            scale = self.pattern.scale.raw_value / normalization
+            scale = self.pattern.scale.raw_value / norm
             offset = self.pattern.zero_shift.raw_value
 
         this_x_array = x_array + offset
+
+        if 'excluded_points' in kwargs:
+            setattr(self.model, 'excluded_points', kwargs['excluded_points'])
 
         if borg.debug:
             print("CALLING FROM Cryspy\n----------------------")
@@ -376,6 +394,10 @@ class Cryspy:
 
         self.model["tof_parameters"].zero = offset
         this_x_array = x_array
+
+        # background
+        self.model["tof_background"].time_max = this_x_array[-1]
+        # self.model.numpy_time = np.array(this_x_array)
 
         if borg.debug:
             print("CALLING FROM Cryspy\n----------------------")
@@ -444,8 +466,8 @@ class Cryspy:
             ][0]
             phasesL.items.append(self.phases.items[idx])
             phase_lists.append(phasesL)
-            profile, peak = _do_run(
-                self.model, self.polarized, this_x_array, crystal, phasesL
+            profile, peak = self._do_run(
+                self.model, self.polarized, this_x_array, crystal, phasesL, bg
             )
             profiles.append(profile)
             peak_dat.append(peak)
@@ -464,7 +486,9 @@ class Cryspy:
         x_str = "ttheta"
         if self.type == "powder1DTOF":
             x_str = "time"
+        norm = normalization
         if self.polarized:
+            norm = 1.0
             # TODO *REPLACE PLACEHOLDER FN*
             dependents, additional_data = self.polarized_update(
                 pol_fn,
@@ -488,7 +512,7 @@ class Cryspy:
         self.additional_data["phase_names"] = list(additional_data.keys())
         self.additional_data["type"] = self.type
 
-        scaled_dependents = [scale * dep / normalization for dep in dependents]
+        scaled_dependents = [scale * dep / norm for dep in dependents]
         self.additional_data["components"] = scaled_dependents
 
         total_profile = (
@@ -588,18 +612,17 @@ class Cryspy:
 
     @staticmethod
     def nonPolarized_update(crystals, profiles, peak_dat, scales, x_str):
-        dependent = np.array([profile.intensity_total for profile in profiles])
-
+        dependent = np.array([profile[0] for profile in profiles])
         output = {}
         for idx, profile in enumerate(profiles):
             output.update(
                 {
                     crystals[idx].data_name: {
                         "hkl": {
-                            x_str: getattr(peak_dat[idx], "numpy_" + x_str),
-                            "h": peak_dat[idx].numpy_index_h,
-                            "k": peak_dat[idx].numpy_index_k,
-                            "l": peak_dat[idx].numpy_index_l,
+                            x_str: peak_dat[idx][x_str+'_hkl'],
+                            "h": peak_dat[idx]['index_hkl'][0],
+                            "k": peak_dat[idx]['index_hkl'][1],
+                            "l": peak_dat[idx]['index_hkl'][2],
                         },
                         "profile": scales[idx] * dependent[idx, :] / normalization,
                         "components": {"total": dependent[idx, :]},
@@ -611,8 +634,9 @@ class Cryspy:
 
     @staticmethod
     def polarized_update(func, crystals, profiles, peak_dat, scales, x_str):
-        up = np.array([profile.intensity_up_total for profile in profiles])
-        down = np.array([profile.intensity_down_total for profile in profiles])
+        up = np.array([profile[0] for profile in profiles])
+        down = np.array([profile[1] for profile in profiles])
+
         dependent = np.array([func(u, d) for u, d in zip(up, down)])
 
         output = {}
@@ -621,16 +645,16 @@ class Cryspy:
                 {
                     crystals[idx].data_name: {
                         "hkl": {
-                            x_str: getattr(peak_dat[idx], "numpy_" + x_str),
-                            "h": peak_dat[idx].numpy_index_h,
-                            "k": peak_dat[idx].numpy_index_k,
-                            "l": peak_dat[idx].numpy_index_l,
+                            x_str: peak_dat[idx][x_str+'_hkl'],
+                            "h": peak_dat[idx]['index_hkl'][0],
+                            "k": peak_dat[idx]['index_hkl'][1],
+                            "l": peak_dat[idx]['index_hkl'][2],
                         },
-                        "profile": scales[idx] * dependent[idx, :] / normalization,
+                        "profile": scales[idx] * dependent[idx, :],
                         "components": {
                             "total": dependent[idx, :],
-                            "up": scales[idx] * up[idx, :] / normalization,
-                            "down": scales[idx] * down[idx, :] / normalization,
+                            "up": scales[idx] * up[idx, :],
+                            "down": scales[idx] * down[idx, :],
                         },
                         "profile_scale": scales[idx],
                         "func": func,
@@ -640,20 +664,67 @@ class Cryspy:
 
         return dependent, output
 
+    def _do_run(self,
+                model,
+                polarized,
+                x_array,
+                crystals,
+                phase_list,
+                bg
+                ):
+        idx = [
+            idx for idx, item in enumerate(model.items) if isinstance(item, cryspy.PhaseL)
+        ][0]
+        model.items[idx] = phase_list
 
-def _do_run(
-    model,
-    polarized,
-    x_array,
-    crystals,
-    phase_list,
-):
-    idx = [
-        idx for idx, item in enumerate(model.items) if isinstance(item, cryspy.PhaseL)
-    ][0]
-    model.items[idx] = phase_list
-    result1 = model.calc_profile(
-        x_array, [crystals], flag_internal=True, flag_polarized=polarized
-    )
-    result2 = model.d_internal_val["peak_" + crystals.data_name]
-    return result1, result2
+        data_name = crystals.data_name
+        setattr(self.model, 'data_name', data_name)
+
+        # crystals holds the current phase
+        self._cryspyObject = cryspy.str_to_globaln(crystals.to_cif())
+
+        phase_obj = self._cryspyObject
+        # phase -> dict
+        phase_dict = phase_obj.get_dictionary()
+        phase_name = list(phase_dict.keys())[0]
+
+        is_tof = False
+        if self.model.PREFIX.lower() == 'tof':
+            is_tof = True
+        # model -> dict
+        experiment_dict_model = self.model.get_dictionary()
+
+        if is_tof:
+            ttheta = x_array
+        else:
+            ttheta = x_array * np.pi/180 # needs recasting into radians for CW
+
+        exp_name_model = experiment_dict_model['type_name']
+        self._cryspyDict = {phase_name: phase_dict[phase_name], exp_name_model: experiment_dict_model}
+
+        # excluded_points = np.full(len(ttheta), False)
+        # self._cryspyDict[exp_name_model]['excluded_points'] = excluded_points
+        self._cryspyDict[exp_name_model]['ttheta'] = ttheta
+
+        self._cryspyDict[exp_name_model]['time'] = np.array(ttheta) # required for TOF
+
+        self._cryspyDict[exp_name_model]['background_ttheta'] = ttheta
+        self._cryspyDict[exp_name_model]['background_intensity'] = bg
+        self._cryspyDict[exp_name_model]['flags_background_intensity'] = np.full(len(ttheta), False)
+
+        # interestingly, experimental signal is required, although not used for simple profile calc
+        self._cryspyDict[exp_name_model]['signal_exp'] = np.array([np.zeros(len(ttheta)), np.zeros(len(ttheta))])
+
+
+        rhochi_calc_chi_sq_by_dictionary(self._cryspyDict,
+                                        dict_in_out=self._cryspyInOutDict,
+                                        flag_use_precalculated_data=False,
+                                        flag_calc_analytical_derivatives=False)
+
+        y_plus = self._cryspyInOutDict[exp_name_model]['signal_plus']
+        y_minus = self._cryspyInOutDict[exp_name_model]['signal_minus']
+
+        result1 = y_plus, y_minus
+        result2 = self._cryspyInOutDict[exp_name_model]['dict_in_out_' + data_name.lower()]
+
+        return result1, result2

@@ -53,7 +53,7 @@ jobs:
         echo "pythonLocation: $pythonLocation"
 
     - name: Set up python packages manager
-      uses: Gr1N/setup-poetry@v7
+      uses: Gr1N/setup-poetry@v8
 
     - name: Create venv and install dependences
       run: poetry update

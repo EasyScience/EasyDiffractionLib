@@ -60,6 +60,7 @@ class Cryspy:
         self.experiment_cif = ""
         self._first_experiment_name = ""
         self.exp_obj = None
+        self.excluded_points = []
 
     @property
     def cif_str(self, index=0) -> str:
@@ -511,6 +512,7 @@ class Cryspy:
         self.additional_data["ivar_run"] = this_x_array
         self.additional_data["phase_names"] = list(additional_data.keys())
         self.additional_data["type"] = self.type
+        self.additional_data["excluded"] = self.excluded_points
 
         scaled_dependents = [scale * dep / norm for dep in dependents]
         self.additional_data["components"] = scaled_dependents
@@ -702,8 +704,10 @@ class Cryspy:
         exp_name_model = experiment_dict_model['type_name']
         self._cryspyDict = {phase_name: phase_dict[phase_name], exp_name_model: experiment_dict_model}
 
-        # excluded_points = np.full(len(ttheta), False)
-        # self._cryspyDict[exp_name_model]['excluded_points'] = excluded_points
+        self.excluded_points = np.full(len(ttheta), False)
+        if hasattr(self.model, 'excluded_points'):
+            self.excluded_points = self.model.excluded_points
+        self._cryspyDict[exp_name_model]['excluded_points'] = self.excluded_points
         self._cryspyDict[exp_name_model]['ttheta'] = ttheta
 
         self._cryspyDict[exp_name_model]['time'] = np.array(ttheta) # required for TOF
@@ -723,6 +727,8 @@ class Cryspy:
 
         y_plus = self._cryspyInOutDict[exp_name_model]['signal_plus']
         y_minus = self._cryspyInOutDict[exp_name_model]['signal_minus']
+        y_plus[self.excluded_points == True] = 0.0
+        y_minus[self.excluded_points == True] = 0.0
 
         result1 = y_plus, y_minus
         result2 = self._cryspyInOutDict[exp_name_model]['dict_in_out_' + data_name.lower()]

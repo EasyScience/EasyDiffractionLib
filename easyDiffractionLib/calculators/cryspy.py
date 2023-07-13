@@ -709,7 +709,7 @@ class Cryspy:
         if is_tof:
             ttheta = x_array
         else:
-            ttheta = x_array * np.pi/180 # needs recasting into radians for CW
+            ttheta = np.radians(x_array) # needs recasting into radians for CW
 
         exp_name_model = experiment_dict_model['type_name']
         self._cryspyDict = {phase_name: phase_dict[phase_name], exp_name_model: experiment_dict_model}

@@ -42,7 +42,7 @@ cryspy = { git = 'https://github.com/ikibalin/cryspy.git', rev = 'beta' }
 easyScienceCore = "^0.3.0"
 # easyCrystallography = "^0.3.0"
 # easyScienceCore = { git = 'https://github.com/easyScience/easyCore.git', rev = 'master' }
-easyCrystallography = { git = 'https://github.com/easyScience/easyCrystallography.git', rev = 'july_fixes' }
+easyCrystallography = { git = 'https://github.com/easyScience/easyCrystallography.git', rev = 'develop' }
 
 pycifrw = "^4.4.1"
 CFML = '^0.0.1'

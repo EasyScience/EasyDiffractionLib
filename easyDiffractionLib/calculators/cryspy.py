@@ -368,7 +368,8 @@ class Cryspy:
         return results
 
     def powder_1d_tof_calculate(
-        self, x_array: np.ndarray, pol_fn=None, full_return: bool = False
+        self, x_array: np.ndarray, pol_fn=None, full_return: bool = False,
+        **kwargs
     ):
         """
         For a given x calculate the corresponding y
@@ -405,6 +406,9 @@ class Cryspy:
         # background
         self.model["tof_background"].time_max = this_x_array[-1]
         # self.model.numpy_time = np.array(this_x_array)
+
+        if 'excluded_points' in kwargs:
+            setattr(self.model, 'excluded_points', kwargs['excluded_points'])
 
         if borg.debug:
             print("CALLING FROM Cryspy\n----------------------")
@@ -705,7 +709,7 @@ class Cryspy:
         if is_tof:
             ttheta = x_array
         else:
-            ttheta = x_array * np.pi/180 # needs recasting into radians for CW
+            ttheta = np.radians(x_array) # needs recasting into radians for CW
 
         exp_name_model = experiment_dict_model['type_name']
         self._cryspyDict = {phase_name: phase_dict[phase_name], exp_name_model: experiment_dict_model}

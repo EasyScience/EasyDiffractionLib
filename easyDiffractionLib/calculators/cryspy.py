@@ -7,12 +7,17 @@ from typing import Tuple, Optional, Any, Callable, List, Dict, Union
 import cryspy
 from cryspy.procedure_rhochi.rhochi_by_dictionary import \
     rhochi_calc_chi_sq_by_dictionary
+from cryspy.H_functions_global.function_1_cryspy_objects import \
+        str_to_globaln
 
 import warnings
 
 from numpy import ndarray
 
 from easyCore import np, borg
+
+from easyDiffractionLib.io.cryspy_parser import CryspyParser, Parameter
+from easyDiffractionLib.io.Helpers import formatMsg
 
 # from pathos import multiprocessing as mp
 import functools
@@ -78,6 +83,32 @@ class Cryspy:
         self.exp_obj = cryspy.str_to_globaln(self.experiment_cif)
         if self._cryspyObject is None:
             self._cryspyObject = cryspy.str_to_globaln(self.cif_str)
+
+    def loadModelsFromEdCif(self, edCif):
+        cryspyObj = self._proxy.data._cryspyObj
+        cryspyCif = CryspyParser.edCifToCryspyCif(edCif)
+        cryspyModelsObj = str_to_globaln(cryspyCif)
+
+        modelsCountBefore = len(self.cryspyObjCrystals())
+        cryspyObj.add_items(cryspyModelsObj.items)
+        modelsCountAfter = len(self.cryspyObjCrystals())
+        success = modelsCountAfter - modelsCountBefore
+
+        if success:
+            cryspyModelsDict = cryspyModelsObj.get_dictionary()
+            edModels = CryspyParser.cryspyObjAndDictToEdModels(cryspyModelsObj, cryspyModelsDict)
+
+            self._proxy.data._cryspyDict.update(cryspyModelsDict)
+            self._dataBlocks += edModels
+
+            self._currentIndex = len(self.dataBlocks) - 1
+            if not self.defined:
+                self.defined = bool(len(self.dataBlocks))
+
+            print(formatMsg('sub', f'{len(edModels)} model(s)', '', 'to intern dataset', 'added'))
+
+        else:
+            print(formatMsg('sub', 'No model(s)', '', 'to intern dataset', 'added'))
 
     def createModel(self, model_id: str, model_type: str = "powder1DCW"):
         model = {"background": cryspy.PdBackgroundL(), "phase": self.phases}

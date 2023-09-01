@@ -3,7 +3,6 @@
 # © © 2023 Contributors to the EasyDiffraction project <https://github.com/easyscience/EasyDiffractionApp>
 
 import numpy as np
-# from pycifstar.global_ import Global
 from gemmi import cif
 
 try:
@@ -224,8 +223,74 @@ class CryspyParser:
             cryspyCif = cryspyCif.replace(edValue, cryspyValue)
         return cryspyCif
 
+    # @staticmethod
+    # def starObjToEdProject(starObj):
+    #     edProject = {'name': '', 'params': {}, 'loops': {}}
+
+    #     # DATABLOCK ID
+
+    #     edProject['name'] = dict(Parameter(
+    #         starObj.name,
+    #         icon = 'archive',
+    #         url = 'https://docs.easydiffraction.org/app/project/dictionaries/',
+    #     ))
+
+    #     # DATABLOCK SINGLES
+
+    #     for param in starObj.items.items:
+    #         if param.name == '_project.description':
+    #             category, name = param.name.split('.')
+    #             if category not in edProject['params']:
+    #                 edProject['params'][category] = {}
+    #             edProject['params'][category][name] = dict(Parameter(
+    #                 param.value,
+    #                 category = category,
+    #                 name = name,
+    #                 prettyName = 'Description',
+    #                 url = 'https://docs.easydiffraction.org/app/project/dictionaries/',
+    #             ))
+
+    #     # DATABLOCK TABLES
+
+    #     for loop in starObj.loops:
+    #         category = loop.prefix
+
+    #         if category == '_model_cif_file':
+    #             edModels = []
+    #             for rowIdx, rowItems in enumerate(loop.values):
+    #                 edModel = {}
+    #                 for columnIdx, columnName in enumerate(loop.names):
+    #                     if columnName.replace('.', '_')  == '_model_cif_file_name':  # NEED FIX
+    #                         edModel['cif_file_name'] = dict(Parameter(
+    #                             rowItems[columnIdx],
+    #                             category = '_model',
+    #                             name = 'cif_file_name',
+    #                             prettyName = 'Model file',
+    #                             url = 'https://easydiffraction.org'
+    #                         ))
+    #                 edModels.append(edModel)
+    #             edProject['loops']['_model'] = edModels
+
+    #         elif category == '_experiment_cif_file':
+    #             edExperiments = []
+    #             for rowIdx, rowItems in enumerate(loop.values):
+    #                 edExperiment = {}
+    #                 for columnIdx, columnName in enumerate(loop.names):
+    #                     if columnName.replace('.', '_') == '_experiment_cif_file_name':  # NEED FIX
+    #                         edExperiment['cif_file_name'] = dict(Parameter(
+    #                             rowItems[columnIdx],
+    #                             category = '_experiment',
+    #                             name = 'cif_file_name',
+    #                             prettyName = 'Experiment file',
+    #                             url = 'https://easydiffraction.org'
+    #                         ))
+    #                 edExperiments.append(edExperiment)
+    #             edProject['loops']['_experiment'] = edExperiments
+
+    #     return edProject
+
     @staticmethod
-    def starObjToEdProject(starObj):
+    def gemmiObjToEdProject(starObj):
         edProject = {'name': '', 'params': {}, 'loops': {}}
 
         # DATABLOCK ID
@@ -238,13 +303,13 @@ class CryspyParser:
 
         # DATABLOCK SINGLES
 
-        for param in starObj.items.items:
-            if param.name == '_project.description':
-                category, name = param.name.split('.')
+        for param in starObj:
+            if param.pair is not None and param.pair[0] == '_project.description':
+                category, name = param.pair[0].split('.')
                 if category not in edProject['params']:
                     edProject['params'][category] = {}
                 edProject['params'][category][name] = dict(Parameter(
-                    param.value,
+                    param.pair[0],
                     category = category,
                     name = name,
                     prettyName = 'Description',
@@ -253,38 +318,36 @@ class CryspyParser:
 
         # DATABLOCK TABLES
 
-        for loop in starObj.loops:
-            category = loop.prefix
+        for loop in starObj:
+            if loop.loop is None:
+                continue
+            category = loop.loop.tags[0]
 
-            if category == '_model_cif_file':
+            if '_model' in category:
                 edModels = []
-                for rowIdx, rowItems in enumerate(loop.values):
+                for rowItem in loop.loop.values:
                     edModel = {}
-                    for columnIdx, columnName in enumerate(loop.names):
-                        if columnName.replace('.', '_')  == '_model_cif_file_name':  # NEED FIX
-                            edModel['cif_file_name'] = dict(Parameter(
-                                rowItems[columnIdx],
-                                category = '_model',
-                                name = 'cif_file_name',
-                                prettyName = 'Model file',
-                                url = 'https://easydiffraction.org'
-                            ))
+                    edModel['cif_file_name'] = dict(Parameter(
+                        rowItem,
+                        category = '_model',
+                        name = 'cif_file_name',
+                        prettyName = 'Model file',
+                        url = 'https://easydiffraction.org'
+                    ))
                     edModels.append(edModel)
                 edProject['loops']['_model'] = edModels
 
-            elif category == '_experiment_cif_file':
+            elif '_experiment' in category:
                 edExperiments = []
-                for rowIdx, rowItems in enumerate(loop.values):
+                for rowItem in loop.loop.values:
                     edExperiment = {}
-                    for columnIdx, columnName in enumerate(loop.names):
-                        if columnName.replace('.', '_') == '_experiment_cif_file_name':  # NEED FIX
-                            edExperiment['cif_file_name'] = dict(Parameter(
-                                rowItems[columnIdx],
-                                category = '_experiment',
-                                name = 'cif_file_name',
-                                prettyName = 'Experiment file',
-                                url = 'https://easydiffraction.org'
-                            ))
+                    edExperiment['cif_file_name'] = dict(Parameter(
+                        rowItem,
+                        category = '_experiment',
+                        name = 'cif_file_name',
+                        prettyName = 'Experiment file',
+                        url = 'https://easydiffraction.org'
+                    ))
                     edExperiments.append(edExperiment)
                 edProject['loops']['_experiment'] = edExperiments
 

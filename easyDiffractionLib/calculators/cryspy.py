@@ -775,3 +775,33 @@ class Cryspy:
         result2 = self._cryspyInOutDict[exp_name_model]['dict_in_out_' + data_name.lower()]
 
         return result1, result2
+
+
+class Data():
+    def __init__(self, parent):
+        self._proxy = parent
+        self._cryspyObj = str_to_globaln('')
+        self._cryspyDict = {}
+        self._cryspyInOutDict = {}
+
+
+    def reset(self):
+        self._cryspyObj = str_to_globaln('')
+        self._cryspyDict = {}
+        self._cryspyInOutDict = {}
+
+    @staticmethod
+    def cryspyDictParamPathToStr(p):
+        block = p[0]
+        group = p[1]
+        idx = '__'.join([str(v) for v in p[2]])  # (1,0) -> '1__0', (1,) -> '1'
+        s = f'{block}___{group}___{idx}'  # name should match the regular expression [a-zA-Z_][a-zA-Z0-9_]
+        return s
+
+    @staticmethod
+    def strToCryspyDictParamPath(s):
+        l = s.split('___')
+        block = l[0]
+        group = l[1]
+        idx = tuple(np.fromstring(l[2], dtype=int, sep='__'))
+        return block, group, idx

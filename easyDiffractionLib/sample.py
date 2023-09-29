@@ -205,3 +205,13 @@ class Sample(BaseObj):
             *new_base.__mro__,
         }  # This should fix multiple inheritance
         self.__class__.__bases__ = (new_base, *old_bases, base_class)
+
+    def to_dataBlocks(self):
+        '''
+        Convert the sample to a dict of datablocks
+        '''
+        datablocks = {}
+        #for phase in self.phases:
+        #    datablocks.update(phase.to_dataBlocks())
+
+        return datablocks

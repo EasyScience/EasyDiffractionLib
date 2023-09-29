@@ -103,14 +103,16 @@ class CryspyParser:
     def dataBlockToCif(block, includeBlockName=True):
         cif = ''
         if includeBlockName:
-            cif += f"data_{block['name']['value']}"
+            cif += f"data_{block['name']}"
             cif += '\n\n'
         if 'params' in block:
-            for category in block['params'].values():
-                for param in category.values():
-                    if param["optional"]:
-                        continue
-                    value = param["value"]
+            for category in block['params']:
+                #for param in category.values():
+                for param in block['params'][category]:
+                    # `param` is an easyCore Parameter object
+                    #if param["optional"]:
+                    #    continue
+                    value = param.raw_value
                     if value is None:
                         continue
                     # convert
@@ -119,18 +121,18 @@ class CryspyParser:
                     elif isinstance(value, str) and ' ' in value:  # P n m a -> "P n m a"
                         value = f'"{value}"'
                     # add brackets with error for free params
-                    error = param["error"]
+                    error = param.error.raw_value
                     if error == 0:
                         error = ''
                     else:
-                        if param["error"] > 1:
+                        if param.error.raw_value > 1:
                             error = f'{round(error, 6):.10g}'
                         else:
                             error = f'{round(error, 6):.17f}'.rstrip('0').lstrip('0').lstrip('.').lstrip('0')  # NEED FIX
-                    if param["fit"]:
-                        cif += f'{param["category"]}.{param["name"]} {value}({error})'
+                    if param.fixed:
+                        cif += f'{category}.{param.name} {value}({error})'
                     else:
-                        cif += f'{param["category"]}.{param["name"]} {value}'
+                        cif += f'{category}.{param.name} {value}'
                     cif += '\n'
                 cif += '\n'
         if 'loops' in block:

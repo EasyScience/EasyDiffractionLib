@@ -106,13 +106,13 @@ class CryspyParser:
             cif += f"data_{block['name']}"
             cif += '\n\n'
         if 'params' in block:
-            for category in block['params']:
+            for category in block['params'].values():
                 #for param in category.values():
-                for param in block['params'][category]:
+                for param in category.values():
                     # `param` is an easyCore Parameter object
                     #if param["optional"]:
                     #    continue
-                    value = param.raw_value
+                    value = param['value']
                     if value is None:
                         continue
                     # convert
@@ -121,18 +121,20 @@ class CryspyParser:
                     elif isinstance(value, str) and ' ' in value:  # P n m a -> "P n m a"
                         value = f'"{value}"'
                     # add brackets with error for free params
-                    error = param.error.raw_value
+                    error = 0
+                    if 'error' in param:
+                        error = param['error']
                     if error == 0:
                         error = ''
                     else:
-                        if param.error.raw_value > 1:
+                        if param['error'] > 1:
                             error = f'{round(error, 6):.10g}'
                         else:
                             error = f'{round(error, 6):.17f}'.rstrip('0').lstrip('0').lstrip('.').lstrip('0')  # NEED FIX
-                    if param.fixed:
-                        cif += f'{category}.{param.name} {value}({error})'
+                    if 'fit' in param and param['fit']:
+                        cif += f'{param["category"]}.{param["name"]} {value}({error})'
                     else:
-                        cif += f'{category}.{param.name} {value}'
+                        cif += f'{param["category"]}.{param["name"]} {value}'
                     cif += '\n'
                 cif += '\n'
         if 'loops' in block:
@@ -141,14 +143,14 @@ class CryspyParser:
                 # loop header
                 row0 = category[0]
                 for param in row0.values():
-                    if param["optional"]:
+                    if 'optional' in param and param["optional"]:
                         continue
                     cif += f'{categoryName}.{param["name"]}\n'
                 # loop data
                 for row in category:
                     line = ''
                     for param in row.values():
-                        if param["optional"]:
+                        if 'optional' in param and param["optional"]:
                             continue
                         value = param["value"]
                         if value is None:
@@ -159,7 +161,9 @@ class CryspyParser:
                         elif isinstance(value, str) and ' ' in value:  # P n m a -> "P n m a"
                             value = f'"{value}"'
                         # add brackets with error for free params
-                        error = param["error"]
+                        error = 0
+                        if 'error' in param:
+                            error = param["error"]
                         if error == 0:
                             error = ''
                         else:
@@ -167,7 +171,7 @@ class CryspyParser:
                                 error = f'{round(error, 6):.10g}'
                             else:
                                 error = f'{round(error, 6):.17f}'.rstrip('0').lstrip('0').lstrip('.').lstrip('0')  # NEED FIX
-                        if param["fit"]:
+                        if 'fit' in param and param["fit"]:
                             line += f'{value}({error})'
                         else:
                             line += f'{value}'

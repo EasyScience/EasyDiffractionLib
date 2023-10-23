@@ -2,6 +2,7 @@ __author__ = "github.com/wardsimon"
 __version__ = "0.1.1"
 
 from gemmi import cif
+import gemmi
 from easyCore.Datasets.xarray import xr, np
 from easyDiffractionLib.Profiles.common import _PowderBase
 from easyDiffractionLib.elements.Backgrounds.Point import PointBackground, BackgroundPoint
@@ -166,8 +167,12 @@ class JobBase_1D(_PowderBase):
         if value is not None:
             self.pattern.beam.efficiency = float(value)
         value = block.find_value("_setup_offset_2theta")
+        if value is None:
+            value = block.find_value("_pd_calib.2theta_offset")
         if value is not None:
+            # expect fitting parentheses
             self.pattern.zero_shift = float(value)
+
         value = block.find_value("_setup_field")
         if value is not None:
             self.pattern.field = float(value)
@@ -209,7 +214,11 @@ class JobBase_1D(_PowderBase):
          # Get phase parameters
         sample_phase_labels = self.phases.phase_names 
         experiment_phase_labels = list(block.find_loop("_phase_label"))
+        if not experiment_phase_labels:
+            experiment_phase_labels = list(block.find_loop("_pd_phase_block.id"))
         experiment_phase_scales = np.fromiter(block.find_loop("_phase_scale"), float)
+        if experiment_phase_scales.size == 0:
+            experiment_phase_scales = np.fromiter(block.find_loop("_pd_phase_block.scale"), float)
         for (phase_label, phase_scale) in zip(experiment_phase_labels, experiment_phase_scales):
             if phase_label in sample_phase_labels:
                 self.phases[phase_label].scale = phase_scale
@@ -217,6 +226,9 @@ class JobBase_1D(_PowderBase):
     def data_from_cif_block(self, block, experiment_name):
         # data points
         data_x = np.fromiter(block.find_loop("_pd_meas_2theta"), float)
+        if data_x.size == 0:
+            data_x = np.fromiter(block.find_loop("_pd_meas.2theta_scan"), float) # maybe try _pd_meas.2theta_scan
+
         data_y = []
         data_e = []
         data_y.append(np.fromiter(block.find_loop("_pd_meas_intensity_up"), float))
@@ -226,7 +238,11 @@ class JobBase_1D(_PowderBase):
         # Unpolarized case
         if not np.any(data_y[0]):
             data_y[0] = np.fromiter(block.find_loop("_pd_meas_intensity"), float)
+            if data_y[0].size == 0:
+                data_y[0] = np.fromiter(block.find_loop("_pd_meas.intensity_total"), float)
             data_e[0] = np.fromiter(block.find_loop("_pd_meas_intensity_sigma"), float)
+            if data_e[0].size == 0:
+                data_e[0] = np.fromiter(block.find_loop("_pd_meas.intensity_total_su"), float)
             data_y[1] = np.zeros(len(data_y[0]))
             data_e[1] = np.zeros(len(data_e[0]))
 
@@ -249,10 +265,14 @@ class JobBase_1D(_PowderBase):
             x_label = "_tof_background_time"
             y_label = "_tof_background_intensity"
         else:
-            x_label = "_pd_background_2theta"
-            y_label = "_pd_background_intensity"
-        background_2thetas = np.fromiter(block.find_loop(x_label), float)
-        background_intensities = np.fromiter(block.find_loop(y_label), float)
+            x_label = ["_pd_background_2theta", "_pd_background.line_segment_X"]
+            y_label = ["_pd_background_intensity", "_pd_background.line_segment_intensity"]
+        background_2thetas = np.fromiter(block.find_loop(x_label[0]), float)
+        if background_2thetas.size == 0:
+            background_2thetas = np.fromiter(block.find_loop(x_label[1]), float)
+        background_intensities = np.fromiter(block.find_loop(y_label[0]), float)
+        if background_intensities.size == 0:
+            background_intensities = np.fromiter(block.find_loop(y_label[1]), float)
         bkg = PointBackground(linked_experiment=experiment_name)
         for (x, y) in zip(background_2thetas, background_intensities):
             bkg.append(BackgroundPoint.from_pars(x, y))
@@ -483,14 +503,15 @@ def get_job_from_file(file_url, exp_name="job", phases=None, interface=None):
     block = cif.read(file_url).sole_block()
     datastore = xr.Dataset()
     # Check if powder1DCWpol
-    value_cwpol = block.find_value("_diffrn_radiation_polarization")
+    value_cwpol = block.find_value("_diffrn_radiation_polarization") or block.find_value("_diffrn_radiation.polarization")
     # value_tof = block.find_value("_pd_meas_time_of_flight")
-    value_tof = block.find_loop("_tof_meas_time")  or block.find_loop("_pd_meas_time_of_flight")
-    value_cw = block.find_value("_setup_wavelength")
+    value_tof1 = bool(block.find_loop("_tof_meas_time")) or bool(block.find_loop("_pd_meas_time_of_flight"))
+    value_tof2 = bool(block.find_loop("_tof_meas.time")) or bool(block.find_loop("_pd_meas.time_of_flight"))
+    value_cw = block.find_value("_setup_wavelength") or block.find_value("_diffrn_radiation_wavelength.wavelength")
 
     if value_cwpol is not None:
         job = PolPowder1DCW(exp_name, datastore, phases, interface=interface)
-    elif value_tof:# is not None:
+    elif value_tof1 or value_tof2:
         job = Powder1DTOF(exp_name, datastore, phases, interface=interface)
     elif value_cw is not None:
         job = Powder1DCW(exp_name, datastore, phases, interface=interface)

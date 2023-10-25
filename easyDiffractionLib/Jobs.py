@@ -160,18 +160,17 @@ class JobBase_1D(_PowderBase):
 
     def pattern_from_cif_block(self, block):
         # Various pattern parameters
-        value = block.find_value("_diffrn_radiation_polarization")
+        value = block.find_value("_diffrn_radiation_polarization") or block.find_value("_diffrn_radiation.polarization")
         if value is not None:
             self.pattern.beam.polarization = float(value)
-        value = block.find_value("_diffrn_radiation_efficiency")
+        value = block.find_value("_diffrn_radiation_efficiency") or block.find_value("_diffrn_radiation.efficiency")
         if value is not None:
             self.pattern.beam.efficiency = float(value)
-        value = block.find_value("_setup_offset_2theta")
-        if value is None:
-            value = block.find_value("_pd_calib.2theta_offset")
+        value = block.find_value("_setup_offset_2theta") or block.find_value("_pd_calib.2theta_offset")
         if value is not None:
             # expect fitting parentheses
-            self.pattern.zero_shift = float(value)
+            self.pattern.zero_shift = float(value[:value.find('(')])
+            self.pattern.zero_shift.fixed = not "(" in value
 
         value = block.find_value("_setup_field")
         if value is not None:
@@ -179,34 +178,34 @@ class JobBase_1D(_PowderBase):
 
     def parameters_from_cif_block(self, block):
        # Various instrumental parameters
-        value = block.find_value("_setup_wavelength")
+        value = block.find_value("_setup_wavelength") or block.find_value("_diffrn_radiation_wavelength.wavelength")
         if value is not None:
             self.parameters.wavelength = float(value)
-        value = block.find_value("_pd_instr_resolution_u")
+        value = block.find_value("_pd_instr_resolution_u") or block.find_value("_pd_instr.resolution_u")
         if value is not None:
             self.parameters.resolution_u = float(value)
-        value = block.find_value("_pd_instr_resolution_v")
+        value = block.find_value("_pd_instr_resolution_v") or block.find_value("_pd_instr.resolution_v")
         if value is not None:
             self.parameters.resolution_v = float(value)
-        value = block.find_value("_pd_instr_resolution_w")
+        value = block.find_value("_pd_instr_resolution_w") or block.find_value("_pd_instr.resolution_w")
         if value is not None:
             self.parameters.resolution_w = float(value)
-        value = block.find_value("_pd_instr_resolution_x")
+        value = block.find_value("_pd_instr_resolution_x") or block.find_value("_pd_instr.resolution_x")
         if value is not None:
             self.parameters.resolution_x = float(value)
-        value = block.find_value("_pd_instr_resolution_y")
+        value = block.find_value("_pd_instr_resolution_y") or block.find_value("_pd_instr.resolution_y")
         if value is not None:
             self.parameters.resolution_y = float(value)
-        value = block.find_value("_pd_instr_reflex_asymmetry_p1")
+        value = block.find_value("_pd_instr_reflex_asymmetry_p1") or block.find_value("_pd_instr.reflex_asymmetry_p1")
         if value is not None:
             self.parameters.reflex_asymmetry_p1 = float(value)
-        value = block.find_value("_pd_instr_reflex_asymmetry_p2")
+        value = block.find_value("_pd_instr_reflex_asymmetry_p2") or block.find_value("_pd_instr.reflex_asymmetry_p2")
         if value is not None:
             self.parameters.reflex_asymmetry_p2 = float(value)
-        value = block.find_value("_pd_instr_reflex_asymmetry_p3")
+        value = block.find_value("_pd_instr_reflex_asymmetry_p3") or block.find_value("_pd_instr.reflex_asymmetry_p3")
         if value is not None:
             self.parameters.reflex_asymmetry_p3 = float(value)
-        value = block.find_value("_pd_instr_reflex_asymmetry_p4")
+        value = block.find_value("_pd_instr_reflex_asymmetry_p4") or block.find_value("_pd_instr.reflex_asymmetry_p4")
         if value is not None:
             self.parameters.reflex_asymmetry_p4 = float(value)
 
@@ -218,10 +217,12 @@ class JobBase_1D(_PowderBase):
             experiment_phase_labels = list(block.find_loop("_pd_phase_block.id"))
         experiment_phase_scales = np.fromiter(block.find_loop("_phase_scale"), float)
         if experiment_phase_scales.size == 0:
-            experiment_phase_scales = np.fromiter(block.find_loop("_pd_phase_block.scale"), float)
+            # experiment_phase_scales = np.fromiter(block.find_loop("_pd_phase_block.scale"), float)
+            experiment_phase_scales = np.fromiter(block.find_loop("_pd_phase_block.scale"), (str, 20)) # 20 should be enough
         for (phase_label, phase_scale) in zip(experiment_phase_labels, experiment_phase_scales):
             if phase_label in sample_phase_labels:
-                self.phases[phase_label].scale = phase_scale
+                self.phases[phase_label].scale = float(phase_scale[:phase_scale.find('(')])
+                self.phases[phase_label].scale.fixed = not "(" in phase_scale
 
     def data_from_cif_block(self, block, experiment_name):
         # data points
@@ -261,18 +262,15 @@ class JobBase_1D(_PowderBase):
     def background_from_cif_block(self, block, experiment_name):
         # The background
         is_tof = isinstance(self, Powder1DTOF)
-        if is_tof:
-            x_label = "_tof_background_time"
-            y_label = "_tof_background_intensity"
-        else:
-            x_label = ["_pd_background_2theta", "_pd_background.line_segment_X"]
-            y_label = ["_pd_background_intensity", "_pd_background.line_segment_intensity"]
-        background_2thetas = np.fromiter(block.find_loop(x_label[0]), float)
-        if background_2thetas.size == 0:
-            background_2thetas = np.fromiter(block.find_loop(x_label[1]), float)
-        background_intensities = np.fromiter(block.find_loop(y_label[0]), float)
-        if background_intensities.size == 0:
-            background_intensities = np.fromiter(block.find_loop(y_label[1]), float)
+
+        x_label = ["_tof_background_time", "_tof_background.line_segment_X"] if is_tof \
+            else ["_pd_background_2theta", "_pd_background.line_segment_X"]
+        y_label = ["_tof_background_intensity", "_tof_background.line_segment_intensity"] if is_tof \
+            else ["_pd_background_intensity", "_pd_background.line_segment_intensity"]
+        background_2thetas = np.fromiter(block.find_loop(x_label[0]), float) or \
+            np.fromiter(block.find_loop(x_label[1]), float)
+        background_intensities = np.fromiter(block.find_loop(y_label[0]), float) or \
+            np.fromiter(block.find_loop(y_label[1]), float)
         bkg = PointBackground(linked_experiment=experiment_name)
         for (x, y) in zip(background_2thetas, background_intensities):
             bkg.append(BackgroundPoint.from_pars(x, y))

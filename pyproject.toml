@@ -36,8 +36,7 @@ url = "https://easyscience.github.io/pypi/"
 default = false
 
 [tool.poetry.dependencies]
-# python = "^3.8, <3.11"
-python = "^3.8"
+python = "^3.8, <=3.12"
 cryspy = { git = 'https://github.com/ikibalin/cryspy.git', rev = 'beta' }
 # easyScience
 easyScienceCore = "^0.3.0"

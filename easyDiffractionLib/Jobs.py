@@ -476,7 +476,7 @@ def get_job_type_from_file(file_url):
     block = cif.read(file_url).sole_block()
     job_type = "Powder1DCW"
     # Check if powder1DCWpol
-    value_cwpol = block.find_value("_diffrn_radiation_polarization")
+    value_cwpol = block.find_value("_diffrn_radiation_polarization") or block.find_value("_diffrn_radiation.polarisn_ratio")
     # value_tof = block.find_value("_pd_meas_time_of_flight")
     value_tof = block.find_loop("_tof_meas_time")  or block.find_loop("_pd_meas_time_of_flight")
     value_cw = block.find_value("_pd_meas_2theta")

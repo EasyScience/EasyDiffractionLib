@@ -18,6 +18,7 @@ from easyCore import np, borg
 
 from easyDiffractionLib.io.cryspy_parser import CryspyParser, Parameter
 from easyDiffractionLib.io.Helpers import formatMsg
+from easyDiffractionLib.io.cif import cifV2ToV1
 
 # from pathos import multiprocessing as mp
 import functools
@@ -86,7 +87,7 @@ class Cryspy:
 
     def loadModelsFromEdCif(self, edCif):
         cryspyObj = self._proxy.data._cryspyObj
-        cryspyCif = CryspyParser.edCifToCryspyCif(edCif)
+        cryspyCif = cifV2ToV1(edCif)
         cryspyModelsObj = str_to_globaln(cryspyCif)
 
         modelsCountBefore = len(self.cryspyObjCrystals())

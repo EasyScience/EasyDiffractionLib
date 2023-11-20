@@ -67,6 +67,8 @@ class Cryspy:
         self._first_experiment_name = ""
         self.exp_obj = None
         self.excluded_points = []
+        self._cryspyData = Data()
+        self._cryspyObject = self._cryspyData._cryspyObj
 
     @property
     def cif_str(self, index=0) -> str:
@@ -654,6 +656,76 @@ class Cryspy:
             data = self.additional_data[component_name].copy()
         return data
 
+    def updateModelCif(self, cif_string: str):
+        # self._cryspyObject = cryspy.str_to_globaln(cif_string)
+
+        # self._cryspyObj = self._proxy.data._cryspyObj
+        # self._cryspyObj = self._data
+        cryspyCif = cifV2ToV1(cif_string)
+        cryspyModelsObj = cryspy.str_to_globaln(cryspyCif)
+        self._cryspyObject.add_items(cryspyModelsObj.items)
+        cryspyModelsDict = cryspyModelsObj.get_dictionary()
+        self._cryspyData._cryspyDict.update(cryspyModelsDict)
+
+    def updateExpCif(self, edCif, modelNames):
+        cryspyObj = self._cryspyObject
+        cryspyCif = cifV2ToV1(edCif)
+        cryspyExperimentsObj = str_to_globaln(cryspyCif)
+
+        # Add/modify CryspyObj with ranges based on the measured data points in _pd_meas loop
+        range_min = 0  # default value to be updated later
+        range_max = 180  # default value to be updated later
+        defaultEdRangeCif = f'_pd_meas.2theta_range_min {range_min}\n_pd_meas.2theta_range_max {range_max}'
+        cryspyRangeCif = cifV2ToV1(defaultEdRangeCif)
+        cryspyRangeObj = str_to_globaln(cryspyRangeCif).items
+        for dataBlock in cryspyExperimentsObj.items:
+            for item in dataBlock.items:
+                if type(item) == cryspy.C_item_loop_classes.cl_1_pd_meas.PdMeasL:
+                    range_min = item.items[0].ttheta
+                    range_max = item.items[-1].ttheta
+                    cryspyRangeObj[0].ttheta_min = range_min
+                    cryspyRangeObj[0].ttheta_max = range_max
+            dataBlock.add_items(cryspyRangeObj)
+
+        # Add/modify CryspyObj with phases based on the already loaded phases
+        # loadedModelNames = [block['name']['value'] for block in self._dataBlocks]
+        for dataBlock in cryspyExperimentsObj.items:
+            for itemIdx, item in enumerate(dataBlock.items):
+                if type(item) == cryspy.C_item_loop_classes.cl_1_phase.PhaseL:
+                    cryspyModelNames = [phase.label for phase in item.items]
+                    for modelIdx, modelName in enumerate(cryspyModelNames):
+                        if modelName not in modelNames:
+                            del item.items[modelIdx]
+                    if not len(item.items):
+                        del dataBlock.items[itemIdx]
+            itemTypes = [type(item) for item in dataBlock.items]
+            if cryspy.C_item_loop_classes.cl_1_phase.PhaseL not in itemTypes:
+                defaultEdModelsCif = 'loop_\n_pd_phase_block.id\n_pd_phase_block.scale'
+                for modelName in modelNames:
+                    defaultEdModelsCif += f'\n{modelName} 1.0'
+                cryspyPhasesCif = cifV2ToV1(defaultEdModelsCif)
+                cryspyPhasesObj = str_to_globaln(cryspyPhasesCif).items
+                dataBlock.add_items(cryspyPhasesObj)
+
+        # experimentsCountBefore = len(self.cryspyObjExperiments())
+        # experimentsCountAfter = len(self.cryspyObjExperiments())
+        # success = experimentsCountAfter - experimentsCountBefore
+        #if success:
+        # self._interface.update
+        cryspyObj.add_items(cryspyExperimentsObj.items)
+        cryspyExperimentsDict = cryspyExperimentsObj.get_dictionary()
+        self._cryspyData._cryspyDict.update(cryspyExperimentsDict)
+
+
+    def calculate_profile(self):
+        # use data from the current dictionary to calculate profile
+        result = rhochi_calc_chi_sq_by_dictionary(
+            self._cryspyData._cryspyDict,
+            dict_in_out=self._cryspyData._cryspyInOutDict,
+            flag_use_precalculated_data=False,
+            flag_calc_analytical_derivatives=False)
+        return result
+
     @staticmethod
     def nonPolarized_update(crystals, profiles, peak_dat, scales, x_str):
         dependent = np.array([profile[0] for profile in profiles])
@@ -779,8 +851,7 @@ class Cryspy:
 
 
 class Data():
-    def __init__(self, parent):
-        self._proxy = parent
+    def __init__(self):
         self._cryspyObj = str_to_globaln('')
         self._cryspyDict = {}
         self._cryspyInOutDict = {}

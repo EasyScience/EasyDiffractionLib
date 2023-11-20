@@ -710,9 +710,15 @@ class CryspyV2(InterfaceTemplate):
         if self._internal is not None:
             self._internal.remove_atom(phase, atom)
 
-    def remove_phase(self, phases_obj, phase_obj: Phase) -> None:
-        if self._internal is not None:
-            self._internal.remove_phase(phases_obj, phase_obj)
+    def remove_phase(self, phase_name: str) -> None:
+        # self._cryspyData = Data()
+        # self._cryspyObject = self._cryspyData._cryspyObj
+        cryspyObjBlockNames = [item.data_name for item in self.calculator._cryspyObject.items]
+        cryspyObjBlockIdx = cryspyObjBlockNames.index(phase_name)
+        cryspyDictBlockName = f'crystal_{phase_name}'
+
+        del self.calculator._cryspyObject.items[cryspyObjBlockIdx]
+        del self.calculator._cryspyData._cryspyDict[cryspyDictBlockName]
 
     def fit_func(self, x_array: np.ndarray, *args, **kwargs) -> Union[np.ndarray, None]:
         if self._internal is not None:
@@ -784,6 +790,12 @@ class CryspyV2(InterfaceTemplate):
             data = self._internal.get_phase_components(phase_name)
             return data
 
+    def updateModelCif(self, cif_string: str) -> None:
+        self.calculator.updateModelCif(cif_string)
+
+    def updateExpCif(self, cif_string: str, model_names: list) -> None:
+        self.calculator.updateExpCif(cif_string, model_names)
+
     def full_callback(
         self,
         x_array: np.ndarray,
@@ -801,4 +813,11 @@ class CryspyV2(InterfaceTemplate):
         if self.calculator is not None:
             result = self.calculator.full_calculate(x_array, pol_fn=pol_fn, **kwargs)
         return result
+
+    def calculate_profile(self):
+        results = self.calculator.calculate_profile()
+        return results
+
+    def data(self):
+        return self.calculator._cryspyData
 

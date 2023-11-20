@@ -26,6 +26,21 @@ class InterfaceFactory(InterfaceFactoryTemplate):
     def get_component(self, component_name):
         return self().get_component(component_name)
 
+    def updateModelCif(self, cif_string):
+        return self().updateModelCif(cif_string)
+
+    def updateExpCif(self, cif_string, model_names):
+        return self().updateExpCif(cif_string, model_names)
+
+    def remove_phase(self, phase_name) -> None:
+        return self().remove_phase(phase_name)
+
+    def calculate_profile(self) -> dict:
+        return self().calculate_profile()
+
+    def data(self):
+        return self().data()
+
     def interface_compatability(self, check_str: str) -> List[str]:
         compatible_interfaces = []
         for interface in self._interfaces:

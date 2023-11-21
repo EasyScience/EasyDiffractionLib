@@ -71,7 +71,7 @@ class Parameter(dict):
 class CryspyParser:
 
     @staticmethod
-    def cryspyObjAndDictToEdModels(cryspy_obj, cryspy_dict):
+    def calcObjAndDictToEdModels(cryspy_obj, cryspy_dict):
         phase_names = [name.replace('crystal_', '') for name in cryspy_dict.keys() if name.startswith('crystal_')]
         ed_phases = []
 
@@ -403,12 +403,12 @@ class CryspyParser:
         return ed_phases
 
     @staticmethod
-    def cryspyObjAndDictToEdExperiments(cryspy_obj, cryspy_dict):
+    def calcObjAndDictToEdExperiments(calc_obj, calc_dict):
 
         experiment_names = []
         exp_substrings = ['pd_', 'data_'] # possible experiment prefixes
         # get experiment names from cryspy_dict
-        for key in cryspy_dict.keys():
+        for key in calc_dict.keys():
             for substring in exp_substrings:
                 if key.startswith(substring):
                     key = key.replace(substring, "").replace("_", "")
@@ -417,7 +417,7 @@ class CryspyParser:
         ed_experiments_meas_only = []
         ed_experiments_no_meas = []
 
-        for data_block in cryspy_obj.items:
+        for data_block in calc_obj.items:
             data_block_name = data_block.data_name
 
             if data_block_name in experiment_names:

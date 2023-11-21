@@ -32,6 +32,9 @@ class InterfaceFactory(InterfaceFactoryTemplate):
     def updateExpCif(self, cif_string, model_names):
         return self().updateExpCif(cif_string, model_names)
 
+    def replaceExpCif(self, cif_string, exp_name):
+        return self().replaceExpCif(cif_string, exp_name)
+
     def remove_phase(self, phase_name) -> None:
         return self().remove_phase(phase_name)
 

@@ -99,7 +99,7 @@ class Cryspy:
 
         if success:
             cryspyModelsDict = cryspyModelsObj.get_dictionary()
-            edModels = CryspyParser.cryspyObjAndDictToEdModels(cryspyModelsObj, cryspyModelsDict)
+            edModels = CryspyParser.calcObjAndDictToEdModels(cryspyModelsObj, cryspyModelsDict)
 
             self._proxy.data._cryspyDict.update(cryspyModelsDict)
             self._dataBlocks += edModels
@@ -707,15 +707,26 @@ class Cryspy:
                 cryspyPhasesObj = str_to_globaln(cryspyPhasesCif).items
                 dataBlock.add_items(cryspyPhasesObj)
 
-        # experimentsCountBefore = len(self.cryspyObjExperiments())
-        # experimentsCountAfter = len(self.cryspyObjExperiments())
-        # success = experimentsCountAfter - experimentsCountBefore
-        #if success:
         # self._interface.update
         cryspyObj.add_items(cryspyExperimentsObj.items)
         cryspyExperimentsDict = cryspyExperimentsObj.get_dictionary()
         self._cryspyData._cryspyDict.update(cryspyExperimentsDict)
 
+    def replaceExpCif(self, edCif, currentExperimentName):
+        calcCif = cifV2ToV1(edCif)
+        calcExperimentsObj = str_to_globaln(calcCif)
+        calcExperimentsDict = calcExperimentsObj.get_dictionary()
+
+        calcDictBlockName = f'pd_{currentExperimentName}'
+
+        _, edExperimentsNoMeas = CryspyParser.calcObjAndDictToEdExperiments(calcExperimentsObj,
+                                                                            calcExperimentsDict)
+
+        self._cryspyData._cryspyObj.items[calcObjBlockIdx] = calcExperimentsObj.items[0]
+        self._cryspyData._cryspyDict[calcDictBlockName] = calcExperimentsDict[calcDictBlockName]
+        sdataBlocksNoMeas = edExperimentsNoMeas[0]
+
+        return sdataBlocksNoMeas
 
     def calculate_profile(self):
         # use data from the current dictionary to calculate profile

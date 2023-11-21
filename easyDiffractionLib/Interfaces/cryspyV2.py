@@ -796,6 +796,9 @@ class CryspyV2(InterfaceTemplate):
     def updateExpCif(self, cif_string: str, model_names: list) -> None:
         self.calculator.updateExpCif(cif_string, model_names)
 
+    def replaceExpCif(self, cif_string: str, exp_name: str) -> None:
+        self.calculator.replaceExpCif(cif_string, exp_name)
+
     def full_callback(
         self,
         x_array: np.ndarray,

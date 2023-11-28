@@ -3,6 +3,7 @@ __version__ = "0.1.1"
 
 from gemmi import cif
 import gemmi
+import re
 from easyCore.Datasets.xarray import xr, np
 from easyDiffractionLib.Profiles.common import _PowderBase
 from easyDiffractionLib.elements.Backgrounds.Point import PointBackground, BackgroundPoint
@@ -158,6 +159,12 @@ class JobBase_1D(_PowderBase):
             fitter = Fitter(self, self.interface.fit_func)
         return self.datastore.store[dataarray_name].easyCore.fit(fitter)
 
+    def extract_nu(self, s):
+        match = re.search(r'^([+-]?[0-9]*\.?[0-9]+)(?:\(([0-9]+)\))?', s)
+        number = float(match.group(1)) if match else None
+        uncertainty = float(match.group(2)) if match and match.group(2) else None
+        return number, uncertainty
+
     def pattern_from_cif_block(self, block):
         # Various pattern parameters
         value = block.find_value("_diffrn_radiation_polarization") or block.find_value("_diffrn_radiation.polarization")
@@ -169,7 +176,7 @@ class JobBase_1D(_PowderBase):
         value = block.find_value("_setup_offset_2theta") or block.find_value("_pd_calib.2theta_offset")
         if value is not None:
             # expect fitting parentheses
-            self.pattern.zero_shift = float(value[:value.find('(')])
+            self.pattern.zero_shift, _ = self.extract_nu(value)
             self.pattern.zero_shift.fixed = not "(" in value
 
         value = block.find_value("_setup_field")
@@ -183,19 +190,24 @@ class JobBase_1D(_PowderBase):
             self.parameters.wavelength = float(value)
         value = block.find_value("_pd_instr_resolution_u") or block.find_value("_pd_instr.resolution_u")
         if value is not None:
-            self.parameters.resolution_u = float(value)
+            self.parameters.resolution_u, _ = self.extract_nu(value)
+            self.parameters.resolution_u.fixed = not "(" in value
         value = block.find_value("_pd_instr_resolution_v") or block.find_value("_pd_instr.resolution_v")
         if value is not None:
-            self.parameters.resolution_v = float(value)
+            self.parameters.resolution_v, _ = self.extract_nu(value)
+            self.parameters.resolution_v.fixed = not "(" in value
         value = block.find_value("_pd_instr_resolution_w") or block.find_value("_pd_instr.resolution_w")
         if value is not None:
-            self.parameters.resolution_w = float(value)
+            self.parameters.resolution_w, _ = self.extract_nu(value)
+            self.parameters.resolution_w.fixed = not "(" in value
         value = block.find_value("_pd_instr_resolution_x") or block.find_value("_pd_instr.resolution_x")
         if value is not None:
-            self.parameters.resolution_x = float(value)
+            self.parameters.resolution_x, _ = self.extract_nu(value)
+            self.parameters.resolution_x.fixed = not "(" in value
         value = block.find_value("_pd_instr_resolution_y") or block.find_value("_pd_instr.resolution_y")
         if value is not None:
-            self.parameters.resolution_y = float(value)
+            self.parameters.resolution_y, _ = self.extract_nu(value)
+            self.parameters.resolution_y.fixed = not "(" in value
         value = block.find_value("_pd_instr_reflex_asymmetry_p1") or block.find_value("_pd_instr.reflex_asymmetry_p1")
         if value is not None:
             self.parameters.reflex_asymmetry_p1 = float(value)
@@ -269,8 +281,12 @@ class JobBase_1D(_PowderBase):
             else ["_pd_background_intensity", "_pd_background.line_segment_intensity"]
         background_2thetas = np.fromiter(block.find_loop(x_label[0]), float) or \
             np.fromiter(block.find_loop(x_label[1]), float)
-        background_intensities = np.fromiter(block.find_loop(y_label[0]), float) or \
-            np.fromiter(block.find_loop(y_label[1]), float)
+        # background_intensities = np.fromiter(block.find_loop(y_label[0]), float) or \
+        #     np.fromiter(block.find_loop(y_label[1]), float)
+        background_intensities = list(block.find_loop(y_label[0])) or \
+            list(block.find_loop(y_label[1]))
+        background_intensities = np.array([self.extract_nu(item)[0] for item in background_intensities])
+
         bkg = PointBackground(linked_experiment=experiment_name)
         for (x, y) in zip(background_2thetas, background_intensities):
             bkg.append(BackgroundPoint.from_pars(x, y))
@@ -490,6 +506,38 @@ def get_job_type_from_file(file_url):
     else:
         raise ValueError("Could not determine job type from file.")
     return job_type
+
+def get_job_from_cif_string(cif_string, exp_name="job", phases=None, interface=None):
+    '''
+    Get the job from a CIF string.
+
+    Based on keywords in the CIF string, the job type is determined,
+    the job is created and the data is loaded from the CIF string.
+    '''
+    block = cif.read_string(cif_string).sole_block()
+    datastore = xr.Dataset()
+    # Check if powder1DCWpol
+    value_cwpol = block.find_value("_diffrn_radiation_polarization") or block.find_value("_diffrn_radiation.polarization_ratio")
+    # value_tof = block.find_value("_pd_meas_time_of_flight")
+    value_tof1 = bool(block.find_loop("_tof_meas_time")) or bool(block.find_loop("_pd_meas_time_of_flight"))
+    value_tof2 = bool(block.find_loop("_tof_meas.time")) or bool(block.find_loop("_pd_meas.time_of_flight"))
+    value_cw = block.find_value("_setup_wavelength") or block.find_value("_diffrn_radiation_wavelength.wavelength")
+
+    if exp_name is None:
+        exp_name = block.name
+    if value_cwpol is not None:
+        job = PolPowder1DCW(exp_name, datastore, phases, interface=interface)
+    elif value_tof1 or value_tof2:
+        job = Powder1DTOF(exp_name, datastore, phases, interface=interface)
+    elif value_cw is not None:
+        job = Powder1DCW(exp_name, datastore, phases, interface=interface)
+    else:
+        raise ValueError("Could not determine job type from file.")
+
+    # Load the data
+    job.from_cif_string(cif_string, exp_name)
+
+    return datastore, job
 
 def get_job_from_file(file_url, exp_name="job", phases=None, interface=None):
     '''

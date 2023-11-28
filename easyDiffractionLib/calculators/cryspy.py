@@ -657,15 +657,12 @@ class Cryspy:
         return data
 
     def updateModelCif(self, cif_string: str):
-        # self._cryspyObject = cryspy.str_to_globaln(cif_string)
-
-        # self._cryspyObj = self._proxy.data._cryspyObj
-        # self._cryspyObj = self._data
         cryspyCif = cifV2ToV1(cif_string)
         cryspyModelsObj = cryspy.str_to_globaln(cryspyCif)
         self._cryspyObject.add_items(cryspyModelsObj.items)
         cryspyModelsDict = cryspyModelsObj.get_dictionary()
         self._cryspyData._cryspyDict.update(cryspyModelsDict)
+        pass # debug
 
     def updateExpCif(self, edCif, modelNames):
         cryspyObj = self._cryspyObject

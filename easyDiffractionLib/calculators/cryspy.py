@@ -61,7 +61,7 @@ class Cryspy:
         self.type = "powder1DCW"
         self.additional_data = {"phases": {}}
         self.polarized = False
-        self._cryspyInOutDict = {}
+        self._inOutDict = {}
         self._cryspyObject = None
         self.experiment_cif = ""
         self._first_experiment_name = ""
@@ -86,32 +86,6 @@ class Cryspy:
         self.exp_obj = cryspy.str_to_globaln(self.experiment_cif)
         if self._cryspyObject is None:
             self._cryspyObject = cryspy.str_to_globaln(self.cif_str)
-
-    def loadModelsFromEdCif(self, edCif):
-        cryspyObj = self._proxy.data._cryspyObj
-        cryspyCif = cifV2ToV1(edCif)
-        cryspyModelsObj = str_to_globaln(cryspyCif)
-
-        modelsCountBefore = len(self.cryspyObjCrystals())
-        cryspyObj.add_items(cryspyModelsObj.items)
-        modelsCountAfter = len(self.cryspyObjCrystals())
-        success = modelsCountAfter - modelsCountBefore
-
-        if success:
-            cryspyModelsDict = cryspyModelsObj.get_dictionary()
-            edModels = CryspyParser.calcObjAndDictToEdModels(cryspyModelsObj, cryspyModelsDict)
-
-            self._proxy.data._cryspyDict.update(cryspyModelsDict)
-            self._dataBlocks += edModels
-
-            self._currentIndex = len(self.dataBlocks) - 1
-            if not self.defined:
-                self.defined = bool(len(self.dataBlocks))
-
-            print(formatMsg('sub', f'{len(edModels)} model(s)', '', 'to intern dataset', 'added'))
-
-        else:
-            print(formatMsg('sub', 'No model(s)', '', 'to intern dataset', 'added'))
 
     def createModel(self, model_id: str, model_type: str = "powder1DCW"):
         model = {"background": cryspy.PdBackgroundL(), "phase": self.phases}
@@ -729,7 +703,7 @@ class Cryspy:
         # use data from the current dictionary to calculate profile
         result = rhochi_calc_chi_sq_by_dictionary(
             self._cryspyData._cryspyDict,
-            dict_in_out=self._cryspyData._cryspyInOutDict,
+            dict_in_out=self._cryspyData._inOutDict,
             flag_use_precalculated_data=False,
             flag_calc_analytical_derivatives=False)
         return result
@@ -843,17 +817,17 @@ class Cryspy:
 
 
         rhochi_calc_chi_sq_by_dictionary(self._cryspyDict,
-                                        dict_in_out=self._cryspyInOutDict,
+                                        dict_in_out=self._inOutDict,
                                         flag_use_precalculated_data=False,
                                         flag_calc_analytical_derivatives=False)
 
-        y_plus = self._cryspyInOutDict[exp_name_model]['signal_plus']
-        y_minus = self._cryspyInOutDict[exp_name_model]['signal_minus']
+        y_plus = self._inOutDict[exp_name_model]['signal_plus']
+        y_minus = self._inOutDict[exp_name_model]['signal_minus']
         y_plus[self.excluded_points == True] = 0.0
         y_minus[self.excluded_points == True] = 0.0
 
         result1 = y_plus, y_minus
-        result2 = self._cryspyInOutDict[exp_name_model]['dict_in_out_' + data_name.lower()]
+        result2 = self._inOutDict[exp_name_model]['dict_in_out_' + data_name.lower()]
 
         return result1, result2
 
@@ -862,13 +836,13 @@ class Data():
     def __init__(self):
         self._cryspyObj = str_to_globaln('')
         self._cryspyDict = {}
-        self._cryspyInOutDict = {}
+        self._inOutDict = {}
 
 
     def reset(self):
         self._cryspyObj = str_to_globaln('')
         self._cryspyDict = {}
-        self._cryspyInOutDict = {}
+        self._inOutDict = {}
 
     @staticmethod
     def cryspyDictParamPathToStr(p):

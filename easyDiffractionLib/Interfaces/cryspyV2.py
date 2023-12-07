@@ -211,13 +211,6 @@ class CryspyBase(Neutron_type, metaclass=ABCMeta):
             self._identify(phase_obj), scale=phase_obj.scale.raw_value
         )
 
-    def remove_phase(self, phases_obj: Phases, phase_obj: Phase) -> None:
-        """
-        Remove a phase from the phases object.
-        """
-        ident = self._identify(phase_obj, as_str=True) + "_phase"
-        self.calculator.removePhase(self._identify(phases_obj), ident)
-
     def get_hkl(
         self,
         x_array: np.ndarray = None,
@@ -710,15 +703,12 @@ class CryspyV2(InterfaceTemplate):
         if self._internal is not None:
             self._internal.remove_atom(phase, atom)
 
-    def remove_phase(self, phase_name: str) -> None:
-        # self._cryspyData = Data()
-        # self._cryspyObject = self._cryspyData._cryspyObj
-        cryspyObjBlockNames = [item.data_name for item in self.calculator._cryspyObject.items]
-        cryspyObjBlockIdx = cryspyObjBlockNames.index(phase_name)
-        cryspyDictBlockName = f'crystal_{phase_name}'
-
-        del self.calculator._cryspyObject.items[cryspyObjBlockIdx]
-        del self.calculator._cryspyData._cryspyDict[cryspyDictBlockName]
+    def remove_phase(self, phases_obj: Phases, phase_obj: Phase) -> None:
+        """
+        Remove a phase from the phases object.
+        """
+        ident = self._internal._identify(phase_obj, as_str=True) + "_phase"
+        self.calculator.removePhase(self._internal._identify(phases_obj), ident)
 
     def fit_func(self, x_array: np.ndarray, *args, **kwargs) -> Union[np.ndarray, None]:
         if self._internal is not None:

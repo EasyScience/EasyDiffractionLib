@@ -35,8 +35,8 @@ class InterfaceFactory(InterfaceFactoryTemplate):
     def replaceExpCif(self, cif_string, exp_name):
         return self().replaceExpCif(cif_string, exp_name)
 
-    def remove_phase(self, phase_name) -> None:
-        return self().remove_phase(phase_name)
+    def remove_phase(self, phases_obj=None, phase_obj=None) -> None:
+        return self().remove_phase(phases_obj, phase_obj)
 
     def calculate_profile(self) -> dict:
         return self().calculate_profile()

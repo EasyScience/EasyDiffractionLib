@@ -110,6 +110,9 @@ class Cryspy:
         self.phases.items.append(phase)
 
     def removePhase(self, model_name: str, phase_name: str):
+        if phase_name not in self.storage.keys():
+            # already removed
+            return
         phase = self.storage[phase_name]
         del self.storage[phase_name]
         del self.storage[phase_name.split("_")[0] + "_scale"]
@@ -117,6 +120,15 @@ class Cryspy:
         name = self.current_crystal.pop(int(phase_name.split("_")[0]))
         if name in self.additional_data["phases"].keys():
             del self.additional_data["phases"][name]
+        cryspyObjBlockNames = [item.data_name for item in self._cryspyObject.items]
+        phase_name = phase_obj.name
+        if phase_name not in cryspyObjBlockNames:
+            return
+        cryspyObjBlockIdx = cryspyObjBlockNames.index(phase_name)
+        cryspyDictBlockName = f'crystal_{phase_name}'
+
+        del self._cryspyObject.items[cryspyObjBlockIdx]
+        del self._cryspyData._cryspyDict[cryspyDictBlockName]
 
     def setPhaseScale(self, model_name: str, scale: float = 1.0):
         self.storage[str(model_name) + "_scale"] = scale

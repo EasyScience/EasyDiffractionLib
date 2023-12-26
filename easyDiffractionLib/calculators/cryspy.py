@@ -434,6 +434,8 @@ class Cryspy:
             bg = self.pattern.backgrounds[0].calculate(this_x_array)
         new_bg = bg
 
+
+        # no content of current_crystal - need convert the dictionary to
         num_crys = len(self.current_crystal.keys())
 
         if num_crys == 0:
@@ -576,7 +578,10 @@ class Cryspy:
             return self.powder_1d_calculate(args, full_return=True, **kwargs)
         if self.type == "powder1DTOF":
             return self.powder_1d_tof_calculate(args, full_return=True, **kwargs)
-        return res, dict()
+
+        # res = self.calculate_profile()
+        # profile = res[0]
+        # return res, dict()
 
     def get_phase_components(self, phase_name: str) -> List[np.ndarray]:
         data = None
@@ -779,7 +784,7 @@ class Cryspy:
         setattr(self.model, 'data_name', data_name)
 
         # crystals holds the current phase
-        self._cryspyObject = cryspy.str_to_globaln(crystals.to_cif())
+        # self._cryspyObject = cryspy.str_to_globaln(crystals.to_cif())
 
         phase_obj = self._cryspyObject
         # phase -> dict
@@ -797,29 +802,34 @@ class Cryspy:
         else:
             ttheta = np.radians(x_array) # needs recasting into radians for CW
 
-        exp_name_model = experiment_dict_model['type_name']
-        self._cryspyDict = {phase_name: phase_dict[phase_name], exp_name_model: experiment_dict_model}
+        # exp_name_model = experiment_dict_model['type_name']
+        exp_name_model = phase_obj[1].PREFIX + '_' + phase_obj[1].data_name
 
-        self.excluded_points = np.full(len(ttheta), False)
-        if hasattr(self.model, 'excluded_points'):
-            self.excluded_points = self.model.excluded_points
-        self._cryspyDict[exp_name_model]['excluded_points'] = self.excluded_points
-        self._cryspyDict[exp_name_model]['ttheta'] = ttheta
+        # self._cryspyDict = {phase_name: phase_dict[phase_name], exp_name_model: experiment_dict_model}
 
-        self._cryspyDict[exp_name_model]['time'] = np.array(ttheta) # required for TOF
+        # self.excluded_points = np.full(len(ttheta), False)
+        # if hasattr(self.model, 'excluded_points'):
+        #     self.excluded_points = self.model.excluded_points
+        # self._cryspyDict[exp_name_model]['excluded_points'] = self.excluded_points
+        # self._cryspyDict[exp_name_model]['ttheta'] = ttheta
 
-        self._cryspyDict[exp_name_model]['background_ttheta'] = ttheta
-        self._cryspyDict[exp_name_model]['background_intensity'] = bg
-        self._cryspyDict[exp_name_model]['flags_background_intensity'] = np.full(len(ttheta), False)
+        # self._cryspyDict[exp_name_model]['time'] = np.array(ttheta) # required for TOF
 
-        # interestingly, experimental signal is required, although not used for simple profile calc
-        self._cryspyDict[exp_name_model]['signal_exp'] = np.array([np.zeros(len(ttheta)), np.zeros(len(ttheta))])
+        # self._cryspyDict[exp_name_model]['background_ttheta'] = ttheta
+        # self._cryspyDict[exp_name_model]['background_intensity'] = bg
+        # self._cryspyDict[exp_name_model]['flags_background_intensity'] = np.full(len(ttheta), False)
+
+        # # interestingly, experimental signal is required, although not used for simple profile calc
+        # self._cryspyDict[exp_name_model]['signal_exp'] = np.array([np.zeros(len(ttheta)), np.zeros(len(ttheta))])
 
 
-        rhochi_calc_chi_sq_by_dictionary(self._cryspyDict,
-                                        dict_in_out=self._inOutDict,
+        rhochi_calc_chi_sq_by_dictionary(self._cryspyData._cryspyDict,
+                                        dict_in_out=self._cryspyData._inOutDict,
                                         flag_use_precalculated_data=False,
                                         flag_calc_analytical_derivatives=False)
+
+        self._cryspyDict = self._cryspyData._cryspyDict
+        self._inOutDict = self._cryspyData._inOutDict
 
         y_plus = self._inOutDict[exp_name_model]['signal_plus']
         y_minus = self._inOutDict[exp_name_model]['signal_minus']

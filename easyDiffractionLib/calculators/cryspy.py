@@ -121,7 +121,6 @@ class Cryspy:
         if name in self.additional_data["phases"].keys():
             del self.additional_data["phases"][name]
         cryspyObjBlockNames = [item.data_name for item in self._cryspyObject.items]
-        phase_name = phase_obj.name
         if phase_name not in cryspyObjBlockNames:
             return
         cryspyObjBlockIdx = cryspyObjBlockNames.index(phase_name)

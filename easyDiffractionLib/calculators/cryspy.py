@@ -794,52 +794,57 @@ class Cryspy:
         data_name = crystals.data_name
         setattr(self.model, 'data_name', data_name)
 
-        # crystals holds the current phase
-        # self._cryspyObject = cryspy.str_to_globaln(crystals.to_cif())
-
         phase_obj = self._cryspyObject
         # phase -> dict
         phase_dict = phase_obj.get_dictionary()
-        phase_name = list(phase_dict.keys())[0]
 
         is_tof = False
         if self.model.PREFIX.lower() == 'tof':
             is_tof = True
-        # model -> dict
-        experiment_dict_model = self.model.get_dictionary()
 
         if is_tof:
             ttheta = x_array
         else:
             ttheta = np.radians(x_array) # needs recasting into radians for CW
 
-        # exp_name_model = experiment_dict_model['type_name']
-        exp_name_model = phase_obj[1].PREFIX + '_' + phase_obj[1].data_name
+        # model -> dict
+        experiment_dict_model = self.model.get_dictionary()
+        exp_name_model = experiment_dict_model['type_name']
 
-        # self._cryspyDict = {phase_name: phase_dict[phase_name], exp_name_model: experiment_dict_model}
+        if self._cryspyData._inOutDict:
+            # we have the data from the GUI
+            self._cryspyDict = self._cryspyData._cryspyDict
+        else:
+            # this job runs from the notebook - create the dictionary
+            phase_dict = cryspy.str_to_globaln(crystals.to_cif()).get_dictionary()
+            phase_name = list(phase_dict.keys())[0]
+            experiment_dict_model = self.model.get_dictionary()
 
-        # self.excluded_points = np.full(len(ttheta), False)
-        # if hasattr(self.model, 'excluded_points'):
-        #     self.excluded_points = self.model.excluded_points
-        # self._cryspyDict[exp_name_model]['excluded_points'] = self.excluded_points
-        # self._cryspyDict[exp_name_model]['ttheta'] = ttheta
+            self._cryspyDict = {phase_name: phase_dict[phase_name], exp_name_model: experiment_dict_model}
 
-        # self._cryspyDict[exp_name_model]['time'] = np.array(ttheta) # required for TOF
+            self.excluded_points = np.full(len(ttheta), False)
+            if hasattr(self.model, 'excluded_points'):
+                self.excluded_points = self.model.excluded_points
+            self._cryspyDict[exp_name_model]['excluded_points'] = self.excluded_points
+            self._cryspyDict[exp_name_model]['ttheta'] = ttheta
 
-        # self._cryspyDict[exp_name_model]['background_ttheta'] = ttheta
-        # self._cryspyDict[exp_name_model]['background_intensity'] = bg
-        # self._cryspyDict[exp_name_model]['flags_background_intensity'] = np.full(len(ttheta), False)
+            self._cryspyDict[exp_name_model]['time'] = np.array(ttheta) # required for TOF
 
-        # # interestingly, experimental signal is required, although not used for simple profile calc
-        # self._cryspyDict[exp_name_model]['signal_exp'] = np.array([np.zeros(len(ttheta)), np.zeros(len(ttheta))])
+            self._cryspyDict[exp_name_model]['background_ttheta'] = ttheta
+            self._cryspyDict[exp_name_model]['background_intensity'] = bg
+            self._cryspyDict[exp_name_model]['flags_background_intensity'] = np.full(len(ttheta), False)
+
+            # interestingly, experimental signal is required, although not used for simple profile calc
+            self._cryspyDict[exp_name_model]['signal_exp'] = np.array([np.zeros(len(ttheta)), np.zeros(len(ttheta))])
 
 
-        rhochi_calc_chi_sq_by_dictionary(self._cryspyData._cryspyDict,
+        rhochi_calc_chi_sq_by_dictionary(self._cryspyDict,
                                         dict_in_out=self._cryspyData._inOutDict,
                                         flag_use_precalculated_data=False,
                                         flag_calc_analytical_derivatives=False)
 
-        self._cryspyDict = self._cryspyData._cryspyDict
+        if self._cryspyData._inOutDict:
+            self._cryspyDict = self._cryspyData._cryspyDict
         self._inOutDict = self._cryspyData._inOutDict
 
         y_plus = self._inOutDict[exp_name_model]['signal_plus']

@@ -1,6 +1,6 @@
-import os, sys
 
 from easyDiffractionLib.interface import InterfaceFactory
+
 
 def main():
     interface = InterfaceFactory()

@@ -2,12 +2,12 @@
 import os
 
 from easyCore.Fitting.Fitting import Fitter
-from easyDiffractionLib import Phases
-from easyDiffractionLib.Jobs import Powder1DCW
-from easyDiffractionLib.interface import InterfaceFactory as Calculator
-from easyDiffractionLib.Profiles.P1D import PDFParameters
-from easyDiffractionLib.Interfaces.pdffit2 import readGRData
 
+from easyDiffractionLib import Phases
+from easyDiffractionLib.interface import InterfaceFactory as Calculator
+from easyDiffractionLib.Interfaces.pdffit2 import readGRData
+from easyDiffractionLib.Jobs import Powder1DCW
+from easyDiffractionLib.Profiles.P1D import PDFParameters
 
 # data_fname = "D:\\projects\\easyScience\\easyDiffractionLib\\examples\\PDF\\Ni-xray.gr"
 data_fname = os.path.realpath('Ni-xray.gr')
@@ -78,8 +78,8 @@ Gdiff_baseline = -10
 
 Gdiff_show = Gdiff/5.0 + Gdiff_baseline
 
-from bokeh.io import show
-from bokeh.plotting import figure
+from bokeh.io import show  # noqa: E402
+from bokeh.plotting import figure  # noqa: E402
 
 fig = figure()
 fig.xaxis.axis_label = 'r (Å)'

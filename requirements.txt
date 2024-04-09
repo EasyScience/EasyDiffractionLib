@@ -3,6 +3,4 @@ cryspy @ git+https://github.com/ikibalin/cryspy.git@bravis_type_fix
 easysciencecore==0.2.3
 easycrystallography==0.1.2
 pycifrw
-cfml==0.0.1
-# gsasii==0.0.1
 pdffit2==0.0.0

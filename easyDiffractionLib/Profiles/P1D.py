@@ -3,13 +3,22 @@ from __future__ import annotations
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
-from typing import TypeVar, List, Optional, Union, TYPE_CHECKING, ClassVar, Tuple
+from typing import TYPE_CHECKING
+from typing import ClassVar
+from typing import List
+from typing import Optional
+from typing import Tuple
+from typing import TypeVar
+from typing import Union
 
 from easyCore.Datasets.xarray import xr
-from easyCore.Objects.ObjectClasses import BaseObj, Parameter
-from easyDiffractionLib.Profiles.common import JobSetup, _DataClassBase
+from easyCore.Objects.ObjectClasses import BaseObj
+from easyCore.Objects.ObjectClasses import Parameter
+
 from easyDiffractionLib.components.polarization import PolarizedBeam
 from easyDiffractionLib.elements.Backgrounds.Background import BackgroundContainer
+from easyDiffractionLib.Profiles.common import JobSetup
+from easyDiffractionLib.Profiles.common import _DataClassBase
 
 T = TypeVar("T")
 
@@ -43,7 +52,7 @@ class Powder1DExp(_DataClassBase):
         exps = [
             a
             for a in self._dataset.variables.keys()
-            if not a.startswith(self.simulation_prefix) and not a in self._dataset.dims
+            if not a.startswith(self.simulation_prefix) and a not in self._dataset.dims
         ]
         return exps
 

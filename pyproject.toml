@@ -66,6 +66,8 @@ dev = [
     "requests",
     "py3Dmol",
     "bokeh",
+    "gemmi",
+    "periodictable",
 ]
 
 [project.urls]

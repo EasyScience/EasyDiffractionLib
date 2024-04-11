@@ -1,13 +1,11 @@
-from easyCore import np
+import matplotlib.pyplot as plt
+import numpy as np
 
-from easyDiffractionLib.sample import Sample
 from easyDiffractionLib import Phases
 from easyDiffractionLib.interface import InterfaceFactory as Calculator
 from easyDiffractionLib.Profiles.P1D import Instrument1DCWPolParameters as CWParamsPol
 from easyDiffractionLib.Profiles.P1D import PolPowder1DParameters
-
-import matplotlib.pyplot as plt
-
+from easyDiffractionLib.sample import Sample
 
 calculator = Calculator()
 calculator.switch("CrysPy")

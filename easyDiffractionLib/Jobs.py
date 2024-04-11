@@ -1,16 +1,17 @@
 __author__ = "github.com/wardsimon"
 __version__ = "0.1.1"
 
-from gemmi import cif
-from easyCore.Datasets.xarray import xr, np
-from easyDiffractionLib.Profiles.common import _PowderBase
-from easyDiffractionLib.elements.Backgrounds.Point import PointBackground, BackgroundPoint
-from easyDiffractionLib.Profiles.P1D import (
-    Instrument1DCWPolParameters,
-    Instrument1DTOFParameters,
-)
-from easyDiffractionLib.interface import InterfaceFactory
+import numpy as np
+from easyCore.Datasets.xarray import xr
 from easyCore.Fitting.Fitting import Fitter
+from gemmi import cif
+
+from easyDiffractionLib.elements.Backgrounds.Point import BackgroundPoint
+from easyDiffractionLib.elements.Backgrounds.Point import PointBackground
+from easyDiffractionLib.interface import InterfaceFactory
+from easyDiffractionLib.Profiles.common import _PowderBase
+from easyDiffractionLib.Profiles.P1D import Instrument1DCWPolParameters
+from easyDiffractionLib.Profiles.P1D import Instrument1DTOFParameters
 
 
 class JobBase_1D(_PowderBase):

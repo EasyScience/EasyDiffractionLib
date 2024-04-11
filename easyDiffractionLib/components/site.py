@@ -8,21 +8,22 @@ from __future__ import annotations
 __author__ = "github.com/wardsimon"
 __version__ = "0.2.0"
 
-from easyCore.Objects.ObjectClasses import Descriptor, Parameter
-from typing import List, Union, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
+from typing import List
+from typing import Optional
+from typing import Union
+
+from easyCore.Objects.ObjectClasses import Descriptor
+from easyCore.Objects.ObjectClasses import Parameter
 from easyCore.Utils.io.star import StarLoop
-
-from easyCrystallography.Components.Site import (
-    Site as ecSite,
-    PeriodicSite as ecPeriodicSite,
-    Atoms as ecAtoms,
-    PeriodicAtoms as ecPeriodicAtoms,
-)
-from easyCrystallography.Components.Lattice import PeriodicLattice
-from easyCrystallography.Components.Specie import Specie
 from easyCrystallography.Components.AtomicDisplacement import AtomicDisplacement
+from easyCrystallography.Components.Lattice import PeriodicLattice
+from easyCrystallography.Components.Site import Atoms as ecAtoms
+from easyCrystallography.Components.Site import PeriodicAtoms as ecPeriodicAtoms
+from easyCrystallography.Components.Site import PeriodicSite as ecPeriodicSite
+from easyCrystallography.Components.Site import Site as ecSite
+from easyCrystallography.Components.Specie import Specie
 from easyCrystallography.Components.Susceptibility import MagneticSusceptibility
-
 
 if TYPE_CHECKING:
     from easyCore.Utils.typing import iF

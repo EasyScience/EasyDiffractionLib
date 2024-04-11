@@ -3,10 +3,13 @@ from __future__ import annotations
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
-from typing import ClassVar, Union, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
+from typing import ClassVar
+from typing import Optional
+from typing import Union
 
-from easyCore.Objects.ObjectClasses import BaseObj, Parameter
-
+from easyCore.Objects.ObjectClasses import BaseObj
+from easyCore.Objects.ObjectClasses import Parameter
 
 if TYPE_CHECKING:
     from easyCore.Utils.typing import iF

@@ -1,15 +1,14 @@
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
-from easyCore import np
+import matplotlib.pyplot as plt
+import numpy as np
+from easyCrystallography.Components.Susceptibility import MagneticSusceptibility
 
-from easyDiffractionLib.sample import Sample
 from easyDiffractionLib import Phase
 from easyDiffractionLib.interface import InterfaceFactory as Calculator
 from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters
-
-import matplotlib.pyplot as plt
-from easyCrystallography.Components.Susceptibility import MagneticSusceptibility
+from easyDiffractionLib.sample import Sample
 
 calculator = Calculator()
 

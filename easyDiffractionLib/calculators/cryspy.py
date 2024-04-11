@@ -1,15 +1,17 @@
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.3"
 
-from typing import Tuple, Optional, Any, Callable, List, Dict
+import warnings
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Tuple
 
 import cryspy
-from cryspy.procedure_rhochi.rhochi_by_dictionary import \
-    rhochi_calc_chi_sq_by_dictionary
-
-import warnings
-
 import numpy as np
+from cryspy.procedure_rhochi.rhochi_by_dictionary import rhochi_calc_chi_sq_by_dictionary
 from easyCore import borg
 
 # from pathos import multiprocessing as mp

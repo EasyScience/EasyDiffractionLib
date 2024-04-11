@@ -1,12 +1,13 @@
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
-import CFML_api
 import os
 import re
-
 from typing import Tuple
-from easyCore import np, borg
+
+import CFML_api
+import numpy as np
+from easyCore import borg
 
 
 class CFML:

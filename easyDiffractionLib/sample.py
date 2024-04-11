@@ -3,21 +3,22 @@ __version__ = "0.0.1"
 
 import os
 import tempfile
-from typing import Union, ClassVar
+from typing import ClassVar
+from typing import Union
 
 from easyCore.Objects.ObjectClasses import BaseObj
 from easyCore.Utils.UndoRedo import property_stack_deco
 from easyCrystallography.Structures.Phase import Phases as ecPhases
 
-from easyDiffractionLib import Phase, Phases
-from easyDiffractionLib.Profiles.P1D import (
-    Instrument1DCWParameters,
-    Instrument1DTOFParameters,
-)
+from easyDiffractionLib import Phase
+from easyDiffractionLib import Phases
 from easyDiffractionLib.interface import InterfaceFactory
-from easyDiffractionLib.Interfaces.types import Powder, Neutron
-from easyDiffractionLib.Profiles.P1D import Powder1DParameters as Pattern1D
+from easyDiffractionLib.Interfaces.types import Neutron
+from easyDiffractionLib.Interfaces.types import Powder
+from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters
+from easyDiffractionLib.Profiles.P1D import Instrument1DTOFParameters
 from easyDiffractionLib.Profiles.P1D import PolPowder1DParameters as Pattern1D_Pol
+from easyDiffractionLib.Profiles.P1D import Powder1DParameters as Pattern1D
 
 
 class Sample(BaseObj):
@@ -161,16 +162,14 @@ class Sample(BaseObj):
 
     @property
     def exp_type_str(self) -> str:
-        from easyDiffractionLib.Interfaces.types import (
-            Neutron,
-            XRay,
-            Powder,
-            SingleCrystal,
-            Pol,
-            UPol,
-            CW,
-            TOF,
-        )
+        from easyDiffractionLib.Interfaces.types import CW
+        from easyDiffractionLib.Interfaces.types import TOF
+        from easyDiffractionLib.Interfaces.types import Neutron
+        from easyDiffractionLib.Interfaces.types import Pol
+        from easyDiffractionLib.Interfaces.types import Powder
+        from easyDiffractionLib.Interfaces.types import SingleCrystal
+        from easyDiffractionLib.Interfaces.types import UPol
+        from easyDiffractionLib.Interfaces.types import XRay
 
         type_str = ""
         self_type = type(self)

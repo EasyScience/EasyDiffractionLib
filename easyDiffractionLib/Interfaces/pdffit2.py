@@ -1,19 +1,21 @@
 __author__ = "github.com/arm61"
 
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
+from typing import List
 
 import numpy as np
-
 from diffpy.utils.parsers.loaddata import loadData
-from easyCore.Objects.Inferface import ItemContainer
 from easyCore import borg
-from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
+from easyCore.Objects.Inferface import ItemContainer
+
+from easyDiffractionLib import Lattice
+from easyDiffractionLib import Phases
+from easyDiffractionLib import Site
+from easyDiffractionLib import SpaceGroup
 from easyDiffractionLib.calculators.pdffit2 import Pdffit2 as Pdffit2_calc
-from easyDiffractionLib import Lattice, SpaceGroup, Site, Phases
-from easyDiffractionLib.Profiles.P1D import (
-    Powder1DParameters,
-    PDFParameters,
-)
+from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
+from easyDiffractionLib.Profiles.P1D import PDFParameters
+from easyDiffractionLib.Profiles.P1D import Powder1DParameters
 
 if TYPE_CHECKING:
     pass

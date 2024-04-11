@@ -7,30 +7,31 @@ __version__ = "0.1.0"
 
 import os
 import re
-from functools import partial
-from io import TextIOWrapper, StringIO
-from pathlib import Path
-from typing import Union, List, Tuple
 from copy import deepcopy
+from functools import partial
 from inspect import signature
+from io import StringIO
+from io import TextIOWrapper
 from numbers import Number
+from pathlib import Path
+from typing import List
+from typing import Tuple
+from typing import Union
 
-from easyCore.Utils.io.star import (
-    StarCollection,
-    StarEntry,
-    StarLoop,
-    FakeItem,
-    FakeCore,
-    StarHeader,
-    StarSection,
-)
-
+from easyCore.Utils.io.star import FakeCore
+from easyCore.Utils.io.star import FakeItem
+from easyCore.Utils.io.star import StarCollection
+from easyCore.Utils.io.star import StarEntry
+from easyCore.Utils.io.star import StarHeader
+from easyCore.Utils.io.star import StarLoop
+from easyCore.Utils.io.star import StarSection
 from easyCrystallography.Components.AtomicDisplacement import AtomicDisplacement
-from easyCrystallography.Components.Susceptibility import MagneticSusceptibility
-from easyDiffractionLib.components.site import Atoms
 from easyCrystallography.Components.Lattice import Lattice
 from easyCrystallography.Components.SpaceGroup import SpaceGroup
+from easyCrystallography.Components.Susceptibility import MagneticSusceptibility
 from easyCrystallography.Symmetry.groups import SpaceGroup as SpaceGroup2
+
+from easyDiffractionLib.components.site import Atoms
 
 sub_spgrp = partial(re.sub, r"[\s_]", "")
 space_groups = {sub_spgrp(k): k for k in [opt["hermann_mauguin_fmt"] for opt in SpaceGroup2.SYMM_OPS]}  # type: ignore

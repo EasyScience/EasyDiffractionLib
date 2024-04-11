@@ -1,8 +1,13 @@
 __author__ = 'github.com/wardsimon'
 __version__ = '0.0.1'
 
-from typing import ClassVar, Optional, Union
-from easyCore.Objects.ObjectClasses import BaseObj, Parameter
+from typing import ClassVar
+from typing import Optional
+from typing import Union
+
+from easyCore.Objects.ObjectClasses import BaseObj
+from easyCore.Objects.ObjectClasses import Parameter
+
 from easyDiffractionLib.elements.Backgrounds.Background import BackgroundContainer
 
 

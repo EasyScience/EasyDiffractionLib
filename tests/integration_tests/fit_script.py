@@ -1,16 +1,17 @@
 __author__ = 'github.com/wardsimon'
 __version__ = '0.0.1'
 
-from easyCore import np
-from easyDiffractionLib.sample import Sample
+import numpy as np
+from easyCore.Datasets.xarray import xr
+from easyCore.Fitting.Fitting import Fitter
+
 from easyDiffractionLib import Phases
-from easyDiffractionLib.interface import InterfaceFactory
+from easyDiffractionLib.elements.Backgrounds.Point import BackgroundPoint
+from easyDiffractionLib.elements.Backgrounds.Point import PointBackground
 from easyDiffractionLib.elements.Experiments.Experiment import Pars1D
 from easyDiffractionLib.elements.Experiments.Pattern import Pattern1D
-from easyDiffractionLib.elements.Backgrounds.Point import PointBackground, BackgroundPoint
-
-from easyCore.Fitting.Fitting import Fitter
-from easyCore.Datasets.xarray import xr
+from easyDiffractionLib.interface import InterfaceFactory
+from easyDiffractionLib.sample import Sample
 
 interface = InterfaceFactory()
 c = Phases.from_cif_file('PbSO4.cif')

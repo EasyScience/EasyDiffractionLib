@@ -4,7 +4,13 @@ __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
 from abc import abstractmethod
-from typing import List, Any, Callable, Union, TYPE_CHECKING, TypeVar, Type
+from typing import TYPE_CHECKING
+from typing import Any
+from typing import Callable
+from typing import List
+from typing import Type
+from typing import TypeVar
+from typing import Union
 
 if TYPE_CHECKING:
     from easyCore.Objects.Inferface import ItemContainer

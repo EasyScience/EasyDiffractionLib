@@ -1,8 +1,11 @@
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
-from easyCrystallography.Structures.Phase import Phase as ecPhase, Phases as ecPhases
-from .site import Site, Atoms
+from easyCrystallography.Structures.Phase import Phase as ecPhase
+from easyCrystallography.Structures.Phase import Phases as ecPhases
+
+from .site import Atoms
+from .site import Site
 
 
 class Phase(ecPhase):

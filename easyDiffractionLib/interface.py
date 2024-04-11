@@ -3,8 +3,9 @@ __version__ = "0.0.1"
 
 from typing import List
 
-from easyDiffractionLib.Interfaces import InterfaceTemplate
 from easyCore.Objects.Inferface import InterfaceFactoryTemplate
+
+from easyDiffractionLib.Interfaces import InterfaceTemplate
 
 
 class InterfaceFactory(InterfaceFactoryTemplate):

@@ -1,21 +1,26 @@
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.2"
 
-from typing import List, Callable
+from typing import Callable
+from typing import List
 
-from easyCore import borg, np
+import numpy as np
+from easyCore import borg
 from easyCore.Objects.Inferface import ItemContainer
 from easyCrystallography.Components.Site import Site as Site_base
-from easyDiffractionLib import Lattice, SpaceGroup, Site, Phase, Phases
-from easyDiffractionLib.Profiles.P1D import (
-    Instrument1DCWParameters,
-    Instrument1DTOFParameters,
-    Instrument1DCWPolParameters,
-    Powder1DParameters,
-)
+
+from easyDiffractionLib import Lattice
+from easyDiffractionLib import Phase
+from easyDiffractionLib import Phases
+from easyDiffractionLib import Site
+from easyDiffractionLib import SpaceGroup
+from easyDiffractionLib.calculators.cryspy import Cryspy as Cryspy_calc
 from easyDiffractionLib.components.polarization import PolarizedBeam
 from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
-from easyDiffractionLib.calculators.cryspy import Cryspy as Cryspy_calc
+from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters
+from easyDiffractionLib.Profiles.P1D import Instrument1DCWPolParameters
+from easyDiffractionLib.Profiles.P1D import Instrument1DTOFParameters
+from easyDiffractionLib.Profiles.P1D import Powder1DParameters
 
 
 class Cryspy(InterfaceTemplate):

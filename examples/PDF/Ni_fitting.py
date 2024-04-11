@@ -2,12 +2,12 @@
 import os
 
 from easyCore.Fitting.Fitting import Fitter
-from easyDiffractionLib import Phases
-from easyDiffractionLib.Jobs import Powder1DCW
-from easyDiffractionLib.interface import InterfaceFactory as Calculator
-from easyDiffractionLib.Profiles.P1D import PDFParameters
-from easyDiffractionLib.Interfaces.pdffit2 import readGRData
 
+from easyDiffractionLib import Phases
+from easyDiffractionLib.interface import InterfaceFactory as Calculator
+from easyDiffractionLib.Interfaces.pdffit2 import readGRData
+from easyDiffractionLib.Jobs import Powder1DCW
+from easyDiffractionLib.Profiles.P1D import PDFParameters
 
 # data_fname = "D:\\projects\\easyScience\\easyDiffractionLib\\examples\\PDF\\Ni-xray.gr"
 data_fname = os.path.realpath('Ni-xray.gr')

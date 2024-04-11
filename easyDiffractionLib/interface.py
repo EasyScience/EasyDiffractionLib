@@ -1,10 +1,11 @@
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
-from typing import Callable, List
+from typing import List
+
+from easyCore.Objects.Inferface import InterfaceFactoryTemplate
 
 from easyDiffractionLib.Interfaces import InterfaceTemplate
-from easyCore.Objects.Inferface import InterfaceFactoryTemplate
 
 
 class InterfaceFactory(InterfaceFactoryTemplate):

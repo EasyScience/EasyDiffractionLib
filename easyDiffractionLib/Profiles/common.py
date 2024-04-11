@@ -3,14 +3,16 @@ __version__ = "0.0.1"
 
 import os
 import tempfile
-from typing import Union, TypeVar
+from typing import TypeVar
+from typing import Union
 
-from easyCore.Utils.UndoRedo import property_stack_deco
-from easyCore.Objects.ObjectClasses import BaseObj
-from easyDiffractionLib import Phases, Phase
 from easyCore.Datasets.xarray import xr
 from easyCore.Objects.core import ComponentSerializer
+from easyCore.Objects.ObjectClasses import BaseObj
+from easyCore.Utils.UndoRedo import property_stack_deco
 
+from easyDiffractionLib import Phase
+from easyDiffractionLib import Phases
 
 DataClassBaseType = TypeVar("DataClassBaseType", bound="_DataClassBase")
 
@@ -124,15 +126,12 @@ class _PowderBase(BaseObj):
             name, _phases=phases, _parameters=parameters, _pattern=pattern
         )
 
-        from easyDiffractionLib.Profiles.P1D import (
-            Instrument1DCWParameters,
-            Instrument1DTOFParameters,
-        )
-        from easyDiffractionLib.Interfaces.types import Powder, Neutron
+        from easyDiffractionLib.Interfaces.types import Neutron
+        from easyDiffractionLib.Interfaces.types import Powder
+        from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters
+        from easyDiffractionLib.Profiles.P1D import Instrument1DTOFParameters
+        from easyDiffractionLib.Profiles.P1D import PolPowder1DParameters as Pattern1D_Pol
         from easyDiffractionLib.Profiles.P1D import Powder1DParameters as Pattern1D
-        from easyDiffractionLib.Profiles.P1D import (
-            PolPowder1DParameters as Pattern1D_Pol,
-        )
 
         # Set bases for easy identification
         self._update_bases(Powder)

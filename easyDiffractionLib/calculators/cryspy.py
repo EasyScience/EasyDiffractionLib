@@ -1,21 +1,20 @@
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.3"
 
-import time
-from typing import Tuple, Optional, Any, Callable, List, Dict, Union
+import warnings
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Tuple
 
 import cryspy
-from cryspy.procedure_rhochi.rhochi_by_dictionary import \
-    rhochi_calc_chi_sq_by_dictionary
-
-import warnings
-
-from numpy import ndarray
-
-from easyCore import np, borg
+import numpy as np
+from cryspy.procedure_rhochi.rhochi_by_dictionary import rhochi_calc_chi_sq_by_dictionary
+from easyCore import borg
 
 # from pathos import multiprocessing as mp
-import functools
 
 warnings.filterwarnings("ignore")
 
@@ -195,7 +194,6 @@ class Cryspy:
         return atom_name
 
     def attachMSP(self, atom_name: str, msp_name: str, msp_args: Dict[str, float]):
-        atom = self.storage[atom_name]
         msp = cryspy.AtomSiteSusceptibility(chi_type=msp_name, **msp_args)
         ref_name = str(atom_name) + "_" + msp_name
         self.storage[ref_name] = msp
@@ -446,12 +444,12 @@ class Cryspy:
             ass = []
             for atom in atoms:
                 i = None
-                l = str(storage_invert[atom]) + "_Cani"
-                if l in self.storage.keys():
-                    i = self.storage[l]
-                l = str(storage_invert[atom]) + "_Ciso"
-                if l in self.storage.keys():
-                    i = self.storage[l]
+                l_key = str(storage_invert[atom]) + "_Cani"
+                if l_key in self.storage.keys():
+                    i = self.storage[l_key]
+                l_key = str(storage_invert[atom]) + "_Ciso"
+                if l_key in self.storage.keys():
+                    i = self.storage[l_key]
                 if i is not None:
                     i.label = atom.label
                     pol_atoms.append(i)
@@ -737,8 +735,9 @@ class Cryspy:
 
         y_plus = self._cryspyInOutDict[exp_name_model]['signal_plus']
         y_minus = self._cryspyInOutDict[exp_name_model]['signal_minus']
-        y_plus[self.excluded_points == True] = 0.0
-        y_minus[self.excluded_points == True] = 0.0
+        if self.excluded_points:
+            y_plus = 0.0
+            y_minus = 0.0
 
         result1 = y_plus, y_minus
         result2 = self._cryspyInOutDict[exp_name_model]['dict_in_out_' + data_name.lower()]

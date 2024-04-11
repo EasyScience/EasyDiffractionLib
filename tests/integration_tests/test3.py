@@ -1,15 +1,13 @@
 __author__ = 'github.com/wardsimon'
 __version__ = '0.0.1'
 
-from easyCore import np
+import matplotlib.pyplot as plt
+import numpy as np
 
-from easyDiffractionLib.sample import Sample
-from easyDiffractionLib import Phase, Phases
+from easyDiffractionLib import Phases
 from easyDiffractionLib.interface import InterfaceFactory
 from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters
-
-import matplotlib.pyplot as plt
-
+from easyDiffractionLib.sample import Sample
 
 i = InterfaceFactory()
 

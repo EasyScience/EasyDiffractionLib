@@ -37,7 +37,7 @@ class JobType():
         """
         Convert the job type string to a JobType object
         """
-        self.is_powder = self.STR_POWDER in job_type.to_lower()
+        self.is_powder = self.STR_POWDER in job_type.lower()
         self.is_single_crystal = not self.is_powder
         self.is_cw = self.STR_CW in job_type
         self.is_tof = self.STR_TOF in job_type

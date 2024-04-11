@@ -27,17 +27,18 @@ class JobType():
 
     @property
     def type(self):
-        return self._job_type
+        return self.type_str
 
     @type.setter
     def type(self, value):
-        self._job_type = value
+        self.type_str = value
+        self.parse_job_type(value)
 
     def parse_job_type(self, job_type: str):
         """
         Convert the job type string to a JobType object
         """
-        self.is_powder = self.STR_POWDER in job_type.lower()
+        self.is_powder = self.STR_POWDER in job_type
         self.is_single_crystal = not self.is_powder
         self.is_cw = self.STR_CW in job_type
         self.is_tof = self.STR_TOF in job_type

@@ -4,35 +4,38 @@ __author__ = "github.com/wardsimon"
 __version__ = "0.0.2"
 
 from abc import ABCMeta
-from typing import Callable, Optional, TYPE_CHECKING, List, Union
+from typing import TYPE_CHECKING
+from typing import Callable
+from typing import List
+from typing import Optional
+from typing import Union
 
+import numpy as np
+from easyCore import borg
+from easyCore.Objects.Inferface import ItemContainer
+from easyCrystallography.Components.AtomicDisplacement import Anisotropic as Anisotropic_base
+from easyCrystallography.Components.Site import Site as Site_base
 from numpy import ndarray
 
-from easyCore import borg, np
-from easyCore.Objects.Inferface import ItemContainer
-from easyCrystallography.Components.Site import (
-    Site as Site_base,
-)  # Maintain compatibility with old versions
-from easyDiffractionLib import Lattice, SpaceGroup, Site, Phase, Phases
-from easyDiffractionLib.Profiles.P1D import (
-    Instrument1DCWParameters,
-    Instrument1DTOFParameters,
-    Powder1DParameters,
-)
+from easyDiffractionLib import Lattice
+from easyDiffractionLib import Phase
+from easyDiffractionLib import Phases
+from easyDiffractionLib import Site
+from easyDiffractionLib import SpaceGroup
+from easyDiffractionLib.calculators.cryspy import Cryspy as Cryspy_calc
 from easyDiffractionLib.components.polarization import PolarizedBeam
 from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
-from easyDiffractionLib.calculators.cryspy import Cryspy as Cryspy_calc
-
-from easyDiffractionLib.Interfaces.types import (
-    interfaceMixInMeta,
-    Powder as Powder_type,
-    SingleCrystal as SingleCrystal_type,
-    CW as CW_type,
-    TOF as TOF_type,
-    Pol as Pol_type,
-    UPol as UPol_type,
-    Neutron as Neutron_type,
-)
+from easyDiffractionLib.Interfaces.types import CW as CW_type
+from easyDiffractionLib.Interfaces.types import TOF as TOF_type
+from easyDiffractionLib.Interfaces.types import Neutron as Neutron_type
+from easyDiffractionLib.Interfaces.types import Pol as Pol_type
+from easyDiffractionLib.Interfaces.types import Powder as Powder_type
+from easyDiffractionLib.Interfaces.types import SingleCrystal as SingleCrystal_type
+from easyDiffractionLib.Interfaces.types import UPol as UPol_type
+from easyDiffractionLib.Interfaces.types import interfaceMixInMeta
+from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters
+from easyDiffractionLib.Profiles.P1D import Instrument1DTOFParameters
+from easyDiffractionLib.Profiles.P1D import Powder1DParameters
 
 if TYPE_CHECKING:
     from easyCore.Utils.typing import B
@@ -142,6 +145,19 @@ class CryspyBase(Neutron_type, metaclass=ABCMeta):
                     keys,
                     lambda x, y: self.calculator.genericReturn(a_key, y),
                     lambda x, **y: self.calculator.genericUpdate(a_key, **y),
+                )
+            )
+        # Now do anisotropic ADP
+        elif issubclass(t_, Anisotropic_base):
+            pars = model.get_parameters()
+            adp_pars = {par.name: par.raw_value for par in pars}
+            ref_name = self.calculator.attachADP(model_key, adp_pars)
+            r_list.append(
+                ItemContainer(
+                    ref_name,
+                    {par.name: par.name for par in pars},
+                    self.calculator.genericReturn,
+                    self.calculator.genericUpdate,
                 )
             )
         # Interface with the phase object
@@ -295,7 +311,7 @@ class CW(CW_type):
 
         # Link the Instrumental parameters to the calculator.
         if issubclass(t_, Instrument1DCWParameters):
-            self.calculator.createModel(model_key, "powder1DCW")
+            # self.calculator.createModel(model_key, "powder1DCW")
 
             # These parameters are linked to the Resolution, Peak Asymmetry and Setup cryspy objects
             res_key = self.calculator.createResolution()
@@ -331,7 +347,7 @@ class CW(CW_type):
                     self.calculator.genericUpdate,
                 )
             )
-
+            self.calculator.createModel(model_key, "powder1DCW")
         return r_list
 
 
@@ -555,9 +571,6 @@ class UPol(UPol_type):
         return self.calculator.full_calculate(x_array, *args, **kwargs)
 
 
-#
-# Now define the classes that implement the different types of models.
-#
 @interfaceMixInMeta
 class CryspyCW(CryspyBase, CW, Powder, UPol):
     def create(self, model: B) -> List[ItemContainer]:
@@ -710,6 +723,9 @@ class CryspyV2(InterfaceTemplate):
                 x_array, *args, **kwargs
             )
             return calculation
+        
+    def set_exp_cif(self, cif: str) -> None:
+        self.calculator.set_exp_cif(cif)
 
     def generate_pol_fit_func(
         self,

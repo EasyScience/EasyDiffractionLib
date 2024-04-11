@@ -1,12 +1,16 @@
 __author__ = 'github.com/wardsimon'
 __version__ = '0.0.1'
 
-from .Background import Background
-from typing import Union, List
+from typing import List
+from typing import Union
 
-from easyCore import np
+import numpy as np
 from easyCore.Objects.Groups import BaseCollection
-from easyCore.Objects.ObjectClasses import Parameter, Descriptor, BaseObj
+from easyCore.Objects.ObjectClasses import BaseObj
+from easyCore.Objects.ObjectClasses import Descriptor
+from easyCore.Objects.ObjectClasses import Parameter
+
+from .Background import Background
 
 
 class BackgroundPoint(BaseObj):

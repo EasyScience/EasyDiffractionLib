@@ -1,9 +1,12 @@
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
-from abc import ABCMeta, abstractmethod
-from typing import Tuple, List
-from easyCore import np, borg
+from abc import ABCMeta
+from abc import abstractmethod
+from typing import Tuple
+
+import numpy as np
+from easyCore import borg
 from easyCore.Objects.core import ComponentSerializer
 
 exp_type_strings = {
@@ -149,7 +152,8 @@ class InterfaceTemplate(ComponentSerializer, metaclass=ABCMeta):
         all_bases = set([base for base in sample_object.__class__.__bases__ if hasattr(base, '_internal_type')])
         if len(all_bases) == 0:
             return None
-        all_components = [set([base for base in component.__mro__ if hasattr(base, '_internal_type')]) for component in known_components]
+        all_components = [set([base for base in component.__mro__ if 
+                               hasattr(base, '_internal_type')]) for component in known_components]
         for idx, component in enumerate(all_components):
             test = all_bases-component
             if len(test) == 0:

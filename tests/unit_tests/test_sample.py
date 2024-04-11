@@ -30,15 +30,6 @@ def test_backgrounds():
 def test_phases():
     assert False
 
-
-def test_phases():
-    assert False
-
-
-def test_parameters():
-    assert False
-
-
 def test_parameters():
     assert False
 

@@ -1,8 +1,10 @@
 __author__ = 'github.com/wardsimon'
 __version__ = '0.0.1'
 
-from easyCore.Objects.ObjectClasses import BaseObj, Parameter
 from copy import deepcopy
+
+from easyCore.Objects.ObjectClasses import BaseObj
+from easyCore.Objects.ObjectClasses import Parameter
 from easyCore.Utils.json import MontyDecoder
 
 _decoder = MontyDecoder()

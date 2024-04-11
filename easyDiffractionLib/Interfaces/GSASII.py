@@ -1,12 +1,19 @@
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.2"
 
-from easyCore import borg, np
-from ..Interfaces.interfaceTemplate import InterfaceTemplate
+import numpy as np
+from easyCore import borg
 from easyCore.Objects.Inferface import ItemContainer
+
+from easyDiffractionLib import Lattice
+from easyDiffractionLib import Phases
+from easyDiffractionLib import Site
+from easyDiffractionLib import SpaceGroup
+from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters
+from easyDiffractionLib.Profiles.P1D import Powder1DParameters
+
 from ..calculators.GSASII import GSASII as GSAS_calc
-from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters, Powder1DParameters
-from easyDiffractionLib import Lattice, SpaceGroup, Site, Phases
+from ..Interfaces.interfaceTemplate import InterfaceTemplate
 
 
 class GSASII(InterfaceTemplate):

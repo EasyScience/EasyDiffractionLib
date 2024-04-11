@@ -2,11 +2,12 @@ __author__ = 'github.com/wardsimon'
 __version__ = '0.0.1'
 
 from abc import abstractmethod
-from typing import Union, List
+from typing import List
+from typing import Union
 
-from easyCore import np
-from easyCore.Objects.Variable import Descriptor
+import numpy as np
 from easyCore.Objects.Groups import BaseCollection
+from easyCore.Objects.Variable import Descriptor
 
 
 class Background(BaseCollection):

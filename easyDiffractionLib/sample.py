@@ -1,7 +1,8 @@
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
-import os, tempfile
+import os
+import tempfile
 from typing import Union, ClassVar
 
 from easyCore.Objects.ObjectClasses import BaseObj

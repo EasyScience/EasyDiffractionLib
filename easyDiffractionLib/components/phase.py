@@ -1,9 +1,7 @@
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
-from typing import Optional
 from easyCrystallography.Structures.Phase import Phase as ecPhase, Phases as ecPhases
-from easyCrystallography.io.parser import Parsers
 from .site import Site, Atoms
 
 

@@ -4,7 +4,7 @@ __version__ = '0.0.1'
 from easyCore import np
 
 from easyDiffractionLib.sample import Sample
-from easyDiffractionLib import Phase, Phases
+from easyDiffractionLib import Phases
 from easyDiffractionLib.interface import InterfaceFactory
 from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters
 

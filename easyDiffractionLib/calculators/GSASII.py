@@ -1,11 +1,11 @@
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
-import os, pathlib
-from easyCore import borg
-from GSASII import GSASIIscriptable as G2sc
+import os
+import pathlib
 
-from easyCore import np
+import numpy as np
+from GSASII import GSASIIscriptable as G2sc
 
 
 class GSASII:
@@ -95,7 +95,7 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
         x_max = self.this_x_array[-1]
         n_points = np.prod(x_array.shape)
         x_step = (x_max - x_min)/(n_points - 1)
-        histogram0 = gpx.add_simulated_powder_histogram(f"{phase_name} simulation",
+        _ = gpx.add_simulated_powder_histogram(f"{phase_name} simulation",
                                                         self.prm_file_path,
                                                         x_min, x_max, Tstep=x_step,
                                                         phases=gpx.phases())
@@ -131,7 +131,7 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
             gpx.do_refinements(refinements=[{}], makeBack=[])
             # step 5, retrieve results & plot
             ycalc = gpx.histogram(0).getdata('ycalc')
-        except:
+        except: # noqa E722
             raise ArithmeticError
         finally:
             # Clean up
@@ -155,8 +155,6 @@ INS  1PRCF22   0.000000E+00   0.000000E+00
         self.res = scale * ycalc + self.bg
 
         np.set_printoptions(precision=3)
-        if borg.debug:
-            print(f"y_calc: {res}")
 
         return self.res
 

@@ -2,7 +2,7 @@ __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
 from abc import ABCMeta, abstractmethod
-from typing import Tuple, List
+from typing import Tuple
 from easyCore import np, borg
 from easyCore.Objects.core import ComponentSerializer
 

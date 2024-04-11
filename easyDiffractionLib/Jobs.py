@@ -367,14 +367,16 @@ class PolPowder1DCW(JobBase_1D):
 
     def simulate_experiment(self, experiment_name=None, name_post="", pol_fn=None):
         if pol_fn is None:
-            pol_fn = lambda up, down: up + down
+            # pol_fn = lambda up, down: up + down
+            # the same as above but using def()
+            def pol_fn(up, down): return up + down
         return super(PolPowder1DCW, self).simulate_experiment(
             experiment_name, name_post, pol_fn=pol_fn
         )
 
     def create_simulation(self, tth, simulation_name=None, pol_fn=None, **kwargs):
         if pol_fn is None:
-            pol_fn = lambda up, down: up + down
+            def pol_fn(up, down): return up + down
         return super(PolPowder1DCW, self).create_simulation(
             tth, simulation_name, pol_fn=pol_fn, **kwargs
         )

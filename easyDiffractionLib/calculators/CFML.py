@@ -101,7 +101,7 @@ class CFML:
                 diffraction_pattern = CFML_api.DiffractionPattern(
                     job_info, reflection_list, cell.reciprocal_cell_vol
                 )
-            except Exception as e:
+            except Exception:
                 for cif in cifs:
                     os.remove(cif)
                 raise ArithmeticError

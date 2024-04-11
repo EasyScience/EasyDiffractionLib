@@ -1,12 +1,10 @@
 from easyCore import np
 
 from easyDiffractionLib.sample import Sample
-from easyDiffractionLib import Site, Phases, Phase
+from easyDiffractionLib import Phases
 from easyDiffractionLib.interface import InterfaceFactory as Calculator
-from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters as CWParams
 from easyDiffractionLib.Profiles.P1D import Instrument1DCWPolParameters as CWParamsPol
-from easyDiffractionLib.Profiles.P1D import Instrument1DTOFParameters as TOFParams
-from easyDiffractionLib.Profiles.P1D import Powder1DParameters, PolPowder1DParameters
+from easyDiffractionLib.Profiles.P1D import PolPowder1DParameters
 
 import matplotlib.pyplot as plt
 

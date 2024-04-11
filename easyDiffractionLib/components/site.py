@@ -8,10 +8,8 @@ from __future__ import annotations
 __author__ = "github.com/wardsimon"
 __version__ = "0.2.0"
 
-from easyCore import np
-from easyCore.Objects.ObjectClasses import Descriptor, Parameter, BaseObj
-from easyCore.Objects.Groups import BaseCollection
-from typing import List, Union, ClassVar, TypeVar, Optional, TYPE_CHECKING
+from easyCore.Objects.ObjectClasses import Descriptor, Parameter
+from typing import List, Union, Optional, TYPE_CHECKING
 from easyCore.Utils.io.star import StarLoop
 
 from easyCrystallography.Components.Site import (

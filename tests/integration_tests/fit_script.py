@@ -57,7 +57,7 @@ if result.success:
 
 sim_y_data = interface.fit_func(data_x)
 
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt # noqa E402
 
 plt.plot(data_x, data_y, label='Data')
 plt.plot(data_x, result.y_calc, label='Calculate')

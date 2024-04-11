@@ -266,7 +266,6 @@ class Cryspy(InterfaceTemplate):
         elif issubclass(t_, Phase):
             ident = str(model_key) + "_phase"
             self.calculator.createPhase(ident)
-            crystal_name = self.calculator.createEmptyCrystal(model.name, key=model_key)
             self.calculator.assignCell_toCrystal(self.__identify(model.cell), model_key)
             self.calculator.assignSpaceGroup_toCrystal(
                 self.__identify(model._spacegroup), model_key

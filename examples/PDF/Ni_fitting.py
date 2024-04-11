@@ -78,8 +78,8 @@ Gdiff_baseline = -10
 
 Gdiff_show = Gdiff/5.0 + Gdiff_baseline
 
-from bokeh.io import show
-from bokeh.plotting import figure
+from bokeh.io import show  # noqa: E402
+from bokeh.plotting import figure  # noqa: E402
 
 fig = figure()
 fig.xaxis.axis_label = 'r (Å)'

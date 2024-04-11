@@ -9,7 +9,7 @@ from easyDiffractionLib.interface import InterfaceFactory as Calculator
 from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters
 
 import matplotlib.pyplot as plt
-
+from easyCrystallography.Components.Susceptibility import MagneticSusceptibility
 
 calculator = Calculator()
 
@@ -18,8 +18,6 @@ phase = Phase.from_cif_file("tests/test_resources/cifs/SrTiO3.cif")
 sample = Sample(
     phases=phase, parameters=Instrument1DCWParameters.default(), interface=calculator
 )
-
-from easyCrystallography.Components.Susceptibility import MagneticSusceptibility
 
 msp = MagneticSusceptibility("Cani")
 sample.phases[0].atoms[0]._add_component("msp", msp)

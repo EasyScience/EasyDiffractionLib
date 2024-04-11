@@ -43,7 +43,7 @@ class Powder1DExp(_DataClassBase):
         exps = [
             a
             for a in self._dataset.variables.keys()
-            if not a.startswith(self.simulation_prefix) and not a in self._dataset.dims
+            if not a.startswith(self.simulation_prefix) and a not in self._dataset.dims
         ]
         return exps
 

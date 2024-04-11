@@ -1,6 +1,6 @@
 __author__ = "github.com/arm61"
 
-from typing import Callable, Optional, TYPE_CHECKING, List, Union
+from typing import TYPE_CHECKING, List
 
 import numpy as np
 
@@ -9,14 +9,14 @@ from easyCore.Objects.Inferface import ItemContainer
 from easyCore import borg
 from easyDiffractionLib.Interfaces.interfaceTemplate import InterfaceTemplate
 from easyDiffractionLib.calculators.pdffit2 import Pdffit2 as Pdffit2_calc
-from easyDiffractionLib import Lattice, SpaceGroup, Site, Phases, Phase
+from easyDiffractionLib import Lattice, SpaceGroup, Site, Phases
 from easyDiffractionLib.Profiles.P1D import (
     Powder1DParameters,
     PDFParameters,
 )
 
 if TYPE_CHECKING:
-    from easyCore.Utils.typing import B
+    pass
 
 class Pdffit2(InterfaceTemplate):
     """

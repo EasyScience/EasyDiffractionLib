@@ -26,11 +26,11 @@ class JobType():
         self.parse_job_type(job_type)
 
     @property
-    def job_type(self):
+    def type(self):
         return self._job_type
 
-    @job_type.setter
-    def job_type(self, value):
+    @type.setter
+    def type(self, value):
         self._job_type = value
 
     def parse_job_type(self, job_type: str):

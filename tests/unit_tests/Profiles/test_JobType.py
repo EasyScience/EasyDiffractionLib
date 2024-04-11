@@ -69,3 +69,65 @@ def test_JobType():
     assert job_type.type_str == "Crystal1DCW"
     assert job_type.job_type == "Crystal1DCW"
     assert job_type.type_to_string() == "Crystal1DCW"
+
+def test_Validate():
+    job_type = JobType("Powder1DCW")
+    job_type.is_crystal = True
+    try:
+        job_type.validate()
+    except ValueError as e:
+        assert str(e) == "Job type can not be both powder and single crystal"
+
+    job_type = JobType("Powder1DCW")
+    job_type.is_tof = True
+    try:
+        job_type.validate()
+    except ValueError as e:
+        assert str(e) == "Job type can not be both CW and TOF"
+
+    job_type = JobType("Powder1DCW")
+    job_type.is_1d = False
+    try:
+        job_type.validate()
+    except ValueError as e:
+        assert str(e) == "Job type can not be both 1D and 2D"
+
+    job_type = JobType("Powder1DCW")
+    job_type.is_powder = True
+    job_type.is_single_crystal = False
+    try:
+        job_type.validate()
+    except ValueError as e:
+        assert str(e) == "Job type can not be both powder and single crystal"
+
+    job_type = JobType("Powder1DCW")
+    job_type.is_cw = True
+    job_type.is_tof = False
+    try:
+        job_type.validate()
+    except ValueError as e:
+        assert str(e) == "Job type can not be both CW and TOF"
+
+    job_type = JobType("Powder1DCW")
+    job_type.is_1d = True
+    job_type.is_2d = False
+    try:
+        job_type.validate()
+    except ValueError as e:
+        assert str(e) == "Job type can not be both 1D and 2D"
+
+    job_type = JobType("Powder1DCW")
+    job_type.is_powder = True
+    job_type.is_single_crystal = True
+    try:
+        job_type.validate()
+    except ValueError as e:
+        assert str(e) == "Job type can not be both powder and single crystal"
+
+    job_type = JobType("Powder1DCW")
+    job_type.is_cw = True
+    job_type.is_tof = True
+    try:
+        job_type.validate()
+    except ValueError as e:
+        assert str(e) == "Job type can not be both CW and TOF"

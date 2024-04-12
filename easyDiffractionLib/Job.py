@@ -5,7 +5,7 @@
 
 # easyScience
 from easyCore.Datasets.xarray import xr
-from easyCore.Objects.Job.Job import Job as easyCoreJob
+from easyCore.Objects.Job.Job import JobBase
 from gemmi import cif
 
 from easyDiffractionLib.interface import InterfaceFactory
@@ -15,7 +15,7 @@ from easyDiffractionLib.Profiles.JobType import JobType
 from easyDiffractionLib.Profiles.Sample import Sample
 
 
-class DiffractionJob(easyCoreJob):
+class DiffractionJob(JobBase):
     """
     This class is the base class for all diffraction specific jobs
     """
@@ -27,11 +27,8 @@ class DiffractionJob(easyCoreJob):
         phases=None,
         interface=None,
     ):
-        if interface is None:
-            interface = InterfaceFactory()
         super(DiffractionJob, self).__init__(
-            name,
-            interface=interface,
+            name
         )
 
         self.cif_string = ""
@@ -41,12 +38,14 @@ class DiffractionJob(easyCoreJob):
         if phases is not None and self.phases != phases:
             self.phases = phases
         # The following assignment is necessary for proper binding
+        if interface is None:
+            interface = InterfaceFactory()
         self.interface = interface
 
         # components
-        self._sample = Sample()
-        self._experiment = Experiment()
-        self._analysis = Analysis()
+        self._sample = Sample("Sample")
+        self._experiment = Experiment("Experiment")
+        self._analysis = Analysis("Analysis")
 
         self._summary = None  # TODO: implement
         self._info = None # TODO: implement
@@ -100,18 +99,18 @@ class DiffractionJob(easyCoreJob):
     def info(self, value):
         self._info = value
 
-    def get_job_from_file(self, file_url):
+    def set_job_from_file(self, file_url):
         '''
-        Get the job from a CIF file.
+        Set the job from a CIF file.
 
         Based on keywords in the CIF file, the job type is determined,
-        the job is created and the data is loaded from the CIF file.
+        the job is modified and the data is loaded from the CIF file.
         '''
         block = cif.read(file_url).sole_block()
         self.cif_string = block.as_string()
         value_cwpol = block.find_value("_diffrn_radiation_polarization")
         value_tof = block.find_loop("_tof_meas_time")  or block.find_loop("_pd_meas_time_of_flight")
-        value_cw = block.find_value("_setup_wavelength")
+        value_cw = block.find_value("_setup_wavelength") or block.find_value("_diffrn_radiation_wavelength.wavelength")
 
         if value_cwpol is not None:
             self.job_type.is_pol = True
@@ -122,23 +121,25 @@ class DiffractionJob(easyCoreJob):
         else:
             raise ValueError("Could not determine job type from file.")
 
+        self._name = block.name
+
     def __str__(self):
-        return f"Job: {self.name}"
+        return f"Job: {self._name}"
 
-    def __copy__(self):
-        raise NotImplementedError("Copy not implemented")
+    # def __copy__(self):
+    #     raise NotImplementedError("Copy not implemented")
 
-    def __deepcopy__(self, memo):
-        raise NotImplementedError("Deepcopy not implemented")
+    # def __deepcopy__(self, memo):
+    #     raise NotImplementedError("Deepcopy not implemented")
 
-    def __eq__(self, other):
-        raise NotImplementedError("Equality not implemented")
+    # def __eq__(self, other):
+    #     raise NotImplementedError("Equality not implemented")
 
-    def __ne__(self, other):
-        raise NotImplementedError("Equality not implemented")
+    # def __ne__(self, other):
+    #     raise NotImplementedError("Equality not implemented")
 
-    def __call__(self, *args, **kwargs):
-        raise NotImplementedError("Call not implemented")
+    # def __call__(self, *args, **kwargs):
+    #     raise NotImplementedError("Call not implemented")
 
     def __repr__(self):
         return self.__str__()

@@ -37,8 +37,9 @@ def test_switch_job_TOF_2():
     assert j.job_type.is_1d
 
 def test_get_job_from_file():
-    j = Job.from_file("examples/PbSO4.cif")
-    assert j.name == "PbSO4"
+    j = Job("test")
+    j.set_job_from_file("examples/d1a.cif")
+    assert j.name == "d1a"
     assert j.job_type.type_str == "Powder1DCW"
     assert j.job_type.is_powder
     assert j.job_type.is_cw

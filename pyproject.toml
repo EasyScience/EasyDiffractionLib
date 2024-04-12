@@ -40,7 +40,8 @@ include = ["CHANGELOG.md"]
 
 dependencies = [
     "cryspy @ git+https://github.com/ikibalin/cryspy.git@bravis_type_fix",
-    "easyScienceCore>=0.5.0",
+    # "easyScienceCore>=0.5.0",
+    "easyCore @ git+https://github.com/easyScience/easycore.git@new_job",
     "easyCrystallography>=0.4.0",
     "pycifrw>=4.4.1",
     #"CFML>=0.0.1",

@@ -4,6 +4,8 @@
 
 
 # easyScience
+from typing import Union
+
 from easyCore.Datasets.xarray import xr
 from easyCore.Objects.Job.Job import JobBase
 from gemmi import cif
@@ -13,6 +15,8 @@ from easyDiffractionLib.Profiles.Analysis import Analysis
 from easyDiffractionLib.Profiles.Experiment import Experiment
 from easyDiffractionLib.Profiles.JobType import JobType
 from easyDiffractionLib.Profiles.Sample import Sample
+
+# from easyDiffractionLib.sample import Sample as EDLSample
 
 
 class DiffractionJob(JobBase):
@@ -24,7 +28,10 @@ class DiffractionJob(JobBase):
         name: str,
         job_type: JobType = None,
         datastore: xr.Dataset = None,
-        phases=None,
+        phases=None, # remove
+        sample=None,
+        experiment=None,
+        analysis=None,
         interface=None,
     ):
         super(DiffractionJob, self).__init__(
@@ -35,17 +42,19 @@ class DiffractionJob(JobBase):
         self.datastore = datastore if datastore is not None else xr.Dataset()
         self._name = name if name is not None else "Job"
 
-        if phases is not None and self.phases != phases:
-            self.phases = phases
+        # phases are hidden inside the Sample object
+        # if phases is not None and self.phases != phases:
+        #     self.phases = phases
+
         # The following assignment is necessary for proper binding
         if interface is None:
             interface = InterfaceFactory()
         self.interface = interface
 
         # components
-        self._sample = Sample("Sample")
-        self._experiment = Experiment("Experiment")
-        self._analysis = Analysis("Analysis")
+        self._sample = sample if sample is not None else Sample("Sample") # container for phases
+        self._experiment = experiment if experiment is not None else Experiment("Experiment")
+        self._analysis = analysis if analysis is not None else Analysis("Analysis")
 
         self._summary = None  # TODO: implement
         self._info = None # TODO: implement
@@ -53,10 +62,21 @@ class DiffractionJob(JobBase):
         # Instead of creating separate classes for all techniques,
         # as in old EDL (Powder1DCW, PolPowder1DCW, Powder1DTOF, etc)
         # let's have these as attributes of the Job class
+        #
+        # job_type can be directly assigned when it doesn't clash with
+        # the content of the Experiment object, if passed.
+        #
+        # determine job_type based on Experiment
+        job_type = JobType("Powder1DCW")
+        if self._experiment is not None:
+            self.job_type.is_pol = self._experiment.is_pol
+            self.job_type.is_tof = self._experiment.is_tof
+            self.job_type.is_single_crystal = self._experiment.is_single_crystal
+
+        # check if passed job_type is compatible with the experiment
         if job_type is not None:
-            self.job_type = job_type
-        else: 
-            self.job_type = JobType("Powder1DCW") #default
+            if self.job_type.type != job_type.type:
+                raise ValueError("Job type does not match the experiment.")
         
 
     @property
@@ -64,7 +84,7 @@ class DiffractionJob(JobBase):
         return self._sample
     
     @sample.setter
-    def sample(self, value):
+    def sample(self, value: Union[Sample, None]):
         self._sample = value
 
     @property
@@ -72,7 +92,7 @@ class DiffractionJob(JobBase):
         return self._experiment
     
     @experiment.setter
-    def experiment(self, value):
+    def experiment(self, value: Union[Experiment, None]):
         self._experiment = value
 
     @property
@@ -80,7 +100,7 @@ class DiffractionJob(JobBase):
         return self._analysis
 
     @analysis.setter
-    def analysis(self, value):
+    def analysis(self, value: Union[Analysis, None]):
         self._analysis = value
 
     @property
@@ -123,23 +143,56 @@ class DiffractionJob(JobBase):
 
         self._name = block.name
 
+    # TODO: extend for analysis and info
+    @classmethod
+    def from_cif_file(cls, phase=None, experiment=None):
+        '''
+        Create the job from a CIF file.
+        Allows for instatiation of the job with a sample and experiment from CIF files.
+
+        :param phase: URL of the CIF file containing the sample information.
+        :param experiment: URL of the CIF file containing the experiment information.
+        note: both can be the same file
+        e.g.
+        job = Job.from_cif_file(phase="d1a_phase.cif", experiment="d1a_exp.cif")
+        job = Job.from_cif_file("d1a.cif")
+        '''
+        job_name = "Job"
+        if phase is not None:
+            sample = Sample.from_cif(phase)
+
+        if experiment is not None:
+            exp = Experiment.from_cif(experiment)
+            job_name = exp.name
+        # try parsing the phase CIF if the experiment CIF is not available
+        if sample is not None and experiment is None:
+            exp = Experiment.from_cif(phase)
+            job_name = exp.name
+
+        return cls(name=job_name, sample=sample, experiment=exp)
+
+    def add_experiment_from_files(self, file_url):
+        '''
+        Add an experiment to the job from a CIF file.
+        '''
+        self.experiment = Experiment.from_cif(file_url)
+
+    def add_sample_from_file(self, file_url):
+        '''
+        Add a sample to the job from a CIF file.
+        '''
+        self.sample = Sample.from_cif(file_url)
+
+    def add_analysis_from_file(self, file_url):
+        '''
+        Add an analysis to the job from a CIF file.
+        '''
+        self.analysis = Analysis.from_cif(file_url)
+
+    ###### CIF RELATED METHODS ######
+
     def __str__(self):
         return f"Job: {self._name}"
-
-    # def __copy__(self):
-    #     raise NotImplementedError("Copy not implemented")
-
-    # def __deepcopy__(self, memo):
-    #     raise NotImplementedError("Deepcopy not implemented")
-
-    # def __eq__(self, other):
-    #     raise NotImplementedError("Equality not implemented")
-
-    # def __ne__(self, other):
-    #     raise NotImplementedError("Equality not implemented")
-
-    # def __call__(self, *args, **kwargs):
-    #     raise NotImplementedError("Call not implemented")
 
     def __repr__(self):
         return self.__str__()

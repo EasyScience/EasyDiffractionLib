@@ -14,8 +14,16 @@ class Analysis(coreAnalysis):
         super(Analysis, self).__init__(name, *args, **kwargs)
         self.name = name
 
+    @staticmethod
+    def from_cif(cif_file: str):
+        """
+        Load the analysis from a CIF file
+        """
+        # TODO: Implement this
+        return Analysis("Analysis")
+
     # required dunder methods
     def __str__(self):
-        return f"Experiment: {self.name}"
+        return f"Analysis: {self.name}"
     
     

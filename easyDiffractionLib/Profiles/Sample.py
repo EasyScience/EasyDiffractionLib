@@ -5,6 +5,7 @@
 
 from easyCore.Objects.Job.Theory import TheoryBase as coreSample
 
+# this really should be easyDiffractionLib.sample.Sample
 
 class Sample(coreSample):
     """
@@ -14,9 +15,17 @@ class Sample(coreSample):
         super(Sample, self).__init__(name, *args, **kwargs)
         self._name = name
 
+    @staticmethod
+    def from_cif(cif_file: str):
+        """
+        Load the sample from a CIF file
+        """
+        # TODO: Implement this
+        return Sample("Sample")
+
     # required dunder methods
     def __str__(self):
-        return f"Experiment: {self._name}"
+        return f"Sample: {self._name}"
     
     def as_dict(self, skip: list = []) -> dict:
         this_dict = super(Sample, self).as_dict(skip=skip)

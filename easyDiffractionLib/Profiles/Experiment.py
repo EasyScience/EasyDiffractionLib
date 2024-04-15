@@ -14,6 +14,19 @@ class Experiment(coreExperiment):
         super(Experiment, self).__init__(name, *args, **kwargs)
         self._name = name
 
+        self.is_tof = False
+        self.is_polarized = False
+        self.is_single_crystal = False
+
+
+    @staticmethod
+    def from_cif(cif_file: str):
+        """
+        Load the experiment from a CIF file
+        """
+        # TODO: Implement this
+        return Experiment("Experiment")
+
     # required dunder methods
     def __str__(self):
         return f"Experiment: {self._name}"

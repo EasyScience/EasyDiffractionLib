@@ -71,3 +71,35 @@ def test_wrong_type_passed():
     with pytest.raises(ValueError):
         _ = Job("test", experiment=experiment, job_type=JobType("Powder1DCW"))
 
+def test_sample_assignment():
+    # assure that sample is deep copied
+    sample = Sample("test_sample")
+    j = Job("test", sample=sample)
+    assert id(j.sample) != id(sample)
+    assert j.sample._name == sample.name
+
+    j2 = Job("test")
+    j2.sample = sample
+    assert id(j2.sample) != id(sample)
+    assert j2.sample._name == sample.name
+
+def test_experiment_assignment():
+    # assure that experiment is deep copied
+    experiment = Experiment("test")
+    j = Job("test", experiment=experiment)
+    assert id(j.experiment) != id(experiment)
+
+    j2 = Job("test")
+    j2.experiment = experiment
+    assert id(j2.experiment) != id(experiment)
+
+def test_analysis_assignment():
+    # assure that analysis is deep copied
+    analysis = Analysis("test")
+    j = Job("test", analysis=analysis)
+    assert id(j.analysis) != id(analysis)
+
+    j2 = Job("test")
+    j2.analysis = analysis
+    assert id(j2.analysis) != id(analysis)
+

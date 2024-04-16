@@ -3,7 +3,7 @@
 #  © 2021-2024 Contributors to the easyDiffraction project <https://github.com/easyScience/easyDiffraction
 
 
-# easyScience
+from copy import deepcopy
 from typing import Union
 
 from easyCore.Datasets.xarray import xr
@@ -50,10 +50,10 @@ class DiffractionJob(JobBase):
         if job_type is not None and experiment is not None:
             raise ValueError("Job type and experiment cannot be passed together.")
 
-        # components
-        self._sample = sample if sample is not None else Sample("Sample") # container for phases
-        self._experiment = experiment if experiment is not None else Experiment("Experiment")
-        self._analysis = analysis if analysis is not None else Analysis("Analysis")
+        # assign Job components
+        self.sample = sample # container for phases
+        self.experiment = experiment
+        self.analysis = analysis
 
         self._summary = None  # TODO: implement
         self._info = None # TODO: implement
@@ -65,10 +65,7 @@ class DiffractionJob(JobBase):
         # determine job_type based on Experiment
         self.job_type = JobType("Powder1DCW") if job_type is None else job_type
         if self._experiment is not None:
-            self.job_type.is_pol = self._experiment.is_polarized
-            self.job_type.is_tof = self._experiment.is_tof
-            self.job_type.is_single_crystal = self._experiment.is_single_crystal
-
+            self.update_job_type()
 
     @property
     def sample(self):
@@ -76,7 +73,22 @@ class DiffractionJob(JobBase):
     
     @sample.setter
     def sample(self, value: Union[Sample, None]):
-        self._sample = value
+        # We need to deepcopy the sample to ensure that it is not shared between jobs
+        if value is not None:
+            self._sample = deepcopy(value)
+        else:
+            self._sample = Sample("Sample")
+
+    @property
+    def theory(self):
+        """
+        For diffraction, the theory is the sample
+        """
+        return self._sample
+
+    @theory.setter
+    def theory(self, value):
+        self.sample = value
 
     @property
     def experiment(self):
@@ -84,7 +96,11 @@ class DiffractionJob(JobBase):
     
     @experiment.setter
     def experiment(self, value: Union[Experiment, None]):
-        self._experiment = value
+        # We need to deepcopy the experiment to ensure that it is not shared between jobs
+        if value is not None:
+            self._experiment = deepcopy(value)
+        else:
+            self._experiment = Experiment("Experiment")
 
     @property
     def analysis(self):
@@ -92,7 +108,11 @@ class DiffractionJob(JobBase):
 
     @analysis.setter
     def analysis(self, value: Union[Analysis, None]):
-        self._analysis = value
+        # We need to deepcopy the analysis to ensure that it is not shared between jobs
+        if value is not None:
+            self._analysis = deepcopy(value)
+        else:
+            self._analysis = Analysis("Analysis")
 
     @property
     def summary(self):
@@ -167,20 +187,70 @@ class DiffractionJob(JobBase):
         Add an experiment to the job from a CIF file.
         '''
         self.experiment = Experiment.from_cif(file_url)
+        self.update_job_type()
+
+    def update_job_type(self):
+        '''
+        Update the job type based on the experiment.
+        '''
+        self.job_type.is_pol = self.experiment.is_polarized
+        self.job_type.is_tof = self.experiment.is_tof
+        self.job_type.is_single_crystal = self.experiment.is_single_crystal
 
     def add_sample_from_file(self, file_url):
         '''
         Add a sample to the job from a CIF file.
         '''
         self.sample = Sample.from_cif(file_url)
+        # sample doesn't hold any information about the job type
+        # so no call to update_job_type
 
     def add_analysis_from_file(self, file_url):
         '''
         Add an analysis to the job from a CIF file.
         '''
         self.analysis = Analysis.from_cif(file_url)
+        # analysis doesn't hold any information about the job type
+        # so no call to update_job_type
 
     ###### CIF RELATED METHODS ######
+    def to_cif(self):
+        '''
+        Convert the job to a CIF file.
+        '''
+        sample_cif = self.sample.to_cif()
+        experiment_cif = self.experiment.to_cif()
+        analysis_cif = self.analysis.to_cif()
+
+        # combine all CIFs
+        job_cif = sample_cif + "\n\n" + \
+                experiment_cif + "\n\n" + \
+                analysis_cif
+        return job_cif
+
+    ###### CALCULATE METHODS ######
+    def calculate_model(self):
+        '''
+        Calculate the profile based on current phase.
+        '''
+        pass
+
+    def fit(self):
+        '''
+        Fit the profile based on current phase and experiment.
+        '''
+        pass
+
+    # dunder methods
+    def __deepcopy__(self):
+        # re-create the current object
+        return DiffractionJob(
+            name=self._name,
+            sample=self.sample,
+            experiment=self.experiment,
+            analysis=self.analysis,
+            interface=self.interface
+        )
 
     def __str__(self):
         return f"Job: {self._name}"

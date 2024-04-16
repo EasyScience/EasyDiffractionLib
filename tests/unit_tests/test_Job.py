@@ -1,3 +1,5 @@
+import pytest
+
 from easyDiffractionLib.interface import InterfaceFactory
 from easyDiffractionLib.Job import DiffractionJob as Job
 from easyDiffractionLib.Profiles.Analysis import Analysis
@@ -62,3 +64,10 @@ def test_add_analysis_from_file():
     j.add_analysis_from_file("examples/d1a.cif")
     assert j.analysis._name == "Analysis"
     assert isinstance(j.analysis, Analysis)
+
+def test_wrong_type_passed():
+    experiment = Experiment("test")
+    # test that Job throws
+    with pytest.raises(ValueError):
+        _ = Job("test", experiment=experiment, job_type=JobType("Powder1DCW"))
+

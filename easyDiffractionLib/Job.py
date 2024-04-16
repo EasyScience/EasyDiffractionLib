@@ -28,7 +28,6 @@ class DiffractionJob(JobBase):
         name: str,
         job_type: JobType = None,
         datastore: xr.Dataset = None,
-        phases=None, # remove
         sample=None,
         experiment=None,
         analysis=None,
@@ -42,14 +41,14 @@ class DiffractionJob(JobBase):
         self.datastore = datastore if datastore is not None else xr.Dataset()
         self._name = name if name is not None else "Job"
 
-        # phases are hidden inside the Sample object
-        # if phases is not None and self.phases != phases:
-        #     self.phases = phases
-
         # The following assignment is necessary for proper binding
         if interface is None:
             interface = InterfaceFactory()
         self.interface = interface
+
+        # can't have job_type and experiment together
+        if job_type is not None and experiment is not None:
+            raise ValueError("Job type and experiment cannot be passed together.")
 
         # components
         self._sample = sample if sample is not None else Sample("Sample") # container for phases
@@ -63,21 +62,13 @@ class DiffractionJob(JobBase):
         # as in old EDL (Powder1DCW, PolPowder1DCW, Powder1DTOF, etc)
         # let's have these as attributes of the Job class
         #
-        # job_type can be directly assigned when it doesn't clash with
-        # the content of the Experiment object, if passed.
-        #
         # determine job_type based on Experiment
-        job_type = JobType("Powder1DCW")
+        self.job_type = JobType("Powder1DCW") if job_type is None else job_type
         if self._experiment is not None:
-            self.job_type.is_pol = self._experiment.is_pol
+            self.job_type.is_pol = self._experiment.is_polarized
             self.job_type.is_tof = self._experiment.is_tof
             self.job_type.is_single_crystal = self._experiment.is_single_crystal
 
-        # check if passed job_type is compatible with the experiment
-        if job_type is not None:
-            if self.job_type.type != job_type.type:
-                raise ValueError("Job type does not match the experiment.")
-        
 
     @property
     def sample(self):
@@ -171,7 +162,7 @@ class DiffractionJob(JobBase):
 
         return cls(name=job_name, sample=sample, experiment=exp)
 
-    def add_experiment_from_files(self, file_url):
+    def add_experiment_from_file(self, file_url):
         '''
         Add an experiment to the job from a CIF file.
         '''

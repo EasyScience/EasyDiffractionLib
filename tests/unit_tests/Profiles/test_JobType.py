@@ -13,7 +13,6 @@ def test_JobType():
     assert not job_type.is_2d
     assert job_type.type_str == "Powder1DCW"
     assert job_type.type == "Powder1DCW"
-    assert job_type.type_to_string() == "Powder1DCW"
     assert not job_type.is_pol
 
     job_type = JobType("Crystal1DTOF")
@@ -25,7 +24,6 @@ def test_JobType():
     assert not job_type.is_2d 
     assert job_type.type_str == "Crystal1DTOF"
     assert job_type.type == "Crystal1DTOF"
-    assert job_type.type_to_string() == "Crystal1DTOF"
     assert not job_type.is_pol
 
     job_type = JobType("PolPowder2DCW")
@@ -37,7 +35,6 @@ def test_JobType():
     assert job_type.is_2d 
     assert job_type.type_str == "PolPowder2DCW"
     assert job_type.type == "PolPowder2DCW"
-    assert job_type.type_to_string() == "PolPowder2DCW"
     assert job_type.is_pol
 
     job_type = JobType("Crystal2DTOF")
@@ -49,7 +46,6 @@ def test_JobType():
     assert job_type.is_2d 
     assert job_type.type_str == "Crystal2DTOF"
     assert job_type.type == "Crystal2DTOF"
-    assert job_type.type_to_string() == "Crystal2DTOF"
     assert not job_type.is_pol
 
     job_type = JobType("PolPowder1DTOF")
@@ -61,7 +57,6 @@ def test_JobType():
     assert not job_type.is_2d 
     assert job_type.type_str == "PolPowder1DTOF"
     assert job_type.type == "PolPowder1DTOF"
-    assert job_type.type_to_string() == "PolPowder1DTOF"
     assert job_type.is_pol
 
     job_type = JobType("Crystal1DCW")
@@ -73,7 +68,6 @@ def test_JobType():
     assert not job_type.is_2d 
     assert job_type.type_str == "Crystal1DCW"
     assert job_type.type == "Crystal1DCW"
-    assert job_type.type_to_string() == "Crystal1DCW"
     assert not job_type.is_pol
 
 def test_Validate():

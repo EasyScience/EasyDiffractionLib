@@ -27,6 +27,14 @@ class Experiment(coreExperiment):
         # TODO: Implement this
         return Experiment("Experiment")
 
+    @staticmethod
+    def from_cif_strig(cif_string: str):
+        """
+        Load the experiment from a string
+        """
+        # TODO: Implement this
+        return Experiment("Experiment")
+
     # required dunder methods
     def __str__(self):
         return f"Experiment: {self._name}"

@@ -4,8 +4,10 @@
 
 
 from copy import deepcopy
+from typing import TypeVar
 from typing import Union
 
+import numpy as np
 from easyCore.Datasets.xarray import xr
 from easyCore.Objects.Job.Job import JobBase
 from gemmi import cif
@@ -18,6 +20,7 @@ from easyDiffractionLib.Profiles.Sample import Sample
 
 # from easyDiffractionLib.sample import Sample as EDLSample
 
+T_ = TypeVar('T_')
 
 class DiffractionJob(JobBase):
     """
@@ -40,6 +43,11 @@ class DiffractionJob(JobBase):
         self.cif_string = ""
         self.datastore = datastore if datastore is not None else xr.Dataset()
         self._name = name if name is not None else "Job"
+
+        # Dataset specific attributes
+        self._x_axis_name = "tth" # default for CW, can be `time` for TOF
+        self._y_axis_prefix = "Intensity_" # constant for all techniques
+        self.job_number = 0 # for keeping track of multiple simulations within the dataset
 
         # The following assignment is necessary for proper binding
         if interface is None:
@@ -68,11 +76,11 @@ class DiffractionJob(JobBase):
             self.update_job_type()
 
     @property
-    def sample(self):
+    def sample(self) -> Sample:
         return self._sample
     
     @sample.setter
-    def sample(self, value: Union[Sample, None]):
+    def sample(self, value: Union[Sample, None]) -> None:
         # We need to deepcopy the sample to ensure that it is not shared between jobs
         if value is not None:
             self._sample = deepcopy(value)
@@ -80,22 +88,22 @@ class DiffractionJob(JobBase):
             self._sample = Sample("Sample")
 
     @property
-    def theory(self):
+    def theory(self) -> Sample:
         """
         For diffraction, the theory is the sample
         """
         return self._sample
 
     @theory.setter
-    def theory(self, value):
+    def theory(self, value: Sample) -> None:
         self.sample = value
 
     @property
-    def experiment(self):
+    def experiment(self) -> Union[Experiment, None]:
         return self._experiment
     
     @experiment.setter
-    def experiment(self, value: Union[Experiment, None]):
+    def experiment(self, value: Union[Experiment, None]) -> None:
         # We need to deepcopy the experiment to ensure that it is not shared between jobs
         if value is not None:
             self._experiment = deepcopy(value)
@@ -103,11 +111,11 @@ class DiffractionJob(JobBase):
             self._experiment = Experiment("Experiment")
 
     @property
-    def analysis(self):
+    def analysis(self) -> Union[Analysis, None]:
         return self._analysis
 
     @analysis.setter
-    def analysis(self, value: Union[Analysis, None]):
+    def analysis(self, value: Union[Analysis, None]) -> None:
         # We need to deepcopy the analysis to ensure that it is not shared between jobs
         if value is not None:
             self._analysis = deepcopy(value)
@@ -130,7 +138,7 @@ class DiffractionJob(JobBase):
     def info(self, value):
         self._info = value
 
-    def set_job_from_file(self, file_url):
+    def set_job_from_file(self, file_url: str) -> None:
         '''
         Set the job from a CIF file.
 
@@ -155,8 +163,24 @@ class DiffractionJob(JobBase):
         self._name = block.name
 
     # TODO: extend for analysis and info
+
+    def update_job_type(self) -> None:
+        '''
+        Update the job type based on the experiment.
+        '''
+        self.job_type.is_pol = self.experiment.is_polarized
+        self.job_type.is_tof = self.experiment.is_tof
+        self.job_type.is_single_crystal = self.experiment.is_single_crystal
+
+        if self.job_type.is_tof:
+            self._x_axis_name = "time"
+        else:
+            self._x_axis_name = "tth"
+
+    ###### CIF RELATED METHODS ######
+
     @classmethod
-    def from_cif_file(cls, phase=None, experiment=None):
+    def from_cif_file(cls, phase: Union[Sample, None]=None, experiment: Union[Experiment, None]=None):
         '''
         Create the job from a CIF file.
         Allows for instatiation of the job with a sample and experiment from CIF files.
@@ -182,39 +206,41 @@ class DiffractionJob(JobBase):
 
         return cls(name=job_name, sample=sample, experiment=exp)
 
-    def add_experiment_from_file(self, file_url):
+    def add_experiment_from_file(self, file_url: str) -> None:
         '''
         Add an experiment to the job from a CIF file.
+        Just a wrapper around the Experiment class method.
         '''
         self.experiment = Experiment.from_cif(file_url)
         self.update_job_type()
 
-    def update_job_type(self):
+    def add_experiment_from_string(self, cif_string: str) -> None:
         '''
-        Update the job type based on the experiment.
+        Add an experiment to the job from a CIF string.
+        Just a wrapper around the Experiment class method.
         '''
-        self.job_type.is_pol = self.experiment.is_polarized
-        self.job_type.is_tof = self.experiment.is_tof
-        self.job_type.is_single_crystal = self.experiment.is_single_crystal
+        self.experiment = Experiment.from_cif_string(cif_string)
+        self.update_job_type()
 
-    def add_sample_from_file(self, file_url):
+    def add_sample_from_file(self, file_url: str) -> None:
         '''
         Add a sample to the job from a CIF file.
+        Just a wrapper around the Sample class method.
         '''
         self.sample = Sample.from_cif(file_url)
         # sample doesn't hold any information about the job type
         # so no call to update_job_type
 
-    def add_analysis_from_file(self, file_url):
+    def add_analysis_from_file(self, file_url: str) -> None:
         '''
         Add an analysis to the job from a CIF file.
+        Just a wrapper around the Analysis class method.
         '''
         self.analysis = Analysis.from_cif(file_url)
         # analysis doesn't hold any information about the job type
         # so no call to update_job_type
 
-    ###### CIF RELATED METHODS ######
-    def to_cif(self):
+    def to_cif(self) -> str:
         '''
         Convert the job to a CIF file.
         '''
@@ -229,11 +255,48 @@ class DiffractionJob(JobBase):
         return job_cif
 
     ###### CALCULATE METHODS ######
-    def calculate_model(self):
+    def calculate_theory(self, tth: Union[xr.DataArray, np.ndarray], simulation_name:str="", **kwargs) -> np.ndarray:
+        # THIS DOESN'T CURRENTLY WORK
         '''
         Calculate the profile based on current phase.
         '''
-        pass
+        if not isinstance(tth, xr.DataArray):
+            coord_name = (
+                self.datastore._simulations._simulation_prefix
+                + self._name
+                + "_"
+                + self._x_axis_name
+            )
+            if coord_name in self.datastore.store and \
+                len(self.datastore.store[coord_name]) != len(tth):
+                self.datastore.store.easyCore.remove_coordinate(coord_name)
+                self.job_number += 1
+                coord_name = (
+                    self.datastore._simulations._simulation_prefix
+                    + self._name
+                    + str(self.job_number)
+                    + "_"
+                    + self._x_axis_name
+                )
+            self.datastore.add_coordinate(coord_name, tth)
+            self.datastore.store[coord_name].name = self._x_axis_name
+        else:
+            coord_name = tth.name
+        x, f = self.datastore.store[coord_name].easyCore.fit_prep(
+            self.interface.fit_func,
+            bdims=xr.broadcast(self.datastore.store[coord_name].transpose()),
+        )
+        y = xr.apply_ufunc(f, *x, kwargs=kwargs)
+        y.name = self._y_axis_prefix + self._name + "_sim"
+        if simulation_name is None:
+            simulation_name = self._name
+        else:
+            simulation_name = self._name + "_" + simulation_name
+        self.datastore._simulations.add_simulation(simulation_name, y)
+        # fitter expects ndarrays
+        if type(y) == xr.DataArray:
+            y = y.values
+        return y
 
     def fit(self):
         '''
@@ -241,9 +304,9 @@ class DiffractionJob(JobBase):
         '''
         pass
 
-    # dunder methods
+    ###### DUNDER METHODS ######
     def __deepcopy__(self):
-        # re-create the current object
+        # Re-create the current object
         return DiffractionJob(
             name=self._name,
             sample=self.sample,
@@ -252,10 +315,10 @@ class DiffractionJob(JobBase):
             interface=self.interface
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Job: {self._name}"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.__str__()
 
 

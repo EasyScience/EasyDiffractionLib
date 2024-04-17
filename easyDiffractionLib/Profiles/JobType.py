@@ -133,7 +133,7 @@ class JobType():
         self._is_upol = not self.is_pol
         self.validate()
 
-    def type_to_string(self):
+    def type_to_typestr(self) -> None:
         """
         Convert the job type to a string
         """
@@ -142,7 +142,6 @@ class JobType():
         dim_flag = self.STR_1D if self._is_1d else self.STR_2D
         pol_flag = self.STR_POL if self._is_pol else self.STR_UPOL
         self.type_str = f"{pol_flag}{powder_flag}{dim_flag}{cw_flag}"
-        return self.type_str
 
     def validate(self):
         """
@@ -156,6 +155,7 @@ class JobType():
             raise ValueError("Job type can not be both 1D and 2D")
         if self._is_pol and self._is_upol:
             raise ValueError("Job type can not be both polarized and unpolarized")
+        self.type_to_typestr()
 
     def __str__(self):
         return f"Job type: {self.type_str}"

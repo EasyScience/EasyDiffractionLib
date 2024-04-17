@@ -46,6 +46,15 @@ def test_get_job_from_file():
     assert j.job_type.is_powder
     assert j.job_type.is_cw
     assert j.job_type.is_1d
+    assert j.job_type.is_upol
+
+def test_get_pol_job_from_file():
+    j = Job("test")
+    j.set_job_from_file("examples/PolNPD5T.cif")
+    assert j.name == "PolNPD5T"
+    assert j.job_type.type_str == "PolPowder1DCW"
+    assert j.job_type.is_pol
+    assert not j.job_type.is_upol
 
 def test_add_experiment_from_file():
     j = Job("test")

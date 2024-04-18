@@ -9,6 +9,7 @@ from typing import Union
 
 import numpy as np
 from easyCore.Datasets.xarray import xr
+from easyCore.Fitting.Fitting import Fitter as CoreFitter
 from easyCore.Objects.Job.Job import JobBase
 from gemmi import cif
 
@@ -48,6 +49,10 @@ class DiffractionJob(JobBase):
         self._x_axis_name = "tth" # default for CW, can be `time` for TOF
         self._y_axis_prefix = "Intensity_" # constant for all techniques
         self.job_number = 0 # for keeping track of multiple simulations within the dataset
+
+        # Fitting related attributes
+        self.fitting_results = None
+        self.fitter = CoreFitter(self, self.calculate_theory)
 
         # The following assignment is necessary for proper binding
         if interface is None:
@@ -255,8 +260,30 @@ class DiffractionJob(JobBase):
         return job_cif
 
     ###### CALCULATE METHODS ######
+    @property
+    def calculator(self):
+        '''
+        Get the calculator from the interface.
+        '''
+        return self.interface.calculator
+
+    @calculator.setter
+    def calculator(self, value: str):
+        '''
+        Set the calculator on the interface.
+        '''
+        # TODO: check if the calculator is available for the given JobType
+        self.interface.switch(value, fitter=self.fitter)
+        self.interface.calculator = value
+
     def calculate_theory(self, tth: Union[xr.DataArray, np.ndarray], simulation_name:str="", **kwargs) -> np.ndarray:
-        # THIS DOESN'T CURRENTLY WORK
+        '''
+        Implementation of the abstract method from JobBase.
+        Just a wrapper around the profile calculation.
+        '''
+        return self.calculate_profile(tth, simulation_name, **kwargs)
+
+    def calculate_profile(self, tth: Union[xr.DataArray, np.ndarray], simulation_name:str="", **kwargs) -> np.ndarray:
         '''
         Calculate the profile based on current phase.
         '''
@@ -302,7 +329,35 @@ class DiffractionJob(JobBase):
         '''
         Fit the profile based on current phase and experiment.
         '''
-        pass
+        method = self.fitter.available_methods()[0]
+        self._fit_finished = False
+
+        data = self.interface.data()._inOutDict[self._name]
+        x = data['ttheta']
+        y = data['signal_exp'][0]
+        e = data['signal_exp'][1]
+        weights = 1 / e
+
+        kwargs = {
+            'weights': weights,
+            'method': method
+        }
+
+        local_kwargs = {}
+        if method == 'least_squares':
+            kwargs['minimizer_kwargs'] = {'diff_step': 1e-5}
+
+        # save some kwargs on the interface object for use in the calculator
+        self.interface._InterfaceFactoryTemplate__interface_obj.saved_kwargs = local_kwargs
+        try:
+            res = self.fitter.fit(x, y, **kwargs)
+
+        except Exception:
+            return None
+        # Add these in a transparent manner for querying the Job object
+        # result.success
+        # result.reduced_chi
+        self.fitting_results = res
 
     ###### DUNDER METHODS ######
     def __deepcopy__(self):

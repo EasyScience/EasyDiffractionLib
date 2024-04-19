@@ -3,8 +3,8 @@
 #  © 2021-2024 Contributors to the easydiffraction project <https://github.com/easyScience/easydiffraction
 
 
-from easyCore.Objects.Job.Theory import TheoryBase as coreSample
 from easyCore.Datasets.xarray import xr
+from easyCore.Objects.Job.Theory import TheoryBase as coreSample
 
 # this really should be easyDiffractionLib.sample.Sample
 

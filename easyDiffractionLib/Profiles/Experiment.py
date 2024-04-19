@@ -3,8 +3,9 @@
 #  © 2021-2024 Contributors to the easydiffraction project <https://github.com/easyScience/easydiffraction
 
 
-from easyCore.Objects.Job.Experiment import ExperimentBase as coreExperiment
 from easyCore.Datasets.xarray import xr
+from easyCore.Objects.Job.Experiment import ExperimentBase as coreExperiment
+
 
 class Experiment(coreExperiment):
     """

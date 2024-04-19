@@ -1,21 +1,11 @@
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
-import os
-import tempfile
-from typing import TypeVar
-from typing import Union
 
-from easyCore.Datasets.xarray import xr
 from easyCore.Objects.core import ComponentSerializer
-from easyCore.Objects.ObjectClasses import BaseObj
-from easyCore.Utils.UndoRedo import property_stack_deco
 
-from easyDiffractionLib import Phase
-from easyDiffractionLib import Phases
 from easyDiffractionLib.Profiles.Experiment import Experiment
 from easyDiffractionLib.Profiles.Sample import Sample
-
 
 
 class DataContainer(ComponentSerializer):

@@ -15,10 +15,10 @@ from gemmi import cif
 
 from easyDiffractionLib.interface import InterfaceFactory
 from easyDiffractionLib.Profiles.Analysis import Analysis
+from easyDiffractionLib.Profiles.Container import DataContainer
 from easyDiffractionLib.Profiles.Experiment import Experiment
 from easyDiffractionLib.Profiles.JobType import JobType
 from easyDiffractionLib.Profiles.Sample import Sample
-from easyDiffractionLib.Profiles.Container import DataContainer
 
 # from easyDiffractionLib.sample import Sample as EDLSample
 

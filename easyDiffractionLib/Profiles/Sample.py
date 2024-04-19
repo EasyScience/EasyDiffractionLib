@@ -4,6 +4,7 @@
 
 
 from easyCore.Objects.Job.Theory import TheoryBase as coreSample
+from easyCore.Datasets.xarray import xr
 
 # this really should be easyDiffractionLib.sample.Sample
 
@@ -11,9 +12,11 @@ class Sample(coreSample):
     """
     Diffraction-specific Experiment object.
     """
-    def __init__(self, name: str, *args, **kwargs):
+    def __init__(self, name: str, dataset: xr.Dataset = None, *args, **kwargs):
         super(Sample, self).__init__(name, *args, **kwargs)
         self._name = name
+        self._simulation_prefix = "sim_"
+        self._dataset = dataset if dataset is not None else xr.Dataset()
 
     @staticmethod
     def from_cif(cif_file: str):

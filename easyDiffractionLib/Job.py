@@ -18,6 +18,7 @@ from easyDiffractionLib.Profiles.Analysis import Analysis
 from easyDiffractionLib.Profiles.Experiment import Experiment
 from easyDiffractionLib.Profiles.JobType import JobType
 from easyDiffractionLib.Profiles.Sample import Sample
+from easyDiffractionLib.Profiles.Container import DataContainer
 
 # from easyDiffractionLib.sample import Sample as EDLSample
 
@@ -41,10 +42,12 @@ class DiffractionJob(JobBase):
             name
         )
 
-        self.cif_string = ""
-        self.datastore = datastore if datastore is not None else xr.Dataset()
-        self._name = name if name is not None else "Job"
+        # Generate the datastore for this job
+        __dataset = datastore if datastore is not None else xr.Dataset()
+        self.add_datastore(__dataset)
 
+        self._name = name if name is not None else "Job"
+        self.cif_string = ""
         # Dataset specific attributes
         self._x_axis_name = "tth" # default for CW, can be `time` for TOF
         self._y_axis_prefix = "Intensity_" # constant for all techniques
@@ -358,6 +361,15 @@ class DiffractionJob(JobBase):
         # result.success
         # result.reduced_chi
         self.fitting_results = res
+
+    ###### UTILITY METHODS ######
+    def add_datastore(self, datastore: xr.Dataset):
+        '''
+        Add a datastore to the job.
+        '''
+        self.datastore = DataContainer.prepare(
+            datastore, Experiment, Sample #*job_type.datastore_classes
+        )
 
     ###### DUNDER METHODS ######
     def __deepcopy__(self):

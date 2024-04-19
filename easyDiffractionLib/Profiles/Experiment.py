@@ -4,19 +4,21 @@
 
 
 from easyCore.Objects.Job.Experiment import ExperimentBase as coreExperiment
-
+from easyCore.Datasets.xarray import xr
 
 class Experiment(coreExperiment):
     """
     Diffraction-specific Experiment object.
     """
-    def __init__(self, name: str, *args, **kwargs):
+    def __init__(self, name: str, dataset: xr.Dataset = None, *args, **kwargs):
         super(Experiment, self).__init__(name, *args, **kwargs)
         self._name = name
 
         self.is_tof = False
         self.is_polarized = False
         self.is_single_crystal = False
+        self._simulation_prefix = "sim_"
+        self._dataset = dataset if dataset is not None else xr.Dataset()
 
 
     @staticmethod

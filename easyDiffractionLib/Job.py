@@ -30,7 +30,7 @@ class DiffractionJob(JobBase):
     """
     def __init__(
         self,
-        name: str,
+        name: str = None,
         job_type: Union[JobType, str] = None,
         datastore: xr.Dataset = None,
         sample=None,
@@ -281,18 +281,18 @@ class DiffractionJob(JobBase):
         self.interface.switch(value, fitter=self.fitter)
         self.interface.calculator = value
 
-    def calculate_theory(self, tth: Union[xr.DataArray, np.ndarray], simulation_name:str="", **kwargs) -> np.ndarray:
+    def calculate_theory(self, x: Union[xr.DataArray, np.ndarray], simulation_name:str="", **kwargs) -> np.ndarray:
         '''
         Implementation of the abstract method from JobBase.
         Just a wrapper around the profile calculation.
         '''
-        return self.calculate_profile(tth, simulation_name, **kwargs)
+        return self.calculate_profile(x, simulation_name, **kwargs)
 
-    def calculate_profile(self, tth: Union[xr.DataArray, np.ndarray], simulation_name:str="", **kwargs) -> np.ndarray:
+    def calculate_profile(self, x: Union[xr.DataArray, np.ndarray], simulation_name:str="", **kwargs) -> np.ndarray:
         '''
         Calculate the profile based on current phase.
         '''
-        if not isinstance(tth, xr.DataArray):
+        if not isinstance(x, xr.DataArray):
             coord_name = (
                 self.datastore._simulations._simulation_prefix
                 + self._name
@@ -300,7 +300,7 @@ class DiffractionJob(JobBase):
                 + self._x_axis_name
             )
             if coord_name in self.datastore.store and \
-                len(self.datastore.store[coord_name]) != len(tth):
+                len(self.datastore.store[coord_name]) != len(x):
                 self.datastore.store.easyCore.remove_coordinate(coord_name)
                 self.job_number += 1
                 coord_name = (
@@ -310,15 +310,15 @@ class DiffractionJob(JobBase):
                     + "_"
                     + self._x_axis_name
                 )
-            self.datastore.add_coordinate(coord_name, tth)
+            self.datastore.add_coordinate(coord_name, x)
             self.datastore.store[coord_name].name = self._x_axis_name
         else:
-            coord_name = tth.name
-        x, f = self.datastore.store[coord_name].easyCore.fit_prep(
+            coord_name = x.name
+        x_store, f = self.datastore.store[coord_name].easyCore.fit_prep(
             self.interface.fit_func,
             bdims=xr.broadcast(self.datastore.store[coord_name].transpose()),
         )
-        y = xr.apply_ufunc(f, *x, kwargs=kwargs)
+        y = xr.apply_ufunc(f, *x_store, kwargs=kwargs)
         y.name = self._y_axis_prefix + self._name + "_sim"
         if simulation_name is None:
             simulation_name = self._name

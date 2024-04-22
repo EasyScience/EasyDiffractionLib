@@ -9,14 +9,22 @@ from easyDiffractionLib.Profiles.Sample import Sample
 
 
 def test_job_init():
-    j = Job("test")
-    assert j.name == "test"
+    j = Job()
+    assert j.name == "Job"
     assert isinstance(j.interface, InterfaceFactory)
     assert isinstance(j.sample, Sample)
     assert isinstance(j.experiment, Experiment)
     assert isinstance(j.analysis, Analysis)
     assert j.job_type.type_str == "Powder1DCW"
 
+def test_job_with_name():
+    j = Job("test")
+    assert j.name == "test"
+
+def test_job_direct_import():
+    import easyDiffractionLib as ed
+    j = ed.Job()
+    assert j.name == "Job"
 
 def test_powder1dcw():
     j = Job("test", job_type=JobType("Powder1DCW"))

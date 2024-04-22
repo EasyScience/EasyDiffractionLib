@@ -1,14 +1,14 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from easyDiffractionLib import Phase
-from easyDiffractionLib import Phases
-from easyDiffractionLib import Site
-from easyDiffractionLib.interface import InterfaceFactory as Calculator
-from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters as CWParams
-from easyDiffractionLib.Profiles.P1D import Instrument1DTOFParameters as TOFParams
-from easyDiffractionLib.Profiles.P1D import Powder1DParameters
-from easyDiffractionLib.sample import Sample
+from easydiffraction import Phase
+from easydiffraction import Phases
+from easydiffraction import Site
+from easydiffraction.interface import InterfaceFactory as Calculator
+from easydiffraction.Profiles.P1D import Instrument1DCWParameters as CWParams
+from easydiffraction.Profiles.P1D import Instrument1DTOFParameters as TOFParams
+from easydiffraction.Profiles.P1D import Powder1DParameters
+from easydiffraction.sample import Sample
 
 calculator = Calculator()
 calculator.switch("CrysPy")

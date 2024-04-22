@@ -4,10 +4,10 @@ __version__ = '0.0.1'
 import matplotlib.pyplot as plt
 import numpy as np
 
-from easyDiffractionLib import Phases
-from easyDiffractionLib.interface import InterfaceFactory
-from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters
-from easyDiffractionLib.sample import Sample
+from easydiffraction import Phases
+from easydiffraction.interface import InterfaceFactory
+from easydiffraction.Profiles.P1D import Instrument1DCWParameters
+from easydiffraction.sample import Sample
 
 i = InterfaceFactory()
 

@@ -31,7 +31,7 @@ class DiffractionJob(JobBase):
     def __init__(
         self,
         name: str,
-        job_type: JobType = None,
+        job_type: Union[JobType, str] = None,
         datastore: xr.Dataset = None,
         sample=None,
         experiment=None,
@@ -80,7 +80,9 @@ class DiffractionJob(JobBase):
         #
         # determine job_type based on Experiment
         self.job_type = JobType("Powder1DCW") if job_type is None else job_type
-        if self._experiment is not None:
+        if isinstance(job_type, str):
+            self.job_type = JobType(job_type)
+        if job_type is None:
             self.update_job_type()
 
     @property

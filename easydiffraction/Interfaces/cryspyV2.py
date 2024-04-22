@@ -11,10 +11,10 @@ from typing import Optional
 from typing import Union
 
 import numpy as np
-from easyscience import borg
-from easyscience.Objects.Inferface import ItemContainer
 from easyCrystallography.Components.AtomicDisplacement import Anisotropic as Anisotropic_base
 from easyCrystallography.Components.Site import Site as Site_base
+from easyscience import borg
+from easyscience.Objects.Inferface import ItemContainer
 from numpy import ndarray
 
 from easydiffraction import Lattice

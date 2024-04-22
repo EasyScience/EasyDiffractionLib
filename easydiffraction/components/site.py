@@ -13,9 +13,6 @@ from typing import List
 from typing import Optional
 from typing import Union
 
-from easyscience.Objects.ObjectClasses import Descriptor
-from easyscience.Objects.ObjectClasses import Parameter
-from easyscience.Utils.io.star import StarLoop
 from easyCrystallography.Components.AtomicDisplacement import AtomicDisplacement
 from easyCrystallography.Components.Lattice import PeriodicLattice
 from easyCrystallography.Components.Site import Atoms as ecAtoms
@@ -24,6 +21,9 @@ from easyCrystallography.Components.Site import PeriodicSite as ecPeriodicSite
 from easyCrystallography.Components.Site import Site as ecSite
 from easyCrystallography.Components.Specie import Specie
 from easyCrystallography.Components.Susceptibility import MagneticSusceptibility
+from easyscience.Objects.ObjectClasses import Descriptor
+from easyscience.Objects.ObjectClasses import Parameter
+from easyscience.Utils.io.star import StarLoop
 
 if TYPE_CHECKING:
     from easyscience.Utils.typing import iF

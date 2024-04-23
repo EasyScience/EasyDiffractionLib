@@ -31,7 +31,7 @@ class DiffractionJob(JobBase):
     def __init__(
         self,
         name: str = None,
-        job_type: Union[JobType, str] = None,
+        type: Union[JobType, str] = None,
         datastore: xr.Dataset = None,
         sample=None,
         experiment=None,
@@ -62,8 +62,8 @@ class DiffractionJob(JobBase):
             interface = InterfaceFactory()
         self.interface = interface
 
-        # can't have job_type and experiment together
-        if job_type is not None and experiment is not None:
+        # can't have type and experiment together
+        if type is not None and experiment is not None:
             raise ValueError("Job type and experiment cannot be passed together.")
 
         # assign Job components
@@ -78,11 +78,11 @@ class DiffractionJob(JobBase):
         # as in old EDL (Powder1DCW, PolPowder1DCW, Powder1DTOF, etc)
         # let's have these as attributes of the Job class
         #
-        # determine job_type based on Experiment
-        self.job_type = JobType("Powder1DCW") if job_type is None else job_type
-        if isinstance(job_type, str):
-            self.job_type = JobType(job_type)
-        if job_type is None:
+        # determine type based on Experiment
+        self.type = JobType() if type is None else type
+        if isinstance(type, str):
+            self.type = JobType(type)
+        if type is None:
             self.update_job_type()
 
     @property
@@ -162,11 +162,11 @@ class DiffractionJob(JobBase):
         value_cw = block.find_value("_setup_wavelength") or block.find_value("_diffrn_radiation_wavelength.wavelength")
 
         if value_cwpol is not None:
-            self.job_type.is_pol = True
+            self.type.is_pol = True
         elif value_tof:
-            self.job_type.is_tof = True
+            self.type.is_tof = True
         elif value_cw is not None:
-            self.job_type.is_cw = True
+            self.type.is_cwl = True
         else:
             raise ValueError("Could not determine job type from file.")
 
@@ -178,11 +178,11 @@ class DiffractionJob(JobBase):
         '''
         Update the job type based on the experiment.
         '''
-        self.job_type.is_pol = self.experiment.is_polarized
-        self.job_type.is_tof = self.experiment.is_tof
-        self.job_type.is_single_crystal = self.experiment.is_single_crystal
+        self.type.is_pol = self.experiment.is_polarized
+        self.type.is_tof = self.experiment.is_tof
+        self.type.is_sc = self.experiment.is_single_crystal
 
-        if self.job_type.is_tof:
+        if self.type.is_tof:
             self._x_axis_name = "time"
         else:
             self._x_axis_name = "tth"
@@ -370,7 +370,7 @@ class DiffractionJob(JobBase):
         Add a datastore to the job.
         '''
         self.datastore = DataContainer.prepare(
-            datastore, Experiment, Sample #*job_type.datastore_classes
+            datastore, Experiment, Sample #*type.datastore_classes
         )
 
     ###### DUNDER METHODS ######

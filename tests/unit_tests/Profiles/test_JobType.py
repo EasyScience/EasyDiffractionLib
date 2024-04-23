@@ -4,109 +4,94 @@ from easyDiffractionLib.Profiles.JobType import JobType
 
 
 def test_JobType():
-    job_type = JobType("Powder1DCW")
-    assert job_type.is_powder
-    assert not job_type.is_single_crystal
-    assert job_type.is_cw
+    job_type = JobType("pd-cwl-unp-1d-neut")
+    assert job_type.is_pd
+    assert not job_type.is_sc
+    assert job_type.is_cwl
     assert not job_type.is_tof
     assert job_type.is_1d
     assert not job_type.is_2d
-    assert job_type.type_str == "Powder1DCW"
-    assert job_type.type == "Powder1DCW"
+    assert job_type.type_str == "pd-cwl-unp-1d-neut"
+    assert job_type.type == "pd-cwl-unp-1d-neut"
     assert not job_type.is_pol
 
-    job_type = JobType("Crystal1DTOF")
-    assert not job_type.is_powder 
-    assert job_type.is_single_crystal 
-    assert not job_type.is_cw 
+    job_type = JobType("sc-tof")
+    assert not job_type.is_pd
+    assert job_type.is_sc
+    assert not job_type.is_cwl
     assert job_type.is_tof 
     assert job_type.is_1d 
     assert not job_type.is_2d 
-    assert job_type.type_str == "Crystal1DTOF"
-    assert job_type.type == "Crystal1DTOF"
+    assert job_type.type_str == "sc-tof-unp-1d-neut"
+    assert job_type.type == "sc-tof-unp-1d-neut"
     assert not job_type.is_pol
 
-    job_type = JobType("PolPowder2DCW")
-    assert job_type.is_powder 
-    assert not job_type.is_single_crystal 
-    assert job_type.is_cw 
+    job_type = JobType("pd-cwl-pol-2d-neut")
+    assert job_type.is_pd 
+    assert not job_type.is_sc 
+    assert job_type.is_cwl 
     assert not job_type.is_tof 
     assert not job_type.is_1d 
     assert job_type.is_2d 
-    assert job_type.type_str == "PolPowder2DCW"
-    assert job_type.type == "PolPowder2DCW"
+    assert job_type.type_str == "pd-cwl-pol-2d-neut"
+    assert job_type.type == "pd-cwl-pol-2d-neut"
     assert job_type.is_pol
 
-    job_type = JobType("Crystal2DTOF")
-    assert not job_type.is_powder 
-    assert job_type.is_single_crystal 
-    assert not job_type.is_cw 
-    assert job_type.is_tof 
-    assert not job_type.is_1d 
-    assert job_type.is_2d 
-    assert job_type.type_str == "Crystal2DTOF"
-    assert job_type.type == "Crystal2DTOF"
-    assert not job_type.is_pol
-
-    job_type = JobType("PolPowder1DTOF")
-    assert job_type.is_powder 
-    assert not job_type.is_single_crystal 
-    assert not job_type.is_cw 
+    job_type = JobType("sc-tof")
+    assert not job_type.is_pd 
+    assert job_type.is_sc 
+    assert not job_type.is_cwl 
     assert job_type.is_tof 
     assert job_type.is_1d 
     assert not job_type.is_2d 
-    assert job_type.type_str == "PolPowder1DTOF"
-    assert job_type.type == "PolPowder1DTOF"
-    assert job_type.is_pol
-
-    job_type = JobType("Crystal1DCW")
-    assert not job_type.is_powder 
-    assert job_type.is_single_crystal 
-    assert job_type.is_cw 
-    assert not job_type.is_tof 
-    assert job_type.is_1d 
-    assert not job_type.is_2d 
-    assert job_type.type_str == "Crystal1DCW"
-    assert job_type.type == "Crystal1DCW"
+    assert job_type.type_str == "sc-tof-unp-1d-neut"
+    assert job_type.type == "sc-tof-unp-1d-neut"
     assert not job_type.is_pol
+
+    job_type = JobType("xray")
+    assert job_type.is_pd
+    assert not job_type.is_sc
+    assert job_type.type_str == "pd-cwl-unp-1d-xray"
+    assert job_type.type == "pd-cwl-unp-1d-xray"
+    assert job_type.is_xray
 
 def test_Validate():
-    job_type = JobType("Powder1DCW")
-    job_type._is_single_crystal = True
+    job_type = JobType("")
+    job_type._is_sc = True
     with pytest.raises(ValueError):
         job_type.validate()
 
-    job_type = JobType("Powder1DCW")
+    job_type = JobType()
     job_type._is_tof = True
     with pytest.raises(ValueError):
         job_type.validate()
 
-    job_type = JobType("Powder1DCW")
+    job_type = JobType()
     job_type._is_2d = True
     with pytest.raises(ValueError):
         job_type.validate()
 
-    job_type = JobType("Powder1DCW")
-    job_type._is_single_crystal = True
+    job_type = JobType()
+    job_type._is_sc = True
     with pytest.raises(ValueError):
         job_type.validate()
 
-    job_type = JobType("Powder1DCW")
+    job_type = JobType()
     job_type._is_tof = True
     with pytest.raises(ValueError):
         job_type.validate()
 
 def test_Convert():
-    job_type = JobType("Powder1DCW")
-    job_type.type = "Crystal1DTOF"
-    assert job_type.is_single_crystal
+    job_type = JobType()
+    job_type.type = "sc"
+    assert job_type.is_sc
 
-    job_type.type = "Crystal1DTOF"
+    job_type.type = "tof"
     assert job_type.is_tof
 
-    job_type.type = "Crystal2DTOF"
+    job_type.type = "2D"
     assert job_type.is_2d
 
-    job_type.type = "PolCrystal2DTOF"
+    job_type.type = "Pol"
     assert job_type.is_pol
 

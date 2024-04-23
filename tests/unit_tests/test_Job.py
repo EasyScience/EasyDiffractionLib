@@ -1,5 +1,6 @@
 import pytest
 
+import easyDiffractionLib as ed
 from easyDiffractionLib.interface import InterfaceFactory
 from easyDiffractionLib.Job import DiffractionJob as Job
 from easyDiffractionLib.Profiles.Analysis import Analysis
@@ -15,54 +16,53 @@ def test_job_init():
     assert isinstance(j.sample, Sample)
     assert isinstance(j.experiment, Experiment)
     assert isinstance(j.analysis, Analysis)
-    assert j.job_type.type_str == "Powder1DCW"
+    assert j.type.type_str == "pd-cwl-unp-1d-neut"
 
 def test_job_with_name():
     j = Job("test")
     assert j.name == "test"
 
 def test_job_direct_import():
-    import easyDiffractionLib as ed
     j = ed.Job()
     assert j.name == "Job"
 
 def test_powder1dcw():
-    j = Job("test", job_type=JobType("Powder1DCW"))
-    assert j.job_type.is_powder
-    assert j.job_type.is_cw
-    assert j.job_type.is_1d
+    j = Job(type=JobType())
+    assert j.type.is_pd
+    assert j.type.is_cwl
+    assert j.type.is_1d
 
 def test_switch_job_TOF():
-    j = Job("test", job_type=JobType("Powder1DCW"))
-    j.job_type = JobType("Powder1DTOF")
-    assert j.job_type.is_tof
-    assert j.job_type.is_powder
-    assert j.job_type.is_1d
+    j = Job(type="pd-cwl-unp")
+    j.type.type = "tof"
+    assert j.type.is_tof
+    assert j.type.is_pd
+    assert j.type.is_1d
 
 def test_switch_job_TOF_2():
-    j = Job("test", job_type=JobType("Powder1DCW"))
-    j.job_type.is_tof = True
-    assert j.job_type.is_tof
-    assert j.job_type.is_powder
-    assert j.job_type.is_1d
+    j = Job(type=JobType("pd-cwl-unp"))
+    j.type.is_tof = True
+    assert j.type.is_tof
+    assert j.type.is_pd
+    assert j.type.is_1d
 
 def test_get_job_from_file():
-    j = Job("test")
+    j = Job()
     j.set_job_from_file("examples/d1a.cif")
     assert j.name == "d1a"
-    assert j.job_type.type_str == "Powder1DCW"
-    assert j.job_type.is_powder
-    assert j.job_type.is_cw
-    assert j.job_type.is_1d
-    assert j.job_type.is_upol
+    assert j.type.type_str == "pd-cwl-unp-1d-neut"
+    assert j.type.is_pd
+    assert j.type.is_cwl
+    assert j.type.is_1d
+    assert j.type.is_unp
 
 def test_get_pol_job_from_file():
     j = Job("test")
     j.set_job_from_file("examples/PolNPD5T.cif")
     assert j.name == "PolNPD5T"
-    assert j.job_type.type_str == "PolPowder1DCW"
-    assert j.job_type.is_pol
-    assert not j.job_type.is_upol
+    assert j.type.type_str == "pd-cwl-pol-1d-neut"
+    assert j.type.is_pol
+    assert not j.type.is_unp
 
 def test_add_experiment_from_file():
     j = Job("test")
@@ -86,7 +86,7 @@ def test_wrong_type_passed():
     experiment = Experiment("test")
     # test that Job throws
     with pytest.raises(ValueError):
-        _ = Job("test", experiment=experiment, job_type=JobType("Powder1DCW"))
+        _ = Job("test", experiment=experiment, type="pd-cwl-unp-1d-neut")
 
 def test_sample_assignment():
     # assure that sample is deep copied

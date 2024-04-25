@@ -38,11 +38,12 @@ classifiers = [
 ]
 include = ["CHANGELOG.md"]
 
+
 dependencies = [
     "cryspy @ git+https://github.com/ikibalin/cryspy.git@bravis_type_fix",
-    # "easyScienceCore>=0.5.0",
-    "easyScienceCore @ git+https://github.com/easyScience/easycore.git@new_job",
-    "easyCrystallography>=0.4.0",
+    "EasyScience @ git+https://github.com/EasyScience/EasyScience.git@new_job",
+    #"easyCrystallography>=0.4.0",
+    "easyCrystallography @ git+https://github.com/EasyScience/EasyCrystallography.git@new_easyscience",
     "pycifrw>=4.4.1",
     #"CFML>=0.0.1",
     # GSASII = {version = '^0.0.1', optional=true}

@@ -19,7 +19,7 @@ def pol_diff(a, b):
     return a-b
 
 # this has to be full path to not confuse the CIF file reader that we are loading a string...
-cif_fname = 'd:\\projects\\easyScience\\easyDiffractionLib\\tests\\structure.cif'
+cif_fname = 'd:\\projects\\easyScience\\easydiffraction\\tests\\structure.cif'
 phases = Phases.from_cif_file(cif_fname)
 phase = phases[0]
 

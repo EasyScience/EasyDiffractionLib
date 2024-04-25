@@ -1,12 +1,12 @@
 import pytest
 
-import easyDiffractionLib as ed
-from easyDiffractionLib.interface import InterfaceFactory
-from easyDiffractionLib.Job import DiffractionJob as Job
-from easyDiffractionLib.Profiles.Analysis import Analysis
-from easyDiffractionLib.Profiles.Experiment import Experiment
-from easyDiffractionLib.Profiles.JobType import JobType
-from easyDiffractionLib.Profiles.Sample import Sample
+import easydiffraction as ed
+from easydiffraction.interface import InterfaceFactory
+from easydiffraction.Job import DiffractionJob as Job
+from easydiffraction.Profiles.Analysis import Analysis
+from easydiffraction.Profiles.Experiment import Experiment
+from easydiffraction.Profiles.JobType import JobType
+from easydiffraction.Profiles.Sample import Sample
 
 
 def test_job_init():

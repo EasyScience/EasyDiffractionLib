@@ -1,6 +1,6 @@
 import pytest
 
-from easyDiffractionLib.Profiles.JobType import JobType
+from easydiffraction.Profiles.JobType import JobType
 
 
 def test_JobType():

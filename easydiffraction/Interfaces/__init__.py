@@ -9,12 +9,12 @@ except ImportError:
 
 # Temporarily disabling the CrysFML and GSASII interfaces
 # try:
-#     from easyDiffractionLib.Interfaces.CFML import CFML  # noqa: F401
+#     from easydiffraction.Interfaces.CFML import CFML  # noqa: F401
 # except ImportError:
 #     print('Warning: CrysFML is not installed')
 
 # try:
-#     from easyDiffractionLib.Interfaces.GSASII import GSASII  # noqa: F401
+#     from easydiffraction.Interfaces.GSASII import GSASII  # noqa: F401
 # except ImportError:
 #     print('Warning: GSAS-2 is not installed')
 

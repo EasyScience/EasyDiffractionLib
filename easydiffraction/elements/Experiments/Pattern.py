@@ -32,7 +32,7 @@ class Pattern1D(BaseObj):
             'fixed': True
         },
         'backgrounds': {
-            '@module': 'easyDiffractionLib.elements.Backgrounds.Background',
+            '@module': 'easydiffraction.elements.Backgrounds.Background',
             '@class': 'BackgroundContainer',
             '@version': '0.0.1',
             'data': [],

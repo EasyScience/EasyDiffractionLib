@@ -7,6 +7,7 @@ from typing import ClassVar
 from typing import Union
 
 from easyCrystallography.Structures.Phase import Phases as ecPhases
+from easyscience.Datasets.xarray import xr
 from easyscience.Objects.ObjectClasses import BaseObj
 from easyscience.Utils.UndoRedo import property_stack_deco
 
@@ -35,6 +36,7 @@ class Sample(BaseObj):
 
     def __init__(
         self,
+        dataset: Union[xr.Dataset, None] = None,
         phases: Union[Phase, Phases] = None,
         parameters=None,
         pattern=None,
@@ -54,6 +56,12 @@ class Sample(BaseObj):
                 phases = Phases("Phases", phases[0])
         else:
             raise AttributeError("`phases` must be a Crystal or Crystals")
+
+        self._simulation_prefix = "sim_"
+        if dataset is not None:
+            self._dataset = dataset
+        else:
+            self._dataset = xr.Dataset()
 
         if parameters is None:
             parameters = Instrument1DCWParameters()
@@ -93,6 +101,10 @@ class Sample(BaseObj):
             self.interface = interface
         else:
             self.interface = InterfaceFactory()
+
+    def add_phase_from_cif(self, cif_file):
+        phase = Phase.from_cif_file(cif_file)
+        self.phases.append(phase)
 
     @property
     def interface(self):

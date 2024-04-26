@@ -13,14 +13,15 @@ from easyscience.Fitting.Fitting import Fitter as CoreFitter
 from easyscience.Objects.Job.Job import JobBase
 from gemmi import cif
 
+from easydiffraction import Phases
 from easydiffraction.interface import InterfaceFactory
 from easydiffraction.Profiles.Analysis import Analysis
 from easydiffraction.Profiles.Container import DataContainer
 from easydiffraction.Profiles.Experiment import Experiment
 from easydiffraction.Profiles.JobType import JobType
-from easydiffraction.Profiles.Sample import Sample
 
-# from easydiffraction.sample import Sample as EDLSample
+# from easydiffraction.Profiles.Sample import Sample
+from easydiffraction.sample import Sample
 
 T_ = TypeVar('T_')
 
@@ -148,6 +149,10 @@ class DiffractionJob(JobBase):
     def info(self, value):
         self._info = value
 
+    @property
+    def phases(self) -> Phases:
+        return self.sample.phases
+
     def set_job_from_file(self, file_url: str) -> None:
         '''
         Set the job from a CIF file.
@@ -237,7 +242,7 @@ class DiffractionJob(JobBase):
         Add a sample to the job from a CIF file.
         Just a wrapper around the Sample class method.
         '''
-        self.sample = Sample.from_cif(file_url)
+        self.sample.add_phase_from_cif(file_url)
         # sample doesn't hold any information about the job type
         # so no call to update_job_type
 
@@ -370,7 +375,7 @@ class DiffractionJob(JobBase):
         Add a datastore to the job.
         '''
         self.datastore = DataContainer.prepare(
-            datastore, Experiment, Sample #*type.datastore_classes
+            datastore, Sample, Experiment #*type.datastore_classes
         )
 
     ###### DUNDER METHODS ######

@@ -86,12 +86,14 @@ def test_Convert():
     job_type.type = "sc"
     assert job_type.is_sc
 
-    job_type.type = "tof"
+    job_type.type = "tOF"
     assert job_type.is_tof
 
-    job_type.type = "2D"
+    job_type.type = "2D-Pol"
     assert job_type.is_2d
-
-    job_type.type = "Pol"
     assert job_type.is_pol
+
+    # finally assure the final type
+    assert job_type.type_str == "sc-tof-pol-2d-neut"
+ 
 

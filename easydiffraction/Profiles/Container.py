@@ -21,8 +21,9 @@ class DataContainer(ComponentSerializer):
     @classmethod
     def prepare(cls, dataset, simulation_class, experiment_class):
         class Simulation(simulation_class):
-            def __init__(self):
-                super(Simulation, self).__init__(dataset)
+            def __init__(self, dataset):
+                super(Simulation, self).__init__(dataset=dataset)
+                # super(Simulation, self).__init__()
 
             def as_dict(self, skip=None):
                 """
@@ -45,7 +46,7 @@ class DataContainer(ComponentSerializer):
                 d["simulations"] = self._dataset.as_dict()
                 return d
 
-        s = Simulation()
+        s = Simulation(dataset=dataset)
         e = Experiment(s._simulation_prefix)
 
         return cls(s, e)

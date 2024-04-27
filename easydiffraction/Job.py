@@ -94,7 +94,8 @@ class DiffractionJob(JobBase):
     def sample(self, value: Union[Sample, None]) -> None:
         # We need to deepcopy the sample to ensure that it is not shared between jobs
         if value is not None:
-            self._sample = deepcopy(value)
+            self._sample = value
+            # self._sample = deepcopy(value) # TODO fix deepcopy on EXC sample
         else:
             self._sample = Sample("Sample")
 

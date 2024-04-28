@@ -6,6 +6,7 @@ from easydiffraction.Job import DiffractionJob as Job
 from easydiffraction.Profiles.Analysis import Analysis
 from easydiffraction.Profiles.Experiment import Experiment
 from easydiffraction.Profiles.JobType import JobType
+
 # from easydiffraction.Profiles.Sample import Sample
 from easydiffraction.sample import Sample
 

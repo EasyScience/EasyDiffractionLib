@@ -69,6 +69,7 @@ class DiffractionJob(JobBase):
 
         # assign Job components
         self.sample = sample # container for phases
+        self.interface = self.sample._interface
         self.experiment = experiment
         self.analysis = analysis
 
@@ -307,7 +308,7 @@ class DiffractionJob(JobBase):
             )
             if coord_name in self.datastore.store and \
                 len(self.datastore.store[coord_name]) != len(x):
-                self.datastore.store.easyscience.remove_coordinate(coord_name)
+                self.datastore.store.EasyScience.remove_coordinate(coord_name)
                 self.job_number += 1
                 coord_name = (
                     self.datastore._simulations._simulation_prefix
@@ -320,17 +321,19 @@ class DiffractionJob(JobBase):
             self.datastore.store[coord_name].name = self._x_axis_name
         else:
             coord_name = x.name
-        x_store, f = self.datastore.store[coord_name].easyscience.fit_prep(
+        x_store, f = self.datastore.store[coord_name].EasyScience.fit_prep(
             self.interface.fit_func,
             bdims=xr.broadcast(self.datastore.store[coord_name].transpose()),
         )
         y = xr.apply_ufunc(f, *x_store, kwargs=kwargs)
         y.name = self._y_axis_prefix + self._name + "_sim"
-        if simulation_name is None:
+        if not simulation_name:
             simulation_name = self._name
         else:
             simulation_name = self._name + "_" + simulation_name
-        self.datastore._simulations.add_simulation(simulation_name, y)
+        # self.datastore._simulations.add_simulation(simulation_name, y)
+        prefix = self.datastore._simulations._simulation_prefix
+        self.datastore.store[prefix + simulation_name + self._x_axis_name] = y
         # fitter expects ndarrays
         if type(y) == xr.DataArray:
             y = y.values

@@ -95,7 +95,7 @@ class Sample(BaseObj):
             self._update_bases(TOF)
 
         self.filename = os.path.join(tempfile.gettempdir(), "easydiffraction_temp.cif")
-        print(f"Temp CIF: {self.filename}")
+        # print(f"Temp CIF: {self.filename}")
         self.output_index = None
         if interface is not None:
             self.interface = interface

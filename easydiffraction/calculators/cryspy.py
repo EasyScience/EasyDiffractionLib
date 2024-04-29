@@ -735,9 +735,9 @@ class Cryspy:
 
         y_plus = self._cryspyInOutDict[exp_name_model]['signal_plus']
         y_minus = self._cryspyInOutDict[exp_name_model]['signal_minus']
-        if self.excluded_points:
-            y_plus = 0.0
-            y_minus = 0.0
+        # if self.excluded_points.any():
+        #     y_plus = 0.0
+        #     y_minus = 0.0
 
         result1 = y_plus, y_minus
         result2 = self._cryspyInOutDict[exp_name_model]['dict_in_out_' + data_name.lower()]

@@ -152,6 +152,10 @@ class DiffractionJob(JobBase):
         self._info = value
 
     @property
+    def parameters(self):
+        return self.sample.parameters
+
+    @property
     def phases(self) -> Phases:
         return self.sample.phases
 
@@ -261,7 +265,7 @@ class DiffractionJob(JobBase):
         '''
         Convert the job to a CIF file.
         '''
-        sample_cif = self.sample.to_cif()
+        sample_cif = self.sample.cif()
         experiment_cif = self.experiment.to_cif()
         analysis_cif = self.analysis.to_cif()
 
@@ -277,7 +281,7 @@ class DiffractionJob(JobBase):
         '''
         Get the calculator from the interface.
         '''
-        return self.interface.calculator
+        return self.interface.current_interface_name
 
     @calculator.setter
     def calculator(self, value: str):

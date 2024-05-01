@@ -13,6 +13,7 @@ from easyscience.Fitting.Fitting import Fitter as CoreFitter
 from easyscience.Objects.Job.Job import JobBase
 from gemmi import cif
 
+from easydiffraction import Phase
 from easydiffraction import Phases
 from easydiffraction.interface import InterfaceFactory
 from easydiffraction.Profiles.Analysis import Analysis
@@ -183,6 +184,14 @@ class DiffractionJob(JobBase):
 
         self._name = block.name
 
+    def add_phase(self, id: str="", phase: Union[Phase, None]=None) -> None:
+        '''
+        Add a phase to the Sample.
+        '''
+        if phase is None:
+            phase = Phase(id)
+        self.sample.phases.append(phase)
+
     # TODO: extend for analysis and info
 
     def update_job_type(self) -> None:
@@ -249,6 +258,15 @@ class DiffractionJob(JobBase):
         Just a wrapper around the Sample class method.
         '''
         self.sample.add_phase_from_cif(file_url)
+        # sample doesn't hold any information about the job type
+        # so no call to update_job_type
+
+    def add_sample_from_string(self, cif_string: str) -> None:
+        '''
+        Add a sample to the job from a CIF string.
+        Just a wrapper around the Sample class method.
+        '''
+        self.sample.add_phase_from_string(cif_string)
         # sample doesn't hold any information about the job type
         # so no call to update_job_type
 

@@ -106,6 +106,11 @@ class Sample(BaseObj):
         phase = Phase.from_cif_file(cif_file)
         self.phases.append(phase)
 
+    def add_phase_from_string(self, cif_string):
+        phase = Phase.from_cif_string(cif_string)
+        for p in phase:
+            self.phases.append(p)
+
     @property
     def interface(self):
         return self._interface

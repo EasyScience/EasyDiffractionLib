@@ -39,6 +39,13 @@ class Phase(ecPhase):
         if self.interface is not None:
             self.interface().remove_atom(self, item)
 
+    @property
+    def atom_site(self):
+        '''
+        Vanity method to alias `atoms`
+        '''
+        return self.atoms
+
 class Phases(ecPhases):
     _SITE_CLASS = Site
     _ATOM_CLASS = Atoms
@@ -62,4 +69,3 @@ class Phases(ecPhases):
     @classmethod
     def from_cif_string(cls, cif_string):
         return super(Phases, cls).from_cif_string(cif_string)
-

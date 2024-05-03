@@ -122,7 +122,9 @@ class DiffractionJob(JobBase):
         if value is not None:
             self._experiment = deepcopy(value)
         else:
-            self._experiment = Experiment("Experiment")
+            self._experiment = Experiment("Experiment",
+                                          datastore=self.datastore,
+                                          interface=self.interface)
 
     @property
     def analysis(self) -> Union[Analysis, None]:
@@ -201,11 +203,19 @@ class DiffractionJob(JobBase):
         self.type.is_pol = self.experiment.is_polarized
         self.type.is_tof = self.experiment.is_tof
         self.type.is_sc = self.experiment.is_single_crystal
+        self.type.is_2d = self.experiment.is_2d
 
         if self.type.is_tof:
             self._x_axis_name = "time"
         else:
             self._x_axis_name = "tth"
+
+    def update_phase_scale(self) -> None:
+        '''
+        Update the phase scale based on the experiment.
+        '''
+        for phase in self.sample.phases:
+            phase.scale = self.experiment.phase_scale.get(phase.name, phase.scale)
 
     ###### CIF RELATED METHODS ######
 
@@ -241,7 +251,13 @@ class DiffractionJob(JobBase):
         Add an experiment to the job from a CIF file.
         Just a wrapper around the Experiment class method.
         '''
-        self.experiment = Experiment.from_cif(file_url)
+        # experiment can be either xye or cif
+        # check the extension first and then call the appropriate method
+        if file_url.endswith(".xye"):
+            self.experiment.from_xye_file(file_url)
+        else:
+            self.experiment.from_cif_file(file_url)
+        self.update_phase_scale()
         self.update_job_type()
 
     def add_experiment_from_string(self, cif_string: str) -> None:
@@ -250,6 +266,7 @@ class DiffractionJob(JobBase):
         Just a wrapper around the Experiment class method.
         '''
         self.experiment = Experiment.from_cif_string(cif_string)
+        self.update_phase_scale()
         self.update_job_type()
 
     def add_sample_from_file(self, file_url: str) -> None:

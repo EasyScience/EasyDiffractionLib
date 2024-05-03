@@ -1,3 +1,4 @@
+import numpy as np
 import pytest
 
 import easydiffraction as ed
@@ -121,4 +122,14 @@ def test_analysis_assignment():
     j2 = Job("test")
     j2.analysis = analysis
     assert id(j2.analysis) != id(analysis)
+
+def test_calculate_profile():
+    j = Job("test")
+    j.add_sample_from_file("examples/PbSO4.cif")
+    x_data = np.linspace(20, 170, 500)
+    y = j.calculate_profile(x=x_data)
+    assert len(y) == len(x_data)
+    assert y[0] == pytest.approx(0.0, abs=1e-5)
+    assert np.max(y) == pytest.approx(11206, abs=1)
+
 

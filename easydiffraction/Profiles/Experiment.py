@@ -8,6 +8,8 @@ from gemmi import cif
 
 from easydiffraction.elements.Backgrounds.Point import BackgroundPoint
 from easydiffraction.elements.Backgrounds.Point import PointBackground
+from easydiffraction.io.cif_reader import parameters_from_cif_block as parameters_from_cif
+from easydiffraction.io.cif_reader import pattern_from_cif_block as pattern_from_cif
 from easydiffraction.Jobs import background_as_cif
 from easydiffraction.Jobs import cw_param_as_cif
 from easydiffraction.Jobs import exp_data_as_cif
@@ -110,52 +112,12 @@ class Experiment(coreExperiment):
         # self._experiments[]
 
     def pattern_from_cif_block(self, block):
-        # Various pattern parameters
-        value = block.find_value("_diffrn_radiation_polarization") or block.find_value("_diffrn_radiation.polarization")
-        if value is not None:
-            self.pattern.beam.polarization = float(value)
-        value = block.find_value("_diffrn_radiation_efficiency") or block.find_value("_diffrn_radiation.efficiency")
-        if value is not None:
-            self.pattern.beam.efficiency = float(value)
-        value = block.find_value("_setup_offset_2theta") or block.find_value("_setup.offset_2theta")
-        if value is not None:
-            self.pattern.zero_shift = float(value)
-        value = block.find_value("_setup_field") or block.find_value("_setup.field")
-        if value is not None:
-            self.pattern.field = float(value)
+        self.pattern = pattern_from_cif(block)
 
     def parameters_from_cif_block(self, block):
        # Various instrumental parameters
-        value = block.find_value("_setup_wavelength")
-        if value is not None:
-            self.parameters.wavelength = float(value)
-        value = block.find_value("_pd_instr_resolution_u")
-        if value is not None:
-            self.parameters.resolution_u = float(value)
-        value = block.find_value("_pd_instr_resolution_v")
-        if value is not None:
-            self.parameters.resolution_v = float(value)
-        value = block.find_value("_pd_instr_resolution_w")
-        if value is not None:
-            self.parameters.resolution_w = float(value)
-        value = block.find_value("_pd_instr_resolution_x")
-        if value is not None:
-            self.parameters.resolution_x = float(value)
-        value = block.find_value("_pd_instr_resolution_y")
-        if value is not None:
-            self.parameters.resolution_y = float(value)
-        value = block.find_value("_pd_instr_reflex_asymmetry_p1")
-        if value is not None:
-            self.parameters.reflex_asymmetry_p1 = float(value)
-        value = block.find_value("_pd_instr_reflex_asymmetry_p2")
-        if value is not None:
-            self.parameters.reflex_asymmetry_p2 = float(value)
-        value = block.find_value("_pd_instr_reflex_asymmetry_p3")
-        if value is not None:
-            self.parameters.reflex_asymmetry_p3 = float(value)
-        value = block.find_value("_pd_instr_reflex_asymmetry_p4")
-        if value is not None:
-            self.parameters.reflex_asymmetry_p4 = float(value)
+        self.parameters = parameters_from_cif(block)
+
 
     def phase_parameters_from_cif_block(self, block):
          # Get phase parameters

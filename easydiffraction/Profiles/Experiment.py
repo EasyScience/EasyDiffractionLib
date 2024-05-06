@@ -8,8 +8,12 @@ from gemmi import cif
 
 from easydiffraction.elements.Backgrounds.Point import BackgroundPoint
 from easydiffraction.elements.Backgrounds.Point import PointBackground
+
+# from easydiffraction.io.cif_reader import background_from_cif_block as background_from_cif
+from easydiffraction.io.cif_reader import data_from_cif_block as data_from_cif
 from easydiffraction.io.cif_reader import parameters_from_cif_block as parameters_from_cif
 from easydiffraction.io.cif_reader import pattern_from_cif_block as pattern_from_cif
+from easydiffraction.io.cif_reader import phase_parameters_from_cif_block as phase_parameters_from_cif
 from easydiffraction.Jobs import background_as_cif
 from easydiffraction.Jobs import cw_param_as_cif
 from easydiffraction.Jobs import exp_data_as_cif
@@ -17,6 +21,9 @@ from easydiffraction.Jobs import exp_data_as_cif
 # from easydiffraction.Jobs import phases_as_cif
 from easydiffraction.Jobs import polar_param_as_cif
 from easydiffraction.Jobs import tof_param_as_cif
+from easydiffraction.Profiles.P1D import Instrument1DCWParameters
+from easydiffraction.Profiles.P1D import PolPowder1DParameters
+from easydiffraction.Profiles.P1D import Powder1DParameters
 
 _DEFAULT_DATA_BLOCK_NO_MEAS = """data_pnd
 
@@ -73,6 +80,10 @@ class Experiment(coreExperiment):
         self._y_axis_prefix = "Intensity_"
         self.job_number = 0
         self.cif_string = ""
+        # local references to pattern and parameters
+        if hasattr(self._datastore, "_simulations"):
+            self.pattern = self._datastore._simulations.pattern
+            self.parameters = self._datastore._simulations.parameters
 
     def add_experiment_data(self, x, y, e, experiment_name="None"):
 
@@ -112,36 +123,107 @@ class Experiment(coreExperiment):
         # self._experiments[]
 
     def pattern_from_cif_block(self, block):
-        self.pattern = pattern_from_cif(block)
+        p = pattern_from_cif(block)
+        self.is_polarized = False
+        pattern = Powder1DParameters() # default
+        if 'beam.polarization' in p or 'beam.efficiency' in p:
+            self.is_polarized = True
+            pattern = PolPowder1DParameters()
+            pattern.beam_polarization = p.get('beam.polarization', 0.0)
+            pattern.beam_efficiency = p.get('beam.efficiency', 0.0)
+            pattern.field = p.get('field', 0.0)
+        if 'zero_shift' in p:
+            pattern.zero_shift = p['zero_shift'].get('value', 0.0)
+            pattern.zero_shift.error = p['zero_shift'].get('error', 0.0)
+            pattern.zero_shift.fixed = False if p['zero_shift'].get('error') else True
+        # modify the pattern on the datastore
+        self.pattern = pattern
 
     def parameters_from_cif_block(self, block):
        # Various instrumental parameters
-        self.parameters = parameters_from_cif(block)
+        p = parameters_from_cif(block)
+        parameters = Instrument1DCWParameters() # default
+        # test for TOF will be done here, once we know what CIF block to expect
+        if 'wavelength' in p:
+            parameters.wavelength = p['wavelength'].get('value', 0.0)
+        if p['wavelength'].get('error') is not None:
+            parameters.wavelength.error = p['wavelength'].get('error')
+            parameters.wavelength.fixed = False
 
+        if 'resolution_u' in p:
+            parameters.resolution_u = p['resolution_u'].get('value', 0.0)
+            if p['resolution_u'].get('error') is not None:
+                parameters.resolution_u.error = p['resolution_u'].get('error')
+                parameters.resolution_u.fixed = False
+
+        if 'resolution_v' in p:
+            parameters.resolution_v = p['resolution_v'].get('value', 0.0)
+            if p['resolution_v'].get('error') is not None:
+                parameters.resolution_v.error = p['resolution_v'].get('error')
+                parameters.resolution_v.fixed = False
+
+        if 'resolution_w' in p:
+            parameters.resolution_w = p['resolution_w'].get('value', 0.0)
+            if p['resolution_w'].get('error') is not None:
+                parameters.resolution_w.error = p['resolution_w'].get('error')
+                parameters.resolution_w.fixed = False
+
+
+        if 'resolution_x' in p:
+            parameters.resolution_x = p['resolution_x'].get('value', 0.0)
+            if p['resolution_x'].get('error') is not None:
+                parameters.resolution_x.error = p['resolution_x'].get('error')
+                parameters.resolution_x.fixed = False
+
+        if 'resolution_y' in p:
+            parameters.resolution_y = p['resolution_y'].get('value', 0.0)
+            if p['resolution_y'].get('error') is not None:
+                parameters.resolution_y.error = p['resolution_y'].get('error')
+                parameters.resolution_y.fixed = False
+
+        if 'reflex_asymmetry_p1' in p:
+            parameters.reflex_asymmetry_p1 = p['reflex_asymmetry_p1'].get('value', 0.0)
+            if p['reflex_asymmetry_p1'].get('error') is not None:
+                parameters.reflex_asymmetry_p1.error = p['reflex_asymmetry_p1'].get('error')
+                parameters.reflex_asymmetry_p1.fixed = False
+
+        if 'reflex_asymmetry_p2' in p:
+            parameters.reflex_asymmetry_p2 = p['reflex_asymmetry_p2'].get('value', 0.0)
+            if p['reflex_asymmetry_p2'].get('error') is not None:
+                parameters.reflex_asymmetry_p2.error = p['reflex_asymmetry_p2'].get('error')
+                parameters.reflex_asymmetry_p2.fixed = False
+
+        if 'reflex_asymmetry_p3' in p:
+            parameters.reflex_asymmetry_p3 = p['reflex_asymmetry_p3'].get('value', 0.0)
+            if p['reflex_asymmetry_p3'].get('error') is not None:
+                parameters.reflex_asymmetry_p3.error = p['reflex_asymmetry_p3'].get('error')
+                parameters.reflex_asymmetry_p3.fixed = False
+
+        if 'reflex_asymmetry_p4' in p:
+            parameters.reflex_asymmetry_p4 = p['reflex_asymmetry_p4'].get('value', 0.0)
+            if p['reflex_asymmetry_p4'].get('error') is not None:
+                parameters.reflex_asymmetry_p4.error = p['reflex_asymmetry_p4'].get('error')
+                parameters.reflex_asymmetry_p4.fixed = False
+
+        self.parameters = parameters
 
     def phase_parameters_from_cif_block(self, block):
-         # Get phase parameters
-        experiment_phase_labels = list(block.find_loop("_phase_label"))
-        experiment_phase_scales = np.fromiter(block.find_loop("_phase_scale"), float)
+        # Get phase parameters
+        p = phase_parameters_from_cif(block)
 
-        for (phase_label, phase_scale) in zip(experiment_phase_labels, experiment_phase_scales):
-            self.phase_scale[phase_label] = phase_scale
+        phases = self._datastore._simulations.phases
+        for phase in phases:
+            if phase.name not in p:
+                continue
+            phase.scale = p[phase.name].get('value', 0.0)
+            if p[phase.name].get('error') is not None:
+                phase.scale.error = p[phase.name].get('error', 0.0)
+                phase.scale.fixed = False
+        pass
 
     def data_from_cif_block(self, block, experiment_name):
         # data points
-        data_x = np.fromiter(block.find_loop("_pd_meas_2theta"), float)
-        data_y = []
-        data_e = []
-        data_y.append(np.fromiter(block.find_loop("_pd_meas_intensity_up"), float))
-        data_e.append(np.fromiter(block.find_loop("_pd_meas_intensity_up_sigma"), float))
-        data_y.append(np.fromiter(block.find_loop("_pd_meas_intensity_down"), float))
-        data_e.append(np.fromiter(block.find_loop("_pd_meas_intensity_down_sigma"), float))
-        # Unpolarized case
-        if not np.any(data_y[0]):
-            data_y[0] = np.fromiter(block.find_loop("_pd_meas_intensity"), float)
-            data_e[0] = np.fromiter(block.find_loop("_pd_meas_intensity_sigma"), float)
-            data_y[1] = np.zeros(len(data_y[0]))
-            data_e[1] = np.zeros(len(data_e[0]))
+        data_x, data_y, data_e = data_from_cif(block)
 
         coord_name = self.name + "_" + experiment_name + "_" + self._x_axis_name
 

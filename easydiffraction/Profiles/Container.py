@@ -36,7 +36,7 @@ class DataContainer(ComponentSerializer):
 
         class Experiment(experiment_class):
             def __init__(self, sim_prefix):
-                super(Experiment, self).__init__(dataset, sim_prefix)
+                super(Experiment, self).__init__(sim_prefix, dataset)
             def as_dict(self, skip=None):
                 """
                 :return: Json-able dictionary representation.

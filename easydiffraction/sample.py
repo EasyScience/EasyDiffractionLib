@@ -79,19 +79,18 @@ class Sample(BaseObj):
 
         if getattr(pattern, "__old_class__", pattern.__class__) == Pattern1D:
             from easydiffraction.Interfaces.types import UPol
-
             self._update_bases(UPol)
+
         elif getattr(pattern, "__old_class__", pattern.__class__) == Pattern1D_Pol:
             from easydiffraction.Interfaces.types import Pol
-
             self._update_bases(Pol)
+
         if isinstance(parameters, Instrument1DCWParameters):
             from easydiffraction.Interfaces.types import CW
-
             self._update_bases(CW)
+
         elif isinstance(parameters, Instrument1DTOFParameters):
             from easydiffraction.Interfaces.types import TOF
-
             self._update_bases(TOF)
 
         self.filename = os.path.join(tempfile.gettempdir(), "easydiffraction_temp.cif")
@@ -176,43 +175,6 @@ class Sample(BaseObj):
     @property
     def pattern(self):
         return self._pattern
-
-    @property
-    def exp_type_str(self) -> str:
-        from easydiffraction.Interfaces.types import CW
-        from easydiffraction.Interfaces.types import TOF
-        from easydiffraction.Interfaces.types import Neutron
-        from easydiffraction.Interfaces.types import Pol
-        from easydiffraction.Interfaces.types import Powder
-        from easydiffraction.Interfaces.types import SingleCrystal
-        from easydiffraction.Interfaces.types import UPol
-        from easydiffraction.Interfaces.types import XRay
-
-        type_str = ""
-        self_type = type(self)
-        if issubclass(self_type, Neutron):
-            type_str += "N"
-        elif issubclass(self_type, XRay):
-            type_str += "X"
-
-        if issubclass(self_type, Powder):
-            type_str += "powder"
-        elif issubclass(self_type, SingleCrystal):
-            type_str += "single"
-
-        type_str += "1D"
-
-        if issubclass(self_type, CW):
-            type_str += "CW"
-        elif issubclass(self_type, TOF):
-            type_str += "TOF"
-
-        if issubclass(self_type, Pol):
-            type_str += "pol"
-        elif issubclass(self_type, UPol):
-            type_str += "unp"
-
-        return type_str
 
     def _update_bases(self, new_base):
         base_class = getattr(self, "__old_class__", self.__class__)

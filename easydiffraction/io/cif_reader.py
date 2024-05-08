@@ -84,7 +84,6 @@ def phase_parameters_from_cif_block(block) -> dict:
         experiment_phase_scales = []
         for scale in scales:
             experiment_phase_scales.append(scale.decode('ascii'))
-            # np.append(experiment_phase_scales, scale.decode('ascii'))
 
     for (phase_label, phase_scale) in zip(experiment_phase_labels, experiment_phase_scales):
         phase_parameters[phase_label] = {}
@@ -97,7 +96,7 @@ def data_from_cif_block(block):
     data = {}
 
     # v 1.x
-    is_v1 = block.find_loop("_pd_meas_2theta") is not None
+    is_v1 = len(block.find_loop("_pd_meas_2theta")) > 0
     # assure we actually have data
     if not is_v1 and block.find_loop("_pd_meas.2theta_scan") is None:
         return
@@ -118,6 +117,7 @@ def data_from_cif_block(block):
         str_intensity = "_pd_meas.intensity_total"
         str_intensity_sigma = "_pd_meas.intensity_total_su"
 
+    # Those values are NOT fittable, so no (error) is expected
     data_x = np.fromiter(block.find_loop(str_theta), float)
     data_y = []
     data_e = []
@@ -135,6 +135,25 @@ def data_from_cif_block(block):
     data['y'] = data_y
     data['e'] = data_e
     return data
+
+def background_from_cif_block(block):
+   # v 1.x
+    is_v1 = len(block.find_loop('_pd_background_2theta')) > 0
+    is_tof = len(block.find_loop('_tof_background_time')) > 0
+
+    if is_tof:
+        x_label = "_tof_background_time"
+        y_label = "_tof_background_intensity"
+    elif is_v1:
+        x_label = "_pd_background_2theta"
+        y_label = "_pd_background_intensity"
+    else:
+        x_label = "_pd_background.line_segment_X"
+        y_label = "_pd_background.line_segment_intensity"
+
+    x = np.fromiter(block.find_loop(x_label), float)
+    y = np.fromiter(block.find_loop(y_label), float)
+    return x, y
 
 def parse_with_error(value: str) -> tuple:
     if "(" in value:

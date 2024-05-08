@@ -122,7 +122,7 @@ class DiffractionJob(JobBase):
         if value is not None:
             self._experiment = deepcopy(value)
         else:
-            self._experiment = Experiment("Experiment",
+            self._experiment = Experiment(job_name=self._name,
                                           datastore=self.datastore,
                                           interface=self.interface)
 
@@ -257,7 +257,8 @@ class DiffractionJob(JobBase):
             self.experiment.from_xye_file(file_url)
         else:
             self.experiment.from_cif_file(file_url)
-        self.update_phase_scale()
+
+        # self.update_phase_scale()
         self.update_job_type()
 
     def add_experiment_from_string(self, cif_string: str) -> None:
@@ -265,8 +266,8 @@ class DiffractionJob(JobBase):
         Add an experiment to the job from a CIF string.
         Just a wrapper around the Experiment class method.
         '''
-        self.experiment = Experiment.from_cif_string(cif_string)
-        self.update_phase_scale()
+        self.experiment.from_cif_string(cif_string)
+        # self.update_phase_scale()
         self.update_job_type()
 
     def add_sample_from_file(self, file_url: str) -> None:
@@ -277,6 +278,8 @@ class DiffractionJob(JobBase):
         self.sample.add_phase_from_cif(file_url)
         # sample doesn't hold any information about the job type
         # so no call to update_job_type
+        self.datastore._simulations = self.sample
+
 
     def add_sample_from_string(self, cif_string: str) -> None:
         '''
@@ -284,6 +287,7 @@ class DiffractionJob(JobBase):
         Just a wrapper around the Sample class method.
         '''
         self.sample.add_phase_from_string(cif_string)
+        self.datastore._simulations = self.sample
         # sample doesn't hold any information about the job type
         # so no call to update_job_type
 

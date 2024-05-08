@@ -14,6 +14,8 @@ import numpy as np
 from cryspy.procedure_rhochi.rhochi_by_dictionary import rhochi_calc_chi_sq_by_dictionary
 from easyscience import borg
 
+from easydiffraction.io.cif import cifV2ToV1
+
 # from pathos import multiprocessing as mp
 
 warnings.filterwarnings("ignore")
@@ -73,10 +75,10 @@ class Cryspy:
     def set_exp_cif(self, value: str):
         if value == self.experiment_cif:
             return
+        cryspyCif = cifV2ToV1(value)
         self.experiment_cif = value
-        self.exp_obj = cryspy.str_to_globaln(self.experiment_cif)
         if self._cryspyObject is None:
-            self._cryspyObject = cryspy.str_to_globaln(self.cif_str)
+            self._cryspyObject = cryspy.str_to_globaln(cryspyCif)
 
     def createModel(self, model_id: str, model_type: str = "powder1DCW"):
         model = {"background": cryspy.PdBackgroundL(), "phase": self.phases}
@@ -743,3 +745,48 @@ class Cryspy:
         result2 = self._cryspyInOutDict[exp_name_model]['dict_in_out_' + data_name.lower()]
 
         return result1, result2
+
+    def updateExpCif(self, edCif, modelNames):
+        cryspyObj = self._cryspyObject
+        cryspyCif = cifV2ToV1(edCif)
+        cryspyExperimentsObj = cryspy.str_to_globaln(cryspyCif)
+
+        # Add/modify CryspyObj with ranges based on the measured data points in _pd_meas loop
+        range_min = 0  # default value to be updated later
+        range_max = 180  # default value to be updated later
+        defaultEdRangeCif = f'_pd_meas.2theta_range_min {range_min}\n_pd_meas.2theta_range_max {range_max}'
+        cryspyRangeCif = cifV2ToV1(defaultEdRangeCif)
+        cryspyRangeObj = cryspy.str_to_globaln(cryspyRangeCif).items
+        for dataBlock in cryspyExperimentsObj.items:
+            for item in dataBlock.items:
+                if type(item) == cryspy.C_item_loop_classes.cl_1_pd_meas.PdMeasL:
+                    range_min = item.items[0].ttheta
+                    range_max = item.items[-1].ttheta
+                    cryspyRangeObj[0].ttheta_min = range_min
+                    cryspyRangeObj[0].ttheta_max = range_max
+            dataBlock.add_items(cryspyRangeObj)
+
+        # Add/modify CryspyObj with phases based on the already loaded phases
+        # loadedModelNames = [block['name']['value'] for block in self._dataBlocks]
+        for dataBlock in cryspyExperimentsObj.items:
+            for itemIdx, item in enumerate(dataBlock.items):
+                if type(item) == cryspy.C_item_loop_classes.cl_1_phase.PhaseL:
+                    cryspyModelNames = [phase.label for phase in item.items]
+                    for modelIdx, modelName in enumerate(cryspyModelNames):
+                        if modelName not in modelNames:
+                            del item.items[modelIdx]
+                    if not len(item.items):
+                        del dataBlock.items[itemIdx]
+            itemTypes = [type(item) for item in dataBlock.items]
+            if cryspy.C_item_loop_classes.cl_1_phase.PhaseL not in itemTypes:
+                defaultEdModelsCif = 'loop_\n_pd_phase_block.id\n_pd_phase_block.scale'
+                for modelName in modelNames:
+                    defaultEdModelsCif += f'\n{modelName} 1.0'
+                cryspyPhasesCif = cifV2ToV1(defaultEdModelsCif)
+                cryspyPhasesObj = cryspy.str_to_globaln(cryspyPhasesCif).items
+                dataBlock.add_items(cryspyPhasesObj)
+
+        # self._interface.update
+        cryspyObj.add_items(cryspyExperimentsObj.items)
+        cryspyExperimentsDict = cryspyExperimentsObj.get_dictionary()
+        self._cryspyData._cryspyDict.update(cryspyExperimentsDict)

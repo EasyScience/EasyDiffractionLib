@@ -1150,3 +1150,131 @@ def str2float(text):
         if text.strip() == ".":
             return 0
         raise ex
+
+def dataBlockToCif(block, includeBlockName=True):
+    cif = ''
+    if includeBlockName:
+        cif += f"data_{block['name']['value']}"
+        cif += '\n\n'
+    if 'params' in block:
+        for category in block['params'].values():
+            #for param in category.values():
+            for param in category.values():
+                # `param` is an easyCore Parameter object
+                #if param["optional"]:
+                #    continue
+                value = param['value']
+                if value is None:
+                    continue
+                # convert
+                if isinstance(value, float):
+                    value = f'{round(value, 6):.10g}'  # 3.0 -> "3", 3.012345 -> "3.0123"  # NEED FIX
+                elif isinstance(value, str) and ' ' in value:  # P n m a -> "P n m a"
+                    value = f'"{value}"'
+                # add brackets with error for free params
+                error = 0
+                if 'error' in param:
+                    error = param['error']
+                if error == 0:
+                    error = ''
+                else:
+                    if param['error'] > 1:
+                        error = f'{round(error, 6):.10g}'
+                    else:
+                        error = f'{round(error, 6):.17f}'.rstrip('0').lstrip('0').lstrip('.').lstrip('0')  # NEED FIX
+                if 'fit' in param and param['fit']:
+                    cif += f'{param["category"]}.{param["name"]} {value}({error})'
+                else:
+                    cif += f'{param["category"]}.{param["name"]} {value}'
+                cif += '\n'
+            cif += '\n'
+    if 'loops' in block:
+        for categoryName, category in block['loops'].items():
+            cif += '\nloop_\n'
+            # loop header
+            row0 = category[0]
+            for param in row0.values():
+                if 'optional' in param and param["optional"]:
+                    continue
+                cif += f'{categoryName}.{param["name"]}\n'
+            # loop data
+            for row in category:
+                line = ''
+                for param in row.values():
+                    if 'optional' in param and param["optional"]:
+                        continue
+                    value = param["value"]
+                    if value is None:
+                        continue
+                    # convert
+                    if isinstance(value, float):
+                        value = f'{round(value, 6):.10g}'  # 3.0 -> "3", 3.012345 -> "3.0123"  # NEED FIX
+                    elif isinstance(value, str) and ' ' in value:  # P n m a -> "P n m a"
+                        value = f'"{value}"'
+                    # add brackets with error for free params
+                    error = 0
+                    if 'error' in param:
+                        error = param["error"]
+                    if error == 0:
+                        error = ''
+                    else:
+                        if param["error"] > 1:
+                            error = f'{round(error, 6):.10g}'
+                        else:
+                            error = f'{round(error, 6):.17f}'.rstrip('0').lstrip('0').lstrip('.').lstrip('0')  # NEED FIX
+                    if 'fit' in param and param["fit"]:
+                        line += f'{value}({error})'
+                    else:
+                        line += f'{value}'
+                    line += ' '
+                line = line.rstrip()
+                cif += f'{line}\n'
+    cif = cif.strip()
+    cif = cif.replace('\n\n\n', '\n\n')
+    return cif
+
+def cifV2ToV1(edCif):
+    cryspyCif = edCif
+    edToCryspyNamesMap = {
+        '_diffrn_radiation.probe': '_setup_radiation',
+        '_diffrn_radiation_wavelength.wavelength': '_setup_wavelength',
+
+        '_pd_calib.2theta_offset': '_setup_offset_2theta',
+
+        '_pd_instr.resolution_u': '_pd_instr_resolution_u',
+        '_pd_instr.resolution_v': '_pd_instr_resolution_v',
+        '_pd_instr.resolution_w': '_pd_instr_resolution_w',
+        '_pd_instr.resolution_x': '_pd_instr_resolution_x',
+        '_pd_instr.resolution_y': '_pd_instr_resolution_y',
+
+        '_pd_instr.reflex_asymmetry_p1': '_pd_instr_reflex_asymmetry_p1',
+        '_pd_instr.reflex_asymmetry_p2': '_pd_instr_reflex_asymmetry_p2',
+        '_pd_instr.reflex_asymmetry_p3': '_pd_instr_reflex_asymmetry_p3',
+        '_pd_instr.reflex_asymmetry_p4': '_pd_instr_reflex_asymmetry_p4',
+
+        '_pd_phase_block.id': '_phase_label',
+        '_pd_phase_block.scale': '_phase_scale',
+
+        '_pd_meas.2theta_range_min': '_range_2theta_min',
+        '_pd_meas.2theta_range_max': '_range_2theta_max',
+        '_pd_meas.2theta_scan': '_pd_meas_2theta',
+
+        '_pd_meas.intensity_total_su': '_pd_meas_intensity_sigma',  # before intensity_total!
+        '_pd_meas.intensity_total': '_pd_meas_intensity',
+
+        '_pd_background.line_segment_X': '_pd_background_2theta',
+        '_pd_background.line_segment_intensity': '_pd_background_intensity',
+
+        '_model.cif_file_name': '_model_cif_file_name',
+        '_experiment.cif_file_name': '_experiment_cif_file_name'
+    }
+    edToCryspyValuesMap = {
+        'x-ray': 'X-rays',
+        'neutron': 'neutrons',
+        'neutronss': 'neutrons',
+    }
+    for edName, cryspyName in edToCryspyNamesMap.items():
+        cryspyCif = cryspyCif.replace(edName, cryspyName)
+    for edValue, cryspyValue in edToCryspyValuesMap.items():
+        cryspyCif = cryspyCif.replace(edValue, cryspyValue)
+    return cryspyCif

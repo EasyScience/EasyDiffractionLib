@@ -8,8 +8,7 @@ from gemmi import cif
 
 from easydiffraction.elements.Backgrounds.Point import BackgroundPoint
 from easydiffraction.elements.Backgrounds.Point import PointBackground
-
-# from easydiffraction.io.cif_reader import background_from_cif_block as background_from_cif
+from easydiffraction.io.cif_reader import background_from_cif_block as background_from_cif
 from easydiffraction.io.cif_reader import data_from_cif_block as data_from_cif
 from easydiffraction.io.cif_reader import parameters_from_cif_block as parameters_from_cif
 from easydiffraction.io.cif_reader import pattern_from_cif_block as pattern_from_cif
@@ -65,9 +64,9 @@ class Experiment(coreExperiment):
     """
     Diffraction-specific Experiment object.
     """
-    def __init__(self, name: str, datastore: xr.Dataset = None, *args, **kwargs):
-        super(Experiment, self).__init__(name, *args, **kwargs)
-        self._name = name
+    def __init__(self, job_name: str, datastore: xr.Dataset = None, *args, **kwargs):
+        super(Experiment, self).__init__(job_name, *args, **kwargs)
+        self.job_name = job_name
 
         self.is_tof = False
         self.is_polarized = False
@@ -75,8 +74,7 @@ class Experiment(coreExperiment):
         self.is_2d = False
         self._simulation_prefix = "sim_"
         self._datastore = datastore if datastore is not None else xr.Dataset()
-        self.name = name
-        self._x_axis_name = ""
+        self._x_axis_name = "tth"
         self._y_axis_prefix = "Intensity_"
         self.job_number = 0
         self.cif_string = ""
@@ -87,7 +85,7 @@ class Experiment(coreExperiment):
 
     def add_experiment_data(self, x, y, e, experiment_name="None"):
 
-        coord_name = self.name + "_" + experiment_name + "_" + self._x_axis_name
+        coord_name = self.job_name + "_" + experiment_name + "_" + self._x_axis_name
         self._datastore.store.easyscience.add_coordinate(coord_name, x)
 
         j = 0
@@ -95,17 +93,17 @@ class Experiment(coreExperiment):
             data_y = y[i]
             data_e = e[i]
             self._datastore.store.easyscience.add_variable(
-                self.name + "_" + experiment_name + f"_I{j}", [coord_name], data_y
+                self.job_name + "_" + experiment_name + f"_I{j}", [coord_name], data_y
             )
             self._datastore.store.easyscience.sigma_attach(
-                self.name + "_" + experiment_name + f"_I{j}", data_e
+                self.job_name + "_" + experiment_name + f"_I{j}", data_e
             )
             j += 1
 
 
     def add_experiment(self, experiment_name, file_path):
         data = np.loadtxt(file_path, unpack=True)
-        coord_name = self.name + "_" + experiment_name + "_" + self._x_axis_name
+        coord_name = self.job_name + "_" + experiment_name + "_" + self._x_axis_name
 
         self._datastore.store.easyscience.add_coordinate(coord_name, data[0])
 
@@ -114,10 +112,10 @@ class Experiment(coreExperiment):
             data_y = data[i]
             data_e = data[i + 1]
             self._datastore.store.easyscience.add_variable(
-                self.name + "_" + experiment_name + f"_I{j}", [coord_name], data_y
+                self.job_name + "_" + experiment_name + f"_I{j}", [coord_name], data_y
             )
             self._datastore.store.easyscience.sigma_attach(
-                self.name + "_" + experiment_name + f"_I{j}", data_e
+                self.job_name + "_" + experiment_name + f"_I{j}", data_e
             )
             j += 1
         # self._experiments[]
@@ -210,50 +208,46 @@ class Experiment(coreExperiment):
     def phase_parameters_from_cif_block(self, block):
         # Get phase parameters
         p = phase_parameters_from_cif(block)
-
         phases = self._datastore._simulations.phases
         for phase in phases:
-            if phase.name not in p:
+            pname = phase.name.lower()
+            if pname not in p:
                 continue
-            phase.scale = p[phase.name].get('value', 0.0)
-            if p[phase.name].get('error') is not None:
-                phase.scale.error = p[phase.name].get('error', 0.0)
+            phase.scale = p[pname].get('value', 0.0)
+            if p[pname].get('error') is not None:
+                phase.scale.error = p[pname].get('error', 0.0)
                 phase.scale.fixed = False
         pass
 
     def data_from_cif_block(self, block, experiment_name):
         # data points
-        data_x, data_y, data_e = data_from_cif(block)
+        #data_x, data_y, data_e = data_from_cif(block)
+        data =data_from_cif(block)
+        data_x = data['x']
+        data_y = data['y']
+        data_e = data['e']
 
-        coord_name = self.name + "_" + experiment_name + "_" + self._x_axis_name
+        coord_name = self.job_name + "_" + experiment_name + "_" + self._x_axis_name
 
         self._datastore.store.easyscience.add_coordinate(coord_name, data_x)
 
         for i in range(0, len(data_y)):
             self._datastore.store.easyscience.add_variable(
-                self.name + "_" + experiment_name + f"_I{i}", [coord_name], data_y[i]
+                self.job_name + "_" + experiment_name + f"_I{i}", [coord_name], data_y[i]
             )
             self._datastore.store.easyscience.sigma_attach(
-                self.name + "_" + experiment_name + f"_I{i}", data_e[i]
+                self.job_name + "_" + experiment_name + f"_I{i}", data_e[i]
             )
 
     def background_from_cif_block(self, block, experiment_name):
         # The background
-        # is_tof = isinstance(self, Powder1DTOF)
-        is_tof = False
-        if is_tof:
-            x_label = "_tof_background_time"
-            y_label = "_tof_background_intensity"
-        else:
-            x_label = "_pd_background_2theta"
-            y_label = "_pd_background_intensity"
-        background_2thetas = np.fromiter(block.find_loop(x_label), float)
-        background_intensities = np.fromiter(block.find_loop(y_label), float)
+        background_2thetas, background_intensities = background_from_cif(block)
+
         bkg = PointBackground(linked_experiment=experiment_name)
         for (x, y) in zip(background_2thetas, background_intensities):
             bkg.append(BackgroundPoint.from_pars(x, y))
-
-        self.set_background(bkg)
+        self.pattern.backgrounds.append(bkg)
+        pass
 
     def from_xye_file(self, file_url, experiment_name=None):
         """
@@ -275,6 +269,9 @@ class Experiment(coreExperiment):
             Load a CIF file into the experiment.
             """
             # content
+            # update the reference to parameters and pattern
+            self.pattern = self._datastore._simulations.pattern
+            self.parameters = self._datastore._simulations.parameters
             cif_string = ""
             with open(file_url, "r") as f:
                 cif_string = f.read()
@@ -321,7 +318,7 @@ class Experiment(coreExperiment):
         #is_pol = isinstance(self, PolPowder1DCW)
         is_tof = False
         is_pol = False
-        cif = "data_" + self.name + "\n\n"
+        cif = "data_" + self.job_name + "\n\n"
         if is_tof:
             cif += tof_param_as_cif(pattern=self.pattern, parameters=self.parameters) + "\n\n"
         else:

@@ -78,6 +78,7 @@ class Experiment(coreExperiment):
         self._y_axis_prefix = "Intensity_"
         self.job_number = 0
         self.cif_string = ""
+        self.name = job_name
         # local references to pattern and parameters
         if hasattr(self._datastore, "_simulations"):
             self.pattern = self._datastore._simulations.pattern
@@ -288,6 +289,7 @@ class Experiment(coreExperiment):
 
         if experiment_name is None:
             experiment_name = block.name
+            self.name = experiment_name
         self.from_cif_block(block, experiment_name=experiment_name)
 
     def from_cif_block(self, block, experiment_name=None):
@@ -302,6 +304,7 @@ class Experiment(coreExperiment):
         """
         if experiment_name is None:
             experiment_name = block.name
+            self.name = experiment_name
         self.pattern_from_cif_block(block)
         self.parameters_from_cif_block(block)
         self.phase_parameters_from_cif_block(block)

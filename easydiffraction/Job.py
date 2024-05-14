@@ -338,10 +338,19 @@ class DiffractionJob(JobBase):
         '''
         return self.calculate_profile(x, simulation_name, **kwargs)
 
-    def calculate_profile(self, x: Union[xr.DataArray, np.ndarray], simulation_name:str="", **kwargs) -> np.ndarray:
+    def calculate_profile(self, x: Union[xr.DataArray, np.ndarray] = None, simulation_name:str="", **kwargs) -> np.ndarray:
         '''
         Calculate the profile based on current phase.
         '''
+        if x is None:
+            x_coord_name = (
+                self._name
+                + "_"
+                + self.experiment.name
+                + "_"
+                + self._x_axis_name
+            )
+            x = self.datastore.store[x_coord_name]
         if not isinstance(x, xr.DataArray):
             coord_name = (
                 self.datastore._simulations._simulation_prefix

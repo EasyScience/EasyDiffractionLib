@@ -350,6 +350,8 @@ class DiffractionJob(JobBase):
                 + "_"
                 + self._x_axis_name
             )
+            if x_coord_name not in self.datastore.store:
+                raise ValueError("x-axis data not found in the datastore.")
             x = self.datastore.store[x_coord_name]
         if not isinstance(x, xr.DataArray):
             coord_name = (

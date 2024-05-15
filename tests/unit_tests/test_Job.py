@@ -70,7 +70,7 @@ def test_get_pol_job_from_file():
 def test_add_experiment_from_file():
     j = Job("test")
     j.add_experiment_from_file("examples/d1a.cif")
-    assert j.experiment._name == "test"
+    assert j.experiment._name == "d1a"
     assert isinstance(j.experiment, Experiment)
 
 def test_add_sample_from_file():

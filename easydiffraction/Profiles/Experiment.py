@@ -21,6 +21,7 @@ from easydiffraction.Jobs import exp_data_as_cif
 from easydiffraction.Jobs import polar_param_as_cif
 from easydiffraction.Jobs import tof_param_as_cif
 from easydiffraction.Profiles.P1D import Instrument1DCWParameters
+from easydiffraction.Profiles.P1D import Instrument1DTOFParameters
 from easydiffraction.Profiles.P1D import PolPowder1DParameters
 from easydiffraction.Profiles.P1D import Powder1DParameters
 
@@ -101,7 +102,6 @@ class Experiment(coreExperiment):
             )
             j += 1
 
-
     def add_experiment(self, experiment_name, file_path):
         data = np.loadtxt(file_path, unpack=True)
         coord_name = self.job_name + "_" + experiment_name + "_" + self._x_axis_name
@@ -133,22 +133,30 @@ class Experiment(coreExperiment):
             pattern.field = p.get('field', 0.0)
         if 'zero_shift' in p:
             pattern.zero_shift = p['zero_shift'].get('value', 0.0)
-            pattern.zero_shift.error = p['zero_shift'].get('error', 0.0)
-            pattern.zero_shift.fixed = False if p['zero_shift'].get('error') else True
+            if p['zero_shift'].get('error') is not None:
+                pattern.zero_shift.error = p['zero_shift'].get('error')
+                pattern.zero_shift.fixed = False
         # modify the pattern on the datastore
         self.pattern = pattern
 
     def parameters_from_cif_block(self, block):
        # Various instrumental parameters
         p = parameters_from_cif(block)
-        parameters = Instrument1DCWParameters() # default
-        # test for TOF will be done here, once we know what CIF block to expect
+        if 'wavelength' in p:
+            self.cw_parameters_from_dict(p)
+        elif 'dtt1' in p:
+            self.tof_parameters_from_dict(p)
+        else:
+            raise ValueError("Unknown instrumental parameters in CIF file")
+
+    def cw_parameters_from_dict(self, p: dict):
+        # Constant Wavelength instrumental parameters
+        parameters = Instrument1DCWParameters()
         if 'wavelength' in p:
             parameters.wavelength = p['wavelength'].get('value', 0.0)
-        if p['wavelength'].get('error') is not None:
-            parameters.wavelength.error = p['wavelength'].get('error')
-            parameters.wavelength.fixed = False
-
+            if p['wavelength'].get('error') is not None:
+                parameters.wavelength.error = p['wavelength'].get('error')
+                parameters.wavelength.fixed = False
         if 'resolution_u' in p:
             parameters.resolution_u = p['resolution_u'].get('value', 0.0)
             if p['resolution_u'].get('error') is not None:
@@ -206,6 +214,77 @@ class Experiment(coreExperiment):
 
         self.parameters = parameters
 
+    def tof_parameters_from_dict(self, p: dict):
+       # Time of Flight instrumental parameters
+        parameters = Instrument1DTOFParameters()
+        if 'dtt1' in p:
+            parameters.dtt1 = p['dtt1'].get('value', 0.0)
+            if p['dtt1'].get('error') is not None:
+                parameters.dtt1.error = p['dtt1'].get('error')
+                parameters.dtt1.fixed = False
+        if 'dtt2' in p:
+            parameters.dtt2 = p['dtt2'].get('value', 0.0)
+            if p['dtt2'].get('error') is not None:
+                parameters.dtt2.error = p['dtt2'].get('error')
+                parameters.dtt2.fixed = False
+        if '2theta_bank' in p:
+            parameters.ttheta_bank = p['2theta_bank'].get('value', 0.0)
+            if p['2theta_bank'].get('error') is not None:
+                parameters.ttheta_bank.error = p['2theta_bank'].get('error')
+                parameters.ttheta_bank.fixed = False
+        if 'alpha0' in p:
+            parameters.alpha0 = p['alpha0'].get('value', 0.0)
+            if p['alpha0'].get('error') is not None:
+                parameters.alpha0.error = p['alpha0'].get('error')
+                parameters.alpha0.fixed = False
+        if 'alpha1' in p:
+            parameters.alpha1 = p['alpha1'].get('value', 0.0)
+            if p['alpha1'].get('error') is not None:
+                parameters.alpha1.error = p['alpha1'].get('error')
+                parameters.alpha1.fixed = False
+        if 'beta0' in p:
+            parameters.beta0 = p['beta0'].get('value', 0.0)
+            if p['beta0'].get('error') is not None:
+                parameters.beta0.error = p['beta0'].get('error')
+                parameters.beta0.fixed = False
+        if 'beta1' in p:
+            parameters.beta1 = p['beta1'].get('value', 0.0)
+            if p['beta1'].get('error') is not None:
+                parameters.beta1.error = p['beta1'].get('error')
+                parameters.beta1.fixed = False
+        if 'gamma0' in p:
+            parameters.gamma0 = p['gamma0'].get('value', 0.0)
+            if p['gamma0'].get('error') is not None:
+                parameters.gamma0.error = p['gamma0'].get('error')
+                parameters.gamma0.fixed = False
+        if 'gamma1' in p:
+            parameters.gamma1 = p['gamma1'].get('value', 0.0)
+            if p['gamma1'].get('error') is not None:
+                parameters.gamma1.error = p['gamma1'].get('error')
+                parameters.gamma1.fixed = False
+        if 'gamma2' in p:
+            parameters.gamma2 = p['gamma2'].get('value', 0.0)
+            if p['gamma2'].get('error') is not None:
+                parameters.gamma2.error = p['gamma2'].get('error')
+                parameters.gamma2.fixed = False
+        if 'sigma0' in p:
+            parameters.sigma0 = p['sigma0'].get('value', 0.0)
+            if p['sigma0'].get('error') is not None:
+                parameters.sigma0.error = p['sigma0'].get('error')
+                parameters.sigma0.fixed = False
+        if 'sigma1' in p:
+            parameters.sigma1 = p['sigma1'].get('value', 0.0)
+            if p['sigma1'].get('error') is not None:
+                parameters.sigma1.error = p['sigma1'].get('error')
+                parameters.sigma1.fixed = False
+        if 'sigma2' in p:
+            parameters.sigma2 = p['sigma2'].get('value', 0.0)
+            if p['sigma2'].get('error') is not None:
+                parameters.sigma2.error = p['sigma2'].get('error')
+                parameters.sigma2.fixed = False
+
+        self.parameters = parameters
+
     def phase_parameters_from_cif_block(self, block):
         # Get phase parameters
         p = phase_parameters_from_cif(block)
@@ -222,7 +301,6 @@ class Experiment(coreExperiment):
 
     def data_from_cif_block(self, block, experiment_name):
         # data points
-        #data_x, data_y, data_e = data_from_cif(block)
         data =data_from_cif(block)
         data_x = data['x']
         data_y = data['y']
@@ -253,8 +331,9 @@ class Experiment(coreExperiment):
     def from_xye_file(self, file_url, experiment_name=None):
         """
         Load an xye file into the experiment.
+        All instrumental parameters are set to default values, defined in the
+        Instrument1DCWParameters class.
         """
-        #data = np.loadtxt(file_url, unpack=True)
         with open(file_url, "r") as f:
             data = f.read()
 
@@ -262,8 +341,6 @@ class Experiment(coreExperiment):
             experiment_name = "None"
         string = _DEFAULT_DATA_BLOCK_NO_MEAS + "\n" + data
         self.from_cif_string(string, experiment_name=experiment_name)
-
-        # self.add_experiment_data(data[0], data[1:], experiment_name=experiment_name)
 
     def from_cif_file(self, file_url, experiment_name=None):
             """
@@ -339,6 +416,36 @@ class Experiment(coreExperiment):
     def update_bindings(self):
         self.generate_bindings()
 
+    #
+    # vanity methods for querying the datastore
+    #
+    @property
+    def x(self):
+        '''
+        Returns the x-axis data as xarray
+        '''
+        return self._datastore.store[self.job_name + "_" + self.name + "_tth"]
+
+    @property
+    def y(self):
+        '''
+        Returns the y-axis experimental data as xarray
+        '''
+        return self._datastore.store[self.job_name + "_" + self.name + "_I0"]
+
+    @property
+    def y_alpha(self):
+        '''
+        Returns the y-axis experimental data as xarray
+        '''
+        return self.y
+
+    @property
+    def y_beta(self):
+        '''
+        Returns the y-axis experimental data as xarray
+        '''
+        return self._datastore.store[self.job_name + "_" + self.name + "_I1"]
 
     @staticmethod
     def from_cif(cif_file: str):

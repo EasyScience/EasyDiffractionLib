@@ -205,10 +205,10 @@ class DiffractionJob(JobBase):
         self.type.is_sc = self.experiment.is_single_crystal
         self.type.is_2d = self.experiment.is_2d
 
-        if self.type.is_tof:
-            self._x_axis_name = "time"
-        else:
-            self._x_axis_name = "tth"
+        #if self.type.is_tof:
+        #    self._x_axis_name = "time"
+        #else:
+        self._x_axis_name = "tth"
 
     def update_phase_scale(self) -> None:
         '''
@@ -400,10 +400,10 @@ class DiffractionJob(JobBase):
         method = self.fitter.available_methods()[0]
         self._fit_finished = False
 
-        data = self.interface.data()._inOutDict[self._name]
-        x = data['ttheta']
-        y = data['signal_exp'][0]
-        e = data['signal_exp'][1]
+        x = self.experiment.x
+        y = self.experiment.y
+        e = self.experiment.e
+
         weights = 1 / e
 
         kwargs = {

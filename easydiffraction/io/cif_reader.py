@@ -71,11 +71,6 @@ def parameters_from_cif_block(block) -> dict:
         parameters['reflex_asymmetry_p3'] = {}
         parameters['reflex_asymmetry_p3']['value'], parameters['reflex_asymmetry_p3']['error'] = parse_with_error(value)
     
-    # TOF
-    # value = block.find_value("_pd_instr_zero") or block.find_value("_pd_instr.zero")
-    # if value is not None:
-    #     parameters['zero'] = {}
-    #     parameters['zero']['value'], parameters['zero']['error'] = parse_with_error(value)
     value = block.find_value("_pd_instr_dtt1") or block.find_value("_pd_instr.dtt1")
     if value is not None:
         parameters['dtt1'] = {}
@@ -191,16 +186,15 @@ def data_from_cif_block(block):
     data_x = np.fromiter(block.find_loop(str_theta), float)
     data_y = []
     data_e = []
-    data_y.append(np.fromiter(block.find_loop(str_up), float))
-    data_e.append(np.fromiter(block.find_loop(str_up_sigma), float))
-    data_y.append(np.fromiter(block.find_loop(str_down), float))
-    data_e.append(np.fromiter(block.find_loop(str_down_sigma), float))
+    if len(block.find_loop(str_up)) != 0:
+        data_y.append(np.fromiter(block.find_loop(str_up), float))
+        data_e.append(np.fromiter(block.find_loop(str_up_sigma), float))
+        data_y.append(np.fromiter(block.find_loop(str_down), float))
+        data_e.append(np.fromiter(block.find_loop(str_down_sigma), float))
     # Unpolarized case
-    if not np.any(data_y[0]):
-        data_y[0] = np.fromiter(block.find_loop(str_intensity), float)
-        data_e[0] = np.fromiter(block.find_loop(str_intensity_sigma), float)
-        data_y[1] = np.zeros(len(data_y[0]))
-        data_e[1] = np.zeros(len(data_e[0]))
+    else:
+        data_y.append(np.fromiter(block.find_loop(str_intensity), float))
+        data_e.append(np.fromiter(block.find_loop(str_intensity_sigma), float))
     data['x'] = data_x
     data['y'] = data_y
     data['e'] = data_e

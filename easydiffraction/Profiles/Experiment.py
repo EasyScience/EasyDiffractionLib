@@ -119,7 +119,6 @@ class Experiment(coreExperiment):
                 self.job_name + "_" + experiment_name + f"_I{j}", data_e
             )
             j += 1
-        # self._experiments[]
 
     def pattern_from_cif_block(self, block):
         p = pattern_from_cif(block)
@@ -143,8 +142,10 @@ class Experiment(coreExperiment):
        # Various instrumental parameters
         p = parameters_from_cif(block)
         if 'wavelength' in p:
+            self.is_tof = False
             self.cw_parameters_from_dict(p)
         elif 'dtt1' in p:
+            self.is_tof = True
             self.tof_parameters_from_dict(p)
         else:
             raise ValueError("Unknown instrumental parameters in CIF file")
@@ -301,7 +302,7 @@ class Experiment(coreExperiment):
 
     def data_from_cif_block(self, block, experiment_name):
         # data points
-        data =data_from_cif(block)
+        data = data_from_cif(block)
         data_x = data['x']
         data_y = data['y']
         data_e = data['e']
@@ -309,6 +310,7 @@ class Experiment(coreExperiment):
         coord_name = self.job_name + "_" + experiment_name + "_" + self._x_axis_name
 
         self._datastore.store.easyscience.add_coordinate(coord_name, data_x)
+        self.is_polarized = False if len(data_y) == 1 else True
 
         for i in range(0, len(data_y)):
             self._datastore.store.easyscience.add_variable(
@@ -446,6 +448,13 @@ class Experiment(coreExperiment):
         Returns the y-axis experimental data as xarray
         '''
         return self._datastore.store[self.job_name + "_" + self.name + "_I1"]
+
+    @property
+    def e(self):
+        '''
+        Returns the error data as xarray
+        '''
+        return self._datastore.store["s_" + self.job_name + "_" + self.name + "_I0"]
 
     @staticmethod
     def from_cif(cif_file: str):

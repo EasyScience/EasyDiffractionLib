@@ -787,6 +787,15 @@ class CryspyV2(InterfaceTemplate):
             data = self._internal.get_phase_components(phase_name)
             return data
 
+    def updateModelCif(self, cif_string: str) -> None:
+        self.calculator.updateModelCif(cif_string)
+
+    def updateExpCif(self, cif_string: str, model_names: list) -> None:
+        self.calculator.updateExpCif(cif_string, model_names)
+
+    def replaceExpCif(self, cif_string: str, exp_name: str) -> None:
+        self.calculator.replaceExpCif(cif_string, exp_name)
+
     def full_callback(
         self,
         x_array: np.ndarray,
@@ -805,3 +814,9 @@ class CryspyV2(InterfaceTemplate):
             result = self.calculator.full_calculate(x_array, pol_fn=pol_fn, **kwargs)
         return result
 
+    def calculate_profile(self):
+        results = self.calculator.calculate_profile()
+        return results
+
+    def data(self):
+        return self.calculator._cryspyData

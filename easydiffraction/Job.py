@@ -20,6 +20,10 @@ from easydiffraction.Profiles.Analysis import Analysis
 from easydiffraction.Profiles.Container import DataContainer
 from easydiffraction.Profiles.Experiment import Experiment
 from easydiffraction.Profiles.JobType import JobType
+from easydiffraction.Profiles.P1D import Instrument1DCWParameters
+from easydiffraction.Profiles.P1D import Instrument1DTOFParameters
+from easydiffraction.Profiles.P1D import PolPowder1DParameters
+from easydiffraction.Profiles.P1D import Powder1DParameters
 
 # from easydiffraction.Profiles.Sample import Sample
 from easydiffraction.sample import Sample
@@ -68,11 +72,8 @@ class DiffractionJob(JobBase):
         if type is not None and experiment is not None:
             raise ValueError("Job type and experiment cannot be passed together.")
 
-        # assign Job components
-        self.sample = sample # container for phases
-        self.interface = self.sample._interface
+        # assign Experiment, so potential type assignment can be done
         self.experiment = experiment
-        self.analysis = analysis
 
         self._summary = None  # TODO: implement
         self._info = None # TODO: implement
@@ -88,6 +89,11 @@ class DiffractionJob(JobBase):
         if type is None:
             self.update_job_type()
 
+        # assign Job components
+        self.sample = sample # container for phases
+        self.interface = self.sample._interface
+        self.analysis = analysis
+
     @property
     def sample(self) -> Sample:
         return self._sample
@@ -99,7 +105,16 @@ class DiffractionJob(JobBase):
             self._sample = value
             # self._sample = deepcopy(value) # TODO fix deepcopy on EXC sample
         else:
-            self._sample = Sample("Sample")
+            # pass the initial parameters, based on type
+            if self.type.is_pol:
+                pattern = PolPowder1DParameters()
+            else:
+                pattern = Powder1DParameters()
+            if self.type.is_cwl:
+                parameters = Instrument1DCWParameters()
+            elif self.type.is_tof:
+                parameters = Instrument1DTOFParameters()
+            self._sample = Sample("Sample", parameters=parameters, pattern=pattern)
 
     @property
     def theory(self) -> Sample:
@@ -153,6 +168,18 @@ class DiffractionJob(JobBase):
     @info.setter
     def info(self, value):
         self._info = value
+
+    @property
+    def type(self) -> JobType:
+        return self._type
+
+    @type.setter
+    def type(self, value: Union[JobType, str]) -> None:
+        if isinstance(value, str):
+            self._type = JobType(value)
+        else:
+            self._type = value
+        # we modified the type - this job goes back to the default state
 
     @property
     def parameters(self):

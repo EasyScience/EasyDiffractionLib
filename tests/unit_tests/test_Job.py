@@ -7,6 +7,10 @@ from easydiffraction.Job import DiffractionJob as Job
 from easydiffraction.Profiles.Analysis import Analysis
 from easydiffraction.Profiles.Experiment import Experiment
 from easydiffraction.Profiles.JobType import JobType
+from easydiffraction.Profiles.P1D import Instrument1DCWParameters
+from easydiffraction.Profiles.P1D import Instrument1DTOFParameters
+from easydiffraction.Profiles.P1D import PolPowder1DParameters
+from easydiffraction.Profiles.P1D import Powder1DParameters
 
 # from easydiffraction.Profiles.Sample import Sample
 from easydiffraction.sample import Sample
@@ -48,6 +52,16 @@ def test_switch_job_TOF_2():
     assert j.type.is_tof
     assert j.type.is_pd
     assert j.type.is_1d
+    assert isinstance(j.parameters, Instrument1DCWParameters)
+    assert isinstance(j.sample.pattern, Powder1DParameters)
+
+def test_job_tof():
+    j = Job(type="pol-tof")
+    assert j.type.is_tof
+    assert not j.type.is_cwl
+    assert j.type.is_pol
+    assert isinstance(j.parameters, Instrument1DTOFParameters)
+    assert isinstance(j.sample.pattern, PolPowder1DParameters)
 
 def test_get_job_from_file():
     j = Job()

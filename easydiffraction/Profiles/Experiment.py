@@ -120,7 +120,7 @@ class Experiment(coreExperiment):
             )
             j += 1
 
-    def pattern_from_cif_block(self, block):
+    def pattern_from_cif_block(self, block, experiment_name="None"):
         p = pattern_from_cif(block)
         self.is_polarized = False
         pattern = Powder1DParameters() # default
@@ -135,6 +135,8 @@ class Experiment(coreExperiment):
             if p['zero_shift'].get('error') is not None:
                 pattern.zero_shift.error = p['zero_shift'].get('error')
                 pattern.zero_shift.fixed = False
+        bkg = self.background_from_cif_block(block, experiment_name=experiment_name)
+        pattern.backgrounds.append(bkg)
         # modify the pattern on the datastore
         self.pattern = pattern
 
@@ -320,15 +322,14 @@ class Experiment(coreExperiment):
                 self.job_name + "_" + experiment_name + f"_I{i}", data_e[i]
             )
 
-    def background_from_cif_block(self, block, experiment_name):
+    def background_from_cif_block(self, block, experiment_name=None):
         # The background
         background_2thetas, background_intensities = background_from_cif(block)
 
         bkg = PointBackground(linked_experiment=experiment_name)
         for (x, y) in zip(background_2thetas, background_intensities):
             bkg.append(BackgroundPoint.from_pars(x, y))
-        self.pattern.backgrounds.append(bkg)
-        pass
+        return bkg
 
     def from_xye_file(self, file_url, experiment_name=None):
         """
@@ -350,8 +351,8 @@ class Experiment(coreExperiment):
             """
             # content
             # update the reference to parameters and pattern
-            self.pattern = self._datastore._simulations.pattern
-            self.parameters = self._datastore._simulations.parameters
+            # self.pattern = self._datastore._simulations.pattern
+            # self.parameters = self._datastore._simulations.parameters
             cif_string = ""
             with open(file_url, "r") as f:
                 cif_string = f.read()
@@ -384,11 +385,10 @@ class Experiment(coreExperiment):
         if experiment_name is None:
             experiment_name = block.name
             self.name = experiment_name
-        self.pattern_from_cif_block(block)
+        self.pattern_from_cif_block(block, experiment_name=experiment_name)
         self.parameters_from_cif_block(block)
         self.phase_parameters_from_cif_block(block)
         self.data_from_cif_block(block, experiment_name)
-        self.background_from_cif_block(block, experiment_name)
 
     def as_cif(self):
         '''

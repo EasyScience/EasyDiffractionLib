@@ -215,13 +215,25 @@ def background_from_cif_block(block):
         x_label = "_pd_background.line_segment_X"
         y_label = "_pd_background.line_segment_intensity"
 
-    x = np.fromiter(block.find_loop(x_label), float)
-    y = np.fromiter(block.find_loop(y_label), float)
-    return x, y
+    bg_x_values = np.fromiter(block.find_loop(x_label), float)
+    bg_y_label = np.fromiter(block.find_loop(y_label), dtype=('S20'))
+    bg_y_values = []
+    for val in bg_y_label:
+        bg_y_values.append(val.decode('ascii'))
+
+    y = {}
+    for (x, y_repr) in zip(bg_x_values, bg_y_values):
+        y[x] = {}
+        y[x]['value'], y[x]['error'] = parse_with_error(y_repr)
+
+    return bg_x_values, y
 
 def parse_with_error(value: str) -> tuple:
     if "(" in value:
         value, error = value.split("(")
         error = error.strip(")")
-        return float(value), float(error)
-    return float(value), None
+        if not error:
+            return float(value), 0.0  # 1.23()
+        else:
+            return float(value), float(error) # 1.23(4)
+    return float(value), None # 1.23

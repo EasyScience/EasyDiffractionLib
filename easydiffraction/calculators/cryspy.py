@@ -802,7 +802,7 @@ class Cryspy:
         experiment_dict_model = self.model.get_dictionary()
         exp_name_model = experiment_dict_model['type_name']
 
-        if self._cryspyData._inOutDict:
+        if self._cryspyData._inOutDict and phase_dict:
             # we have the data from the GUI
             self._cryspyDict = self._cryspyData._cryspyDict
         else:

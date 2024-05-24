@@ -4,6 +4,8 @@
 import numpy as np
 from easyscience.Datasets.xarray import xr
 from easyscience.Objects.Job.Experiment import ExperimentBase as coreExperiment
+from easyscience.Objects.ObjectClasses import Descriptor
+from easyscience.Objects.ObjectClasses import Parameter
 from gemmi import cif
 
 from easydiffraction.elements.Backgrounds.Point import BackgroundPoint
@@ -328,7 +330,13 @@ class Experiment(coreExperiment):
 
         bkg = PointBackground(linked_experiment=experiment_name)
         for (x, y) in zip(background_2thetas, background_intensities):
-            bkg.append(BackgroundPoint.from_pars(x, y))
+            bg_x = Descriptor('x', x)
+            intensity = background_intensities[y]['value']
+            error = background_intensities[y]['error']
+            fixed = error is None
+            error = 0.0 if error is None else error
+            bg_y = Parameter('intensity', intensity, error=error, fixed=fixed)
+            bkg.append(BackgroundPoint(x=bg_x, y=bg_y))
         return bkg
 
     def from_xye_file(self, file_url, experiment_name=None):

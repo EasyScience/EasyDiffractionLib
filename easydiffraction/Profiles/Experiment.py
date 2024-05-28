@@ -349,7 +349,7 @@ class Experiment(coreExperiment):
             data = f.read()
 
         if experiment_name is None:
-            experiment_name = "None"
+            experiment_name = self.name
         string = _DEFAULT_DATA_BLOCK_NO_MEAS + "\n" + data
         self.from_cif_string(string, experiment_name=experiment_name)
 
@@ -434,14 +434,20 @@ class Experiment(coreExperiment):
         '''
         Returns the x-axis data as xarray
         '''
-        return self._datastore.store[self.job_name + "_" + self.name + "_tth"]
+        coord = self.job_name + "_" + self.name + "_tth"
+        if coord in self._datastore.store:
+            return self._datastore.store[coord]
+        return None
 
     @property
     def y(self):
         '''
         Returns the y-axis experimental data as xarray
         '''
-        return self._datastore.store[self.job_name + "_" + self.name + "_I0"]
+        coord = self.job_name + "_" + self.name + "_I0"
+        if coord in self._datastore.store:
+            return self._datastore.store[coord]
+        return None
 
     @property
     def y_alpha(self):
@@ -455,15 +461,21 @@ class Experiment(coreExperiment):
         '''
         Returns the y-axis experimental data as xarray
         '''
-        return self._datastore.store[self.job_name + "_" + self.name + "_I1"]
+        coord = self.job_name + "_" + self.name + "_I1"
+        if coord in self._datastore.store:
+            return self._datastore.store[coord]
+        return None
 
     @property
     def e(self):
         '''
         Returns the error data as xarray
         '''
-        return self._datastore.store["s_" + self.job_name + "_" + self.name + "_I0"]
-
+        coord = self.job_name + "_" + self.name + "_I0"
+        if coord in self._datastore.store:
+            return self._datastore.store[coord]
+        return None
+ 
     @staticmethod
     def from_cif(cif_file: str):
         """

@@ -47,12 +47,16 @@ class DiffractionJob(JobBase):
         super(DiffractionJob, self).__init__(
             name
         )
+        # The following assignment is necessary for proper binding
+        if interface is None:
+            interface = InterfaceFactory()
+        self.interface = interface
 
         # Generate the datastore for this job
         __dataset = datastore if datastore is not None else xr.Dataset()
         self.add_datastore(__dataset)
-
         self._name = name if name is not None else "Job"
+
         self.cif_string = ""
         # Dataset specific attributes
         self._x_axis_name = "tth" # default for CW, can be `time` for TOF
@@ -61,12 +65,7 @@ class DiffractionJob(JobBase):
 
         # Fitting related attributes
         self.fitting_results = None
-        self.fitter = CoreFitter(self, self.calculate_theory)
-
-        # The following assignment is necessary for proper binding
-        if interface is None:
-            interface = InterfaceFactory()
-        self.interface = interface
+        self.fitter = CoreFitter(self, self.interface.fit_func)
 
         # can't have type and experiment together
         if type is not None and experiment is not None:
@@ -93,6 +92,12 @@ class DiffractionJob(JobBase):
         self.sample = sample # container for phases
         self.interface = self.sample._interface
         self.analysis = analysis
+
+        # necessary for the fitter
+        self._kwargs = {}
+        self._kwargs['_phases'] = self.sample.phases
+        self._kwargs['_parameters'] = self.sample.parameters
+        self._kwargs['_pattern'] = self.sample.pattern
 
     @property
     def sample(self) -> Sample:
@@ -188,6 +193,12 @@ class DiffractionJob(JobBase):
     @property
     def phases(self) -> Phases:
         return self.sample.phases
+
+    @property
+    def background(self):
+        # calculate background based on the experimental x values
+        x = self.experiment.x
+        return self.experiment.pattern.backgrounds[0].calculate(x) if x is not None else None
 
     def set_job_from_file(self, file_url: str) -> None:
         '''
@@ -413,8 +424,14 @@ class DiffractionJob(JobBase):
         else:
             simulation_name = self._name + "_" + simulation_name
         # self.datastore._simulations.add_simulation(simulation_name, y)
-        prefix = self.datastore._simulations._simulation_prefix
-        self.datastore.store[prefix + simulation_name + self._x_axis_name] = y
+        # prefix = self.datastore._simulations._simulation_prefix
+        # self.datastore.store[prefix + simulation_name + self._x_axis_name] = y
+        self.datastore.store[self.datastore._simulations._simulation_prefix + simulation_name] = y
+        #######
+        ## self.datastore._simulations.add_simulation(simulation_name, y)
+        #def add_simulation(self, simulation_name, simulation):
+        #    self._dataset[self._simulation_prefix + simulation_name] = simulation
+        ########
         # fitter expects ndarrays
         if type(y) == xr.DataArray:
             y = y.values
@@ -424,6 +441,7 @@ class DiffractionJob(JobBase):
         '''
         Fit the profile based on current phase and experiment.
         '''
+        self.fitter = CoreFitter(self, self.interface.fit_func)
         method = self.fitter.available_methods()[0]
         self._fit_finished = False
 
@@ -445,6 +463,10 @@ class DiffractionJob(JobBase):
         # save some kwargs on the interface object for use in the calculator
         self.interface._InterfaceFactoryTemplate__interface_obj.saved_kwargs = local_kwargs
         try:
+            if isinstance(x, xr.DataArray):
+                x = x.values
+            if isinstance(y, xr.DataArray):
+                y = y.values
             res = self.fitter.fit(x, y, **kwargs)
 
         except Exception:

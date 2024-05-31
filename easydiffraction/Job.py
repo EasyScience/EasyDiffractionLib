@@ -486,7 +486,7 @@ class DiffractionJob(JobBase):
         )
 
     ###### DUNDER METHODS ######
-    def __deepcopy__(self):
+    def __copy__(self):
         # Re-create the current object
         return DiffractionJob(
             name=self._name,
@@ -494,6 +494,16 @@ class DiffractionJob(JobBase):
             experiment=self.experiment,
             analysis=self.analysis,
             interface=self.interface
+        )
+
+    def __deepcopy__(self, j):
+        # Re-create the current object
+        return DiffractionJob(
+            name=j._name,
+            sample=j.sample,
+            experiment=j.experiment,
+            analysis=j.analysis,
+            interface=j.interface
         )
 
     def __str__(self) -> str:

@@ -499,3 +499,9 @@ class Experiment(coreExperiment):
     def as_dict(self, skip: list = []) -> dict:
         this_dict = super(Experiment, self).as_dict(skip=skip)
         return this_dict
+
+    def __copy__(self):
+        return Experiment(self.job_name, datastore=self._datastore)
+    
+    def __deepcopy__(self, memo):
+        return Experiment(self.job_name, datastore=self._datastore)

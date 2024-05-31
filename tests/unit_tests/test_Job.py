@@ -1,3 +1,5 @@
+import copy
+
 import numpy as np
 import pytest
 
@@ -146,4 +148,14 @@ def test_calculate_profile():
     assert y[0] == pytest.approx(0.0, abs=1e-5)
     assert np.max(y) == pytest.approx(11206, abs=1)
 
-
+def test_copy():
+    j = Job("test")
+    j.add_sample_from_file("examples/PbSO4.cif")
+    j2 = copy.copy(j)
+    assert id(j) != id(j2)
+    assert j2.name == j.name
+    assert j2.sample._name == j.sample._name
+    assert j2.experiment._name == j.experiment._name
+    assert j2.analysis._name == j.analysis._name
+    assert j2.type.type_str == j.type.type_str
+    assert j2.parameters == j.parameters

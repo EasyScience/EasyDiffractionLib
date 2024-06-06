@@ -131,7 +131,7 @@ def test_experiment_assignment():
 
 def test_analysis_assignment():
     # assure that analysis is deep copied
-    analysis = Analysis("test")
+    analysis = Analysis("analysis")
     j = Job("test", analysis=analysis)
     assert id(j.analysis) != id(analysis)
 

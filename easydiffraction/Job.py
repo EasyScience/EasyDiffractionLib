@@ -9,7 +9,8 @@ from typing import Union
 
 import numpy as np
 from easyscience.Datasets.xarray import xr  # type: ignore
-from easyscience.Fitting.Fitting import Fitter as CoreFitter
+
+# from easyscience.Fitting.Fitting import Fitter as CoreFitter
 from easyscience.Objects.Job.Job import JobBase
 from gemmi import cif
 
@@ -65,7 +66,7 @@ class DiffractionJob(JobBase):
 
         # Fitting related attributes
         self.fitting_results = None
-        self.fitter = CoreFitter(self, self.interface.fit_func)
+        # self.fitter = CoreFitter(self, self.interface.fit_func)
 
         # can't have type and experiment together
         if type is not None and experiment is not None:
@@ -94,6 +95,7 @@ class DiffractionJob(JobBase):
         self.analysis = analysis
 
         # necessary for the fitter
+        # TODO: remove the dependency on kwargs
         self._kwargs = {}
         self._kwargs['_phases'] = self.sample.phases
         self._kwargs['_parameters'] = self.sample.parameters
@@ -156,7 +158,8 @@ class DiffractionJob(JobBase):
         if value is not None:
             self._analysis = deepcopy(value)
         else:
-            self._analysis = Analysis("Analysis")
+            self._analysis = Analysis(self._name,
+                                      interface=self.interface)
 
     @property
     def summary(self):
@@ -358,27 +361,26 @@ class DiffractionJob(JobBase):
         '''
         Get the calculator from the interface.
         '''
-        return self.interface.current_interface_name
+        #return self.interface.current_interface_name
+        return self.analysis.calculator
 
     @calculator.setter
     def calculator(self, value: str):
         '''
         Set the calculator on the interface.
         '''
-        # TODO: check if the calculator is available for the given JobType
-        self.interface.switch(value, fitter=self.fitter)
-        self.interface.calculator = value
+        self.analysis.calculator = value
 
-    def calculate_theory(self, x: Union[xr.DataArray, np.ndarray], simulation_name:str="", **kwargs) -> np.ndarray:
-        '''
-        Implementation of the abstract method from JobBase.
-        Just a wrapper around the profile calculation.
-        '''
-        return self.calculate_profile(x, simulation_name, **kwargs)
+    # def calculate_theory(self, x: Union[xr.DataArray, np.ndarray], simulation_name:str="", **kwargs) -> np.ndarray:
+    #     '''
+    #     Implementation of the abstract method from JobBase.
+    #     Just a wrapper around the profile calculation.
+    #     '''
+    #     return self.calculate_profile(x, simulation_name, **kwargs)
 
     def calculate_profile(self, x: Union[xr.DataArray, np.ndarray] = None, simulation_name:str="", **kwargs) -> np.ndarray:
         '''
-        Calculate the profile based on current phase.
+        Pull out necessary data from the datastore and calculate the profile.
         '''
         if x is None:
             x_coord_name = (
@@ -413,11 +415,9 @@ class DiffractionJob(JobBase):
             self.datastore.store[coord_name].name = self._x_axis_name
         else:
             coord_name = x.name
-        x_store, f = self.datastore.store[coord_name].EasyScience.fit_prep(
-            self.interface.fit_func,
-            bdims=xr.broadcast(self.datastore.store[coord_name].transpose()),
-        )
-        y = xr.apply_ufunc(f, *x_store, kwargs=kwargs)
+        coord = self.datastore.store[coord_name]
+        y = self.analysis.calculate_profile(x, coord, **kwargs)
+
         y.name = self._y_axis_prefix + self._name + "_sim"
         if not simulation_name:
             simulation_name = self._name
@@ -437,44 +437,22 @@ class DiffractionJob(JobBase):
             y = y.values
         return y
 
-    def fit(self):
+    def fit(self, **kwargs):
         '''
         Fit the profile based on current phase and experiment.
         '''
-        self.fitter = CoreFitter(self, self.interface.fit_func)
-        method = self.fitter.available_methods()[0]
-        self._fit_finished = False
-
         x = self.experiment.x
         y = self.experiment.y
         e = self.experiment.e
 
-        weights = 1 / e
-
-        kwargs = {
-            'weights': weights,
-            'method': method
-        }
-
-        local_kwargs = {}
-        if method == 'least_squares':
-            kwargs['minimizer_kwargs'] = {'diff_step': 1e-5}
-
-        # save some kwargs on the interface object for use in the calculator
-        self.interface._InterfaceFactoryTemplate__interface_obj.saved_kwargs = local_kwargs
-        try:
-            if isinstance(x, xr.DataArray):
-                x = x.values
-            if isinstance(y, xr.DataArray):
-                y = y.values
-            res = self.fitter.fit(x, y, **kwargs)
-
-        except Exception:
-            return None
+        result = self.analysis.fit(x, y, e, **self._kwargs)
         # Add these in a transparent manner for querying the Job object
         # result.success
         # result.reduced_chi
-        self.fitting_results = res
+        if result is None:
+            raise ValueError("Fitting failed.")
+
+        self.fitting_results = result
 
     ###### UTILITY METHODS ######
     def add_datastore(self, datastore: xr.Dataset):

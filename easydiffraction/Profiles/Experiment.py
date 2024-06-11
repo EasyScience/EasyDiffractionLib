@@ -141,6 +141,10 @@ class Experiment(coreExperiment):
         pattern.backgrounds.append(bkg)
         # modify the pattern on the datastore
         self.pattern = pattern
+        # self._datastore._simulations._pattern = pattern
+        # let the interface know we changed the pattern
+        #if hasattr(self.interface._InterfaceFactoryTemplate__interface_obj,"set_pattern"):
+        #    self.interface._InterfaceFactoryTemplate__interface_obj.set_pattern(self.pattern)
 
     def parameters_from_cif_block(self, block):
        # Various instrumental parameters
@@ -351,7 +355,8 @@ class Experiment(coreExperiment):
         if experiment_name is None:
             experiment_name = self.name
         string = _DEFAULT_DATA_BLOCK_NO_MEAS + "\n" + data
-        self.from_cif_string(string, experiment_name=experiment_name)
+        self.from_cif_string(string)
+        pass
 
     def from_cif_file(self, file_url, experiment_name=None):
             """

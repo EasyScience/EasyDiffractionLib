@@ -75,6 +75,9 @@ class Cryspy:
     def cif_str(self, value: str):
         self.createCrystal_fromCifStr(value)
 
+    def set_pattern(self, pattern):
+        self.pattern = pattern
+
     def set_exp_cif(self, value: str):
         if value == self.experiment_cif:
             return

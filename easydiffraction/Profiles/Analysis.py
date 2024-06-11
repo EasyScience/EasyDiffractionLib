@@ -25,7 +25,6 @@ class Analysis(coreAnalysis):
         self.interface = interface
         self._fitter = CoreFitter(self, self.interface.fit_func)
 
-
     def calculate_theory(self, x: Union[xr.DataArray, np.ndarray], **kwargs) -> np.ndarray:
         '''
         Implementation of the abstract method from JobBase.
@@ -61,8 +60,7 @@ class Analysis(coreAnalysis):
         for kwarg in kwargs:
             self._kwargs[kwarg] = kwargs[kwarg]
 
-        self.fitter = CoreFitter(self, self.interface.fit_func)
-        method = self.fitter.available_methods()[0]
+        method = self._fitter.available_methods()[0]
 
         weights = 1 / e
 
@@ -82,7 +80,7 @@ class Analysis(coreAnalysis):
                 x = x.values
             if isinstance(y, xr.DataArray):
                 y = y.values
-            res = self.fitter.fit(x, y, **kwargs)
+            res = self._fitter.fit(x, y, **kwargs)
 
         except Exception:
             return None

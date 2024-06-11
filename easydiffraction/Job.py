@@ -16,6 +16,8 @@ from gemmi import cif
 
 from easydiffraction import Phase
 from easydiffraction import Phases
+from easydiffraction.elements.Backgrounds.Point import BackgroundPoint
+from easydiffraction.elements.Backgrounds.Point import PointBackground
 from easydiffraction.interface import InterfaceFactory
 from easydiffraction.Profiles.Analysis import Analysis
 from easydiffraction.Profiles.Container import DataContainer
@@ -66,7 +68,6 @@ class DiffractionJob(JobBase):
 
         # Fitting related attributes
         self.fitting_results = None
-        # self.fitter = CoreFitter(self, self.interface.fit_func)
 
         # can't have type and experiment together
         if type is not None and experiment is not None:
@@ -188,10 +189,26 @@ class DiffractionJob(JobBase):
         else:
             self._type = value
         # we modified the type - this job goes back to the default state
+        if hasattr(self, 'sample'):
+            phases = self.sample.phases
+            # recreate the sample based on the current type
+            self.sample = None
+            self.sample.phases = phases
+
+    ###### VANITY PROPERTIES ######
+    @property
+    def fitter(self):
+        return self.analysis._fitter
 
     @property
     def parameters(self):
         return self.sample.parameters
+
+    @property
+    def pattern(self):
+        if hasattr(self.experiment, 'pattern'):
+            return self.experiment.pattern
+        return self.sample._pattern
 
     @property
     def phases(self) -> Phases:
@@ -257,6 +274,22 @@ class DiffractionJob(JobBase):
         '''
         for phase in self.sample.phases:
             phase.scale = self.experiment.phase_scale.get(phase.name, phase.scale)
+
+    ###### BACKGROUNDS ######
+    def set_background(self, points: list) -> None:
+        '''
+        Sets a background on the pattern.
+        '''
+        # extract experiment name so we can link the background to it
+        experiment_name = self.experiment.name
+        bkg = PointBackground(linked_experiment=experiment_name)
+        for point in points:
+            bkg.append(BackgroundPoint(point[0], point[1]))
+        self.sample.set_background(bkg)
+        if len(self.experiment.pattern.backgrounds) == 0:
+            self.experiment.pattern.backgrounds.append(bkg)
+        else:
+            self.experiment.pattern.backgrounds[0] = bkg
 
     ###### CIF RELATED METHODS ######
 

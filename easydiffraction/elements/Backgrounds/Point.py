@@ -18,7 +18,7 @@ class BackgroundPoint(BaseObj):
     This class describes a background point. It contains x position and y intensities. Note that the label for x
     varies with it's value!!!
     """
-    def __init__(self, x: Descriptor, y: Parameter, name: str = None):
+    def __init__(self, x: float | Descriptor, y: float | Parameter, name: str = None):
         """
         Construct a background point from a x-Descriptor any y-parameter.
 
@@ -29,28 +29,16 @@ class BackgroundPoint(BaseObj):
         :param name: Override the default naming.
         :type name: str
         """
+        if not isinstance(x, Descriptor):
+            x = Descriptor('x', x)
+        if not isinstance(y, Parameter):
+            y = Parameter('intensity', y, fixed=True)
         if name is None:
             name = '{:.1f}_deg'.format(x.raw_value).replace(".", ",")
         x._callback = property(fget=None,
                                fset=lambda x_value: self._modify_x_label(x_value),
                                fdel=None)
         super(BackgroundPoint, self).__init__(name, x=x, y=y)
-
-    @classmethod
-    def from_pars(cls, x: float, y: float):
-        """
-        Construct a background point from x, y floats.
-
-        :param x: background x-position.
-        :type x: float
-        :param y: background intensity/y-position
-        :type y: float
-        :return: Constructed background point
-        :rtype: BackgroundPoint
-        """
-        x = Descriptor('x', x)
-        y = Parameter('intensity', y, fixed=True)
-        return cls(x, y)
 
     @classmethod
     def default(cls):
@@ -60,7 +48,7 @@ class BackgroundPoint(BaseObj):
         :return: Constructed background point
         :rtype: BackgroundPoint
         """
-        return cls.from_pars(0, 0)
+        return cls(0, 0)
 
     def set(self, value: float):
         """

@@ -256,7 +256,7 @@ class JobBase_1D(_PowderBase):
         background_intensities = np.fromiter(block.find_loop(y_label), float)
         bkg = PointBackground(linked_experiment=experiment_name)
         for (x, y) in zip(background_2thetas, background_intensities):
-            bkg.append(BackgroundPoint.from_pars(x, y))
+            bkg.append(BackgroundPoint(x, y))
 
         self.set_background(bkg)
 

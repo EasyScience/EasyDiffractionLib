@@ -18,7 +18,7 @@ class BackgroundPoint(BaseObj):
     This class describes a background point. It contains x position and y intensities. Note that the label for x
     varies with it's value!!!
     """
-    def __init__(self, x: Union[float, Descriptor], y: Union[float, Parameter], name: str = None):
+    def __init__(self, x: Union[float, Descriptor] = 0.0, y: Union[float, Parameter] = 0.0, name: str = None):
         """
         Construct a background point from a x-Descriptor any y-parameter.
 
@@ -39,16 +39,6 @@ class BackgroundPoint(BaseObj):
                                fset=lambda x_value: self._modify_x_label(x_value),
                                fdel=None)
         super(BackgroundPoint, self).__init__(name, x=x, y=y)
-
-    @classmethod
-    def default(cls):
-        """
-        Construct a background point at x = 0, y = 0
-
-        :return: Constructed background point
-        :rtype: BackgroundPoint
-        """
-        return cls(0, 0)
 
     def set(self, value: float):
         """

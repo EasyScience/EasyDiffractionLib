@@ -466,7 +466,7 @@ class DiffractionJob(JobBase):
         #    self._dataset[self._simulation_prefix + simulation_name] = simulation
         ########
         # fitter expects ndarrays
-        if type(y) == xr.DataArray:
+        if isinstance(y, xr.DataArray):
             y = y.values
         return y
 

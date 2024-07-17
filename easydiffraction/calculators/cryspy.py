@@ -660,7 +660,7 @@ class Cryspy:
         cryspyRangeObj = cryspy.str_to_globaln(cryspyRangeCif).items
         for dataBlock in cryspyExperimentsObj.items:
             for item in dataBlock.items:
-                if type(item) == cryspy.C_item_loop_classes.cl_1_pd_meas.PdMeasL:
+                if isinstance(item, cryspy.C_item_loop_classes.cl_1_pd_meas.PdMeasL):
                     range_min = item.items[0].ttheta
                     range_max = item.items[-1].ttheta
                     cryspyRangeObj[0].ttheta_min = range_min
@@ -671,7 +671,7 @@ class Cryspy:
         # loadedModelNames = [block['name']['value'] for block in self._dataBlocks]
         for dataBlock in cryspyExperimentsObj.items:
             for itemIdx, item in enumerate(dataBlock.items):
-                if type(item) == cryspy.C_item_loop_classes.cl_1_phase.PhaseL:
+                if isinstance(item, cryspy.C_item_loop_classes.cl_1_phase.PhaseL):
                     cryspyModelNames = [phase.label for phase in item.items]
                     for modelIdx, modelName in enumerate(cryspyModelNames):
                         if modelName not in modelNames:

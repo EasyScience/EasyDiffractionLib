@@ -62,7 +62,7 @@ dev = [
     "flake8>=6.0.0",
     "pytest>=5.2",
     "pytest-cov>=3.0.0",
-    "ruff<0.5",
+    "ruff",
     "toml>=0.10",
     "yapf>=0.31.0",
     "requests",

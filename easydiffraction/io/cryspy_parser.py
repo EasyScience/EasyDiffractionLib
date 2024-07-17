@@ -93,7 +93,7 @@ class CryspyParser:
                     # DATABLOCK SINGLES
 
                     # Space group category
-                    if type(item) == cryspy.C_item_loop_classes.cl_2_space_group.SpaceGroup:
+                    if isinstance(item, cryspy.C_item_loop_classes.cl_2_space_group.SpaceGroup):
                         if '_space_group' not in ed_phase['params']:
                             ed_phase['params']['_space_group'] = {}
                         ed_phase['params']['_space_group']['name_H-M_alt'] = dict(Parameter(
@@ -133,7 +133,7 @@ class CryspyParser:
                         ))
 
                     # Cell category
-                    elif type(item) == cryspy.C_item_loop_classes.cl_1_cell.Cell:
+                    elif isinstance(item, cryspy.C_item_loop_classes.cl_1_cell.Cell):
                         if '_cell' not in ed_phase['params']:
                             ed_phase['params']['_cell'] = {}
                         ed_phase['params']['_cell']['length_a'] = dict(Parameter(
@@ -248,7 +248,7 @@ class CryspyParser:
                     # DATABLOCK TABLES
 
                     # Atom site category
-                    elif type(item) == cryspy.C_item_loop_classes.cl_1_atom_site.AtomSiteL:
+                    elif isinstance(item, cryspy.C_item_loop_classes.cl_1_atom_site.AtomSiteL):
                         cryspy_atoms = item.items
                         ed_atoms = []
                         for idx, cryspy_atom in enumerate(cryspy_atoms):
@@ -441,7 +441,7 @@ class CryspyParser:
                     # DATABLOCK SINGLES
 
                     # Ranges category
-                    if type(item) == cryspy.C_item_loop_classes.cl_1_range.Range:
+                    if isinstance(item, cryspy.C_item_loop_classes.cl_1_range.Range):
                         ed_experiment_no_meas['params']['_pd_meas'] = {}
                         ed_experiment_no_meas['params']['_pd_meas']['2theta_range_min'] = dict(Parameter(
                             item.ttheta_min,
@@ -480,7 +480,7 @@ class CryspyParser:
                     # DATABLOCK SINGLES
 
                     # Setup section (cryspy)
-                    if type(item) == cryspy.C_item_loop_classes.cl_1_setup.Setup:
+                    if isinstance(item, cryspy.C_item_loop_classes.cl_1_setup.Setup):
                         if '_diffrn_radiation' not in ed_experiment_no_meas['params']:
                             ed_experiment_no_meas['params']['_diffrn_radiation'] = {}
                         ed_experiment_no_meas['params']['_diffrn_radiation']['probe'] = dict(Parameter(
@@ -530,7 +530,7 @@ class CryspyParser:
                         ))
 
                     # Instrument resolution section (cryspy)
-                    elif type(item) == cryspy.C_item_loop_classes.cl_1_pd_instr_resolution.PdInstrResolution:
+                    elif isinstance(item, cryspy.C_item_loop_classes.cl_1_pd_instr_resolution.PdInstrResolution):
                         if '_pd_instr' not in ed_experiment_no_meas['params']:
                             ed_experiment_no_meas['params']['_pd_instr'] = {}
                         ed_experiment_no_meas['params']['_pd_instr']['resolution_u'] = dict(Parameter(
@@ -605,7 +605,7 @@ class CryspyParser:
                         ))
 
                     # Peak assymetries section (cryspy)
-                    elif type(item) == cryspy.C_item_loop_classes.cl_1_pd_instr_reflex_asymmetry.PdInstrReflexAsymmetry:
+                    elif isinstance(item, cryspy.C_item_loop_classes.cl_1_pd_instr_reflex_asymmetry.PdInstrReflexAsymmetry):
                         if '_pd_instr' not in ed_experiment_no_meas['params']:
                             ed_experiment_no_meas['params']['_pd_instr'] = {}
                         ed_experiment_no_meas['params']['_pd_instr']['reflex_asymmetry_p1'] = dict(Parameter(
@@ -665,7 +665,7 @@ class CryspyParser:
                             fit = item.p4_refinement))
 
                     # Phases section (cryspy)
-                    elif type(item) == cryspy.C_item_loop_classes.cl_1_phase.PhaseL:
+                    elif isinstance(item, cryspy.C_item_loop_classes.cl_1_phase.PhaseL):
                         cryspy_phases = item.items
                         ed_phases = []
                         for idx, cryspy_phase in enumerate(cryspy_phases):
@@ -701,7 +701,7 @@ class CryspyParser:
                         ed_experiment_no_meas['loops']['_pd_phase_block'] = ed_phases
 
                     # Background section (cryspy)
-                    elif type(item) == cryspy.C_item_loop_classes.cl_1_pd_background.PdBackgroundL:
+                    elif isinstance(item, cryspy.C_item_loop_classes.cl_1_pd_background.PdBackgroundL):
                         cryspy_bkg_points = item.items
                         ed_bkg_points = []
                         for idx, cryspy_bkg_point in enumerate(cryspy_bkg_points):
@@ -748,7 +748,7 @@ class CryspyParser:
                         ed_experiment_no_meas['loops']['_pd_background'] = ed_bkg_points
 
                     # Measured data section (cryspy)
-                    elif type(item) == cryspy.C_item_loop_classes.cl_1_pd_meas.PdMeasL:
+                    elif isinstance(item, cryspy.C_item_loop_classes.cl_1_pd_meas.PdMeasL):
                         cryspy_meas_points = item.items
                         ed_meas_points = []
                         for idx, cryspy_meas_point in enumerate(cryspy_meas_points):

@@ -125,14 +125,14 @@ class DiffractionJob(JobBase):
             self._sample = Sample("Sample", parameters=parameters, pattern=pattern)
 
     @property
-    def theory(self) -> Sample:
+    def theoretical_model(self) -> Sample:
         """
         For diffraction, the theory is the sample
         """
         return self._sample
 
-    @theory.setter
-    def theory(self, value: Sample) -> None:
+    @theoretical_model.setter
+    def theoretical_model(self, value: Sample) -> None:
         self.sample = value
 
     @property

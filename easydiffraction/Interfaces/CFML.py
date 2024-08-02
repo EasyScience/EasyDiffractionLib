@@ -5,7 +5,7 @@ import glob
 import os
 
 import numpy as np
-from easyscience import borg
+from easyscience import global_object as borg
 from easyscience.Objects.Inferface import ItemContainer
 
 from easydiffraction import Lattice

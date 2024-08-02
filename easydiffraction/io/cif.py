@@ -18,18 +18,18 @@ from typing import List
 from typing import Tuple
 from typing import Union
 
-from easyCrystallography.Components.AtomicDisplacement import AtomicDisplacement
-from easyCrystallography.Components.Lattice import Lattice
-from easyCrystallography.Components.SpaceGroup import SpaceGroup
-from easyCrystallography.Components.Susceptibility import MagneticSusceptibility
-from easyCrystallography.Symmetry.groups import SpaceGroup as SpaceGroup2
-from easyscience.Utils.io.star import FakeCore
-from easyscience.Utils.io.star import FakeItem
-from easyscience.Utils.io.star import StarCollection
-from easyscience.Utils.io.star import StarEntry
-from easyscience.Utils.io.star import StarHeader
-from easyscience.Utils.io.star import StarLoop
-from easyscience.Utils.io.star import StarSection
+from easycrystallography.Components.AtomicDisplacement import AtomicDisplacement
+from easycrystallography.Components.Lattice import Lattice
+from easycrystallography.Components.SpaceGroup import SpaceGroup
+from easycrystallography.Components.Susceptibility import MagneticSusceptibility
+from easycrystallography.Symmetry.groups import SpaceGroup as SpaceGroup2
+from easycrystallography.io.star_base import FakeCore
+from easycrystallography.io.star_base import FakeItem
+from easycrystallography.io.star_base import StarCollection
+from easycrystallography.io.star_base import StarEntry
+from easycrystallography.io.star_base import StarHeader
+from easycrystallography.io.star_base import StarLoop
+from easycrystallography.io.star_base import StarSection
 
 from easydiffraction.components.site import Atoms
 

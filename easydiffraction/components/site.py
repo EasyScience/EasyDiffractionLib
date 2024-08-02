@@ -1,4 +1,4 @@
-#  SPDX-FileCopyrightText: 2022 easyCrystallography contributors  <crystallography@easyscience.software>
+#  SPDX-FileCopyrightText: 2022 easycrystallography contributors  <crystallography@easyscience.software>
 #  SPDX-License-Identifier: BSD-3-Clause
 #  © 2022 Contributors to the EasyScience project <https://github.com/easyScience>
 #
@@ -13,17 +13,17 @@ from typing import List
 from typing import Optional
 from typing import Union
 
-from easyCrystallography.Components.AtomicDisplacement import AtomicDisplacement
-from easyCrystallography.Components.Lattice import PeriodicLattice
-from easyCrystallography.Components.Site import Atoms as ecAtoms
-from easyCrystallography.Components.Site import PeriodicAtoms as ecPeriodicAtoms
-from easyCrystallography.Components.Site import PeriodicSite as ecPeriodicSite
-from easyCrystallography.Components.Site import Site as ecSite
-from easyCrystallography.Components.Specie import Specie
-from easyCrystallography.Components.Susceptibility import MagneticSusceptibility
+from easycrystallography.Components.AtomicDisplacement import AtomicDisplacement
+from easycrystallography.Components.Lattice import PeriodicLattice
+from easycrystallography.Components.Site import Atoms as ecAtoms
+from easycrystallography.Components.Site import PeriodicAtoms as ecPeriodicAtoms
+from easycrystallography.Components.Site import PeriodicSite as ecPeriodicSite
+from easycrystallography.Components.Site import Site as ecSite
+from easycrystallography.Components.Specie import Specie
+from easycrystallography.Components.Susceptibility import MagneticSusceptibility
 from easyscience.Objects.ObjectClasses import Descriptor
 from easyscience.Objects.ObjectClasses import Parameter
-from easyscience.Utils.io.star import StarLoop
+from easycrystallography.io.star_base import StarLoop
 
 if TYPE_CHECKING:
     from easyscience.Utils.typing import iF

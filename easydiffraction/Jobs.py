@@ -3,7 +3,7 @@ __version__ = "0.1.1"
 
 import numpy as np
 from easyscience.Datasets.xarray import xr
-from easyscience.Fitting.Fitting import Fitter
+from easyscience.fitting.fitter import Fitter
 from gemmi import cif
 
 from easydiffraction.elements.Backgrounds.Point import BackgroundPoint

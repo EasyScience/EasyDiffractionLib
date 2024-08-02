@@ -86,7 +86,7 @@ class Cryspy:
         if self._cryspyObject is None:
             self._cryspyObject = cryspy.str_to_globaln(cryspyCif)
 
-    def createModel(self, model_id: str, model_type: str = "powder1DCW"):
+    def createModel(self, model_type: str = "powder1DCW"):
         model = {"background": cryspy.PdBackgroundL(), "phase": self.phases}
         self.polarized = False
         if model_type.endswith("pol"):

@@ -4,7 +4,7 @@
 
 
 from easyscience.Datasets.xarray import xr
-from easyscience.Objects.Job.Theory import TheoryBase as coreSample
+from easyscience.Objects.Job.TheoreticalModel import TheoreticalModelBase as coreSample
 
 # this really should be easydiffraction.sample.Sample
 

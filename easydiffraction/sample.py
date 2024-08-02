@@ -6,10 +6,10 @@ import tempfile
 from typing import ClassVar
 from typing import Union
 
-from easyCrystallography.Structures.Phase import Phases as ecPhases
+from easycrystallography.Structures.Phase import Phases as ecPhases
 from easyscience.Datasets.xarray import xr
 from easyscience.Objects.ObjectClasses import BaseObj
-from easyscience.Utils.UndoRedo import property_stack_deco
+from easyscience.global_object.undo_redo import property_stack_deco
 
 from easydiffraction import Phase
 from easydiffraction import Phases

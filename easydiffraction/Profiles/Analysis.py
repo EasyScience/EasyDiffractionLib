@@ -7,7 +7,7 @@ from typing import Union
 
 import numpy as np
 from easyscience.Datasets.xarray import xr  # type: ignore
-from easyscience.Fitting.Fitting import Fitter as CoreFitter
+from easyscience.fitting.fitter import Fitter as CoreFitter
 from easyscience.Objects.Job.Analysis import AnalysisBase as coreAnalysis
 
 from easydiffraction.interface import InterfaceFactory
@@ -60,7 +60,7 @@ class Analysis(coreAnalysis):
         for kwarg in kwargs:
             self._kwargs[kwarg] = kwargs[kwarg]
 
-        method = self._fitter.available_methods()[0]
+        method = self._fitter.minimizer.available_methods()[0]
 
         weights = 1 / e
 

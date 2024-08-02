@@ -11,8 +11,8 @@ from typing import Optional
 from typing import Union
 
 import numpy as np
-from easyCrystallography.Components.AtomicDisplacement import Anisotropic as Anisotropic_base
-from easyCrystallography.Components.Site import Site as Site_base
+from easycrystallography.Components.AtomicDisplacement import Anisotropic as Anisotropic_base
+from easycrystallography.Components.Site import Site as Site_base
 from easyscience import borg
 from easyscience.Objects.Inferface import ItemContainer
 from numpy import ndarray
@@ -181,7 +181,7 @@ class CryspyBase(Neutron_type, metaclass=ABCMeta):
             for atom in model.atoms:
                 self.calculator.assignAtom_toCrystal(self._identify(atom), model_key)
         # Interface with the Phases object
-        elif issubclass(t_, Phases):
+        elif issubclass(t_, Phases) and len(model) > 0:
             for phase in model:
                 ident = self._identify(phase, as_str=True) + "_phase"
                 self.calculator.assignPhase(model_key, ident)
@@ -244,7 +244,7 @@ class CryspyBase(Neutron_type, metaclass=ABCMeta):
         return data
 
     def _createModel(self, model_key: str, model_type: str) -> None:
-        self.calculator.createModel(model_key, model_type)
+        self.calculator.createModel(model_type)
 
     def get_calculated_y_for_phase(self, phase_idx: int) -> list:
         return self.calculator.get_calculated_y_for_phase(phase_idx)
@@ -257,10 +257,12 @@ class CryspyBase(Neutron_type, metaclass=ABCMeta):
         """
         Helper function to identify objects.
         """
-        obj_id = borg.map.convert_id_to_key(obj)
-        if as_str:
-            obj_id = str(obj_id)
+        if hasattr(obj, "unique_name"):
+            obj_id = obj.unique_name
+        else:
+            obj_id = None
         return obj_id
+
 
 
 class Powder(Powder_type):
@@ -307,7 +309,7 @@ class CW(CW_type):
     def create(self, model: B) -> List[ItemContainer]:
         r_list = []
         t_ = type(model)
-        model_key = self._identify(model)
+        #model_key = self._identify(model)
 
         # Link the Instrumental parameters to the calculator.
         if issubclass(t_, Instrument1DCWParameters):
@@ -347,7 +349,7 @@ class CW(CW_type):
                     self.calculator.genericUpdate,
                 )
             )
-            self.calculator.createModel(model_key, "powder1DCW")
+            self.calculator.createModel("powder1DCW")
         return r_list
 
 
@@ -361,10 +363,10 @@ class TOF(TOF_type):
     def create(self, model: B) -> List[ItemContainer]:
         r_list = []
         t_ = type(model)
-        model_key = self._identify(model)
+        #model_key = self._identify(model)
 
         if issubclass(t_, Instrument1DTOFParameters):
-            self.calculator.createModel(model_key, "powder1DTOF")
+            self.calculator.createModel("powder1DTOF")
             # These parameters are linked to the Resolution and Setup cryspy objects
             res_key = self.calculator.createResolution(cls_type="powder1DTOF")
             setup_key = self.calculator.createSetup(cls_type="powder1DTOF")

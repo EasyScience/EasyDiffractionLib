@@ -10,7 +10,7 @@ from typing import Union
 import numpy as np
 from easyscience.Datasets.xarray import xr  # type: ignore
 
-# from easyscience.Fitting.Fitting import Fitter as CoreFitter
+# from easyscience.fitting.fitter import Fitter as CoreFitter
 from easyscience.Objects.Job.Job import JobBase
 from gemmi import cif
 
@@ -84,6 +84,8 @@ class DiffractionJob(JobBase):
         # let's have these as attributes of the Job class
         #
         # determine type based on Experiment
+        self._type = None
+        self._sample = None
         self.type = JobType() if type is None else type
         if isinstance(type, str):
             self.type = JobType(type)
@@ -125,14 +127,14 @@ class DiffractionJob(JobBase):
             self._sample = Sample("Sample", parameters=parameters, pattern=pattern)
 
     @property
-    def theory(self) -> Sample:
+    def theoretical_model(self) -> Sample:
         """
-        For diffraction, the theory is the sample
+        For diffraction, the theoretical_model is the sample
         """
         return self._sample
 
-    @theory.setter
-    def theory(self, value: Sample) -> None:
+    @theoretical_model.setter
+    def theoretical_model(self, value: Sample) -> None:
         self.sample = value
 
     @property
@@ -189,7 +191,7 @@ class DiffractionJob(JobBase):
         else:
             self._type = value
         # we modified the type - this job goes back to the default state
-        if hasattr(self, 'sample'):
+        if hasattr(self, 'sample') and self.sample is not None:
             phases = self.sample.phases
             # recreate the sample based on the current type
             self.sample = None
@@ -460,11 +462,6 @@ class DiffractionJob(JobBase):
         # prefix = self.datastore._simulations._simulation_prefix
         # self.datastore.store[prefix + simulation_name + self._x_axis_name] = y
         self.datastore.store[self.datastore._simulations._simulation_prefix + simulation_name] = y
-        #######
-        ## self.datastore._simulations.add_simulation(simulation_name, y)
-        #def add_simulation(self, simulation_name, simulation):
-        #    self._dataset[self._simulation_prefix + simulation_name] = simulation
-        ########
         # fitter expects ndarrays
         if isinstance(y, xr.DataArray):
             y = y.values

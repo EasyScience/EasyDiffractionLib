@@ -5,7 +5,7 @@ from typing import Callable
 from typing import List
 
 import numpy as np
-from easyCrystallography.Components.Site import Site as Site_base
+from easycrystallography.Components.Site import Site as Site_base
 from easyscience import borg
 from easyscience.Objects.Inferface import ItemContainer
 

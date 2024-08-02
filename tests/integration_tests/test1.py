@@ -3,7 +3,7 @@ __version__ = "0.0.1"
 
 import matplotlib.pyplot as plt
 import numpy as np
-from easyCrystallography.Components.Susceptibility import MagneticSusceptibility
+from easycrystallography.Components.Susceptibility import MagneticSusceptibility
 
 from easydiffraction import Phase
 from easydiffraction.interface import InterfaceFactory as Calculator

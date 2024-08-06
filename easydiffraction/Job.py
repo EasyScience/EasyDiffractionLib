@@ -11,7 +11,7 @@ import numpy as np
 from easyscience.Datasets.xarray import xr  # type: ignore
 
 # from easyscience.fitting.fitter import Fitter as CoreFitter
-from easyscience.Objects.Job.Job import JobBase
+from easyscience.Objects.job.job import JobBase
 from gemmi import cif
 
 from easydiffraction import Phase
@@ -406,12 +406,12 @@ class DiffractionJob(JobBase):
         '''
         self.analysis.calculator = value
 
-    # def calculate_theory(self, x: Union[xr.DataArray, np.ndarray], simulation_name:str="", **kwargs) -> np.ndarray:
-    #     '''
-    #     Implementation of the abstract method from JobBase.
-    #     Just a wrapper around the profile calculation.
-    #     '''
-    #     return self.calculate_profile(x, simulation_name, **kwargs)
+    def calculate_theory(self, x: Union[xr.DataArray, np.ndarray], simulation_name:str="", **kwargs) -> np.ndarray:
+        '''
+        Implementation of the abstract method from JobBase.
+        Just a wrapper around the profile calculation.
+        '''
+        return self.calculate_profile(x, simulation_name, **kwargs)
 
     def calculate_profile(self, x: Union[xr.DataArray, np.ndarray] = None, simulation_name:str="", **kwargs) -> np.ndarray:
         '''

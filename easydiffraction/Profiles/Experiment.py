@@ -3,7 +3,7 @@
 #  © 2021-2024 Contributors to the easydiffraction project <https://github.com/easyScience/easydiffraction
 import numpy as np
 from easyscience.Datasets.xarray import xr
-from easyscience.Objects.Job.Experiment import ExperimentBase as coreExperiment
+from easyscience.Objects.job.experiment import ExperimentBase as coreExperiment
 from easyscience.Objects.ObjectClasses import Descriptor
 from easyscience.Objects.ObjectClasses import Parameter
 from gemmi import cif

@@ -21,9 +21,9 @@ from easycrystallography.Components.Site import PeriodicSite as ecPeriodicSite
 from easycrystallography.Components.Site import Site as ecSite
 from easycrystallography.Components.Specie import Specie
 from easycrystallography.Components.Susceptibility import MagneticSusceptibility
+from easycrystallography.io.star_base import StarLoop
 from easyscience.Objects.ObjectClasses import Descriptor
 from easyscience.Objects.ObjectClasses import Parameter
-from easycrystallography.io.star_base import StarLoop
 
 if TYPE_CHECKING:
     from easyscience.Utils.typing import iF

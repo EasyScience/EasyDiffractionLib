@@ -6,7 +6,7 @@ from abc import abstractmethod
 from typing import Tuple
 
 import numpy as np
-from easyscience import borg
+from easyscience import global_object as borg
 from easyscience.Objects.core import ComponentSerializer
 
 exp_type_strings = {

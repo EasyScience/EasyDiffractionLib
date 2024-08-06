@@ -2,7 +2,7 @@ __author__ = "github.com/wardsimon"
 __version__ = "0.0.2"
 
 import numpy as np
-from easyscience import borg
+from easyscience import global_object as borg
 from easyscience.Objects.Inferface import ItemContainer
 
 from easydiffraction import Lattice

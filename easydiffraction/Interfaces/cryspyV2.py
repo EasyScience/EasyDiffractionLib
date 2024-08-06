@@ -13,7 +13,7 @@ from typing import Union
 import numpy as np
 from easycrystallography.Components.AtomicDisplacement import Anisotropic as Anisotropic_base
 from easycrystallography.Components.Site import Site as Site_base
-from easyscience import borg
+from easyscience import global_object as borg
 from easyscience.Objects.Inferface import ItemContainer
 from numpy import ndarray
 

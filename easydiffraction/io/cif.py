@@ -22,7 +22,6 @@ from easycrystallography.Components.AtomicDisplacement import AtomicDisplacement
 from easycrystallography.Components.Lattice import Lattice
 from easycrystallography.Components.SpaceGroup import SpaceGroup
 from easycrystallography.Components.Susceptibility import MagneticSusceptibility
-from easycrystallography.Symmetry.groups import SpaceGroup as SpaceGroup2
 from easycrystallography.io.star_base import FakeCore
 from easycrystallography.io.star_base import FakeItem
 from easycrystallography.io.star_base import StarCollection
@@ -30,6 +29,7 @@ from easycrystallography.io.star_base import StarEntry
 from easycrystallography.io.star_base import StarHeader
 from easycrystallography.io.star_base import StarLoop
 from easycrystallography.io.star_base import StarSection
+from easycrystallography.Symmetry.groups import SpaceGroup as SpaceGroup2
 
 from easydiffraction.components.site import Atoms
 

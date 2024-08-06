@@ -12,7 +12,7 @@ from typing import Tuple
 import cryspy
 import numpy as np
 from cryspy.procedure_rhochi.rhochi_by_dictionary import rhochi_calc_chi_sq_by_dictionary
-from easyscience import borg
+from easyscience import global_object as borg
 
 from easydiffraction.io.cif import cifV2ToV1
 from easydiffraction.io.cryspy_parser import CryspyParser

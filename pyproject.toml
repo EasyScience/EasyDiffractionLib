@@ -48,7 +48,7 @@ dependencies = [
     #"CFML>=0.0.1",
     # GSASII = {version = '^0.0.1', optional=true}
     #"diffpy.pdffit2 == 0.0.0",
-    "diffpy.pdffit2 @ git+https://github.com/EasyScience/pdffit2@master",
+    "diffpy.pdffit2 == 0.0.1",
 ]
 
 [project.optional-dependencies]

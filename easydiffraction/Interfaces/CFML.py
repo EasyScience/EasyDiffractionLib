@@ -131,9 +131,6 @@ class CFML(InterfaceTemplate):
             self.__createModel(model)
         elif t_.__name__ in ["Powder1DCW", "powder1DCW", "Npowder1DCW", "Npowder1DCWunp"]:
             self.__createModel(model)
-        else:
-            if self._borg.debug:
-                print(f"I'm a: {type(model)}")
         return r_list
 
     def link_atom(self, crystal_obj, atom):
@@ -223,4 +220,4 @@ class CFML(InterfaceTemplate):
 
     @staticmethod
     def __identify(obj):
-        return borg.map.convert_id_to_key(obj)
+        return obj.unique_name

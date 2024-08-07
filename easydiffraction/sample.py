@@ -155,7 +155,7 @@ class Sample(BaseObj):
             self._phases.append(value)
         elif isinstance(value, Phases):
             self._phases = value
-            self._borg.map.add_edge(self, value)
+            self._global_object.map.add_edge(self, value)
             self._phases.interface = self.interface
         else:
             raise ValueError

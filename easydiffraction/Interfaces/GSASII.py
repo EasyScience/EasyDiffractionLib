@@ -121,9 +121,7 @@ class GSASII(InterfaceTemplate):
             self.__createModel(model)
         elif issubclass(t_, Sample):
             self.__createModel(model)
-        else:
-            if self._borg.debug:
-                print(f"I'm a: {type(model)}")
+
         return r_list
 
     def link_atom(self, crystal_obj, atom):

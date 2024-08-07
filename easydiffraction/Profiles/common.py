@@ -198,7 +198,7 @@ class _PowderBase(BaseObj):
         if not isinstance(value, Phases):
             raise ValueError
         self._phases = value
-        self._borg.map.add_edge(self, value)
+        self._global_object.map.add_edge(self, value)
         self._phases.interface = self.interface
 
     @property

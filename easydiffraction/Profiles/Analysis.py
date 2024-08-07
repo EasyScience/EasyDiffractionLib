@@ -8,6 +8,7 @@ from typing import Union
 import numpy as np
 from easyscience.Datasets.xarray import xr  # type: ignore
 from easyscience.fitting.fitter import Fitter as CoreFitter
+from easyscience.fitting.minimizers.factory import AvailableMinimizers
 from easyscience.Objects.job.analysis import AnalysisBase as coreAnalysis
 
 from easydiffraction.interface import InterfaceFactory
@@ -60,21 +61,11 @@ class Analysis(coreAnalysis):
         for kwarg in kwargs:
             self._kwargs[kwarg] = kwargs[kwarg]
 
-        method = self._fitter.minimizer.available_methods()[0]
-
         weights = 1 / e
-
-        kwargs = {
-            'weights': weights,
-            'method': method
-        }
-
-        local_kwargs = {}
-        if method == 'least_squares':
-            kwargs['minimizer_kwargs'] = {'diff_step': 1e-5}
+        self._kwargs['weights'] = weights
 
         # save some kwargs on the interface object for use in the calculator
-        self.interface._InterfaceFactoryTemplate__interface_obj.saved_kwargs = local_kwargs
+        self.interface._InterfaceFactoryTemplate__interface_obj.saved_kwargs = self._kwargs
         try:
             if isinstance(x, xr.DataArray):
                 x = x.values
@@ -85,6 +76,10 @@ class Analysis(coreAnalysis):
         except Exception:
             return None
         return res
+
+    @property
+    def available_minimizers(self) -> list:
+        return AvailableMinimizers
 
     @staticmethod
     def from_cif(cif_file: str):

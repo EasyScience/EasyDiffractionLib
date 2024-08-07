@@ -474,8 +474,9 @@ class DiffractionJob(JobBase):
         x = self.experiment.x
         y = self.experiment.y
         e = self.experiment.e
-
-        result = self.analysis.fit(x, y, e, **self._kwargs)
+        kwargs.update(self._kwargs)
+        # result = self.analysis.fit(x, y, e, **self._kwargs)
+        result = self.analysis.fit(x, y, e, **kwargs)
         # Add these in a transparent manner for querying the Job object
         # result.success
         # result.reduced_chi

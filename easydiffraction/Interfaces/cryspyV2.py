@@ -185,9 +185,7 @@ class CryspyBase(Neutron_type, metaclass=ABCMeta):
             for phase in model:
                 ident = self._identify(phase, as_str=True) + "_phase"
                 self.calculator.assignPhase(model_key, ident)
-        else:
-            if self._borg.debug:
-                print(f"I'm a: {type(model)}")
+
         return r_list
 
     def link_atom(self, crystal_obj: Phase, atom: Union[Site, Site_base]) -> None:

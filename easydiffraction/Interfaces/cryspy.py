@@ -328,9 +328,7 @@ class Cryspy(InterfaceTemplate):
                     )
                 )
             self.__createModel(model_key, base)
-        else:
-            if self._borg.debug:
-                print(f"I'm a: {type(model)}")
+
         return r_list
 
     def link_atom(self, crystal_obj, atom):

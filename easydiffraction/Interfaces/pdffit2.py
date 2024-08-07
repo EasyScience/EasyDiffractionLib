@@ -180,7 +180,7 @@ class Pdffit2(InterfaceTemplate):
 
     @staticmethod
     def __identify(obj):
-        return borg.map.convert_id_to_key(obj)
+        return obj.unique_name
 
 
 def readGRData(filename):

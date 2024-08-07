@@ -146,15 +146,16 @@ class BackgroundContainer(BaseCollection):
 
     def __setitem__(self, pos: int, item):
         # Remove the reference
-        self._borg.map.prune_vertex_from_edge(self, self[pos])
+        self._global_object.map.prune_vertex_from_edge(self, self[pos])
         # Add the new reference
-        self._borg.map.add_edge(self, item)
+        self._global_object.map.add_edge(self, item)
         # Get all items, go through and change the item at index pos to the new one
         keys = self._kwargs.keys()
         items = {}
         for idx, key in enumerate(keys):
             if idx == pos:
-                items[str(self._borg.map.convert_id_to_key(item))] = item
+                # items[str(self._global_object.map.convert_id_to_key(item))] = item
+                items[item.unique_name] = item
             else:
                 items[key] = self._kwargs[key]
         # Set the new dict

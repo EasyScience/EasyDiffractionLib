@@ -79,7 +79,31 @@ class Analysis(coreAnalysis):
 
     @property
     def available_minimizers(self) -> list:
-        return AvailableMinimizers
+        """
+        Return a list of available minimizers, converted to a list of strings.
+        """
+        # AvailableMinimizers is an enum. Convert it to a list of strings.
+        minimizers = [minimizer.name for minimizer in AvailableMinimizers]
+        return minimizers
+
+    @property
+    def current_minimizer(self) -> str:
+        """
+        Return the current minimizer as a string.
+        """
+        minimizer = self._fitter._enum_current_minimizer.name
+        return minimizer
+
+    @current_minimizer.setter
+    def current_minimizer(self, minimizer: str):
+        """
+        Set the current minimizer.
+        """
+        # Convert the string to an enum
+        if minimizer not in AvailableMinimizers.__members__:
+            raise ValueError(f"Minimizer {minimizer} not available")
+        minimizer = AvailableMinimizers[minimizer]
+        self._fitter.switch_minimizer(minimizer)
 
     @staticmethod
     def from_cif(cif_file: str):

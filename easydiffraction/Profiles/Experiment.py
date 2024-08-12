@@ -30,15 +30,15 @@ from easydiffraction.Profiles.P1D import Powder1DParameters
 _DEFAULT_DATA_BLOCK_NO_MEAS = """data_pnd
 
 _diffrn_radiation.probe neutron
-_diffrn_radiation_wavelength.wavelength 1.9
+_diffrn_radiation_wavelength.wavelength 1.91
 
-_pd_calib.2theta_offset 0.0
+_pd_calib.2theta_offset -0.1406
 
-_pd_instr.resolution_u 0.04
-_pd_instr.resolution_v -0.05
-_pd_instr.resolution_w 0.06
+_pd_instr.resolution_u 0.139
+_pd_instr.resolution_v -0.4124
+_pd_instr.resolution_w 0.386
 _pd_instr.resolution_x 0
-_pd_instr.resolution_y 0
+_pd_instr.resolution_y 0.0878
 
 _pd_instr.reflex_asymmetry_p1 0
 _pd_instr.reflex_asymmetry_p2 0
@@ -46,22 +46,10 @@ _pd_instr.reflex_asymmetry_p3 0
 _pd_instr.reflex_asymmetry_p4 0
 
 loop_
-_pd_phase_block.id
-_pd_phase_block.scale
-ph 1.0
-
-loop_
-_pd_background.line_segment_X
-_pd_background.line_segment_intensity
-0 100
-180 100
-
-loop_
 _pd_meas.2theta_scan
 _pd_meas.intensity_total
 _pd_meas.intensity_total_su
 """
-
 
 class Experiment(coreExperiment):
     """
@@ -351,7 +339,6 @@ class Experiment(coreExperiment):
         """
         with open(file_url, "r") as f:
             data = f.read()
-
         if experiment_name is None:
             experiment_name = self.name
         string = _DEFAULT_DATA_BLOCK_NO_MEAS + "\n" + data

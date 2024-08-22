@@ -101,7 +101,8 @@ class DiffractionJob(JobBase):
         # TODO: remove the dependency on kwargs
         self._kwargs = {}
         self._kwargs['_phases'] = self.sample.phases
-        self._kwargs['_parameters'] = self.sample.parameters
+        # self._kwargs['_parameters'] = self.sample.parameters
+        self._kwargs['_parameters'] = self.experiment.parameters
         self._kwargs['_pattern'] = self.sample.pattern
 
     @property
@@ -265,10 +266,10 @@ class DiffractionJob(JobBase):
         self.type.is_sc = self.experiment.is_single_crystal
         self.type.is_2d = self.experiment.is_2d
 
-        #if self.type.is_tof:
-        #    self._x_axis_name = "time"
-        #else:
-        self._x_axis_name = "tth"
+        if self.type.is_tof:
+            self._x_axis_name = "time"
+        else:
+            self._x_axis_name = "tth"
 
     def update_phase_scale(self) -> None:
         '''
@@ -336,6 +337,7 @@ class DiffractionJob(JobBase):
 
         # self.update_phase_scale()
         self.update_job_type()
+        self.generate_bindings()
 
     def add_experiment_from_string(self, cif_string: str) -> None:
         '''

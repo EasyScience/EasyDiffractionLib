@@ -142,6 +142,7 @@ class Experiment(coreExperiment):
             self.cw_parameters_from_dict(p)
         elif 'dtt1' in p:
             self.is_tof = True
+            self._x_axis_name = "time"
             self.tof_parameters_from_dict(p)
         else:
             raise ValueError("Unknown instrumental parameters in CIF file")
@@ -343,7 +344,6 @@ class Experiment(coreExperiment):
             experiment_name = self.name
         string = _DEFAULT_DATA_BLOCK_NO_MEAS + "\n" + data
         self.from_cif_string(string)
-        pass
 
     def from_cif_file(self, file_url, experiment_name=None):
             """
@@ -426,7 +426,8 @@ class Experiment(coreExperiment):
         '''
         Returns the x-axis data as xarray
         '''
-        coord = self.job_name + "_" + self.name + "_tth"
+        # coord = self.job_name + "_" + self.name + "_tth"
+        coord = self.job_name + "_" + self.name + "_" + self._x_axis_name
         if coord in self._datastore.store:
             return self._datastore.store[coord]
         return None

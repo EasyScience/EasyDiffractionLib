@@ -168,8 +168,14 @@ class Sample(BaseObj):
     @parameters.setter
     @property_stack_deco
     def parameters(self, value):
-        if not isinstance(value, Instrument1DCWParameters):
+        if not isinstance(value, (Instrument1DCWParameters, Instrument1DTOFParameters)):
             raise ValueError
+        if isinstance(value, Instrument1DTOFParameters):
+            from easydiffraction.Interfaces.types import TOF
+            self._update_bases(TOF)
+        else:
+            from easydiffraction.Interfaces.types import CW
+            self._update_bases(CW)
         self._parameters = value
         self._parameters.interface = self._interface
 

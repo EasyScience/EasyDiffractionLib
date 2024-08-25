@@ -86,6 +86,10 @@ class DiffractionJob(JobBase):
         # determine type based on Experiment
         self._type = None
         self._sample = None
+
+        # assign Experiment parameters to Sample
+        if experiment is not None:
+            self.sample.parameters = self.experiment.parameters
         self.type = JobType() if type is None else type
         if isinstance(type, str):
             self.type = JobType(type)
@@ -101,8 +105,7 @@ class DiffractionJob(JobBase):
         # TODO: remove the dependency on kwargs
         self._kwargs = {}
         self._kwargs['_phases'] = self.sample.phases
-        # self._kwargs['_parameters'] = self.sample.parameters
-        self._kwargs['_parameters'] = self.experiment.parameters
+        self._kwargs['_parameters'] = self.sample.parameters
         self._kwargs['_pattern'] = self.sample.pattern
 
     @property
@@ -337,7 +340,17 @@ class DiffractionJob(JobBase):
 
         # self.update_phase_scale()
         self.update_job_type()
-        self.generate_bindings()
+        # re-do the sample.
+        if type(self.sample.parameters) != type(self.experiment.parameters):
+            # Different type read in (likely TOF), so re-create the sample
+            parameters = self.experiment.parameters
+            pattern = self.experiment.pattern
+            phases = self.sample.phases
+            name = self.sample.name
+            self.sample = Sample(name, parameters=parameters, pattern=pattern, phases=phases)
+        # self.sample.parameters = self.experiment.parameters
+        self.update_job_type()
+        # self.update_interface()
 
     def add_experiment_from_string(self, cif_string: str) -> None:
         '''
@@ -495,6 +508,15 @@ class DiffractionJob(JobBase):
         self.datastore = DataContainer.prepare(
             datastore, Sample, Experiment #*type.datastore_classes
         )
+
+    def update_interface(self):
+        '''
+        Update the interface based on the current job.
+        '''
+        if hasattr(self.interface._InterfaceFactoryTemplate__interface_obj,"set_job_type"):
+            self.interface._InterfaceFactoryTemplate__interface_obj.set_job_type(tof=self.type.is_tof, pol=self.type.is_pol)
+        self.interface.generate_bindings(self)
+        self.generate_bindings()
 
     ###### DUNDER METHODS ######
     def __copy__(self):

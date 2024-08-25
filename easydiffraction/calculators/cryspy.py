@@ -334,6 +334,14 @@ class Cryspy:
         for r_key in kwargs.keys():
             setattr(reflex_asymmetry, r_key, kwargs[key])
 
+    def set_job_type(self, tof=False, pol=False):
+        self.type = "powder1DCW"
+        self.polarized = False
+        if tof:
+            self.type = "powder1DTOF"
+        if pol:
+            self.polarized = True
+
     def powder_1d_calculate(
         self, x_array: np.ndarray, full_return: bool = False, **kwargs
     ):

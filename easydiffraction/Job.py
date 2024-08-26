@@ -88,7 +88,7 @@ class DiffractionJob(JobBase):
         self._sample = None
 
         # assign Experiment parameters to Sample
-        if experiment is not None:
+        if self.experiment is not None and self.sample is not None and hasattr(experiment, 'parameters'):
             self.sample.parameters = self.experiment.parameters
         self.type = JobType() if type is None else type
         if isinstance(type, str):
@@ -341,7 +341,7 @@ class DiffractionJob(JobBase):
         # self.update_phase_scale()
         self.update_job_type()
         # re-do the sample.
-        if type(self.sample.parameters) != type(self.experiment.parameters):
+        if type(self.sample.parameters) is not type(self.experiment.parameters):
             # Different type read in (likely TOF), so re-create the sample
             parameters = self.experiment.parameters
             pattern = self.experiment.pattern

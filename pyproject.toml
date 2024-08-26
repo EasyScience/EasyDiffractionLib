@@ -85,6 +85,7 @@ packages = ["EasyDiffraction"]
 line-length = 127
 exclude = [
     "docs",
+    ".ipynb",
 ]
 
 [tool.ruff.format]

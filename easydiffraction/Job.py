@@ -101,13 +101,6 @@ class DiffractionJob(JobBase):
         self.interface = self.sample._interface
         self.analysis = analysis
 
-        # necessary for the fitter
-        # TODO: remove the dependency on kwargs
-        self._kwargs = {}
-        self._kwargs['_phases'] = self.sample.phases
-        self._kwargs['_parameters'] = self.sample.parameters
-        self._kwargs['_pattern'] = self.sample.pattern
-
     @property
     def sample(self) -> Sample:
         return self._sample
@@ -489,8 +482,12 @@ class DiffractionJob(JobBase):
         x = self.experiment.x
         y = self.experiment.y
         e = self.experiment.e
+
+        self._kwargs = {}
+        self._kwargs['_phases'] = self.sample.phases
+        self._kwargs['_parameters'] = self.experiment.parameters
+        self._kwargs['_pattern'] = self.sample.pattern
         kwargs.update(self._kwargs)
-        # result = self.analysis.fit(x, y, e, **self._kwargs)
         result = self.analysis.fit(x, y, e, **kwargs)
         # Add these in a transparent manner for querying the Job object
         # result.success

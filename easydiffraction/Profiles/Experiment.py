@@ -125,6 +125,9 @@ class Experiment(coreExperiment):
             if p['zero_shift'].get('error') is not None:
                 pattern.zero_shift.error = p['zero_shift'].get('error')
                 pattern.zero_shift.fixed = False
+        if 'radiation' in p:
+            pattern.radiation = p['radiation']
+
         # # update the background on pattern
         # bkg = self.background_from_cif_block(block, experiment_name=experiment_name)
         # pattern.backgrounds.append(bkg)

@@ -13,7 +13,7 @@ from typing import Union
 
 from easyscience.Datasets.xarray import xr
 from easyscience.Objects.ObjectClasses import BaseObj
-from easyscience.Objects.ObjectClasses import Parameter
+from easyscience.Objects.ObjectClasses import Parameter, Descriptor
 
 from easydiffraction.components.polarization import PolarizedBeam
 from easydiffraction.elements.Backgrounds.Background import BackgroundContainer
@@ -92,6 +92,7 @@ class Powder1DParameters(BaseObj):
         self,
         zero_shift: Optional[Union[Parameter, float]] = None,
         scale: Optional[Union[Parameter, float]] = None,
+        radiation: Optional[str] = None,
         backgrounds: Optional[BackgroundContainer] = None,
         interface: Optional[iF] = None,
         **kwargs,
@@ -108,6 +109,10 @@ class Powder1DParameters(BaseObj):
             self.scale = scale
         if backgrounds is not None:
             self.backgrounds = backgrounds
+        if radiation is not None:
+            self.radiation = radiation
+        else:
+            self.radiation = "neutrons"
 
         self.name = self._name
         self.interface = interface

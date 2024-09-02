@@ -172,6 +172,10 @@ class JobBase_1D(_PowderBase):
         value = block.find_value("_setup_field")
         if value is not None:
             self.pattern.field = float(value)
+        value = block.find_value("_diffrn_radiation_probe") or block.find_value("_diffrn_radiation.probe")
+        if value is not None:
+            self.pattern.radiation = value
+
 
     def parameters_from_cif_block(self, block):
        # Various instrumental parameters

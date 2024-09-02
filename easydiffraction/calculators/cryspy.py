@@ -828,11 +828,14 @@ class Cryspy:
         if hasattr(self.model, 'excluded_points'):
             self.excluded_points = self.model.excluded_points
         self._cryspyDict[exp_name_model]['excluded_points'] = self.excluded_points
+        self._cryspyDict[exp_name_model]['radiation'] = self.pattern.radiation
         if is_tof:
             self._cryspyDict[exp_name_model]['time'] = np.array(ttheta) # required for TOF
+            self._cryspyDict[exp_name_model]['time_max'] = ttheta[-1]
+            self._cryspyDict[exp_name_model]['time_min'] = ttheta[0]
             self._cryspyDict[exp_name_model]['background_time'] = self.pattern.backgrounds[0].x_sorted_points
-            self._cryspyDict[exp_name_model]['background_intensity'] = bg
-            self._cryspyDict[exp_name_model]['flags_background_intensity'] = np.full(len(ttheta), True)
+            self._cryspyDict[exp_name_model]['background_intensity'] = self.pattern.backgrounds[0].x_sorted_points
+            self._cryspyDict[exp_name_model]['flags_background_intensity'] = np.full(len(self.pattern.backgrounds[0].x_sorted_points), True)
         else:
             self._cryspyDict[exp_name_model]['ttheta'] = ttheta
             self._cryspyDict[exp_name_model]['background_ttheta'] = ttheta
@@ -843,7 +846,7 @@ class Cryspy:
         self._cryspyDict[exp_name_model]['signal_exp'] = np.array([np.zeros(len(ttheta)), np.zeros(len(ttheta))])
 
 
-        rhochi_calc_chi_sq_by_dictionary(self._cryspyDict,
+        res = rhochi_calc_chi_sq_by_dictionary(self._cryspyDict,
                                         dict_in_out=self._cryspyData._inOutDict,
                                         flag_use_precalculated_data=False,
                                         flag_calc_analytical_derivatives=False)

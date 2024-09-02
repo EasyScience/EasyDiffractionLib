@@ -110,7 +110,7 @@ class Experiment(coreExperiment):
             )
             j += 1
 
-    def pattern_from_cif_block(self, block, experiment_name="None"):
+    def pattern_from_cif_block(self, block) -> None:
         p = pattern_from_cif(block)
         self.is_polarized = False
         pattern = Powder1DParameters() # default
@@ -125,16 +125,12 @@ class Experiment(coreExperiment):
             if p['zero_shift'].get('error') is not None:
                 pattern.zero_shift.error = p['zero_shift'].get('error')
                 pattern.zero_shift.fixed = False
-        bkg = self.background_from_cif_block(block, experiment_name=experiment_name)
-        pattern.backgrounds.append(bkg)
-        # modify the pattern on the datastore
+        # # update the background on pattern
+        # bkg = self.background_from_cif_block(block, experiment_name=experiment_name)
+        # pattern.backgrounds.append(bkg)
         self.pattern = pattern
-        # self._datastore._simulations._pattern = pattern
-        # let the interface know we changed the pattern
-        #if hasattr(self.interface._InterfaceFactoryTemplate__interface_obj,"set_pattern"):
-        #    self.interface._InterfaceFactoryTemplate__interface_obj.set_pattern(self.pattern)
 
-    def parameters_from_cif_block(self, block):
+    def parameters_from_cif_block(self, block) -> None:
        # Various instrumental parameters
         p = parameters_from_cif(block)
         if 'wavelength' in p:
@@ -317,7 +313,8 @@ class Experiment(coreExperiment):
                 self.job_name + "_" + experiment_name + f"_I{i}", data_e[i]
             )
 
-    def background_from_cif_block(self, block, experiment_name=None):
+    @staticmethod
+    def background_from_cif_block(block, experiment_name:str=None) -> PointBackground:
         # The background
         background_2thetas, background_intensities = background_from_cif(block)
 
@@ -386,7 +383,9 @@ class Experiment(coreExperiment):
         if experiment_name is None:
             experiment_name = block.name
             self.name = experiment_name
-        self.pattern_from_cif_block(block, experiment_name=experiment_name)
+        self.pattern_from_cif_block(block)
+        bg = self.background_from_cif_block(block, experiment_name=experiment_name)
+        self.pattern.backgrounds.append(bg)
         self.parameters_from_cif_block(block)
         self.phase_parameters_from_cif_block(block)
         self.data_from_cif_block(block, experiment_name)

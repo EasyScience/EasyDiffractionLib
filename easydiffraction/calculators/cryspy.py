@@ -26,6 +26,7 @@ normalization = 0.5
 RAD_MAP = {
     'x-ray': 'X-rays',
     'neutron': 'neutrons',
+    'neutrons': 'neutrons',
     'neutronss': 'neutrons',
 }
 

@@ -13,7 +13,7 @@ from typing import Union
 
 from easyscience.Datasets.xarray import xr
 from easyscience.Objects.ObjectClasses import BaseObj
-from easyscience.Objects.ObjectClasses import Parameter, Descriptor
+from easyscience.Objects.ObjectClasses import Parameter
 
 from easydiffraction.components.polarization import PolarizedBeam
 from easydiffraction.elements.Backgrounds.Background import BackgroundContainer

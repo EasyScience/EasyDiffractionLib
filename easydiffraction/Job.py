@@ -283,7 +283,10 @@ class DiffractionJob(JobBase):
         experiment_name = self.experiment.name
         bkg = PointBackground(linked_experiment=experiment_name)
         for point in points:
-            bkg.append(BackgroundPoint(point[0], point[1]))
+            # necessary in case points are xarray DataArrays
+            point0 = float(point[0])
+            point1 = float(point[1])
+            bkg.append(BackgroundPoint(point0, point1))
         self.sample.set_background(bkg)
         if len(self.experiment.pattern.backgrounds) == 0:
             self.experiment.pattern.backgrounds.append(bkg)
@@ -332,7 +335,7 @@ class DiffractionJob(JobBase):
             self.experiment.from_cif_file(file_url)
 
         # self.update_phase_scale()
-        self.update_job_type()
+        # self.update_job_type()
         # re-do the sample.
         if type(self.sample.parameters) is not type(self.experiment.parameters):
             # Different type read in (likely TOF), so re-create the sample
@@ -341,9 +344,9 @@ class DiffractionJob(JobBase):
             phases = self.sample.phases
             name = self.sample.name
             self.sample = Sample(name, parameters=parameters, pattern=pattern, phases=phases)
-        # self.sample.parameters = self.experiment.parameters
+        self.sample.parameters = self.experiment.parameters
         self.update_job_type()
-        # self.update_interface()
+        self.update_interface()
 
     def add_experiment_from_string(self, cif_string: str) -> None:
         '''

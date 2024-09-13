@@ -23,10 +23,17 @@ warnings.filterwarnings("ignore")
 
 normalization = 0.5
 
+RAD_MAP = {
+    'x-ray': 'X-rays',
+    'neutron': 'neutrons',
+    'neutronss': 'neutrons',
+}
 
 class Cryspy:
     def __init__(self):
+        # temporary cludge before `beta` branch merged properly
         self.pattern = None
+
         self.conditions = {
             "wavelength": 1.25,
             "resolution": {"u": 0.001, "v": 0.001, "w": 0.001, "x": 0.000, "y": 0.000},
@@ -50,7 +57,7 @@ class Cryspy:
             },
         }
         self.background = None
-        self.storage = {}
+        self.storage = {} # name -> cryspy object
         self.current_crystal = {}
         self.model = None
         self.phases = cryspy.PhaseL()
@@ -62,8 +69,9 @@ class Cryspy:
         self.experiment_cif = ""
         self._first_experiment_name = ""
         self.exp_obj = None
+        self.chisq = None
         self.excluded_points = []
-        self._cryspyData = Data()
+        self._cryspyData = Data() # {phase_name: CryspyPhase, exp_name: CryspyExperiment}
         self._cryspyObject = self._cryspyData._cryspyObj
 
     @property
@@ -424,13 +432,11 @@ class Cryspy:
         else:
             scale = self.pattern.scale.raw_value / normalization
             offset = self.pattern.zero_shift.raw_value
-
         self.model["tof_parameters"].zero = offset
-        this_x_array = x_array
 
+        this_x_array = x_array
         # background
         self.model["tof_background"].time_max = this_x_array[-1]
-        # self.model.numpy_time = np.array(this_x_array)
 
         if 'excluded_points' in kwargs:
             setattr(self.model, 'excluded_points', kwargs['excluded_points'])
@@ -828,14 +834,18 @@ class Cryspy:
         if hasattr(self.model, 'excluded_points'):
             self.excluded_points = self.model.excluded_points
         self._cryspyDict[exp_name_model]['excluded_points'] = self.excluded_points
-        self._cryspyDict[exp_name_model]['radiation'] = self.pattern.radiation
+        self._cryspyDict[exp_name_model]['radiation'] = [RAD_MAP[self.pattern.radiation]]
         if is_tof:
             self._cryspyDict[exp_name_model]['time'] = np.array(ttheta) # required for TOF
             self._cryspyDict[exp_name_model]['time_max'] = ttheta[-1]
             self._cryspyDict[exp_name_model]['time_min'] = ttheta[0]
             self._cryspyDict[exp_name_model]['background_time'] = self.pattern.backgrounds[0].x_sorted_points
-            self._cryspyDict[exp_name_model]['background_intensity'] = self.pattern.backgrounds[0].x_sorted_points
-            self._cryspyDict[exp_name_model]['flags_background_intensity'] = np.full(len(self.pattern.backgrounds[0].x_sorted_points), True)
+            self._cryspyDict[exp_name_model]['background_intensity'] = self.pattern.backgrounds[0].y_sorted_points
+            self._cryspyDict[exp_name_model]['flags_background_intensity'] = \
+                np.full(len(self.pattern.backgrounds[0].x_sorted_points), False)
+            for i, point in enumerate(self.pattern.backgrounds[0]):
+                self._cryspyDict[exp_name_model]['flags_background_intensity'][i] = not point.y.fixed
+
         else:
             self._cryspyDict[exp_name_model]['ttheta'] = ttheta
             self._cryspyDict[exp_name_model]['background_ttheta'] = ttheta
@@ -845,11 +855,14 @@ class Cryspy:
         # interestingly, experimental signal is required, although not used for simple profile calc
         self._cryspyDict[exp_name_model]['signal_exp'] = np.array([np.zeros(len(ttheta)), np.zeros(len(ttheta))])
 
-
         res = rhochi_calc_chi_sq_by_dictionary(self._cryspyDict,
                                         dict_in_out=self._cryspyData._inOutDict,
                                         flag_use_precalculated_data=False,
                                         flag_calc_analytical_derivatives=False)
+        chi2 = res[0]
+        point_count = res[1]
+        free_param_count = len(res[4])
+        self.chisq = chi2 / (point_count - free_param_count)
 
         if self._cryspyData._inOutDict:
             self._cryspyDict = self._cryspyData._cryspyDict
@@ -862,7 +875,6 @@ class Cryspy:
         result2 = self._inOutDict[exp_name_model]['dict_in_out_' + data_name.lower()]
 
         return result1, result2
-
 
 class Data():
     def __init__(self):

@@ -41,9 +41,9 @@ include = ["CHANGELOG.md"]
 
 dependencies = [
     "cryspy @ git+https://github.com/ikibalin/cryspy.git@beta",
-    "EasyScience @ git+https://github.com/EasyScience/EasyScience.git@develop",
+    "EasyScience @ git+https://github.com/EasyScience/EasyScience.git",
     #"easyCrystallography>=0.4.0",
-    "easycrystallography @ git+https://github.com/EasyScience/EasyCrystallography.git@updated_toml",
+    "easycrystallography @ git+https://github.com/EasyScience/EasyCrystallography.git@develop",
     "pycifrw>=4.4.1",
     #"CFML>=0.0.1",
     # GSASII = {version = '^0.0.1', optional=true}

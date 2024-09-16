@@ -1,9 +1,5 @@
-__author__ = 'github.com/wardsimon'
-__version__ = '0.0.1'
-
-
-from easycrystallography.Structures.Phase import Lattice as Lattice
-from easycrystallography.Structures.Phase import SpaceGroup as SpaceGroup
+from easycrystallography.Components.Lattice import Lattice as Lattice
+from easycrystallography.Components.SpaceGroup import SpaceGroup as SpaceGroup
 
 from .components.phase import Phase as Phase
 from .components.phase import Phases as Phases
@@ -12,4 +8,3 @@ from .components.site import Site as Site
 from .Job import DiffractionJob as Job
 
 __all__ = ['Job']
-

@@ -254,6 +254,12 @@ class DiffractionJob(JobBase):
             phase = Phase(id)
         self.sample.phases.append(phase)
 
+    def remove_phase(self, id: str) -> None:
+        '''
+        Remove a phase from the Sample.
+        '''
+        del self.sample.phases[id]
+
     # TODO: extend for analysis and info
 
     def update_job_type(self) -> None:

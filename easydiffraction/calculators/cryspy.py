@@ -109,14 +109,16 @@ class Cryspy:
         self.phases.items.append(phase)
 
     def removePhase(self, model_name: str, phase_name: str):
+        # NEED FIX: Check if all phases are removed!
         if phase_name not in self.storage.keys():
             # already removed
             return
+        short_phase_name = phase_name[:-len('_phase')]
         phase = self.storage[phase_name]
         del self.storage[phase_name]
-        del self.storage[phase_name.split("_")[0] + "_scale"]
+        del self.storage[f"{short_phase_name}_scale"]
         self.phases.items.pop(self.phases.items.index(phase))
-        name = self.current_crystal.pop(int(phase_name.split("_")[0]))
+        name = self.current_crystal.pop(short_phase_name)
         if name in self.additional_data["phases"].keys():
             del self.additional_data["phases"][name]
         cryspyObjBlockNames = [item.data_name for item in self._cryspyObject.items]

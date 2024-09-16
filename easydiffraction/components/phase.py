@@ -40,7 +40,7 @@ class Phase(ecPhase):
             self.interface().remove_atom(self, item)
 
     @property
-    def atom_site(self):
+    def atom_sites(self):
         '''
         Vanity method to alias `atoms`
         '''

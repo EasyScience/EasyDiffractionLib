@@ -70,7 +70,8 @@ def parameters_from_cif_block(block) -> dict:
     if value is not None:
         parameters['reflex_asymmetry_p3'] = {}
         parameters['reflex_asymmetry_p3']['value'], parameters['reflex_asymmetry_p3']['error'] = parse_with_error(value)
-    
+
+    # ToF
     value = block.find_value("_pd_instr_dtt1") or block.find_value("_pd_instr.dtt1")
     if value is not None:
         parameters['dtt1'] = {}

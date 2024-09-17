@@ -86,6 +86,10 @@ class DiffractionJob(JobBase):
         # determine type based on Experiment
         self._type = None
         self._sample = None
+
+        # assign Experiment parameters to Sample
+        if self.experiment is not None and self.sample is not None and hasattr(experiment, 'parameters'):
+            self.sample.parameters = self.experiment.parameters
         self.type = JobType() if type is None else type
         if isinstance(type, str):
             self.type = JobType(type)
@@ -96,13 +100,6 @@ class DiffractionJob(JobBase):
         self.sample = sample # container for phases
         self.interface = self.sample._interface
         self.analysis = analysis
-
-        # necessary for the fitter
-        # TODO: remove the dependency on kwargs
-        self._kwargs = {}
-        self._kwargs['_phases'] = self.sample.phases
-        self._kwargs['_parameters'] = self.sample.parameters
-        self._kwargs['_pattern'] = self.sample.pattern
 
     @property
     def sample(self) -> Sample:
@@ -271,10 +268,10 @@ class DiffractionJob(JobBase):
         self.type.is_sc = self.experiment.is_single_crystal
         self.type.is_2d = self.experiment.is_2d
 
-        #if self.type.is_tof:
-        #    self._x_axis_name = "time"
-        #else:
-        self._x_axis_name = "tth"
+        if self.type.is_tof:
+            self._x_axis_name = "time"
+        else:
+            self._x_axis_name = "tth"
 
     def update_phase_scale(self) -> None:
         '''
@@ -292,7 +289,10 @@ class DiffractionJob(JobBase):
         experiment_name = self.experiment.name
         bkg = PointBackground(linked_experiment=experiment_name)
         for point in points:
-            bkg.append(BackgroundPoint(point[0], point[1]))
+            # necessary in case points are xarray DataArrays
+            point0 = float(point[0])
+            point1 = float(point[1])
+            bkg.append(BackgroundPoint(point0, point1))
         self.sample.set_background(bkg)
         if len(self.experiment.pattern.backgrounds) == 0:
             self.experiment.pattern.backgrounds.append(bkg)
@@ -341,7 +341,18 @@ class DiffractionJob(JobBase):
             self.experiment.from_cif_file(file_url)
 
         # self.update_phase_scale()
+        # self.update_job_type()
+        # re-do the sample.
+        if type(self.sample.parameters) is not type(self.experiment.parameters):
+            # Different type read in (likely TOF), so re-create the sample
+            parameters = self.experiment.parameters
+            pattern = self.experiment.pattern
+            phases = self.sample.phases
+            name = self.sample.name
+            self.sample = Sample(name, parameters=parameters, pattern=pattern, phases=phases)
+        self.sample.parameters = self.experiment.parameters
         self.update_job_type()
+        self.update_interface()
 
     def add_experiment_from_string(self, cif_string: str) -> None:
         '''
@@ -483,8 +494,12 @@ class DiffractionJob(JobBase):
         x = self.experiment.x
         y = self.experiment.y
         e = self.experiment.e
+
+        self._kwargs = {}
+        self._kwargs['_phases'] = self.sample.phases
+        self._kwargs['_parameters'] = self.experiment.parameters
+        self._kwargs['_pattern'] = self.sample.pattern
         kwargs.update(self._kwargs)
-        # result = self.analysis.fit(x, y, e, **self._kwargs)
         result = self.analysis.fit(x, y, e, **kwargs)
         # Add these in a transparent manner for querying the Job object
         # result.success
@@ -502,6 +517,15 @@ class DiffractionJob(JobBase):
         self.datastore = DataContainer.prepare(
             datastore, Sample, Experiment #*type.datastore_classes
         )
+
+    def update_interface(self):
+        '''
+        Update the interface based on the current job.
+        '''
+        if hasattr(self.interface._InterfaceFactoryTemplate__interface_obj,"set_job_type"):
+            self.interface._InterfaceFactoryTemplate__interface_obj.set_job_type(tof=self.type.is_tof, pol=self.type.is_pol)
+        self.interface.generate_bindings(self)
+        self.generate_bindings()
 
     ###### DUNDER METHODS ######
     def __copy__(self):

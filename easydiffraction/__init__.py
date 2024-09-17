@@ -8,3 +8,4 @@ from .components.site import Site as Site
 from .Job import DiffractionJob as Job
 
 __all__ = ['Job']
+

@@ -23,9 +23,16 @@ warnings.filterwarnings("ignore")
 
 normalization = 0.5
 
+RAD_MAP = {
+    'x-ray': 'X-rays',
+    'neutron': 'neutrons',
+    'neutrons': 'neutrons',
+    'neutronss': 'neutrons',
+}
 
 class Cryspy:
     def __init__(self):
+        # temporary cludge before `beta` branch merged properly
         self.pattern = None
         self.conditions = {
             "wavelength": 1.25,
@@ -50,7 +57,7 @@ class Cryspy:
             },
         }
         self.background = None
-        self.storage = {}
+        self.storage = {} # name -> cryspy object
         self.current_crystal = {}
         self.model = None
         self.phases = cryspy.PhaseL()
@@ -62,9 +69,11 @@ class Cryspy:
         self.experiment_cif = ""
         self._first_experiment_name = ""
         self.exp_obj = None
+        self.chisq = None
         self.excluded_points = []
-        self._cryspyData = Data()
+        self._cryspyData = Data() # {phase_name: CryspyPhase, exp_name: CryspyExperiment}
         self._cryspyObject = self._cryspyData._cryspyObj
+        self._counter = 0
 
     @property
     def cif_str(self, index=0) -> str:
@@ -336,6 +345,14 @@ class Cryspy:
         for r_key in kwargs.keys():
             setattr(reflex_asymmetry, r_key, kwargs[key])
 
+    def set_job_type(self, tof=False, pol=False):
+        self.type = "powder1DCW"
+        self.polarized = False
+        if tof:
+            self.type = "powder1DTOF"
+        if pol:
+            self.polarized = True
+
     def powder_1d_calculate(
         self, x_array: np.ndarray, full_return: bool = False, **kwargs
     ):
@@ -418,13 +435,11 @@ class Cryspy:
         else:
             scale = self.pattern.scale.raw_value / normalization
             offset = self.pattern.zero_shift.raw_value
-
         self.model["tof_parameters"].zero = offset
-        this_x_array = x_array
 
+        this_x_array = x_array
         # background
         self.model["tof_background"].time_max = this_x_array[-1]
-        # self.model.numpy_time = np.array(this_x_array)
 
         if 'excluded_points' in kwargs:
             setattr(self.model, 'excluded_points', kwargs['excluded_points'])
@@ -580,6 +595,8 @@ class Cryspy:
         :return: points calculated at `x`
         :rtype: np.ndarray
         """
+        self._counter += 1
+        print(f"Counter: {self._counter}")
         res = np.zeros_like(x_array)
         self.additional_data["ivar"] = res
         args = x_array
@@ -814,30 +831,41 @@ class Cryspy:
             # this job runs from the notebook - create the dictionary
             phase_dict = cryspy.str_to_globaln(crystals.to_cif()).get_dictionary()
             phase_name = list(phase_dict.keys())[0]
-            experiment_dict_model = self.model.get_dictionary()
-
         self._cryspyDict = {phase_name: phase_dict[phase_name], exp_name_model: experiment_dict_model}
 
         self.excluded_points = np.full(len(ttheta), False)
         if hasattr(self.model, 'excluded_points'):
             self.excluded_points = self.model.excluded_points
         self._cryspyDict[exp_name_model]['excluded_points'] = self.excluded_points
-        self._cryspyDict[exp_name_model]['ttheta'] = ttheta
+        self._cryspyDict[exp_name_model]['radiation'] = [RAD_MAP[self.pattern.radiation]]
+        if is_tof:
+            self._cryspyDict[exp_name_model]['time'] = np.array(ttheta) # required for TOF
+            self._cryspyDict[exp_name_model]['time_max'] = ttheta[-1]
+            self._cryspyDict[exp_name_model]['time_min'] = ttheta[0]
+            self._cryspyDict[exp_name_model]['background_time'] = self.pattern.backgrounds[0].x_sorted_points
+            self._cryspyDict[exp_name_model]['background_intensity'] = self.pattern.backgrounds[0].y_sorted_points
+            self._cryspyDict[exp_name_model]['flags_background_intensity'] = \
+                np.full(len(self.pattern.backgrounds[0].x_sorted_points), False)
+            for i, point in enumerate(self.pattern.backgrounds[0]):
+                self._cryspyDict[exp_name_model]['flags_background_intensity'][i] = not point.y.fixed
 
-        self._cryspyDict[exp_name_model]['time'] = np.array(ttheta) # required for TOF
-
-        self._cryspyDict[exp_name_model]['background_ttheta'] = ttheta
-        self._cryspyDict[exp_name_model]['background_intensity'] = bg
-        self._cryspyDict[exp_name_model]['flags_background_intensity'] = np.full(len(ttheta), False)
+        else:
+            self._cryspyDict[exp_name_model]['ttheta'] = ttheta
+            self._cryspyDict[exp_name_model]['background_ttheta'] = ttheta
+            self._cryspyDict[exp_name_model]['background_intensity'] = bg
+            self._cryspyDict[exp_name_model]['flags_background_intensity'] = np.full(len(ttheta), True)
 
         # interestingly, experimental signal is required, although not used for simple profile calc
         self._cryspyDict[exp_name_model]['signal_exp'] = np.array([np.zeros(len(ttheta)), np.zeros(len(ttheta))])
 
-
-        rhochi_calc_chi_sq_by_dictionary(self._cryspyDict,
+        res = rhochi_calc_chi_sq_by_dictionary(self._cryspyDict,
                                         dict_in_out=self._cryspyData._inOutDict,
                                         flag_use_precalculated_data=False,
                                         flag_calc_analytical_derivatives=False)
+        chi2 = res[0]
+        point_count = res[1]
+        free_param_count = len(res[4])
+        self.chisq = chi2 / (point_count - free_param_count)
 
         if self._cryspyData._inOutDict:
             self._cryspyDict = self._cryspyData._cryspyDict

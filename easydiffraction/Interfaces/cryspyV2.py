@@ -322,7 +322,7 @@ class CW(CW_type):
             res_keys = {k: v for k, v in keys.items() if 'resolution' in k}
             asymm_keys = {k: v for k, v in keys.items() if 'reflex_asymmetry' in k}
             setup_keys = {k: v for k, v in keys.items() if 'wavelength' in k}
-
+            self.calculator.parameters = model
             r_list.append(
                 ItemContainer(
                     res_key,
@@ -369,7 +369,7 @@ class TOF(TOF_type):
             res_key = self.calculator.createResolution(cls_type="powder1DTOF")
             setup_key = self.calculator.createSetup(cls_type="powder1DTOF")
             keys = self._instrument_tof_link.copy()
-
+            self.calculator.parameters = model
             setup_keys = {k: keys[k] for k in ["ttheta_bank", "dtt1", "dtt2"]}
             res_keys = {
                 k: keys[k]
@@ -726,6 +726,9 @@ class CryspyV2(InterfaceTemplate):
         
     def set_exp_cif(self, cif: str) -> None:
         self.calculator.set_exp_cif(cif)
+
+    def set_job_type(self, tof: bool, pol:bool) -> None:
+        self.calculator.set_job_type(tof, pol)
 
     def generate_pol_fit_func(
         self,

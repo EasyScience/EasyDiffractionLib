@@ -110,7 +110,7 @@ class Experiment(coreExperiment):
             )
             j += 1
 
-    def pattern_from_cif_block(self, block, experiment_name="None"):
+    def pattern_from_cif_block(self, block) -> None:
         p = pattern_from_cif(block)
         self.is_polarized = False
         pattern = Powder1DParameters() # default
@@ -125,16 +125,15 @@ class Experiment(coreExperiment):
             if p['zero_shift'].get('error') is not None:
                 pattern.zero_shift.error = p['zero_shift'].get('error')
                 pattern.zero_shift.fixed = False
-        bkg = self.background_from_cif_block(block, experiment_name=experiment_name)
-        pattern.backgrounds.append(bkg)
-        # modify the pattern on the datastore
-        self.pattern = pattern
-        # self._datastore._simulations._pattern = pattern
-        # let the interface know we changed the pattern
-        #if hasattr(self.interface._InterfaceFactoryTemplate__interface_obj,"set_pattern"):
-        #    self.interface._InterfaceFactoryTemplate__interface_obj.set_pattern(self.pattern)
+        if 'radiation' in p:
+            pattern.radiation = p['radiation']
 
-    def parameters_from_cif_block(self, block):
+        # # update the background on pattern
+        # bkg = self.background_from_cif_block(block, experiment_name=experiment_name)
+        # pattern.backgrounds.append(bkg)
+        self.pattern = pattern
+
+    def parameters_from_cif_block(self, block) -> None:
        # Various instrumental parameters
         p = parameters_from_cif(block)
         if 'wavelength' in p:
@@ -142,6 +141,7 @@ class Experiment(coreExperiment):
             self.cw_parameters_from_dict(p)
         elif 'dtt1' in p:
             self.is_tof = True
+            self._x_axis_name = "time"
             self.tof_parameters_from_dict(p)
         else:
             raise ValueError("Unknown instrumental parameters in CIF file")
@@ -316,7 +316,8 @@ class Experiment(coreExperiment):
                 self.job_name + "_" + experiment_name + f"_I{i}", data_e[i]
             )
 
-    def background_from_cif_block(self, block, experiment_name=None):
+    @staticmethod
+    def background_from_cif_block(block, experiment_name:str=None) -> PointBackground:
         # The background
         background_2thetas, background_intensities = background_from_cif(block)
 
@@ -343,7 +344,6 @@ class Experiment(coreExperiment):
             experiment_name = self.name
         string = _DEFAULT_DATA_BLOCK_NO_MEAS + "\n" + data
         self.from_cif_string(string)
-        pass
 
     def from_cif_file(self, file_url, experiment_name=None):
             """
@@ -371,6 +371,7 @@ class Experiment(coreExperiment):
             experiment_name = block.name
             self.name = experiment_name
         self.from_cif_block(block, experiment_name=experiment_name)
+        # self.generate_bindings() # ???? NEEDED???
 
     def from_cif_block(self, block, experiment_name=None):
         """
@@ -385,7 +386,9 @@ class Experiment(coreExperiment):
         if experiment_name is None:
             experiment_name = block.name
             self.name = experiment_name
-        self.pattern_from_cif_block(block, experiment_name=experiment_name)
+        self.pattern_from_cif_block(block)
+        bg = self.background_from_cif_block(block, experiment_name=experiment_name)
+        self.pattern.backgrounds.append(bg)
         self.parameters_from_cif_block(block)
         self.phase_parameters_from_cif_block(block)
         self.data_from_cif_block(block, experiment_name)
@@ -426,7 +429,8 @@ class Experiment(coreExperiment):
         '''
         Returns the x-axis data as xarray
         '''
-        coord = self.job_name + "_" + self.name + "_tth"
+        # coord = self.job_name + "_" + self.name + "_tth"
+        coord = self.job_name + "_" + self.name + "_" + self._x_axis_name
         if coord in self._datastore.store:
             return self._datastore.store[coord]
         return None

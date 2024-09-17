@@ -1230,6 +1230,106 @@ def dataBlockToCif(block, includeBlockName=True):
     cif = cif.replace('\n\n\n', '\n\n')
     return cif
 
+@staticmethod
+def cifV2ToV1_tof(edCif):
+        rawToEdNamesCif = {
+            '_symmetry_space_group_name_H-M': '_space_group.name_H-M_alt',
+            '_atom_site_thermal_displace_type': '_atom_site.ADP_type',
+            '_atom_site_adp_type': '_atom_site.ADP_type',
+            '_atom_site_U_iso_or_equiv': '_atom_site.U_iso_or_equiv'
+        }
+        edToCryspyNamesMap = {}
+        edToCryspyNamesMap['base'] = {
+            '_atom_site.site_symmetry_multiplicity': '_atom_site_multiplicity',
+
+            '_diffrn_radiation.probe': '_setup_radiation',
+
+            '_pd_phase_block.id': '_phase_label',
+            '_pd_phase_block.scale': '_phase_scale',
+
+            '_model.cif_file_name': '_model_cif_file_name',
+            '_experiment.cif_file_name': '_experiment_cif_file_name'
+        }
+        edToCryspyNamesMap['cwl'] = {
+            '_diffrn_radiation_wavelength.wavelength': '_setup_wavelength',
+
+            '_pd_calib.2theta_offset': '_setup_offset_2theta',
+
+            '_pd_instr.resolution_u': '_pd_instr_resolution_u',
+            '_pd_instr.resolution_v': '_pd_instr_resolution_v',
+            '_pd_instr.resolution_w': '_pd_instr_resolution_w',
+            '_pd_instr.resolution_x': '_pd_instr_resolution_x',
+            '_pd_instr.resolution_y': '_pd_instr_resolution_y',
+
+            '_pd_instr.reflex_asymmetry_p1': '_pd_instr_reflex_asymmetry_p1',
+            '_pd_instr.reflex_asymmetry_p2': '_pd_instr_reflex_asymmetry_p2',
+            '_pd_instr.reflex_asymmetry_p3': '_pd_instr_reflex_asymmetry_p3',
+            '_pd_instr.reflex_asymmetry_p4': '_pd_instr_reflex_asymmetry_p4',
+
+            '_pd_meas.2theta_scan': '_pd_meas_2theta',
+            '_pd_meas.intensity_total_su': '_pd_meas_intensity_sigma',  # before _pd_meas.intensity_total!
+            '_pd_meas.intensity_total': '_pd_meas_intensity',
+
+            # NEED see if we can hide this as for TOF case
+            '_pd_meas.2theta_range_min': '_range_2theta_min',
+            '_pd_meas.2theta_range_max': '_range_2theta_max',
+
+            # NEED to remove this and use our handling of a background as for TOF case
+            '_pd_background.line_segment_X': '_pd_background_2theta',
+            '_pd_background.line_segment_intensity': '_pd_background_intensity',
+            '_pd_background.X_coordinate': '_pd_background_X_coordinate',
+
+        }
+        edToCryspyNamesMap['tof'] = {
+            '_pd_instr.zero': '_tof_parameters_Zero',
+            '_pd_instr.dtt1': '_tof_parameters_Dtt1',
+            '_pd_instr.dtt2': '_tof_parameters_dtt2',
+            '_pd_instr.2theta_bank': '_tof_parameters_2theta_bank',
+
+            '_pd_instr.peak_shape': '_tof_profile_peak_shape',
+            '_pd_instr.alpha0': '_tof_profile_alpha0',
+            '_pd_instr.alpha1': '_tof_profile_alpha1',
+            '_pd_instr.beta0':  '_tof_profile_beta0',
+            '_pd_instr.beta1':  '_tof_profile_beta1',
+            '_pd_instr.gamma0': '_tof_profile_gamma0',
+            '_pd_instr.gamma1': '_tof_profile_gamma1',
+            '_pd_instr.gamma2': '_tof_profile_gamma2',
+            '_pd_instr.sigma0': '_tof_profile_sigma0',
+            '_pd_instr.sigma1': '_tof_profile_sigma1',
+            '_pd_instr.sigma2': '_tof_profile_sigma2',
+
+            ###'_tof_background.time_max': '_tof_background_time_max',
+            ###'_tof_background.coeff': '_tof_background_coeff',
+
+            '_pd_background.line_segment_X': '_tof_backgroundpoint_time',
+            '_pd_background.line_segment_intensity': '_tof_backgroundpoint_intensity',
+            '_pd_background.X_coordinate': '_tof_backgroundpoint.X_coordinate',
+
+            '_pd_meas.time_of_flight': '_tof_meas_time',
+            '_pd_meas.intensity_total_su': '_tof_meas_intensity_sigma',  # before _pd_meas.intensity_total!
+            '_pd_meas.intensity_total': '_tof_meas_intensity',
+
+            '_pd_meas.tof_range_min': '_range_time_min',
+            '_pd_meas.tof_range_max': '_range_time_max',
+        }
+        edToCryspyValuesMap = {
+            'x-ray': 'X-rays',
+            'neutron': 'neutrons',
+            'neutronss': 'neutrons',
+        }
+        cryspyCif = edCif
+        diffrn_radiation_type = 'cwl' if '2theta_scan' in cryspyCif else 'tof'
+        for rawName, edName in rawToEdNamesCif.items():
+            cryspyCif = cryspyCif.replace(rawName, edName)
+        for edName, cryspyName in edToCryspyNamesMap['base'].items():
+            cryspyCif = cryspyCif.replace(edName, cryspyName)
+        for edName, cryspyName in edToCryspyNamesMap[diffrn_radiation_type].items():
+            cryspyCif = cryspyCif.replace(edName, cryspyName)
+        for edValue, cryspyValue in edToCryspyValuesMap.items():
+            cryspyCif = cryspyCif.replace(edValue, cryspyValue)
+        return cryspyCif
+
+@staticmethod
 def cifV2ToV1(edCif):
     cryspyCif = edCif
     edToCryspyNamesMap = {

@@ -356,7 +356,7 @@ class JobBase_1D(_PowderBase):
         cif += background_as_cif(background=background, is_tof=is_tof) + "\n\n"
         cif += exp_data_as_cif(data=self.datastore, is_tof=is_tof, is_pol=is_pol) + "\n\n"
         return cif
-    
+
     def update_bindings(self):
         self.generate_bindings()
 

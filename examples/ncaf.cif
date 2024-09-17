@@ -1,0 +1,27 @@
+data_ncaf
+
+_cell.length_a 10.2515
+_cell.length_b 10.2515
+_cell.length_c 10.2515
+_cell.angle_alpha 90.0
+_cell.angle_beta 90.0
+_cell.angle_gamma 90.0
+
+_space_group.name_H-M_alt "I 21 3"
+_space_group.IT_coordinate_system_code 1
+
+loop_
+_atom_site.label
+_atom_site.type_symbol
+_atom_site.fract_x
+_atom_site.fract_y
+_atom_site.fract_z
+_atom_site.occupancy
+_atom_site.ADP_type
+_atom_site.B_iso_or_equiv
+Ca Ca 0.4675(3) 0.0 0.25 1.0 Biso 0.36(7)
+Al Al 0.24896 0.24896 0.24896 1.0 Biso 0.32(8)
+Na Na 0.08606 0.08606 0.08606 1.0 Biso 1.4(1)
+F1 F 0.1375(2) 0.3052(2) 0.1209(2) 1.0 Biso 0.46(6)
+F2 F 0.3632(2) 0.3624(2) 0.1863(2) 1.0 Biso 0.97(6)
+F3 F 0.46094 0.46094 0.46094 1.0 Biso 0.01(7)

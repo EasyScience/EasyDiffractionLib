@@ -73,7 +73,6 @@ class Cryspy:
         self.excluded_points = []
         self._cryspyData = Data() # {phase_name: CryspyPhase, exp_name: CryspyExperiment}
         self._cryspyObject = self._cryspyData._cryspyObj
-        self._counter = 0
 
     @property
     def cif_str(self, index=0) -> str:
@@ -595,8 +594,6 @@ class Cryspy:
         :return: points calculated at `x`
         :rtype: np.ndarray
         """
-        self._counter += 1
-        print(f"Counter: {self._counter}")
         res = np.zeros_like(x_array)
         self.additional_data["ivar"] = res
         args = x_array

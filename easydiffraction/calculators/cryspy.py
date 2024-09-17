@@ -826,9 +826,9 @@ class Cryspy:
         else:
             # this job runs from the notebook - create the dictionary
             phase_dict = cryspy.str_to_globaln(crystals.to_cif()).get_dictionary()
-            phase_name = list(phase_dict.keys())[0]
-            experiment_dict_model = self.model.get_dictionary()
+            # experiment_dict_model = self.model.get_dictionary()
 
+        phase_name = list(phase_dict.keys())[0]
         self._cryspyDict = {phase_name: phase_dict[phase_name], exp_name_model: experiment_dict_model}
 
         self.excluded_points = np.full(len(ttheta), False)

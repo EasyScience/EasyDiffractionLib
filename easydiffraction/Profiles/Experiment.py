@@ -294,7 +294,7 @@ class Experiment(coreExperiment):
             if p[pname].get('error') is not None:
                 phase.scale.error = p[pname].get('error', 0.0)
                 phase.scale.fixed = False
-        pass # debug hook
+        pass
 
     def data_from_cif_block(self, block, experiment_name):
         # data points
@@ -360,7 +360,6 @@ class Experiment(coreExperiment):
             self.from_cif_string(cif_string, experiment_name=experiment_name)
             if hasattr(self.interface._InterfaceFactoryTemplate__interface_obj,"set_exp_cif"):
                 self.interface._InterfaceFactoryTemplate__interface_obj.set_exp_cif(self.cif_string)
-            pass
 
     def from_cif_string(self, cif_string, experiment_name=None):
         """
@@ -372,7 +371,7 @@ class Experiment(coreExperiment):
             experiment_name = block.name
             self.name = experiment_name
         self.from_cif_block(block, experiment_name=experiment_name)
-        self.generate_bindings() # ???? NEEDED???
+        # self.generate_bindings() # ???? NEEDED???
 
     def from_cif_block(self, block, experiment_name=None):
         """

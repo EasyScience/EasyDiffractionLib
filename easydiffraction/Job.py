@@ -251,6 +251,12 @@ class DiffractionJob(JobBase):
             phase = Phase(id)
         self.sample.phases.append(phase)
 
+    def remove_phase(self, id: str) -> None:
+        '''
+        Remove a phase from the Sample.
+        '''
+        del self.sample.phases[id]
+
     # TODO: extend for analysis and info
 
     def update_job_type(self) -> None:
@@ -359,6 +365,7 @@ class DiffractionJob(JobBase):
 
     def add_sample_from_file(self, file_url: str) -> None:
         '''
+        Deprecated. Use add_phase_from_file instead.
         Add a sample to the job from a CIF file.
         Just a wrapper around the Sample class method.
         '''
@@ -367,6 +374,8 @@ class DiffractionJob(JobBase):
         # so no call to update_job_type
         self.datastore._simulations = self.sample
 
+    # Alias to deprecated add_sample_from_file. This is for consistency with the old EDL.
+    add_phase_from_file = add_sample_from_file
 
     def add_sample_from_string(self, cif_string: str) -> None:
         '''

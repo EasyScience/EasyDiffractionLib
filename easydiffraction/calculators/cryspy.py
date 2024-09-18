@@ -34,7 +34,6 @@ class Cryspy:
     def __init__(self):
         # temporary cludge before `beta` branch merged properly
         self.pattern = None
-
         self.conditions = {
             "wavelength": 1.25,
             "resolution": {"u": 0.001, "v": 0.001, "w": 0.001, "x": 0.000, "y": 0.000},
@@ -118,14 +117,16 @@ class Cryspy:
         self.phases.items.append(phase)
 
     def removePhase(self, model_name: str, phase_name: str):
+        # NEED FIX: Check if all phases are removed!
         if phase_name not in self.storage.keys():
             # already removed
             return
+        short_phase_name = phase_name[:-len('_phase')]
         phase = self.storage[phase_name]
         del self.storage[phase_name]
-        del self.storage[phase_name.split("_")[0] + "_scale"]
+        del self.storage[f"{short_phase_name}_scale"]
         self.phases.items.pop(self.phases.items.index(phase))
-        name = self.current_crystal.pop(int(phase_name.split("_")[0]))
+        name = self.current_crystal.pop(short_phase_name)
         if name in self.additional_data["phases"].keys():
             del self.additional_data["phases"][name]
         cryspyObjBlockNames = [item.data_name for item in self._cryspyObject.items]
@@ -826,8 +827,6 @@ class Cryspy:
         else:
             # this job runs from the notebook - create the dictionary
             phase_dict = cryspy.str_to_globaln(crystals.to_cif()).get_dictionary()
-            # experiment_dict_model = self.model.get_dictionary()
-
         phase_name = list(phase_dict.keys())[0]
         self._cryspyDict = {phase_name: phase_dict[phase_name], exp_name_model: experiment_dict_model}
 
@@ -876,6 +875,7 @@ class Cryspy:
         result2 = self._inOutDict[exp_name_model]['dict_in_out_' + data_name.lower()]
 
         return result1, result2
+
 
 class Data():
     def __init__(self):

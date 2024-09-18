@@ -348,18 +348,18 @@ class DiffractionJob(JobBase):
             self.experiment.from_cif_file(file_url)
 
         # self.update_phase_scale()
-        # self.update_job_type()
-        # re-do the sample.
-        if type(self.sample.parameters) is not type(self.experiment.parameters):
+        self.update_job_type()
+        # re-do the sample in case of type change.
+        if self.sample.parameters.name != self.experiment.parameters.name:
             # Different type read in (likely TOF), so re-create the sample
             parameters = self.experiment.parameters
             pattern = self.experiment.pattern
             phases = self.sample.phases
             name = self.sample.name
             self.sample = Sample(name, parameters=parameters, pattern=pattern, phases=phases)
-        self.sample.parameters = self.experiment.parameters
-        self.update_job_type()
-        self.update_interface()
+            self.sample.parameters = self.experiment.parameters
+            self.update_job_type()
+            self.update_interface()
 
     def add_experiment_from_string(self, cif_string: str) -> None:
         '''

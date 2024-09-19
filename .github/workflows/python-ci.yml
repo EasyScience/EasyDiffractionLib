@@ -12,8 +12,8 @@
 
 name: CI using pip
 
-# Trigger the workflow on push or pull request
-on: [push, pull_request]
+# Trigger the workflow on push, pull request and manual trigger
+on: [push, pull_request, workflow_call]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:

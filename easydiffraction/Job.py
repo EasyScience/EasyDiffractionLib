@@ -347,7 +347,6 @@ class DiffractionJob(JobBase):
         else:
             self.experiment.from_cif_file(file_url)
 
-        # self.update_phase_scale()
         self.update_job_type()
         # re-do the sample in case of type change.
         if self.sample.parameters.name != self.experiment.parameters.name:
@@ -367,7 +366,6 @@ class DiffractionJob(JobBase):
         Just a wrapper around the Experiment class method.
         '''
         self.experiment.from_cif_string(cif_string)
-        # self.update_phase_scale()
         self.update_job_type()
 
     def add_sample_from_file(self, file_url: str) -> None:
@@ -485,9 +483,6 @@ class DiffractionJob(JobBase):
             simulation_name = self._name
         else:
             simulation_name = self._name + "_" + simulation_name
-        # self.datastore._simulations.add_simulation(simulation_name, y)
-        # prefix = self.datastore._simulations._simulation_prefix
-        # self.datastore.store[prefix + simulation_name + self._x_axis_name] = y
         self.datastore.store[self.datastore._simulations._simulation_prefix + simulation_name] = y
         # fitter expects ndarrays
         if isinstance(y, xr.DataArray):

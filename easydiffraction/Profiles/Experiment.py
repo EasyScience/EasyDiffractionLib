@@ -128,9 +128,6 @@ class Experiment(coreExperiment):
         if 'radiation' in p:
             pattern.radiation = p['radiation']
 
-        # # update the background on pattern
-        # bkg = self.background_from_cif_block(block, experiment_name=experiment_name)
-        # pattern.backgrounds.append(bkg)
         self.pattern = pattern
 
     def parameters_from_cif_block(self, block) -> None:
@@ -399,8 +396,6 @@ class Experiment(coreExperiment):
         (pattern, background, instrument, data points etc.)
         '''
         # header
-        #is_tof = isinstance(self, Powder1DTOF)
-        #is_pol = isinstance(self, PolPowder1DCW)
         is_tof = False
         is_pol = False
         cif = "data_" + self.job_name + "\n\n"
@@ -413,7 +408,6 @@ class Experiment(coreExperiment):
             cif += polar_param_as_cif(pattern=self.pattern) + "\n\n"
 
         background = self.pattern.backgrounds[0]
-        # cif += phases_as_cif(phases=self.phases) + "\n\n"
         cif += background_as_cif(background=background, is_tof=is_tof) + "\n\n"
         cif += exp_data_as_cif(data=self._datastore, is_tof=is_tof, is_pol=is_pol) + "\n\n"
         return cif
@@ -429,7 +423,6 @@ class Experiment(coreExperiment):
         '''
         Returns the x-axis data as xarray
         '''
-        # coord = self.job_name + "_" + self.name + "_tth"
         coord = self.job_name + "_" + self.name + "_" + self._x_axis_name
         if coord in self._datastore.store:
             return self._datastore.store[coord]

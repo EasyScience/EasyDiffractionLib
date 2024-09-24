@@ -1233,7 +1233,6 @@ def dataBlockToCif(block, includeBlockName=True):
     cif = cif.replace('\n\n\n', '\n\n')
     return cif
 
-@staticmethod
 def cifV2ToV1_tof(edCif):
         rawToEdNamesCif = {
             '_symmetry_space_group_name_H-M': '_space_group.name_H-M_alt',
@@ -1332,7 +1331,6 @@ def cifV2ToV1_tof(edCif):
             cryspyCif = cryspyCif.replace(edValue, cryspyValue)
         return cryspyCif
 
-@staticmethod
 def cifV2ToV1(edCif):
     cryspyCif = edCif
     edToCryspyNamesMap = {

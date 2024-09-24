@@ -666,7 +666,8 @@ class Cryspy:
 
     def updateExpCif(self, edCif, modelNames):
         cryspyObj = self._cryspyObject
-        cryspyCif = cifV2ToV1_tof(edCif)
+        # cryspyCif = cifV2ToV1_tof(edCif)
+        cryspyCif = cifV2ToV1(edCif)
         cryspyExperimentsObj = cryspy.str_to_globaln(cryspyCif)
 
         # Add/modify CryspyObj with ranges based on the measured data points in _pd_meas loop

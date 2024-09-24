@@ -154,7 +154,6 @@ class BackgroundContainer(BaseCollection):
         items = {}
         for idx, key in enumerate(keys):
             if idx == pos:
-                # items[str(self._global_object.map.convert_id_to_key(item))] = item
                 items[item.unique_name] = item
             else:
                 items[key] = self._kwargs[key]

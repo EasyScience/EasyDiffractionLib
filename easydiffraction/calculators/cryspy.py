@@ -15,6 +15,7 @@ from cryspy.procedure_rhochi.rhochi_by_dictionary import rhochi_calc_chi_sq_by_d
 from easyscience import global_object as borg
 
 from easydiffraction.io.cif import cifV2ToV1
+from easydiffraction.io.cif import cifV2ToV1_tof
 from easydiffraction.io.cryspy_parser import CryspyParser
 
 # from pathos import multiprocessing as mp
@@ -665,7 +666,7 @@ class Cryspy:
 
     def updateExpCif(self, edCif, modelNames):
         cryspyObj = self._cryspyObject
-        cryspyCif = cifV2ToV1(edCif)
+        cryspyCif = cifV2ToV1_tof(edCif)
         cryspyExperimentsObj = cryspy.str_to_globaln(cryspyCif)
 
         # Add/modify CryspyObj with ranges based on the measured data points in _pd_meas loop
@@ -675,12 +676,29 @@ class Cryspy:
         cryspyRangeCif = cifV2ToV1(defaultEdRangeCif)
         cryspyRangeObj = cryspy.str_to_globaln(cryspyRangeCif).items
         for dataBlock in cryspyExperimentsObj.items:
-            for item in dataBlock.items:
-                if isinstance(item, cryspy.C_item_loop_classes.cl_1_pd_meas.PdMeasL):
-                    range_min = item.items[0].ttheta
-                    range_max = item.items[-1].ttheta
-                    cryspyRangeObj[0].ttheta_min = range_min
-                    cryspyRangeObj[0].ttheta_max = range_max
+            cryspyExperimentType = type(dataBlock)
+            if cryspyExperimentType == cryspy.E_data_classes.cl_2_pd.Pd:
+                for item in dataBlock.items:
+                    if isinstance(item, cryspy.C_item_loop_classes.cl_1_pd_meas.PdMeasL):
+                        range_min = item.items[0].ttheta
+                        range_max = item.items[-1].ttheta
+                        cryspyRangeObj[0].ttheta_min = range_min
+                        cryspyRangeObj[0].ttheta_max = range_max
+            elif cryspyExperimentType == cryspy.E_data_classes.cl_2_tof.TOF:
+                range_min = 2000  # default value to be updated later
+                range_max = 20000  # default value to be updated later
+                cryspyRangeCif = f'_range_time_min {range_min}\n_range_time_max {range_max}'
+                cryspyRangeObj = cryspy.str_to_globaln(cryspyRangeCif).items
+                for item in dataBlock.items:
+                    if type(item) is cryspy.C_item_loop_classes.cl_1_tof_meas.TOFMeasL:
+                        range_min = item.items[0].time
+                        range_max = item.items[-1].time
+                        cryspyRangeObj[0].time_min = range_min
+                        cryspyRangeObj[0].time_max = range_max
+                for idx, item in enumerate(dataBlock.items):
+                    if type(item) is cryspy.C_item_loop_classes.cl_1_tof_background.TOFBackground:
+                        dataBlock.items[idx].time_max = range_max
+
             dataBlock.add_items(cryspyRangeObj)
 
         # Add/modify CryspyObj with phases based on the already loaded phases

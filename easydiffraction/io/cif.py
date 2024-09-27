@@ -1192,6 +1192,8 @@ def dataBlockToCif(block, includeBlockName=True):
         for categoryName, category in block['loops'].items():
             cif += '\nloop_\n'
             # loop header
+            if not category:
+                continue
             row0 = category[0]
             for param in row0.values():
                 if 'optional' in param and param["optional"]:

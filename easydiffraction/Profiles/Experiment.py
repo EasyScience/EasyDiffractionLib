@@ -27,7 +27,7 @@ from easydiffraction.Profiles.P1D import Instrument1DTOFParameters
 from easydiffraction.Profiles.P1D import PolPowder1DParameters
 from easydiffraction.Profiles.P1D import Powder1DParameters
 
-_DEFAULT_DATA_BLOCK_NO_MEAS = """data_pnd
+_DEFAULT_DATA_BLOCK_NO_MEAS_PD_CWL = """data_pnd
 
 _diffrn_radiation.probe neutron
 _diffrn_radiation_wavelength.wavelength 1.91
@@ -47,6 +47,39 @@ _pd_instr.reflex_asymmetry_p4 0
 
 loop_
 _pd_meas.2theta_scan
+_pd_meas.intensity_total
+_pd_meas.intensity_total_su
+"""
+
+_DEFAULT_DATA_BLOCK_NO_MEAS_PD_TOF = """data_pnd
+
+_diffrn_radiation.probe neutron
+
+_pd_instr.2theta_bank 144.845
+_pd_instr.dtt1 7476.91
+_pd_instr.dtt2 -1.54
+_pd_instr.zero -9.24
+_pd_instr.alpha0 0.0
+_pd_instr.alpha1 0.5971
+_pd_instr.beta0 0.04221
+_pd_instr.beta1 0.00946
+_pd_instr.sigma0 0.30
+_pd_instr.sigma1 7.01
+_pd_instr.sigma2 0.0
+
+loop_
+_pd_phase_block.id
+_pd_phase_block.scale
+ph 1.0
+
+loop_
+_pd_background.line_segment_X
+_pd_background.line_segment_intensity
+0 100
+150000 100
+
+loop_
+_pd_meas.time_of_flight
 _pd_meas.intensity_total
 _pd_meas.intensity_total_su
 """
@@ -338,8 +371,11 @@ class Experiment(coreExperiment):
         with open(file_url, "r") as f:
             data = f.read()
         if experiment_name is None:
-            experiment_name = self.name
-        string = _DEFAULT_DATA_BLOCK_NO_MEAS + "\n" + data
+            experiment_name = 'pnd'
+        if self.is_tof:
+            string = _DEFAULT_DATA_BLOCK_NO_MEAS_PD_TOF + "\n" + data
+        else:
+            string = _DEFAULT_DATA_BLOCK_NO_MEAS_PD_CWL + "\n" + data
         self.from_cif_string(string)
 
     def from_cif_file(self, file_url, experiment_name=None):

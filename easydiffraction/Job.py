@@ -95,6 +95,9 @@ class DiffractionJob(JobBase):
             self.type = JobType(type)
         if type is None:
             self.update_job_type()
+        else:
+            # update experiment with right type
+            self.update_exp_type()
 
         # assign Job components
         self.sample = sample # container for phases
@@ -279,6 +282,15 @@ class DiffractionJob(JobBase):
             self._x_axis_name = "time"
         else:
             self._x_axis_name = "tth"
+
+    def update_exp_type(self) -> None:
+        '''
+        Update the experiment type based on the job.
+        '''
+        self.experiment.is_polarized = self.type.is_pol
+        self.experiment.is_tof = self.type.is_tof
+        self.experiment.is_single_crystal = self.type.is_sc
+        self.experiment.is_2d = self.type.is_2d
 
     def update_phase_scale(self) -> None:
         '''

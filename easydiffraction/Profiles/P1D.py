@@ -325,7 +325,6 @@ class Instrument1DTOFParameters(BaseObj):
             "name": "sigma2",
             "value": 0.0,
             "fixed": True,
-            "enabled": False,
         },
         "gamma0": {
             "name": "gamma0",

@@ -642,22 +642,24 @@ class Cryspy:
         :return: points calculated at `x`
         :rtype: np.ndarray
         """
-        _ = self.calculate_profile()
-        # default to the 1st experiment
-        exp_name = list(self._cryspyData._inOutDict.keys())[0]
-        result_dict = self._cryspyData._inOutDict[exp_name]
-        total_profile = result_dict['signal_plus'] + result_dict['signal_minus']
-        return (total_profile, dict())
-
-        # res = np.zeros_like(x_array)
-        # self.additional_data["ivar"] = res
-        # args = x_array
-        # if self.type == "powder1DCW":
-        #     res2 = self.powder_1d_calculate(args, full_return=True, **kwargs)
-        #     #return self.powder_1d_calculate(args, full_return=True, **kwargs)
-        #     return res2
-        # if self.type == "powder1DTOF":
-        #     return self.powder_1d_tof_calculate(args, full_return=True, **kwargs)
+        if self._cryspyData._cryspyDict:
+            # this job was spawned by the GUI, with the dictionary already created
+            _ = self.calculate_profile()
+            # default to the 1st experiment
+            exp_name = list(self._cryspyData._inOutDict.keys())[0]
+            result_dict = self._cryspyData._inOutDict[exp_name]
+            total_profile = result_dict['signal_plus'] + result_dict['signal_minus']
+            return (total_profile, dict())
+        else:
+            res = np.zeros_like(x_array)
+            self.additional_data["ivar"] = res
+            args = x_array
+            if self.type == "powder1DCW":
+                res2 = self.powder_1d_calculate(args, full_return=True, **kwargs)
+                #return self.powder_1d_calculate(args, full_return=True, **kwargs)
+                return res2
+            if self.type == "powder1DTOF":
+                return self.powder_1d_tof_calculate(args, full_return=True, **kwargs)
 
     def get_phase_components(self, phase_name: str) -> List[np.ndarray]:
         data = None

@@ -476,6 +476,39 @@ def get_job_type_from_file(file_url):
         raise ValueError("Could not determine job type from file.")
     return job_type
 
+def get_job_from_cif_string(cif_string, exp_name="job", phases=None, interface=None):
+    '''
+    Get the job from a CIF string.
+
+    Based on keywords in the CIF string, the job type is determined,
+    the job is created and the data is loaded from the CIF string.
+    '''
+    block = cif.read_string(cif_string).sole_block()
+    datastore = xr.Dataset()
+    # Check if powder1DCWpol
+    value_cwpol = block.find_value("_diffrn_radiation_polarization") or \
+        block.find_value("_diffrn_radiation.polarization_ratio")
+    # value_tof = block.find_value("_pd_meas_time_of_flight")
+    value_tof1 = bool(block.find_loop("_tof_meas_time")) or bool(block.find_loop("_pd_meas_time_of_flight"))
+    value_tof2 = bool(block.find_loop("_tof_meas.time")) or bool(block.find_loop("_pd_meas.time_of_flight"))
+    value_cw = block.find_value("_setup_wavelength") or block.find_value("_diffrn_radiation_wavelength.wavelength")
+
+    if exp_name is None:
+        exp_name = block.name
+    if value_cwpol is not None:
+        job = PolPowder1DCW(exp_name, datastore, phases, interface=interface)
+    elif value_tof1 or value_tof2:
+        job = Powder1DTOF(exp_name, datastore, phases, interface=interface)
+    elif value_cw is not None:
+        job = Powder1DCW(exp_name, datastore, phases, interface=interface)
+    else:
+        raise ValueError("Could not determine job type from file.")
+
+    # Load the data
+    job.from_cif_string(cif_string, exp_name)
+
+    return datastore, job
+
 def get_job_from_file(file_url, exp_name="job", phases=None, interface=None):
     '''
     Get the job from a CIF file.

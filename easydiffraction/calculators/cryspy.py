@@ -31,6 +31,50 @@ RAD_MAP = {
     'neutronss': 'neutrons',
 }
 
+CRYSPY_MODEL_INSTR_KEYS = {
+    'wavelength': 'wavelength',
+    'ttheta': 'offset_ttheta',
+    'u': 'resolution_parameters',
+    'v': 'resolution_parameters',
+    'w': 'resolution_parameters',
+    'x': 'resolution_parameters',
+    'y': 'resolution_parameters',
+    'p1': 'asymmetry_parameters',
+    'p2': 'asymmetry_parameters',
+    'p3': 'asymmetry_parameters',
+    'p4': 'asymmetry_parameters',
+}
+
+CRYSPY_MODEL_PHASE_KEYS = {
+    'fract_x' : 'atom_fract_xyz',
+    'fract_y' : 'atom_fract_xyz',
+    'fract_z' : 'atom_fract_xyz',
+    'occupancy' : 'atom_occupancy',
+    'b_iso_or_equiv' : 'atom_b_iso',
+    'length_a': 'unit_cell_parameters',
+    'length_b': 'unit_cell_parameters',
+    'length_c': 'unit_cell_parameters',
+}
+
+CRYSPY_MODEL_COORD_INDEX = {
+    'length_a': 0,
+    'length_b': 1,
+    'length_c': 2,
+    'fract_x' : 0,
+    'fract_y' : 1,
+    'fract_z' : 2,
+    'u': 0,
+    'v': 1,
+    'w': 2,
+    'x': 3,
+    'y': 4,
+    'p1': 0,
+    'p2': 1,
+    'p3': 2,
+    'p4': 3,
+}
+
+
 class Cryspy:
     def __init__(self):
         # temporary cludge before `beta` branch merged properly
@@ -74,6 +118,7 @@ class Cryspy:
         self.excluded_points = []
         self._cryspyData = Data() # {phase_name: CryspyPhase, exp_name: CryspyExperiment}
         self._cryspyObject = self._cryspyData._cryspyObj
+        self._easyModel = None
 
     @property
     def cif_str(self, index=0) -> str:
@@ -287,6 +332,8 @@ class Cryspy:
         item = self.storage[item_key]
         for key, value in kwargs.items():
             setattr(item, key, kwargs[key])
+            # update corresponding element in _cryspyDict
+            self.updateCryspyDict(item_key, key, value)
 
     def genericReturn(self, item_key: str, value_key: str) -> Any:
         item = self.storage[item_key]
@@ -595,14 +642,22 @@ class Cryspy:
         :return: points calculated at `x`
         :rtype: np.ndarray
         """
-        res = np.zeros_like(x_array)
-        self.additional_data["ivar"] = res
-        args = x_array
-        if self.type == "powder1DCW":
-            return self.powder_1d_calculate(args, full_return=True, **kwargs)
-        if self.type == "powder1DTOF":
-            return self.powder_1d_tof_calculate(args, full_return=True, **kwargs)
-        return res, dict()
+        _ = self.calculate_profile()
+        # default to the 1st experiment
+        exp_name = list(self._cryspyData._inOutDict.keys())[0]
+        result_dict = self._cryspyData._inOutDict[exp_name]
+        total_profile = result_dict['signal_plus'] + result_dict['signal_minus']
+        return (total_profile, dict())
+
+        # res = np.zeros_like(x_array)
+        # self.additional_data["ivar"] = res
+        # args = x_array
+        # if self.type == "powder1DCW":
+        #     res2 = self.powder_1d_calculate(args, full_return=True, **kwargs)
+        #     #return self.powder_1d_calculate(args, full_return=True, **kwargs)
+        #     return res2
+        # if self.type == "powder1DTOF":
+        #     return self.powder_1d_tof_calculate(args, full_return=True, **kwargs)
 
     def get_phase_components(self, phase_name: str) -> List[np.ndarray]:
         data = None
@@ -743,7 +798,47 @@ class Cryspy:
 
         return sdataBlocksNoMeas
 
-    def calculate_profile(self):
+    def updateCryspyDict(self, item, key, value):
+        '''
+        Update the input cryspy dictionary with the key
+            referenced by the item-key pair
+        '''
+        if not self._cryspyData._inOutDict:
+            return
+        # check the direct mapping first
+        if key in CRYSPY_MODEL_PHASE_KEYS:
+            # phase param
+            phase_name = list(self._cryspyData._cryspyDict.keys())[0]
+            cryspy_dict = self._cryspyData._cryspyDict[phase_name]
+            cryspy_key = CRYSPY_MODEL_PHASE_KEYS[key]
+            loc = cryspy_dict[cryspy_key]
+            # find the text in `item` after the last underscore
+            atom_index = int(item[item.rfind('_') + 1:])
+            # is this a fractional coordinate?
+            if 'fract' in key:
+                coord_index = CRYSPY_MODEL_COORD_INDEX[key]
+                loc[coord_index][atom_index] = value
+            elif 'length' in key:
+                coord_index = CRYSPY_MODEL_COORD_INDEX[key]
+                loc[coord_index] = value
+            else:
+                loc[atom_index] = value
+            return
+        elif key in CRYSPY_MODEL_INSTR_KEYS:
+            # instrument param
+            exp_name = list(self._cryspyData._cryspyDict.keys())[1]
+            cryspy_dict = self._cryspyData._cryspyDict[exp_name]
+            cryspy_key = CRYSPY_MODEL_INSTR_KEYS[key]
+            loc = cryspy_dict[cryspy_key]
+            if 'pd_instr' in item:
+                coord_index = CRYSPY_MODEL_COORD_INDEX[key]
+                loc[coord_index] = value
+            else:
+                loc = np.array([value])
+        else:
+            return
+
+    def calculate_profile(self, x=None):
         # use data from the current dictionary to calculate profile
         result = rhochi_calc_chi_sq_by_dictionary(
             self._cryspyData._cryspyDict,
@@ -845,7 +940,7 @@ class Cryspy:
         else:
             # this job runs from the notebook - create the dictionary
             phase_dict = cryspy.str_to_globaln(crystals.to_cif()).get_dictionary()
-            phase_name = list(phase_dict.keys())[0]
+        phase_name = list(phase_dict.keys())[0]
         self._cryspyDict = {phase_name: phase_dict[phase_name], exp_name_model: experiment_dict_model}
 
         self.excluded_points = np.full(len(ttheta), False)

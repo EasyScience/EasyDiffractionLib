@@ -19,7 +19,7 @@ _pd_instr.reflex_asymmetry_p4 0
 loop_
 _pd_phase_block.id
 _pd_phase_block.scale
-pbso4 1.4597(21)
+PbSO4 1.4597(21)
 
 loop_
 _pd_background.line_segment_X

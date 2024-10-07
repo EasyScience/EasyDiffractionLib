@@ -722,7 +722,11 @@ class CryspyV2(InterfaceTemplate):
             calculation, self._last_callback = self._internal.full_callback(
                 x_array, *args, **kwargs
             )
-            return calculation
+        else:
+            calculation, self._last_callback = self.full_callback(
+                x_array, *args, **kwargs
+            )
+        return calculation
         
     def set_exp_cif(self, cif: str) -> None:
         self.calculator.set_exp_cif(cif)
@@ -810,15 +814,15 @@ class CryspyV2(InterfaceTemplate):
         :param x_array: points to be calculated at
         :return: calculated points
         """
-        if pol_fn is None:
-            pol_fn = self.up_plus_down
+        # if pol_fn is None:
+        #     pol_fn = self.up_plus_down
         result = None
         if self.calculator is not None:
             result = self.calculator.full_calculate(x_array, pol_fn=pol_fn, **kwargs)
         return result
 
-    def calculate_profile(self):
-        results = self.calculator.calculate_profile()
+    def calculate_profile(self, x=None):
+        results = self.calculator.calculate_profile(x)
         return results
 
     def data(self):

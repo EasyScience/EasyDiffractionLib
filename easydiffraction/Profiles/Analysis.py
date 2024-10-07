@@ -24,7 +24,9 @@ class Analysis(coreAnalysis):
         if interface is None:
             interface = InterfaceFactory()
         self.interface = interface
-        self._fitter = CoreFitter(self, self.interface.fit_func)
+        # self._fitter = CoreFitter(self, self.interface.fit_func)
+        self._fitter = CoreFitter(self, self.interface.calculate_profile)
+        # self.interface.calculate_profile
 
     def calculate_theory(self, x: Union[xr.DataArray, np.ndarray], **kwargs) -> np.ndarray:
         '''
@@ -73,7 +75,8 @@ class Analysis(coreAnalysis):
                 y = y.values
             res = self._fitter.fit(x, y, **kwargs)
 
-        except Exception:
+        except Exception as ex:
+            print(f"Error in fitting: {ex}")
             return None
         return res
 

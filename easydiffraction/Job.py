@@ -48,7 +48,7 @@ class DiffractionJob(JobBase):
         interface=None,
     ):
         super(DiffractionJob, self).__init__(
-            name
+            name,
         )
         # The following assignment is necessary for proper binding
         if interface is None:
@@ -225,6 +225,10 @@ class DiffractionJob(JobBase):
         # calculate background based on the experimental x values
         x = self.experiment.x
         return self.experiment.pattern.backgrounds[0].calculate(x) if x is not None else None
+
+    @property
+    def backgrounds(self):
+        return self.experiment.pattern.backgrounds
 
     def set_job_from_file(self, file_url: str) -> None:
         '''

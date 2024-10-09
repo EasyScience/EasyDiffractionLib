@@ -496,7 +496,7 @@ class Experiment(coreExperiment):
         '''
         Returns the error data as xarray
         '''
-        coord = self.job_name + "_" + self.name + "_I0"
+        coord = "s_" + self.job_name + "_" + self.name + "_I0"
         if coord in self._datastore.store:
             return self._datastore.store[coord]
         return None

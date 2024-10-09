@@ -390,7 +390,7 @@ class Cryspy:
             scale = self.pattern.scale.raw_value / norm
             offset = self.pattern.zero_shift.raw_value
 
-        this_x_array = x_array + offset
+        this_x_array = x_array - offset
 
         if 'excluded_points' in kwargs:
             setattr(self.model, 'excluded_points', kwargs['excluded_points'])
@@ -437,7 +437,7 @@ class Cryspy:
             offset = self.pattern.zero_shift.raw_value
         self.model["tof_parameters"].zero = offset
 
-        this_x_array = x_array
+        this_x_array = x_array - offset
         # background
         self.model["tof_background"].time_max = this_x_array[-1]
 

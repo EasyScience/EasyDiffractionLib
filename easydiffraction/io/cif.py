@@ -1227,10 +1227,6 @@ def dataBlockToCif(block, includeBlockName=True):
                     if 'fit' in param and param["fit"]:
                         line += f'{value}({error})'
                     else:
-                        #if instance(value, list):
-                        #    # we have measurement data
-                        #    data
-                        #else:
                         line += f'{value}'
                     line += ' '
                 line = line.rstrip()

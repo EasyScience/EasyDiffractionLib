@@ -280,8 +280,12 @@ class DiffractionJob(JobBase):
 
         if self.type.is_tof:
             self._x_axis_name = "time"
+            if self.pattern is not None:
+                self.pattern.zero_shift.unit = "μs"
         else:
             self._x_axis_name = "tth"
+            if self.pattern is not None:
+                self.pattern.zero_shift.unit = "degree"
 
     def update_exp_type(self) -> None:
         '''

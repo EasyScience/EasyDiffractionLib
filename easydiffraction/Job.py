@@ -508,6 +508,9 @@ class DiffractionJob(JobBase):
         x = self.experiment.x
         y = self.experiment.y
         e = self.experiment.e
+        # we must have experimental data to fit so the pattern needs to
+        # be reset to experimental pattern.
+        self._kwargs['_pattern'] = self.experiment.pattern
 
         kwargs.update(self._kwargs)
         result = self.analysis.fit(x, y, e, **kwargs)

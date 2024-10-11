@@ -15,13 +15,6 @@ from easydiffraction.io.cif_reader import data_from_cif_block as data_from_cif
 from easydiffraction.io.cif_reader import parameters_from_cif_block as parameters_from_cif
 from easydiffraction.io.cif_reader import pattern_from_cif_block as pattern_from_cif
 from easydiffraction.io.cif_reader import phase_parameters_from_cif_block as phase_parameters_from_cif
-from easydiffraction.Jobs import background_as_cif
-from easydiffraction.Jobs import cw_param_as_cif
-from easydiffraction.Jobs import exp_data_as_cif
-
-# from easydiffraction.Jobs import phases_as_cif
-from easydiffraction.Jobs import polar_param_as_cif
-from easydiffraction.Jobs import tof_param_as_cif
 from easydiffraction.Profiles.P1D import Instrument1DCWParameters
 from easydiffraction.Profiles.P1D import Instrument1DTOFParameters
 from easydiffraction.Profiles.P1D import PolPowder1DParameters
@@ -426,26 +419,25 @@ class Experiment(coreExperiment):
         self.phase_parameters_from_cif_block(block)
         self.data_from_cif_block(block, experiment_name)
 
-    def as_cif(self):
+    @property
+    def cif(self):
         '''
         Returns a CIF representation of the experiment.
         (pattern, background, instrument, data points etc.)
         '''
         # header
-        is_tof = False
-        is_pol = False
+        is_tof = self.is_tof
+        is_pol = self.is_polarized
         cif = "data_" + self.job_name + "\n\n"
         if is_tof:
-            cif += tof_param_as_cif(pattern=self.pattern, parameters=self.parameters) + "\n\n"
+            cif += self.tof_param_as_cif(pattern=self.pattern, parameters=self.parameters) + "\n\n"
         else:
-            cif += cw_param_as_cif(parameters=self.parameters, pattern=self.pattern)+  "\n\n"
-
+            cif += self.cw_param_as_cif(parameters=self.parameters, pattern=self.pattern)+  "\n\n"
         if is_pol:
-            cif += polar_param_as_cif(pattern=self.pattern) + "\n\n"
-
+            cif += self.polar_param_as_cif(pattern=self.pattern) + "\n\n"
         background = self.pattern.backgrounds[0]
-        cif += background_as_cif(background=background, is_tof=is_tof) + "\n\n"
-        cif += exp_data_as_cif(data=self._datastore, is_tof=is_tof, is_pol=is_pol) + "\n\n"
+        cif += self.background_as_cif(background=background, is_tof=is_tof) + "\n\n"
+        cif += self.exp_data_as_cif() + "\n\n"
         return cif
 
     def update_bindings(self):
@@ -516,6 +508,125 @@ class Experiment(coreExperiment):
         """
         # TODO: Implement this
         return Experiment("Experiment")
+
+    def exp_data_as_cif(self):
+        '''
+        Returns a CIF representation of the experimental datapoints x,y,e.
+        '''
+        if self.y is None or not len(self.y):
+            return ""
+
+        # for both sim and exp
+        cif_exp_data = "_range_2theta_min " + str(self.x.values[0]) + "\n"
+        cif_exp_data += "_range_2theta_max " + str(self.x.values[-1]) + "\n"
+        cif_exp_data += "_setup_radiation neutrons\n"
+
+        # only when exp present
+        cif_exp_data += "\nloop_"
+
+        if self.is_tof:
+            cif_exp_data += "\n_tof_meas_time"
+            cif_prefix = "_tof_"
+        else:
+            cif_exp_data += "\n_pd_meas_2theta"
+            cif_prefix = "_pd_"
+
+        if self.is_polarized:
+            cif_exp_data += "\n" + \
+                            cif_prefix + "meas_intensity_up\n" + \
+                            cif_prefix + "meas_intensity_up_sigma\n" + \
+                            cif_prefix + "meas_intensity_down\n" + \
+                            cif_prefix + "meas_intensity_down_sigma"
+        else:
+            cif_exp_data += "\n" + \
+                            cif_prefix + "meas_intensity\n" + \
+                            cif_prefix + "meas_intensity_sigma"
+
+        for i in range(len(self.x)):
+            cif_exp_data += "\n" + str(self.x.values[i]) + " "
+            if self.is_polarized:
+                cif_exp_data += str(self.y.values[i]) + " " + \
+                    str(self.e.values[i]) + " " + \
+                    str(self.y_beta.values[i]) + " " + \
+                    str(self.e_beta.values[i])
+            else:
+                cif_exp_data += str(self.y.values[i]) + " " + \
+                    str(self.e.values[i])
+
+        return cif_exp_data
+
+    @staticmethod
+    def cw_param_as_cif(parameters=None, pattern=None):
+        '''
+        Returns a CIF representation of the CW instrument parameters
+        '''
+        cif_ipar_data = ""
+        cif_ipar_data += "\n_setup_wavelength " + str(parameters.wavelength.raw_value)
+        cif_ipar_data += "\n_setup_offset_2theta  " + str(pattern.zero_shift.raw_value)
+        cif_ipar_data += "\n"
+        cif_ipar_data += "\n_pd_instr_resolution_u " + str(parameters.resolution_u.raw_value)
+        cif_ipar_data += "\n_pd_instr_resolution_v " + str(parameters.resolution_v.raw_value)
+        cif_ipar_data += "\n_pd_instr_resolution_w " + str(parameters.resolution_w.raw_value)
+        cif_ipar_data += "\n_pd_instr_resolution_x " + str(parameters.resolution_x.raw_value)
+        cif_ipar_data += "\n_pd_instr_resolution_y " + str(parameters.resolution_y.raw_value)
+        cif_ipar_data += "\n"
+        cif_ipar_data += "\n_pd_instr_reflex_asymmetry_p1 " + str(parameters.reflex_asymmetry_p1.raw_value)
+        cif_ipar_data += "\n_pd_instr_reflex_asymmetry_p2 " + str(parameters.reflex_asymmetry_p2.raw_value)
+        cif_ipar_data += "\n_pd_instr_reflex_asymmetry_p3 " + str(parameters.reflex_asymmetry_p3.raw_value)
+        cif_ipar_data += "\n_pd_instr_reflex_asymmetry_p4 " + str(parameters.reflex_asymmetry_p4.raw_value)
+        return cif_ipar_data
+
+    @staticmethod
+    def tof_param_as_cif(pattern=None, parameters=None):
+        '''
+        Returns a CIF representation of the TOF instrument parameters
+        '''
+        cif_tof_data = ""
+        cif_tof_data += "\n_tof_parameters_zero " + str(pattern.zero_shift.raw_value)
+        cif_tof_data += "\n_tof_parameters_dtt1 " + str(parameters.dtt1.raw_value)
+        cif_tof_data += "\n_tof_parameters_dtt2 " + str(parameters.dtt2.raw_value)
+        cif_tof_data += "\n_tof_parameters_2theta_bank " + str(parameters.ttheta_bank.raw_value)
+        cif_tof_data += "\n_tof_profile_sigma0 " + str(parameters.sigma0.raw_value)
+        cif_tof_data += "\n_tof_profile_sigma1 " + str(parameters.sigma1.raw_value)
+        cif_tof_data += "\n_tof_profile_sigma2 " + str(parameters.sigma2.raw_value)
+        cif_tof_data += "\n_tof_profile_gamma0 " + str(parameters.gamma0.raw_value)
+        cif_tof_data += "\n_tof_profile_gamma1 " + str(parameters.gamma1.raw_value)
+        cif_tof_data += "\n_tof_profile_gamma2 " + str(parameters.gamma2.raw_value)
+        cif_tof_data += "\n_tof_profile_alpha0 " + str(parameters.alpha0.raw_value)
+        cif_tof_data += "\n_tof_profile_alpha1 " + str(parameters.alpha1.raw_value)
+        cif_tof_data += "\n_tof_profile_beta0 " + str(parameters.beta0.raw_value)
+        cif_tof_data += "\n_tof_profile_beta1 " + str(parameters.beta1.raw_value)
+        return cif_tof_data
+
+    @staticmethod
+    def polar_param_as_cif(pattern=None):
+        cif_pat_data = ""
+        cif_pat_data += "\n_diffrn_radiation_polarization " + str(pattern.beam.polarization.raw_value)
+        cif_pat_data += "\n_diffrn_radiation_efficiency " + str(pattern.efficiency.raw_value)
+        cif_pat_data += "\n_setup_field " + str(pattern.field.raw_value)
+        # cif_pat_data += "\n_chi2_sum " + str(self._refine_sum)
+        # cif_pat_data += "\n_chi2_diff " + str(self._refine_diff)
+        # cif_pat_data += "\n_chi2_up " + str(self._refine_up)
+        # cif_pat_data += "\n_chi2_down " + str(self._refine_down)
+        return cif_pat_data
+
+    @staticmethod
+    def background_as_cif(background=None, is_tof=False):
+        '''
+        Returns a CIF representation of the background.
+        '''
+        cif_background = ""
+        if background is None:
+            return cif_background
+
+        if is_tof:
+            cif_background += "\nloop_\n_tof_background_time\n_tof_background_intensity"
+        else:
+            cif_background += "\nloop_ \n_pd_background_2theta\n_pd_background_intensity"
+        # background = self.parent.l_background._background_as_obj
+        for i in range(len(background.data)):
+            cif_background += "\n" + str(background.data[i].x.raw_value) + " " + str(background.data[i].y.raw_value)
+        return cif_background
 
     # required dunder methods
     def __str__(self):

@@ -300,30 +300,7 @@ class JobBase_1D(_PowderBase):
         self.phase_parameters_from_cif_block(block)
         self.data_from_cif_block(block, experiment_name)
         self.background_from_cif_block(block, experiment_name)
-
-    def as_cif(self):
-        '''
-        Returns a CIF representation of the experiment.
-        (pattern, background, instrument, data points etc.)
-        '''
-        # header
-        is_tof = isinstance(self, Powder1DTOF)
-        is_pol = isinstance(self, PolPowder1DCW)
-        cif = "data_" + self.name + "\n\n"
-        if is_tof:
-            cif += tof_param_as_cif(pattern=self.pattern, parameters=self.parameters) + "\n\n"
-        else:
-            cif += cw_param_as_cif(parameters=self.parameters, pattern=self.pattern)+  "\n\n"
-
-        if is_pol:
-            cif += polar_param_as_cif(pattern=self.pattern) + "\n\n"
-
-        background = self.pattern.backgrounds[0]
-        cif += phases_as_cif(phases=self.phases) + "\n\n"
-        cif += background_as_cif(background=background, is_tof=is_tof) + "\n\n"
-        cif += exp_data_as_cif(data=self.datastore, is_tof=is_tof, is_pol=is_pol) + "\n\n"
-        return cif
-    
+   
     def update_bindings(self):
         self.generate_bindings()
 
@@ -505,15 +482,3 @@ def get_job_from_file(file_url, exp_name="job", phases=None, interface=None):
 
     return datastore, job
 
-
-def phases_as_cif(phases=None):
-    '''
-    Returns a CIF representation of the phases names and scales.
-    '''
-    cif_phase = "loop_\n"
-    cif_phase += "_phase_label\n"
-    cif_phase += "_phase_scale\n"
-    cif_phase += "_phase_igsize\n"
-    for phase in phases:
-        cif_phase += phase.name + " " + str(phase.scale.raw_value) + " 0.0\n"
-    return cif_phase

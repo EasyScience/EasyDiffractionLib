@@ -423,13 +423,15 @@ class DiffractionJob(JobBase):
         '''
         Convert the job to a CIF file.
         '''
-        sample_cif = self.phases[0].cif # temporarily just the first phase
+        phase_cif = self.phases[0].cif # temporarily only one phase
+        sample_cif = self.sample.cif
         experiment_cif = self.experiment.cif
         analysis_cif = "" # TODO: implement
         # analysis_cif = self.analysis.to_cif()
 
         # combine all CIFs
-        job_cif = sample_cif + "\n\n" + \
+        job_cif = phase_cif + "\n\n" + \
+                sample_cif + "\n\n" + \
                 experiment_cif + "\n\n" + \
                 analysis_cif
         return job_cif

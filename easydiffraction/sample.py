@@ -111,6 +111,25 @@ class Sample(BaseObj):
         for p in phase:
             self.phases.append(p)
 
+    def phases_as_cif(self):
+        '''
+        Returns a CIF representation of the phases names and scales.
+        '''
+        cif_phase = "loop_\n"
+        cif_phase += "_phase_label\n"
+        cif_phase += "_phase_scale\n"
+        cif_phase += "_phase_igsize\n"
+        for phase in self.phases:
+            cif_phase += phase.name + " " + str(phase.scale.raw_value) + " 0.0\n"
+        return cif_phase
+
+    @property
+    def cif(self):
+        '''
+        Returns a CIF representation of the sample.
+        '''
+        return self.phases_as_cif()
+
     @property
     def interface(self):
         return self._interface

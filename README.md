@@ -4,22 +4,22 @@
 
 <img height="80"><img src="https://raw.githubusercontent.com/easyScience/easyDiffractionApp/master/resources/images/ed_logo.svg" height="65">
 
-**easydiffractionLib** is a Python library which provides:
+**Easydiffraction** is a Python library which provides:
 * Scripting interface to simulate and analyse neutron diffraction patterns.
 * Multiple optimization algorithms to minimize models to experimental data: [Lmfit](https://lmfit.github.io/lmfit-py/), [Bumps](https://github.com/bumps/bumps) and [DFO_LS](https://github.com/numericalalgorithmsgroup/dfols).
 * Multiple calculation engines: [CrysPy](https://github.com/ikibalin/cryspy), [CrysFML](https://www.ill.eu/sites/fullprof/php/programs24b7.html?pagina=Crysfml).
 
-**easydiffractionLib** is the foundation of [**easyDiffraction**](https://github.com/easyScience/easyDiffraction), an intuitive application which endeavors simplifying and accelerating the analysis of diffraction experiments.
+**Easydiffraction** library is the foundation of [**EasyDiffraction** application](https://github.com/easyscience/easydiffractionapp), an intuitive application which endeavors simplifying and accelerating the analysis of diffraction experiments.
 
 ## Getting Started
 
-### Install easyDiffractionLib
+### Install EasyDiffraction python library
 
-Currently **easyDiffractionLib** is in **alpha** and has not been released on **pypi**. Please use the alternative method given below to install **easyDiffractionLib** from our [custom Python Package Index](https://easyscience.github.io/pypi).
+Currently **easydiffraction** is in **alpha** and has not been released on **pypi**. Please use the alternative method given below to install **easydiffraction** from our GitHub repository.
 
-* Create and go to, e.g., **easyDiffraction** directory (*optional*)
+* Create and go to, e.g., **easydiffraction** directory (*optional*)
   ```
-  mkdir easyDiffraction && cd easyDiffraction
+  mkdir easydiffraction && cd easydiffraction
   ```
 * Create virtual environment and activate it (*optional*)
   ```
@@ -30,25 +30,25 @@ Currently **easyDiffractionLib** is in **alpha** and has not been released on **
   ```
   pip install --upgrade pip
   ```
-* Install **easyDiffractionLib**
+* Install **easydiffraction** with extras
   ```
-  pip install easyDiffraction --extra-index-url https://easyscience.github.io/pypi
+  pip install 'easydiffraction[charts] @ git+https://github.com/easyscience/easydiffractionlib.git@new_job_dev'
   ```
 
 ## Examples
 
-### Jupyter Notebook examples that use easyDiffractionLib
+### Jupyter Notebook examples that use EasyDiffraction
 
 #### Locally
 
-* Install **easyDiffractionLib** as described above
-* Install Jupyter Notebook and visualization libraries, such as **py3Dmol** and **bokeh** (*if not done already*)
+* Install **easydiffraction** as described above, including `charts` extras for visualization 
+* Install Jupyter Notebook
   ```
-  pip install notebook py3Dmol bokeh
+  pip install notebook
   ```
-* Download **easyDiffractionLib** Jupyter Notebook [examples](https://github.com/easyScience/easyDiffractionLib/tree/master/examples) from GitHub, e.g., using **svn** (*if not done already*)
+* Download **easyDiffractionLib** Jupyter Notebook [examples](https://github.com/easyscience/easydiffractionlib/tree/new_job_dev/examples) from GitHub, e.g., using **svn** (*if not done already*)
   ```
-  svn export https://github.com/easyScience/easyDiffractionLib/branches/master/examples
+  svn export https://github.com/easyscience/easydiffractionlib/branches/new_job_dev/examples
   ```
 * Run Jupyter Notebook server
   ```
@@ -60,14 +60,17 @@ Currently **easyDiffractionLib** is in **alpha** and has not been released on **
   ```
 * Select one of the ***.ipynb** files
 
-#### Via Binder (interactive)
+#### Via Google Colab (interactive, requires google account)
 
-Examples can also be run on the online service [**Binder**](https://mybinder.org/). Click [launch **Binder**](https://mybinder.org/v2/gh/easyScience/easyDiffractionLib/master) and navigate to the examples folder to run one of the notebooks or create your own.
+##### Neutron powder diffraction
+
+* [Fitting, constant wavelength, La0.5Ba0.5CoO3 - HRPT@PSI](https://colab.research.google.com/github/EasyScience/EasyDiffractionLib/blob/new_job_dev/examples/Fitting_PD-CW_La0.5Ba0.5CoO3-HRPT@PSI/fitting.ipynb)
+* [Fitting, time-of-flight, Si - SEPD@Argonne](https://colab.research.google.com/github/EasyScience/EasyDiffractionLib/blob/new_job_dev/examples/Fitting_PD-TOF_Si-SEPD@Argonne/fitting.ipynb)
 
 #### Via nbviewer (non-interactive preview)
 
-* [Simulation](https://nbviewer.jupyter.org/github/easyScience/easyDiffractionLib/blob/master/examples/Simulation.ipynb)
-* [Fitting](https://nbviewer.jupyter.org/github/easyScience/easyDiffractionLib/blob/master/examples/Fitting.ipynb)
+* [Fitting, constant wavelength, La0.5Ba0.5CoO3 - HRPT@PSI](https://nbviewer.org/github/EasyScience/EasyDiffractionLib/blob/new_job_dev/examples/Fitting_PD-CW_La0.5Ba0.5CoO3-HRPT@PSI/fitting.ipynb)
+* [Fitting, time-of-flight, Si - SEPD@Argonne](https://nbviewer.org/github/EasyScience/EasyDiffractionLib/blob/new_job_dev/examples/Fitting_PD-TOF_Si-SEPD@Argonne/fitting.ipynb)
 
 ## Test
 

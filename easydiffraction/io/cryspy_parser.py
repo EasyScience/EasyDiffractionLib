@@ -7,7 +7,7 @@ import numpy as np
 try:
     import cryspy
     from cryspy.A_functions_base.function_2_space_group import get_it_coordinate_system_codes_by_it_number
-    print('CrysPy module imported')
+    #print('CrysPy module imported')
 except ImportError:
     print('No CrysPy module found')
 

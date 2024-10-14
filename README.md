@@ -41,7 +41,7 @@ Currently **easydiffraction** is in **alpha** and has not been released on **pyp
 
 #### Locally
 
-* Install **easydiffraction** as described above, including `charts` extras for visualization 
+* Install **easydiffraction** as described above, including `charts` extras for visualization
 * Install Jupyter Notebook
   ```
   pip install notebook
@@ -68,6 +68,8 @@ Currently **easydiffraction** is in **alpha** and has not been released on **pyp
 * [Fitting, time-of-flight, Si - SEPD@Argonne](https://colab.research.google.com/github/EasyScience/EasyDiffractionLib/blob/new_job_dev/examples/Fitting_PD-TOF_Si-SEPD@Argonne/fitting.ipynb)
 
 #### Via nbviewer (non-interactive preview)
+
+##### Neutron powder diffraction
 
 * [Fitting, constant wavelength, La0.5Ba0.5CoO3 - HRPT@PSI](https://nbviewer.org/github/EasyScience/EasyDiffractionLib/blob/new_job_dev/examples/Fitting_PD-CW_La0.5Ba0.5CoO3-HRPT@PSI/fitting.ipynb)
 * [Fitting, time-of-flight, Si - SEPD@Argonne](https://nbviewer.org/github/EasyScience/EasyDiffractionLib/blob/new_job_dev/examples/Fitting_PD-TOF_Si-SEPD@Argonne/fitting.ipynb)

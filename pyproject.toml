@@ -38,10 +38,9 @@ classifiers = [
 ]
 include = ["CHANGELOG.md"]
 
-
 dependencies = [
-    "cryspy @ git+https://github.com/ikibalin/cryspy.git@sigma2",
-    "EasyScience @ git+https://github.com/EasyScience/EasyScience.git",
+    "cryspy @ git+https://github.com/ikibalin/cryspy.git@beta",
+    "EasyScience @ git+https://github.com/EasyScience/EasyScience.git@free-params",
     #"easyCrystallography>=0.4.0",
     "easycrystallography @ git+https://github.com/EasyScience/EasyCrystallography.git@develop",
     "pycifrw>=4.4.1",
@@ -70,6 +69,10 @@ dev = [
     "bokeh",
     "gemmi",
     "periodictable",
+]
+charts = [
+  "darkdetect",
+  "plotly"
 ]
 
 [project.urls]

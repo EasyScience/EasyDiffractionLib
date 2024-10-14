@@ -118,7 +118,6 @@ class Cryspy:
         self.excluded_points = []
         self._cryspyData = Data() # {phase_name: CryspyPhase, exp_name: CryspyExperiment}
         self._cryspyObject = self._cryspyData._cryspyObj
-        self._easyModel = None
 
     @property
     def cif_str(self, index=0) -> str:
@@ -844,7 +843,7 @@ class Cryspy:
         else:
             return
 
-    def calculate_profile(self, x=None):
+    def calculate_profile(self):
         # use data from the current dictionary to calculate profile
         result = rhochi_calc_chi_sq_by_dictionary(
             self._cryspyData._cryspyDict,

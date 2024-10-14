@@ -39,8 +39,8 @@ class InterfaceFactory(InterfaceFactoryTemplate):
     def remove_phase(self, phases_obj=None, phase_obj=None) -> None:
         return self().remove_phase(phases_obj, phase_obj)
 
-    def calculate_profile(self, x=None) -> dict:
-        return self().calculate_profile(x)
+    def calculate_profile(self) -> dict:
+        return self().calculate_profile()
 
     def data(self):
         return self().data()

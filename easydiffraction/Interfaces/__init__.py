@@ -21,7 +21,8 @@ except ImportError:
 try:
     from easydiffraction.Interfaces.pdffit2 import Pdffit2  # noqa: F401
 except ImportError:
-    print('Warning: PdfFit2 is not installed')
+    pass
+    #print('Warning: PdfFit2 is not installed')
 
 from easydiffraction.Interfaces.interfaceTemplate import InterfaceTemplate as InterfaceTemplate  # noqa: F401
 

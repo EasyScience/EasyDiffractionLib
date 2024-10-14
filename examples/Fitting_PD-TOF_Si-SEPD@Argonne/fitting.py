@@ -1,5 +1,3 @@
-import os
-
 from funcy import print_durations
 import easydiffraction as ed
 
@@ -57,6 +55,13 @@ if __name__ == "__main__" :
 
     # Load a phase from CIF file
     job.add_phase_from_file('si.cif')
+
+    # Show phase info in CIF format
+    print('*** Phase:')
+    print(job.phases['si'].cif)
+
+    # Display the crystal structure of a given model
+    job.show_crystal_structure(id='si')
 
     # Load experimentally measured data from a file in XYE format
     job.add_experiment_from_file('sepd.xye')

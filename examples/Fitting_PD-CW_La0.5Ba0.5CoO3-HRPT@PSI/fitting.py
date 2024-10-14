@@ -1,5 +1,3 @@
-import os
-
 from funcy import print_durations
 import easydiffraction as ed
 
@@ -89,14 +87,21 @@ if __name__ == "__main__" :
     # Create a job - the main object to store all the information
     job = ed.Job()
 
-    # Load a phase from CIF file
-    print('*** Phase:')
+    # Set phase manually
     set_phase_manually(job)
+
+    # Show phase info in CIF format
+    print('*** Phase:')
     print(job.phases['lbco'].cif)
 
+    # Display the crystal structure of a given model
+    job.show_crystal_structure(id='lbco')
+
     # Load experimentally measured data from a file in XYE format
-    print('*** Measured and calculated data:')
     job.add_experiment_from_file('hrpt.xye')
+
+    # Print data
+    print('*** Measured and calculated data:')
     job.print_data()
 
     # Display the experiment chart

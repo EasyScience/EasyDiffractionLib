@@ -50,6 +50,11 @@ try:
 except ImportError:
     print("plotly not installed")
 
+try:
+    import py3Dmol
+except ImportError:
+    print("py3Dmol not installed")
+
 
 T_ = TypeVar('T_')
 
@@ -575,6 +580,27 @@ class DiffractionJob(JobBase):
         self.generate_bindings()
 
     # Charts
+
+    def show_crystal_structure(self, id=None):
+        '''
+        Show the crystal structure.
+        '''
+        if importlib.util.find_spec("py3Dmol") is None:
+            print("Warning: py3Dmol not installed. Try `pip install py3Dmol`.")
+            return
+
+        phase = self.phases[id]
+        cif = phase.cif
+
+        structure_view = py3Dmol.view(linked=False)
+        structure_view.addModel(cif, 'cif')
+        structure_view.setStyle({'sphere': {'colorscheme': 'Jmol', 'scale': .2},
+                                 'stick': {'colorscheme': 'Jmol', 'radius': 0.1}})
+        if importlib.util.find_spec("darkdetect") is not None and darkdetect.isDark():
+            structure_view.setBackgroundColor('#2b2b2b')
+        structure_view.addUnitCell()
+        structure_view.replicateUnitCell(2, 2, 2)
+        structure_view.zoomTo()
 
     def print_data(self):
         '''

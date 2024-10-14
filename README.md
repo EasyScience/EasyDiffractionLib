@@ -32,7 +32,7 @@ Currently **easydiffraction** is in **alpha** and has not been released on **pyp
   ```
 * Install **easydiffraction** with extras
   ```
-  pip install 'easydiffraction[charts] @ git+https://github.com/easyscience/easydiffractionlib.git@new_job_dev'
+  pip install 'easydiffraction[charts] @ git+https://github.com/easyscience/easydiffractionlib.git@new_job_dev2'
   ```
 
 ## Examples
@@ -46,9 +46,9 @@ Currently **easydiffraction** is in **alpha** and has not been released on **pyp
   ```
   pip install notebook
   ```
-* Download **easyDiffractionLib** Jupyter Notebook [examples](https://github.com/easyscience/easydiffractionlib/tree/new_job_dev/examples) from GitHub, e.g., using **svn** (*if not done already*)
+* Download **easyDiffractionLib** Jupyter Notebook [examples](https://github.com/easyscience/easydiffractionlib/tree/new_job_dev2/examples) from GitHub, e.g., using **svn** (*if not done already*)
   ```
-  svn export https://github.com/easyscience/easydiffractionlib/branches/new_job_dev/examples
+  svn export https://github.com/easyscience/easydiffractionlib/branches/new_job_dev2/examples
   ```
 * Run Jupyter Notebook server
   ```
@@ -64,15 +64,15 @@ Currently **easydiffraction** is in **alpha** and has not been released on **pyp
 
 ##### Neutron powder diffraction
 
-* [Fitting, constant wavelength, La0.5Ba0.5CoO3 - HRPT@PSI](https://colab.research.google.com/github/EasyScience/EasyDiffractionLib/blob/new_job_dev/examples/Fitting_PD-CW_La0.5Ba0.5CoO3-HRPT@PSI/fitting.ipynb)
-* [Fitting, time-of-flight, Si - SEPD@Argonne](https://colab.research.google.com/github/EasyScience/EasyDiffractionLib/blob/new_job_dev/examples/Fitting_PD-TOF_Si-SEPD@Argonne/fitting.ipynb)
+* [Fitting, constant wavelength, La0.5Ba0.5CoO3 - HRPT@PSI](https://colab.research.google.com/github/EasyScience/EasyDiffractionLib/blob/new_job_dev2/examples/Fitting_PD-CW_La0.5Ba0.5CoO3-HRPT@PSI/fitting.ipynb)
+* [Fitting, time-of-flight, Si - SEPD@Argonne](https://colab.research.google.com/github/EasyScience/EasyDiffractionLib/blob/new_job_dev2/examples/Fitting_PD-TOF_Si-SEPD@Argonne/fitting.ipynb)
 
 #### Via nbviewer (non-interactive preview)
 
 ##### Neutron powder diffraction
 
-* [Fitting, constant wavelength, La0.5Ba0.5CoO3 - HRPT@PSI](https://nbviewer.org/github/EasyScience/EasyDiffractionLib/blob/new_job_dev/examples/Fitting_PD-CW_La0.5Ba0.5CoO3-HRPT@PSI/fitting.ipynb)
-* [Fitting, time-of-flight, Si - SEPD@Argonne](https://nbviewer.org/github/EasyScience/EasyDiffractionLib/blob/new_job_dev/examples/Fitting_PD-TOF_Si-SEPD@Argonne/fitting.ipynb)
+* [Fitting, constant wavelength, La0.5Ba0.5CoO3 - HRPT@PSI](https://nbviewer.org/github/EasyScience/EasyDiffractionLib/blob/new_job_dev2/examples/Fitting_PD-CW_La0.5Ba0.5CoO3-HRPT@PSI/fitting.ipynb)
+* [Fitting, time-of-flight, Si - SEPD@Argonne](https://nbviewer.org/github/EasyScience/EasyDiffractionLib/blob/new_job_dev2/examples/Fitting_PD-TOF_Si-SEPD@Argonne/fitting.ipynb)
 
 ## Test
 

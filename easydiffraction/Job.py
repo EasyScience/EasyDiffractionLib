@@ -691,9 +691,8 @@ class DiffractionJob(JobBase):
         resid_y_max = resid_y_range / 2
 
         y_calc = self.calculate_profile()
-        y_calc = self.calculate_profile()
 
-        peak_idx, _ = find_peaks(y_calc)#, prominence=1)
+        peak_idx, _ = find_peaks(y_calc)  #, prominence=1)
         x_bragg = self.experiment.x.data[peak_idx]
         y_bragg = np.zeros_like(x_bragg)
 

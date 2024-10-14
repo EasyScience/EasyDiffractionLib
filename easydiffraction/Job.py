@@ -251,6 +251,10 @@ class DiffractionJob(JobBase):
         x = self.experiment.x
         return self.experiment.pattern.backgrounds[0].calculate(x) if x is not None else None
 
+    @property
+    def backgrounds(self):
+        return self.experiment.pattern.backgrounds
+
     def set_job_from_file(self, file_url: str) -> None:
         '''
         Set the job from a CIF file.

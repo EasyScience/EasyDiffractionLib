@@ -810,8 +810,8 @@ class CryspyV2(InterfaceTemplate):
         :param x_array: points to be calculated at
         :return: calculated points
         """
-        if pol_fn is None:
-            pol_fn = self.up_plus_down
+        # if pol_fn is None:
+        #     pol_fn = self.up_plus_down
         result = None
         if self.calculator is not None:
             result = self.calculator.full_calculate(x_array, pol_fn=pol_fn, **kwargs)

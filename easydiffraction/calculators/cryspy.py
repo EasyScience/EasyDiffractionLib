@@ -644,7 +644,11 @@ class Cryspy:
         """
         if self._cryspyData._cryspyDict:
             # this job was spawned by the GUI, with the dictionary already created
-            _ = self.calculate_profile()
+            res = self.calculate_profile()
+            chi2 = res[0]
+            point_count = res[1]
+            free_param_count = len(res[4])
+            self.chisq = chi2 / (point_count - free_param_count)
             # default to the 1st experiment
             exp_name = list(self._cryspyData._inOutDict.keys())[0]
             result_dict = self._cryspyData._inOutDict[exp_name]

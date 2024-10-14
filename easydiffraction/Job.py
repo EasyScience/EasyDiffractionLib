@@ -8,6 +8,7 @@ from typing import TypeVar
 from typing import Union
 
 import numpy as np
+from scipy.signal import find_peaks
 from easyscience.Datasets.xarray import xr  # type: ignore
 
 # from easyscience.fitting.fitter import Fitter as CoreFitter
@@ -30,6 +31,25 @@ from easydiffraction.Profiles.P1D import Powder1DParameters
 
 # from easydiffraction.Profiles.Sample import Sample
 from easydiffraction.sample import Sample
+
+import importlib.util
+
+try:
+    import darkdetect
+except ImportError:
+    print("darkdetect not installed")
+
+try:
+    import plotly.express as px
+    import plotly.graph_objects as go
+    import plotly.io as pio
+    if importlib.util.find_spec("darkdetect") is None:
+        print("Warning: Darkdetect not installed. Try `pip install darkdetect`.")
+    else:
+        pio.templates.default = "plotly_dark" if darkdetect.isDark() else "plotly_white"
+except ImportError:
+    print("plotly not installed")
+
 
 T_ = TypeVar('T_')
 
@@ -522,6 +542,11 @@ class DiffractionJob(JobBase):
         self._kwargs['_pattern'] = self.experiment.pattern
 
         kwargs.update(self._kwargs)
+
+        if 'method' in kwargs and 'tolerance' in kwargs:
+            kwargs['minimizer_kwargs'] = {'ftol': kwargs['tolerance'], 'xtol': kwargs['tolerance']}
+            del kwargs['tolerance']
+
         result = self.analysis.fit(x, y, e, **kwargs)
         # Add these in a transparent manner for querying the Job object
         # result.success
@@ -548,6 +573,271 @@ class DiffractionJob(JobBase):
             self.interface._InterfaceFactoryTemplate__interface_obj.set_job_type(tof=self.type.is_tof, pol=self.type.is_pol)
         self.interface.generate_bindings(self)
         self.generate_bindings()
+
+    # Charts
+
+    def print_data(self):
+        '''
+        Print the datastore.
+        '''
+        np.set_printoptions(precision=2)
+        print('Measured x:  ', self.experiment.x.data)
+        print('Measured y:  ', self.experiment.y.data)
+        print('Measured sy: ', self.experiment.e.data)
+        print('Calculated y:', self.calculate_profile())
+
+    def show_experiment_chart(self):
+        '''
+        Show the experiment chart.
+        '''
+        if importlib.util.find_spec("plotly") is None:
+            print("Warning: Plotly not installed. Try `pip install plotly`.")
+            return
+
+        if self.type.is_pd and self.type.is_cwl:
+            x_axis_title = '2θ (degree)'
+        elif self.type.is_pd and self.type.is_tof:
+            x_axis_title = 'TOF (µs)'
+        else:
+            x_axis_title = ''
+
+        main_y_range = self.experiment.y.data.max() - self.experiment.y.data.min()
+        main_y_min = self.experiment.y.data.min() - main_y_range / 10
+        main_y_max = self.experiment.y.data.max() + main_y_range / 10
+
+        trace_bkg = go.Scatter(
+            x=self.experiment.x.data,
+            y=self.background,
+            line=dict(color='gray'),  # default: width=2?
+            mode='lines',
+            name='Background (Ibkg)'
+        )
+
+        trace_meas = go.Scatter(
+            x=self.experiment.x.data,
+            y=self.experiment.y.data,
+            line=dict(color='rgb(31, 119, 180)'),
+            mode='lines',
+            name='Measured (Imeas)'
+        )
+
+        trace_meas_upper = go.Scatter(
+            x=self.experiment.x.data,
+            y=self.experiment.y.data + self.experiment.e.data,
+            mode='lines',
+            line=dict(width=0),
+            hoverinfo="skip",
+            showlegend=False
+        )
+
+        trace_meas_lower = go.Scatter(
+            x=self.experiment.x.data,
+            y=self.experiment.y.data - self.experiment.e.data,
+            mode='lines',
+            line=dict(width=0),
+            fillcolor='rgba(31, 119, 180, 0.3)',
+            fill='tonexty',
+            hoverinfo="skip",
+            showlegend=False
+        )
+
+        data = [trace_bkg, trace_meas, trace_meas_lower, trace_meas_upper]
+
+        layout = go.Layout(
+            autosize=True,
+            margin=dict(autoexpand=True,
+                        r=30, t=30, b=45),
+            legend=dict(yanchor="top", y=1.0,
+                        xanchor="right", x=1.0),
+            xaxis=dict(title_text=x_axis_title),
+            yaxis=dict(title_text='Imeas, Ibkg', range=[main_y_min, main_y_max]),
+        )
+
+        fig = go.Figure(data=data, layout=layout)
+
+        fig.update_xaxes(showline=True, mirror=True, zeroline=False)
+        fig.update_yaxes(showline=True, mirror=True, zeroline=False)
+
+        fig.show()
+
+    def show_analysis_chart(self):
+        '''
+        Show the analysis chart.
+        '''
+        if importlib.util.find_spec("plotly") is None:
+            print("Warning: Plotly not installed. Try `pip install plotly`.")
+            return
+
+        if self.type.is_pd and self.type.is_cwl:
+            x_axis_title = '2θ (degree)'
+        elif self.type.is_pd and self.type.is_tof:
+            x_axis_title = 'TOF (µs)'
+        else:
+            x_axis_title = ''
+
+        main_height = 6
+        bragg_height = 1
+        resid_height = 2
+        full_height = resid_height + bragg_height + main_height
+
+        x_min = self.experiment.x.data.min()
+        x_max = self.experiment.x.data.max()
+
+        main_y_range = self.experiment.y.data.max() - self.experiment.y.data.min()
+        main_y_min = self.experiment.y.data.min() - main_y_range / 10
+        main_y_max = self.experiment.y.data.max() + main_y_range / 10
+        resid_y_range = (main_y_max - main_y_min) * resid_height / main_height
+        resid_y_min = -resid_y_range / 2
+        resid_y_max = resid_y_range / 2
+
+        y_calc = self.calculate_profile()
+        y_calc = self.calculate_profile()
+
+        peak_idx, _ = find_peaks(y_calc)#, prominence=1)
+        x_bragg = self.experiment.x.data[peak_idx]
+        y_bragg = np.zeros_like(x_bragg)
+
+        trace_resid = go.Scatter(
+            x=self.experiment.x.data,
+            y=self.experiment.y.data - y_calc,
+            xaxis='x',
+            yaxis='y',
+            line=dict(color='rgb(44, 160, 44)'),
+            mode='lines',
+            name='Residual (Imeas - Icalc)'
+        )
+
+        trace_bragg = go.Scatter(
+            x=x_bragg,  # np.random.uniform(low=self.experiment.x.data.min(), high=self.experiment.x.data.max(), size=(50,)),
+            y=y_bragg,  #np.zeros(50),
+            xaxis='x2',
+            yaxis='y2',
+            line=dict(color=px.colors.qualitative.Plotly[9]),
+            mode='markers',
+            marker=dict(
+                symbol='line-ns-open',
+                size=10,
+                line=dict(width=1)
+            ),
+            name='Bragg peaks'
+        )
+
+        trace_bkg = go.Scatter(
+            x=self.experiment.x.data,
+            y=self.background,
+            xaxis='x3',
+            yaxis='y3',
+            line=dict(color='gray'),  # default: width=2?
+            mode='lines',
+            name='Background (Ibkg)'
+        )
+
+        trace_calc = go.Scatter(
+            x=self.experiment.x.data,
+            y=y_calc,
+            xaxis='x3',
+            yaxis='y3',
+            line=dict(color='rgb(214, 39, 40)'),
+            mode='lines',
+            name='Total calculated (Icalc)'
+        )
+
+        trace_meas = go.Scatter(
+            x=self.experiment.x.data,
+            y=self.experiment.y.data,
+            xaxis='x3',
+            yaxis='y3',
+            line=dict(color='rgb(31, 119, 180)'),
+            mode='lines',
+            name='Measured (Imeas)'
+        )
+
+        trace_meas_upper = go.Scatter(
+            x=self.experiment.x.data,
+            y=self.experiment.y.data + self.experiment.e.data,
+            xaxis='x3',
+            yaxis='y3',
+            mode='lines',
+            line=dict(width=0),
+            hoverinfo="skip",
+            showlegend=False
+        )
+
+        trace_meas_lower = go.Scatter(
+            x=self.experiment.x.data,
+            y=self.experiment.y.data - self.experiment.e.data,
+            xaxis='x3',
+            yaxis='y3',
+            mode='lines',
+            line=dict(width=0),
+            fillcolor='rgba(31, 119, 180, 0.3)',
+            fill='tonexty',
+            hoverinfo="skip",
+            showlegend=False
+        )
+
+        data = [trace_bragg,
+                trace_resid,
+                trace_bkg, trace_calc, trace_meas, trace_meas_lower, trace_meas_upper]
+
+        layout = go.Layout(
+            # autosize = True,
+            margin=dict(autoexpand=True,
+                        r=30, t=30, b=45),
+            legend=dict(yanchor="top", y=1.0,
+                        xanchor="right", x=1.0),
+            xaxis=dict(
+                title_text=x_axis_title,
+                anchor='y',
+                range=[x_min, x_max],
+                # linecolor='blue',
+                showline=True, mirror=True, zeroline=False
+            ),
+            xaxis2=dict(
+                anchor='y2',
+                range=[x_min, x_max],
+                # linecolor='green',
+                showline=True, mirror=True, zeroline=False, showticklabels=False
+            ),
+            xaxis3=dict(
+                anchor='y3',
+                range=[x_min, x_max],
+                # linecolor='red',
+                showline=True, mirror=True, zeroline=False, showticklabels=False
+            ),
+            yaxis=dict(
+                title_text='Imeas - Icalc',
+                domain=[0, resid_height / full_height - 0.01],
+                range=[resid_y_min, resid_y_max],
+                tickvals=[int(resid_y_min), 0, int(resid_y_max)],
+                # nticks = 3,
+                showline=True, mirror=True, showgrid=False
+            ),
+            yaxis2=dict(
+                domain=[resid_height / full_height + 0.01, (resid_height + bragg_height) / full_height - 0.01],
+                showline=True, mirror=True, showgrid=False, zeroline=False, showticklabels=False
+            ),
+            yaxis3=dict(
+                title_text='Imeas, Icalc, Ibkg',
+                domain=[(resid_height + bragg_height) / full_height + 0.01, 1],
+                range=[main_y_min, main_y_max],
+                showline=True, mirror=True, zeroline=False
+            )
+        )
+
+        fig = go.Figure(data=data, layout=layout)
+
+        # fig.update_xaxes(showline=True, mirror=True)
+        # fig.update_yaxes(showline=True, mirror=True)
+
+        fig.show()
+
+    def print_free_parameters(self):
+        '''
+        Print the free parameters.
+        '''
+        for parameter in self.get_fit_parameters():
+            print(parameter)
 
     ###### DUNDER METHODS ######
     def __copy__(self):

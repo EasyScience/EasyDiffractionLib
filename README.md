@@ -70,7 +70,7 @@ Currently **easydiffraction** is in **alpha** and has not been released on **pyp
 #### Via nbviewer (non-interactive preview)
 
 * [Fitting, constant wavelength, La0.5Ba0.5CoO3 - HRPT@PSI](https://nbviewer.org/github/EasyScience/EasyDiffractionLib/blob/new_job_dev/examples/Fitting_PD-CW_La0.5Ba0.5CoO3-HRPT@PSI/fitting.ipynb)
-* [Fitting, time-of-flight, Si - SEPD@Argonne](https://nbviewer.jupyter.org/github/easyScience/easyDiffractionLib/blob/master/examples/Fitting.ipynb)
+* [Fitting, time-of-flight, Si - SEPD@Argonne](https://nbviewer.org/github/EasyScience/EasyDiffractionLib/blob/new_job_dev/examples/Fitting_PD-TOF_Si-SEPD@Argonne/fitting.ipynb)
 
 ## Test
 

@@ -711,7 +711,7 @@ class DiffractionJob(JobBase):
             y=y_bragg,  #np.zeros(50),
             xaxis='x2',
             yaxis='y2',
-            line=dict(color=px.colors.qualitative.Plotly[9]),
+            line=dict(color='rgb(230, 171, 2)'),  #color=px.colors.qualitative.Plotly[9]),
             mode='markers',
             marker=dict(
                 symbol='line-ns-open',
@@ -777,7 +777,7 @@ class DiffractionJob(JobBase):
 
         data = [trace_bragg,
                 trace_resid,
-                trace_bkg, trace_calc, trace_meas, trace_meas_lower, trace_meas_upper]
+                trace_bkg, trace_meas, trace_meas_lower, trace_meas_upper, trace_calc]
 
         layout = go.Layout(
             # autosize = True,

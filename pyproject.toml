@@ -72,7 +72,8 @@ dev = [
 ]
 charts = [
   "darkdetect",
-  "plotly"
+  "plotly",
+  "py3Dmol"
 ]
 
 [project.urls]

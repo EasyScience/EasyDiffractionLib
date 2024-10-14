@@ -589,6 +589,10 @@ class DiffractionJob(JobBase):
             print("Warning: py3Dmol not installed. Try `pip install py3Dmol`.")
             return
 
+        if id is None:
+            print("Warning: phase id is not given.")
+            return
+
         phase = self.phases[id]
         cif = phase.cif
 
@@ -597,10 +601,11 @@ class DiffractionJob(JobBase):
         structure_view.setStyle({'sphere': {'colorscheme': 'Jmol', 'scale': .2},
                                  'stick': {'colorscheme': 'Jmol', 'radius': 0.1}})
         if importlib.util.find_spec("darkdetect") is not None and darkdetect.isDark():
-            structure_view.setBackgroundColor('#2b2b2b')
+            structure_view.setBackgroundColor('#111')
         structure_view.addUnitCell()
         structure_view.replicateUnitCell(2, 2, 2)
         structure_view.zoomTo()
+        structure_view.show()
 
     def print_data(self):
         '''

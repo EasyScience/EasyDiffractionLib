@@ -809,6 +809,8 @@ class Cryspy:
         '''
         if not self._cryspyData._inOutDict:
             return
+        if not self._cryspyData._cryspyDict:
+            return
         # check the direct mapping first
         if key in CRYSPY_MODEL_PHASE_KEYS:
             # phase param

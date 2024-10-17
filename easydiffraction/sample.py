@@ -102,12 +102,15 @@ class Sample(BaseObj):
             self.interface = InterfaceFactory()
 
     def add_phase_from_cif(self, cif_file):
-        phases = Phase.from_cif_file(cif_file)
-        for phase in phases:
-            self.phases.append(phase)
+        cif_string = ""
+        with open(cif_file, "r") as f:
+            cif_string = f.read()
+        self.add_phase_from_string(cif_string)
 
     def add_phase_from_string(self, cif_string):
         phase = Phase.from_cif_string(cif_string)
+        if self._interface is not None:
+            self._interface.updateModelCif(cif_string)
         for p in phase:
             self.phases.append(p)
 

@@ -397,6 +397,8 @@ class Experiment(coreExperiment):
             experiment_name = block.name
             self.name = experiment_name
         self.from_cif_block(block, experiment_name=experiment_name)
+        phase_names = [phase.name for phase in self._datastore._simulations._phases]
+        self.interface.updateExpCif(cif_string, phase_names)
         # self.generate_bindings() # ???? NEEDED???
 
     def from_cif_block(self, block, experiment_name=None):

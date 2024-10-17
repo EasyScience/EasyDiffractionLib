@@ -641,27 +641,14 @@ class Cryspy:
         :return: points calculated at `x`
         :rtype: np.ndarray
         """
-        if self._cryspyData._cryspyDict:
-            # this job was spawned by the GUI, with the dictionary already created
-            res = self.calculate_profile()
-            chi2 = res[0]
-            point_count = res[1]
-            free_param_count = len(res[4])
-            self.chisq = chi2 / (point_count - free_param_count)
-            # default to the 1st experiment
-            exp_name = list(self._cryspyData._inOutDict.keys())[0]
-            result_dict = self._cryspyData._inOutDict[exp_name]
-            total_profile = result_dict['signal_plus'] + result_dict['signal_minus']
-            return (total_profile, dict())
-        else:
-            res = np.zeros_like(x_array)
-            self.additional_data["ivar"] = res
-            args = x_array
-            if self.type == "powder1DCW":
-                return self.powder_1d_calculate(args, full_return=True, **kwargs)
-            if self.type == "powder1DTOF":
-                return self.powder_1d_tof_calculate(args, full_return=True, **kwargs)
-            return res, dict()
+        res = np.zeros_like(x_array)
+        self.additional_data["ivar"] = res
+        args = x_array
+        if self.type == "powder1DCW":
+            return self.powder_1d_calculate(args, full_return=True, **kwargs)
+        if self.type == "powder1DTOF":
+            return self.powder_1d_tof_calculate(args, full_return=True, **kwargs)
+        return res, dict()
 
     def get_phase_components(self, phase_name: str) -> List[np.ndarray]:
         data = None
@@ -773,14 +760,14 @@ class Cryspy:
                         del dataBlock.items[itemIdx]
             itemTypes = [type(item) for item in dataBlock.items]
             if cryspy.C_item_loop_classes.cl_1_phase.PhaseL not in itemTypes:
-                defaultEdModelsCif = 'loop_\n_pd_phase_block.id\n_pd_phase_block.scale'
-                for modelName in modelNames:
-                    defaultEdModelsCif += f'\n{modelName} 1.0'
-                cryspyPhasesCif = cifV2ToV1(defaultEdModelsCif)
-                cryspyPhasesObj = cryspy.str_to_globaln(cryspyPhasesCif).items
-                dataBlock.add_items(cryspyPhasesObj)
+                if modelNames:
+                    defaultEdModelsCif = 'loop_\n_pd_phase_block.id\n_pd_phase_block.scale'
+                    for modelName in modelNames:
+                        defaultEdModelsCif += f'\n{modelName} 1.0'
+                    cryspyPhasesCif = cifV2ToV1(defaultEdModelsCif)
+                    cryspyPhasesObj = cryspy.str_to_globaln(cryspyPhasesCif).items
+                    dataBlock.add_items(cryspyPhasesObj)
 
-        # self._interface.update
         cryspyObj.add_items(cryspyExperimentsObj.items)
         cryspyExperimentsDict = cryspyExperimentsObj.get_dictionary()
         self._cryspyData._cryspyDict.update(cryspyExperimentsDict)
@@ -924,8 +911,6 @@ class Cryspy:
         setattr(self.model, 'data_name', data_name)
 
         phase_obj = self._cryspyObject
-        # phase -> dict
-        phase_dict = phase_obj.get_dictionary()
 
         is_tof = False
         if self.model.PREFIX.lower() == 'tof':
@@ -940,14 +925,10 @@ class Cryspy:
         experiment_dict_model = self.model.get_dictionary()
         exp_name_model = experiment_dict_model['type_name']
 
-        if self._cryspyData._inOutDict and phase_dict:
-            # we have the data from the GUI
-            self._cryspyDict = self._cryspyData._cryspyDict
-        else:
-            # this job runs from the notebook - create the dictionary
-            phase_dict = cryspy.str_to_globaln(crystals.to_cif()).get_dictionary()
-            phase_name = list(phase_dict.keys())[0]
-        self._cryspyDict = {phase_name: phase_dict[phase_name], exp_name_model: experiment_dict_model}
+        if not self._cryspyData._cryspyDict:
+            return None
+        self._cryspyDict = self._cryspyData._cryspyDict
+        self._cryspyDict[exp_name_model] = experiment_dict_model
 
         self.excluded_points = np.full(len(ttheta), False)
         if hasattr(self.model, 'excluded_points'):

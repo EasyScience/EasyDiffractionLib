@@ -1,11 +1,11 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from easyDiffractionLib import Phases
-from easyDiffractionLib.interface import InterfaceFactory as Calculator
-from easyDiffractionLib.Profiles.P1D import Instrument1DCWPolParameters as CWParamsPol
-from easyDiffractionLib.Profiles.P1D import PolPowder1DParameters
-from easyDiffractionLib.sample import Sample
+from easydiffraction import Phases
+from easydiffraction.interface import InterfaceFactory as Calculator
+from easydiffraction.Profiles.P1D import Instrument1DCWPolParameters as CWParamsPol
+from easydiffraction.Profiles.P1D import PolPowder1DParameters
+from easydiffraction.sample import Sample
 
 calculator = Calculator()
 calculator.switch("CrysPy")
@@ -19,7 +19,7 @@ def pol_diff(a, b):
     return a-b
 
 # this has to be full path to not confuse the CIF file reader that we are loading a string...
-cif_fname = 'd:\\projects\\easyScience\\easyDiffractionLib\\tests\\structure.cif'
+cif_fname = 'd:\\projects\\easyScience\\easydiffraction\\tests\\structure.cif'
 phases = Phases.from_cif_file(cif_fname)
 phase = phases[0]
 

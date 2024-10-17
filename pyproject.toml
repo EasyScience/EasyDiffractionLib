@@ -28,7 +28,7 @@ maintainers = [
 readme = "README.md"
 homepage = "https://github.com/easyScience/easyDiffractionLib"
 documentation = "https://github.com/easyScience/easyDiffractionLib"
-requires-python = ">=3.9, <3.12"
+requires-python = ">=3.9, <3.13"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",  # Define that your audience are developers
@@ -39,14 +39,15 @@ classifiers = [
 include = ["CHANGELOG.md"]
 
 dependencies = [
-    "cryspy @ git+https://github.com/ikibalin/cryspy.git@bravis_type_fix",
-    "easyScienceCore>=0.5.0",
-    "easyCrystallography>=0.4.0",
+    "cryspy @ git+https://github.com/ikibalin/cryspy.git@beta",
+    "EasyScience @ git+https://github.com/EasyScience/EasyScience.git@free-params",
+    #"easyCrystallography>=0.4.0",
+    "easycrystallography @ git+https://github.com/EasyScience/EasyCrystallography.git@develop",
     "pycifrw>=4.4.1",
+    "funcy",
     #"CFML>=0.0.1",
     # GSASII = {version = '^0.0.1', optional=true}
-    "diffpy.pdffit2 == 0.0.0",
-    "diffpy.utils == 3.0.0",
+    #"diffpy.pdffit2 == 0.0.0",
 ]
 
 [project.optional-dependencies]
@@ -66,6 +67,12 @@ dev = [
     "requests",
     "py3Dmol",
     "bokeh",
+    "gemmi",
+    "periodictable",
+]
+charts = [
+  "darkdetect",
+  "plotly"
 ]
 
 [project.urls]
@@ -76,12 +83,14 @@ documentation = "https://docs.easydiffraction.org"
 allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
-packages = ["EasyDiffraction"]
+packages = ["easydiffraction"]
 
 [tool.ruff]
 line-length = 127
 exclude = [
     "docs",
+    "examples",
+    "tests",
 ]
 
 [tool.ruff.format]

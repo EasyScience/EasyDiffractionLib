@@ -3,12 +3,12 @@ __version__ = "0.0.1"
 
 import matplotlib.pyplot as plt
 import numpy as np
-from easyCrystallography.Components.Susceptibility import MagneticSusceptibility
+from easycrystallography.Components.Susceptibility import MagneticSusceptibility
 
-from easyDiffractionLib import Phase
-from easyDiffractionLib.interface import InterfaceFactory as Calculator
-from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters
-from easyDiffractionLib.sample import Sample
+from easydiffraction import Phase
+from easydiffraction.interface import InterfaceFactory as Calculator
+from easydiffraction.Profiles.P1D import Instrument1DCWParameters
+from easydiffraction.sample import Sample
 
 calculator = Calculator()
 

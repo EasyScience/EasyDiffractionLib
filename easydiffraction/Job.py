@@ -3,17 +3,18 @@
 #  © 2021-2024 Contributors to the easyDiffraction project <https://github.com/easyScience/easyDiffraction
 
 
+import importlib.util
 from copy import deepcopy
 from typing import TypeVar
 from typing import Union
 
 import numpy as np
-from scipy.signal import find_peaks
 from easyscience.Datasets.xarray import xr  # type: ignore
 
 # from easyscience.fitting.fitter import Fitter as CoreFitter
 from easyscience.Objects.job.job import JobBase
 from gemmi import cif
+from scipy.signal import find_peaks
 
 from easydiffraction import Phase
 from easydiffraction import Phases
@@ -32,15 +33,13 @@ from easydiffraction.Profiles.P1D import Powder1DParameters
 # from easydiffraction.Profiles.Sample import Sample
 from easydiffraction.sample import Sample
 
-import importlib.util
-
 try:
     import darkdetect
 except ImportError:
     print("darkdetect not installed")
 
 try:
-    import plotly.express as px
+    # import plotly.express as px # unused
     import plotly.graph_objects as go
     import plotly.io as pio
     if importlib.util.find_spec("darkdetect") is None:
@@ -255,6 +254,10 @@ class DiffractionJob(JobBase):
         # calculate background based on the experimental x values
         x = self.experiment.x
         return self.experiment.pattern.backgrounds[0].calculate(x) if x is not None else None
+
+    @property
+    def backgrounds(self):
+        return self.experiment.pattern.backgrounds
 
     def set_job_from_file(self, file_url: str) -> None:
         '''

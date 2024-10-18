@@ -73,7 +73,8 @@ class Analysis(coreAnalysis):
                 y = y.values
             res = self._fitter.fit(x, y, **kwargs)
 
-        except Exception:
+        except Exception as ex:
+            print(f"Error in fitting: {ex}")
             return None
         return res
 

@@ -1240,7 +1240,9 @@ def cifV2ToV1_tof(edCif):
             '_symmetry_space_group_name_H-M': '_space_group.name_H-M_alt',
             '_atom_site_thermal_displace_type': '_atom_site.ADP_type',
             '_atom_site_adp_type': '_atom_site.ADP_type',
-            '_atom_site_U_iso_or_equiv': '_atom_site.U_iso_or_equiv'
+            '_atom_site_U_iso_or_equiv': '_atom_site.U_iso_or_equiv',
+            '_atom_site_B_iso_or_equiv': '_atom_site.B_iso_or_equiv',
+            '_space_group_IT_coordinate_system_code': '_space_group.IT_coordinate_system_code',
         }
         edToCryspyNamesMap = {}
         edToCryspyNamesMap['base'] = {

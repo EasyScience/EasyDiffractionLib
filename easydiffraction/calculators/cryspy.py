@@ -703,7 +703,8 @@ class Cryspy:
         return data
 
     def updateModelCif(self, cif_string: str):
-        cryspyCif = cifV2ToV1(cif_string)
+        # Update the model with the cif string
+        cryspyCif = cifV2ToV1_tof(cif_string) # contains phase-specific conversions
         cryspyModelsObj = cryspy.str_to_globaln(cryspyCif)
         self._cryspyObject.add_items(cryspyModelsObj.items)
         cryspyModelsDict = cryspyModelsObj.get_dictionary()

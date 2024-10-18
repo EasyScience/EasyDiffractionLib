@@ -1246,6 +1246,19 @@ def cifV2ToV1_tof(edCif):
         }
         edToCryspyNamesMap = {}
         edToCryspyNamesMap['base'] = {
+            '_space_group.name_H-M_alt': '_space_group_name_H-M_alt',
+            '_space_group.IT_coordinate_system_code': '_space_group_IT_coordinate_system_code',
+
+            '_cell.length': '_cell_length',
+            '_cell.angle': '_cell_angle',
+
+            '_atom_site.label': '_atom_site_label',
+            '_atom_site.type_symbol': '_atom_site_type_symbol',
+            '_atom_site.fract': '_atom_site_fract',
+            '_atom_site.occupancy': '_atom_site_occupancy',
+            '_atom_site.ADP_type': '_atom_site_adp_type',
+            '_atom_site.B_iso_or_equiv': '_atom_site_B_iso_or_equiv',
+
             '_atom_site.site_symmetry_multiplicity': '_atom_site_multiplicity',
 
             '_diffrn_radiation.probe': '_setup_radiation',

@@ -910,8 +910,6 @@ class Cryspy:
         data_name = crystals.data_name
         setattr(self.model, 'data_name', data_name)
 
-        phase_obj = self._cryspyObject
-
         is_tof = False
         if self.model.PREFIX.lower() == 'tof':
             is_tof = True

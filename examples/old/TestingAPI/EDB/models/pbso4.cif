@@ -1,0 +1,26 @@
+data_pbso4
+
+_cell.length_a 8.45()
+_cell.length_b 5.391
+_cell.length_c 6.9506
+_cell.angle_alpha 90.0
+_cell.angle_beta 90.0
+_cell.angle_gamma 90.0
+
+_space_group.name_H-M_alt "P n m a"
+_space_group.IT_coordinate_system_code abc
+
+loop_
+_atom_site.label
+_atom_site.type_symbol
+_atom_site.fract_x
+_atom_site.fract_y
+_atom_site.fract_z
+_atom_site.occupancy
+_atom_site.ADP_type
+_atom_site.B_iso_or_equiv
+Pb Pb 0.1876() 0.25     0.167()  1.0 Biso 1.3729
+S  S  0.0654() 0.25     0.684()  1.0 Biso 0.3777
+O1 O  0.9082() 0.25     0.5954() 1.0 Biso 1.9764
+O2 O  0.1935() 0.25     0.5432() 1.0 Biso 1.4456
+O3 O  0.0811() 0.0272() 0.8086() 1.0 Biso 1.2822

@@ -284,7 +284,9 @@ class DiffractionJob(JobBase):
         '''
         if phase is None:
             phase = Phase(id)
-        self.sample.phases.append(phase)
+        # self.sample.phases.append(phase)
+        cif_string = phase.cif
+        self.sample.add_phase_from_string(cif_string)
 
     def remove_phase(self, id: str) -> None:
         '''

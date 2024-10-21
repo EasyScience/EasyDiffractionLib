@@ -802,6 +802,7 @@ class Cryspy:
         # check the direct mapping first
         if key in CRYSPY_MODEL_PHASE_KEYS:
             # phase param
+            # TODO: remove assumption that the phase is the first block
             phase_name = list(self._cryspyData._cryspyDict.keys())[0]
             cryspy_dict = self._cryspyData._cryspyDict[phase_name]
             cryspy_key = CRYSPY_MODEL_PHASE_KEYS[key]
@@ -926,6 +927,7 @@ class Cryspy:
 
         if not self._cryspyData._cryspyDict:
             return None
+
         self._cryspyDict = self._cryspyData._cryspyDict
         self._cryspyDict[exp_name_model] = experiment_dict_model
 

@@ -7,6 +7,7 @@ from copy import deepcopy
 from typing import TypeVar
 from typing import Union
 
+import time
 import numpy as np
 from easyscience.Datasets.xarray import xr  # type: ignore
 
@@ -52,6 +53,11 @@ try:
     import py3Dmol
 except ImportError:
     print("py3Dmol not installed")
+
+try:
+    import pandas as pd
+except ImportError:
+    print("pandas not installed")
 
 
 T_ = TypeVar('T_')
@@ -556,14 +562,25 @@ class DiffractionJob(JobBase):
             kwargs['minimizer_kwargs'] = {'ftol': kwargs['tolerance'], 'xtol': kwargs['tolerance']}
             del kwargs['tolerance']
 
+        start = time.time()
         result = self.analysis.fit(x, y, e, **kwargs)
+        end = time.time()
+
         # Add these in a transparent manner for querying the Job object
         # result.success
         # result.reduced_chi
         if result is None:
-            raise ValueError("Fitting failed.")
+            raise ValueError("Fitting failed")
+
+        if result.success:
+            print("Fitting successful")
+            print(f"Duration: {end - start:.2f} s")
+            print(f"Reduced chi: {result.reduced_chi:.2f}")
+        else:
+            print("Fitting failed.")
 
         self.fitting_results = result
+
 
     ###### UTILITY METHODS ######
     def add_datastore(self, datastore: xr.Dataset):
@@ -870,8 +887,20 @@ class DiffractionJob(JobBase):
         '''
         Print the free parameters.
         '''
-        for parameter in self.get_fit_parameters():
-            print(parameter)
+        if importlib.util.find_spec("pandas") is not None:
+            parameters = {'names': [], 'values': [], 'errors': [], 'units': []}
+            for parameter in self.get_fit_parameters():
+                parameters['names'].append(parameter.display_name)
+                parameters['values'].append(parameter.raw_value)
+                parameters['errors'].append(parameter.error)
+                parameters['units'].append(f'{parameter.unit:~H}')
+            df = pd.DataFrame(parameters)
+            df.index += 1
+            df.style.format(precision=5)
+            return df
+        else:
+            for parameter in self.get_fit_parameters():
+                print(parameter)
 
     ###### DUNDER METHODS ######
     def __copy__(self):

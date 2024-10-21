@@ -1,5 +1,6 @@
-__author__ = "github.com/wardsimon"
-__version__ = "0.0.2"
+# SPDX-FileCopyrightText: 2024 EasyDiffraction contributors
+# SPDX-License-Identifier: BSD-3-Clause
+# © 2021-2024 Contributors to the EasyDiffraction project <https://github.com/easyscience/EasyDiffraction
 
 import numpy as np
 from easyscience import global_object as borg
@@ -149,7 +150,7 @@ class GSASII(InterfaceTemplate):
 
     def get_hkl(self, x_array: np.ndarray = None, idx=None, phase_name=None, encoded_name=False) -> dict:
         return self.calculator.get_hkl(x_array)
-    
+
     def dump_cif(self, *args, **kwargs):
         if self._filename is None:
             return

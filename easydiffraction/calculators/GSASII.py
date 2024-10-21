@@ -1,5 +1,6 @@
-__author__ = "github.com/wardsimon"
-__version__ = "0.0.1"
+# SPDX-FileCopyrightText: 2024 EasyDiffraction contributors
+# SPDX-License-Identifier: BSD-3-Clause
+# © 2021-2024 Contributors to the EasyDiffraction project <https://github.com/easyscience/EasyDiffraction
 
 import os
 import pathlib
@@ -51,17 +52,17 @@ class GSASII:
             return
         prm_base = """
             123456789012345678901234567890123456789012345678901234567890
-INS   BANK      1                                                               
-INS   HTYPE   PNCR                                                              
+INS   BANK      1
+INS   HTYPE   PNCR
 INS  1 ICONS  1.909000  0.000000      -0.1         0       0.0    0       0.0
-INS  1I HEAD  DUMMY INCIDENT SPECTRUM FOR DIFFRACTOMETER D1A                    
-INS  1I ITYP    0    0.0000  180.0000         1                                 
-INS  1PRCF1     1    6      0.01                                                
-INS  1PRCF11   0.354031E+03  -0.760404E+03   0.651592E+03   0.000000E+00        
-INS  1PRCF12   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00        
-INS  1PRCF2     2    6      0.01                                                
-INS  1PRCF21   0.354031E+03  -0.760404E+03   0.651592E+03   0.000000E+00        
-INS  1PRCF22   0.000000E+00   0.000000E+00                                              
+INS  1I HEAD  DUMMY INCIDENT SPECTRUM FOR DIFFRACTOMETER D1A
+INS  1I ITYP    0    0.0000  180.0000         1
+INS  1PRCF1     1    6      0.01
+INS  1PRCF11   0.354031E+03  -0.760404E+03   0.651592E+03   0.000000E+00
+INS  1PRCF12   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00
+INS  1PRCF2     2    6      0.01
+INS  1PRCF21   0.354031E+03  -0.760404E+03   0.651592E+03   0.000000E+00
+INS  1PRCF22   0.000000E+00   0.000000E+00
         """
         self.prm_dir_path = os.path.dirname(self.filename)
         self.prm_file_path = os.path.join(self.prm_dir_path, self.prm_file_name)

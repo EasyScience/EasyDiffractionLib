@@ -1,6 +1,6 @@
-#  SPDX-FileCopyrightText: 2024 easyDiffraction contributors <support@easydiffraction.org>
-#  SPDX-License-Identifier: BSD-3-Clause
-#  © 2021-2024 Contributors to the easyDiffraction project <https://github.com/easyScience/easyDiffraction
+# SPDX-FileCopyrightText: 2024 EasyDiffraction contributors
+# SPDX-License-Identifier: BSD-3-Clause
+# © 2021-2024 Contributors to the EasyDiffraction project <https://github.com/easyscience/EasyDiffraction
 
 class JobType():
     """
@@ -90,17 +90,17 @@ class JobType():
     @property
     def is_pd(self):
         return self._is_pd
-    
+
     @is_pd.setter
     def is_pd(self, value):
         self._is_pd = value
         self._is_sc = not value
         self.validate()
-    
+
     @property
     def is_sc(self):
         return self._is_sc
-    
+
     @is_sc.setter
     def is_sc(self, value):
         self._is_sc = value
@@ -110,7 +110,7 @@ class JobType():
     @property
     def is_cwl(self):
         return self._is_cwl
-    
+
     @is_cwl.setter
     def is_cwl(self, value):
         self._is_cwl = value
@@ -140,7 +140,7 @@ class JobType():
     @property
     def is_2d(self):
         return self._is_2d
-    
+
     @is_2d.setter
     def is_2d(self, value):
         self._is_2d = value
@@ -150,7 +150,7 @@ class JobType():
     @property
     def is_pol(self):
         return self._is_pol
-    
+
     @is_pol.setter
     def is_pol(self, value):
         self._is_pol = value
@@ -180,7 +180,7 @@ class JobType():
     @property
     def is_unp(self):
         return self._is_unp
-    
+
     @is_unp.setter
     def is_unp(self, value):
         self._is_unp = value

@@ -1,5 +1,6 @@
-__author__ = "github.com/wardsimon"
-__version__ = "0.0.1"
+# SPDX-FileCopyrightText: 2024 EasyDiffraction contributors
+# SPDX-License-Identifier: BSD-3-Clause
+# © 2021-2024 Contributors to the EasyDiffraction project <https://github.com/easyscience/EasyDiffraction
 
 from abc import ABCMeta
 from abc import abstractmethod
@@ -152,7 +153,7 @@ class InterfaceTemplate(ComponentSerializer, metaclass=ABCMeta):
         all_bases = set([base for base in sample_object.__class__.__bases__ if hasattr(base, '_internal_type')])
         if len(all_bases) == 0:
             return None
-        all_components = [set([base for base in component.__mro__ if 
+        all_components = [set([base for base in component.__mro__ if
                                hasattr(base, '_internal_type')]) for component in known_components]
         for idx, component in enumerate(all_components):
             test = all_bases-component

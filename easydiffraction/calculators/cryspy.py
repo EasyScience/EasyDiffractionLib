@@ -1,5 +1,6 @@
-__author__ = "github.com/wardsimon"
-__version__ = "0.0.3"
+# SPDX-FileCopyrightText: 2024 EasyDiffraction contributors
+# SPDX-License-Identifier: BSD-3-Clause
+# © 2021-2024 Contributors to the EasyDiffraction project <https://github.com/easyscience/EasyDiffraction
 
 import warnings
 from typing import Any
@@ -278,7 +279,7 @@ class Cryspy:
         ref_name = str(atom_name) + "_" + "Uani"
         self.storage[ref_name] = adp
         return ref_name
-    
+
     def assignAtom_toCrystal(self, atom_label: str, crystal_name: str):
         crystal = self.storage[crystal_name]
         atom = self.storage[atom_label]

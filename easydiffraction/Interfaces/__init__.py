@@ -1,6 +1,6 @@
-__author__ = 'github.com/wardsimon'
-__version__ = '0.0.1'
-
+# SPDX-FileCopyrightText: 2024 EasyDiffraction contributors
+# SPDX-License-Identifier: BSD-3-Clause
+# © 2021-2024 Contributors to the EasyDiffraction project <https://github.com/easyscience/EasyDiffraction
 
 try:
     from easydiffraction.Interfaces.cryspyV2 import CryspyBase  # noqa: F401
@@ -25,4 +25,3 @@ except ImportError:
     #print('Warning: PdfFit2 is not installed')
 
 from easydiffraction.Interfaces.interfaceTemplate import InterfaceTemplate as InterfaceTemplate  # noqa: F401
-

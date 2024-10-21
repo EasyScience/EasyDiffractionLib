@@ -1,7 +1,8 @@
-from __future__ import annotations
+# SPDX-FileCopyrightText: 2024 EasyDiffraction contributors
+# SPDX-License-Identifier: BSD-3-Clause
+# © 2021-2024 Contributors to the EasyDiffraction project <https://github.com/easyscience/EasyDiffraction
 
-__author__ = "github.com/wardsimon"
-__version__ = "0.0.2"
+from __future__ import annotations
 
 from abc import ABCMeta
 from typing import TYPE_CHECKING
@@ -723,7 +724,7 @@ class CryspyV2(InterfaceTemplate):
                 x_array, *args, **kwargs
             )
             return calculation
-        
+
     def set_exp_cif(self, cif: str) -> None:
         self.calculator.set_exp_cif(cif)
 

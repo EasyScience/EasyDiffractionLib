@@ -1,5 +1,6 @@
-__author__ = "github.com/wardsimon"
-__version__ = "0.1.1"
+# SPDX-FileCopyrightText: 2024 EasyDiffraction contributors
+# SPDX-License-Identifier: BSD-3-Clause
+# © 2021-2024 Contributors to the EasyDiffraction project <https://github.com/easyscience/EasyDiffraction
 
 import numpy as np
 from easyscience.Datasets.xarray import xr
@@ -208,7 +209,7 @@ class JobBase_1D(_PowderBase):
 
     def phase_parameters_from_cif_block(self, block):
          # Get phase parameters
-        sample_phase_labels = self.phases.phase_names 
+        sample_phase_labels = self.phases.phase_names
         experiment_phase_labels = list(block.find_loop("_phase_label"))
         experiment_phase_scales = np.fromiter(block.find_loop("_phase_scale"), float)
         for (phase_label, phase_scale) in zip(experiment_phase_labels, experiment_phase_scales):
@@ -300,7 +301,7 @@ class JobBase_1D(_PowderBase):
         self.phase_parameters_from_cif_block(block)
         self.data_from_cif_block(block, experiment_name)
         self.background_from_cif_block(block, experiment_name)
-   
+
     def update_bindings(self):
         self.generate_bindings()
 
@@ -481,4 +482,3 @@ def get_job_from_file(file_url, exp_name="job", phases=None, interface=None):
     job.from_cif_file(file_url, exp_name)
 
     return datastore, job
-

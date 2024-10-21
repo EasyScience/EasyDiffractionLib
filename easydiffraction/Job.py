@@ -1,7 +1,6 @@
-#  SPDX-FileCopyrightText: 2024 easyDiffraction contributors <support@easydiffraction.org>
-#  SPDX-License-Identifier: BSD-3-Clause
-#  © 2021-2024 Contributors to the easyDiffraction project <https://github.com/easyScience/easyDiffraction
-
+# SPDX-FileCopyrightText: 2024 EasyDiffraction contributors
+# SPDX-License-Identifier: BSD-3-Clause
+# © 2021-2024 Contributors to the EasyDiffraction project <https://github.com/easyscience/EasyDiffraction
 
 import importlib.util
 from copy import deepcopy
@@ -138,7 +137,7 @@ class DiffractionJob(JobBase):
     @property
     def sample(self) -> Sample:
         return self._sample
-    
+
     @sample.setter
     def sample(self, value: Union[Sample, None]) -> None:
         # We need to deepcopy the sample to ensure that it is not shared between jobs
@@ -171,7 +170,7 @@ class DiffractionJob(JobBase):
     @property
     def experiment(self) -> Union[Experiment, None]:
         return self._experiment
-    
+
     @experiment.setter
     def experiment(self, value: Union[Experiment, None]) -> None:
         # We need to deepcopy the experiment to ensure that it is not shared between jobs
@@ -198,7 +197,7 @@ class DiffractionJob(JobBase):
     @property
     def summary(self):
         return self._summary
-    
+
     @summary.setter
     def summary(self, value):
         self._summary = value
@@ -206,7 +205,7 @@ class DiffractionJob(JobBase):
     @property
     def info(self):
         return self._info
-    
+
     @info.setter
     def info(self, value):
         self._info = value
@@ -900,6 +899,3 @@ class DiffractionJob(JobBase):
 
     def __repr__(self) -> str:
         return self.__str__()
-
-
-

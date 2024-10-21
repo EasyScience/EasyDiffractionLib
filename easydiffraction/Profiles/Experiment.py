@@ -1,6 +1,7 @@
-#  SPDX-FileCopyrightText: 2024 easyDiffraction contributors  <support@easydiffraction.software>
-#  SPDX-License-Identifier: BSD-3-Clause
-#  © 2021-2024 Contributors to the easydiffraction project <https://github.com/easyScience/easydiffraction
+# SPDX-FileCopyrightText: 2024 EasyDiffraction contributors
+# SPDX-License-Identifier: BSD-3-Clause
+# © 2021-2024 Contributors to the EasyDiffraction project <https://github.com/easyscience/EasyDiffraction
+
 import numpy as np
 from easyscience.Datasets.xarray import xr
 from easyscience.Objects.job.experiment import ExperimentBase as coreExperiment
@@ -494,7 +495,7 @@ class Experiment(coreExperiment):
         if coord in self._datastore.store:
             return self._datastore.store[coord]
         return None
- 
+
     @staticmethod
     def from_cif(cif_file: str):
         """
@@ -633,13 +634,13 @@ class Experiment(coreExperiment):
     # required dunder methods
     def __str__(self):
         return f"Experiment: {self._name}"
-    
+
     def as_dict(self, skip: list = []) -> dict:
         this_dict = super(Experiment, self).as_dict(skip=skip)
         return this_dict
 
     def __copy__(self):
         return Experiment(self.job_name, datastore=self._datastore)
-    
+
     def __deepcopy__(self, memo):
         return Experiment(self.job_name, datastore=self._datastore)

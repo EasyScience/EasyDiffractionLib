@@ -1,0 +1,22 @@
+data_si
+
+_cell.length_a 5.43146
+_cell.length_b 5.43146
+_cell.length_c 5.43146
+_cell.angle_alpha 90.0
+_cell.angle_beta 90.0
+_cell.angle_gamma 90.0
+
+_space_group.name_H-M_alt "F d -3 m"
+_space_group.IT_coordinate_system_code 2
+
+loop_
+_atom_site.label
+_atom_site.type_symbol
+_atom_site.fract_x
+_atom_site.fract_y
+_atom_site.fract_z
+_atom_site.occupancy
+_atom_site.ADP_type
+_atom_site.B_iso_or_equiv
+Si Si 0.125 0.125 0.125 1.0 Biso 0.529

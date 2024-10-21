@@ -6,7 +6,6 @@ build-backend = 'hatchling.build'
 name = 'easydiffraction'
 version = '0.1.0'
 description = 'Making diffraction data analysis and modelling easy'
-readme = 'README.md'
 authors = [{name = 'EasyDiffractionLib contributors'}]
 readme = 'README.md'
 license = { file = 'LICENSE' }

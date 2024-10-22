@@ -1,15 +1,14 @@
 __author__ = "github.com/wardsimon"
 __version__ = "0.0.1"
 
-from easyCore import np
-
-from easyDiffractionLib.sample import Sample
-from easyDiffractionLib import Phase
-from easyDiffractionLib.interface import InterfaceFactory as Calculator
-from easyDiffractionLib.Profiles.P1D import Instrument1DCWParameters
-
 import matplotlib.pyplot as plt
+import numpy as np
+from easycrystallography.Components.Susceptibility import MagneticSusceptibility
 
+from easydiffraction import Phase
+from easydiffraction.interface import InterfaceFactory as Calculator
+from easydiffraction.Profiles.P1D import Instrument1DCWParameters
+from easydiffraction.sample import Sample
 
 calculator = Calculator()
 
@@ -18,8 +17,6 @@ phase = Phase.from_cif_file("tests/test_resources/cifs/SrTiO3.cif")
 sample = Sample(
     phases=phase, parameters=Instrument1DCWParameters.default(), interface=calculator
 )
-
-from easyCrystallography.Components.Susceptibility import MagneticSusceptibility
 
 msp = MagneticSusceptibility("Cani")
 sample.phases[0].atoms[0]._add_component("msp", msp)

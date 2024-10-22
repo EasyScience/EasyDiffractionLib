@@ -81,6 +81,7 @@ line-length = 127
 exclude = [
     'docs',
     'examples',
+    'examples_unsorted',
     'tests',
 ]
 

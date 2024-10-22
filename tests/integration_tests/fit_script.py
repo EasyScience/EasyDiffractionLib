@@ -1,16 +1,17 @@
 __author__ = 'github.com/wardsimon'
 __version__ = '0.0.1'
 
-from easyCore import np
-from easyDiffractionLib.sample import Sample
-from easyDiffractionLib import Phases
-from easyDiffractionLib.interface import InterfaceFactory
-from easyDiffractionLib.elements.Experiments.Experiment import Pars1D
-from easyDiffractionLib.elements.Experiments.Pattern import Pattern1D
-from easyDiffractionLib.elements.Backgrounds.Point import PointBackground, BackgroundPoint
+import numpy as np
+from easyscience.Datasets.xarray import xr
+from easyscience.fitting.fitter import Fitter
 
-from easyCore.Fitting.Fitting import Fitter
-from easyCore.Datasets.xarray import xr
+from easydiffraction import Phases
+from easydiffraction.elements.Backgrounds.Point import BackgroundPoint
+from easydiffraction.elements.Backgrounds.Point import PointBackground
+from easydiffraction.elements.Experiments.Experiment import Pars1D
+from easydiffraction.elements.Experiments.Pattern import Pattern1D
+from easydiffraction.interface import InterfaceFactory
+from easydiffraction.sample import Sample
 
 interface = InterfaceFactory()
 c = Phases.from_cif_file('PbSO4.cif')
@@ -20,9 +21,9 @@ file_path = 'PbSO4_neutrons_short.xye'
 data_x, data_y, data_e = np.loadtxt(file_path, unpack=True)
 
 data_set = xr.Dataset()
-data_set.easyCore.add_coordinate('tth', data_x)
-data_set.easyCore.add_variable('I', ['tth'], data_y)
-data_set.easyCore.sigma_attach('I', data_e)
+data_set.easyscience.add_coordinate('tth', data_x)
+data_set.easyscience.add_variable('I', ['tth'], data_y)
+data_set.easyscience.sigma_attach('I', data_e)
 
 
 S.parameters.wavelength = 1.912
@@ -49,7 +50,7 @@ S.backgrounds[0][0].y.fixed = True
 S.backgrounds[0][1].y.fixed = True
 
 result = f.fit(data_x, data_y)
-# result = data_set['I'].easyCore.fit(f)
+# result = data_set['I'].easyscience.fit(f)
 
 if result.success:
     print("The fit has been successful: {}".format(result.success))
@@ -57,7 +58,7 @@ if result.success:
 
 sim_y_data = interface.fit_func(data_x)
 
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt # noqa E402
 
 plt.plot(data_x, data_y, label='Data')
 plt.plot(data_x, result.y_calc, label='Calculate')

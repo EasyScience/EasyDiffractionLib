@@ -14,6 +14,8 @@
 
 ## Getting Started
 
+Currently, easydiffraction is in beta and has not been released on PyPI. Please use the alternative method given below to install easydiffraction from our GitHub repository.
+
 ### Install EasyDiffraction python library
 
 * Create and go to, e.g., **easydiffraction** directory (*optional*)
@@ -31,7 +33,7 @@
   ```
 * Install **easydiffraction**
   ```
-  pip install easydiffraction
+  pip install easydiffraction --extra-index-url https://easyscience.github.io/pypi
   ```
 
 ## Examples
@@ -42,7 +44,7 @@
 
 * Install **easydiffraction**, including `charts` extras for visualization
   ```
-  pip install 'easydiffraction[charts]'
+  pip install 'easydiffraction[charts]' --extra-index-url https://easyscience.github.io/pypi
   ```
 * Install Jupyter Notebook
   ```

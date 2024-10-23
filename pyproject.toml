@@ -44,6 +44,7 @@ dev = [
     'pytest-xdist',  # used with nbmake to run parallel tests
     'nbmake',  # testing jupyter notebooks
     'playwright',  # needed for nbmake
+    'jinja2',  # nedeed for nbmake
     'ruff',
     'toml>=0.10',
     'yapf>=0.31.0',

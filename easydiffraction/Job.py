@@ -60,6 +60,8 @@ try:
 except ImportError:
     print("pandas not installed")
 
+if 'JPY_PARENT_PID' in os.environ:
+    from IPython.display import display
 
 T_ = TypeVar('T_')
 

@@ -3,6 +3,7 @@
 # © 2021-2024 Contributors to the EasyDiffraction project <https://github.com/easyscience/EasyDiffraction
 
 import importlib.util
+import os
 import time
 from copy import deepcopy
 from typing import TypeVar
@@ -59,6 +60,8 @@ try:
 except ImportError:
     print("pandas not installed")
 
+if 'JPY_PARENT_PID' in os.environ:
+    from IPython.display import display
 
 T_ = TypeVar('T_')
 
@@ -887,11 +890,14 @@ class DiffractionJob(JobBase):
                 parameters['names'].append(parameter.display_name)
                 parameters['values'].append(parameter.raw_value)
                 parameters['errors'].append(parameter.error)
-                parameters['units'].append(f'{parameter.unit:~H}')
+                parameters['units'].append(f'{parameter.unit:~P}')
             df = pd.DataFrame(parameters)
             df.index += 1
             df.style.format(precision=5)
-            return df
+            if 'JPY_PARENT_PID' in os.environ:
+                display(df)
+            else:
+                print(df)
         else:
             for parameter in self.get_fit_parameters():
                 print(parameter)

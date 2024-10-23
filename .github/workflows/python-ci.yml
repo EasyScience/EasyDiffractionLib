@@ -25,7 +25,7 @@ jobs:
       - name: Suggestion to fix issues
         if: ${{ failure() }}
         run: |
-          echo "::notice::In project root run 'python.exe -m ruff . --fix' and commit changes to fix issues."
+          echo "::notice::In project root run 'python -m ruff check . --fix' and commit changes to fix issues."
           exit 1
 
   Code_Testing:

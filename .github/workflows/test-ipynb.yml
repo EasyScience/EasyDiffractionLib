@@ -1,4 +1,4 @@
-name: test-ipynb
+name: Testing Jupyter Notebooks
 
 on:
   push:

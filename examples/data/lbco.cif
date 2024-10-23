@@ -19,7 +19,7 @@ _atom_site.fract_z
 _atom_site.occupancy
 _atom_site.ADP_type
 _atom_site.B_iso_or_equiv
-La La 0 0 0 0.5 Biso 0.49
-Ba Ba 0 0 0 0.5 Biso 0.49
-Co Co 0.5 0.5 0.5 1 Biso 0.26
-O O 0 0.5 0.5 1 Biso 1.40
+La La 0 0 0 0.5 Biso 0.1
+Ba Ba 0 0 0 0.5 Biso 0.1
+Co Co 0.5 0.5 0.5 1 Biso 0.1
+O O 0 0.5 0.5 1 Biso 0.1

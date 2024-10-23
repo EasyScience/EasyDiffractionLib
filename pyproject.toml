@@ -25,7 +25,7 @@ requires-python = '>=3.9,<3.13'
 dependencies = [
     'cryspy @ git+https://github.com/EasyScience/cryspy.git@beta',
     'EasyScience @ git+https://github.com/EasyScience/EasyScience.git@free-params',
-    'easycrystallography @ git+https://github.com/EasyScience/EasyCrystallography.git@develop',
+    'easycrystallography @ git+https://github.com/EasyScience/EasyCrystallography.git@adp_cif_naming',
     'pycifrw>=4.4.1',
     'pooch',
     'funcy'
@@ -41,12 +41,14 @@ dev = [
     'flake8>=6.0.0',
     'pytest>=5.2',
     'pytest-cov>=3.0.0',
+    'pytest-xdist',  # used with nbmake to run parallel tests
+    'nbmake',  # testing jupyter notebooks
+    'playwright',  # needed for nbmake
+    'jinja2',  # nedeed for nbmake
     'ruff',
     'toml>=0.10',
     'yapf>=0.31.0',
     'requests',
-    'py3Dmol',
-    'bokeh',
     'gemmi',
     'periodictable',
 ]

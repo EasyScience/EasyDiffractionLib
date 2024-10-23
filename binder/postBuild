@@ -1,5 +1,0 @@
-#!/bin/bash
-
-pip install --extra-index-url https://easyscience.github.io/pypi -r requirements.txt
-pip install -r requirements-dev.txt
-pip install --no-deps .

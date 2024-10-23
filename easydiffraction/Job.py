@@ -3,11 +3,11 @@
 # © 2021-2024 Contributors to the EasyDiffraction project <https://github.com/easyscience/EasyDiffraction
 
 import importlib.util
+import os
 import time
 from copy import deepcopy
 from typing import TypeVar
 from typing import Union
-import os
 
 import numpy as np
 from easyscience.Datasets.xarray import xr  # type: ignore

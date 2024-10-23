@@ -744,7 +744,7 @@ class DiffractionJob(JobBase):
 
         y_calc = self.calculate_profile()
 
-        peak_idx, _ = find_peaks(y_calc)  #, prominence=1)
+        peak_idx, _ = find_peaks(y_calc)
         x_bragg = self.experiment.x.data[peak_idx]
         y_bragg = np.zeros_like(x_bragg)
 
@@ -759,8 +759,8 @@ class DiffractionJob(JobBase):
         )
 
         trace_bragg = go.Scatter(
-            x=x_bragg,  # np.random.uniform(low=self.experiment.x.data.min(), high=self.experiment.x.data.max(), size=(50,)),
-            y=y_bragg,  #np.zeros(50),
+            x=x_bragg,
+            y=y_bragg,
             xaxis='x2',
             yaxis='y2',
             line=dict(color='rgb(230, 171, 2)'),  #color=px.colors.qualitative.Plotly[9]),
@@ -778,7 +778,7 @@ class DiffractionJob(JobBase):
             y=self.background,
             xaxis='x3',
             yaxis='y3',
-            line=dict(color='gray'),  # default: width=2?
+            line=dict(color='gray'),
             mode='lines',
             name='Background (Ibkg)'
         )
@@ -841,19 +841,18 @@ class DiffractionJob(JobBase):
                 title_text=x_axis_title,
                 anchor='y',
                 range=[x_min, x_max],
-                # linecolor='blue',
                 showline=True, mirror=True, zeroline=False
             ),
             xaxis2=dict(
+                matches='x',
                 anchor='y2',
                 range=[x_min, x_max],
-                # linecolor='green',
                 showline=True, mirror=True, zeroline=False, showticklabels=False
             ),
             xaxis3=dict(
+                matches='x',
                 anchor='y3',
                 range=[x_min, x_max],
-                # linecolor='red',
                 showline=True, mirror=True, zeroline=False, showticklabels=False
             ),
             yaxis=dict(
@@ -861,7 +860,6 @@ class DiffractionJob(JobBase):
                 domain=[0, resid_height / full_height - 0.01],
                 range=[resid_y_min, resid_y_max],
                 tickvals=[int(resid_y_min), 0, int(resid_y_max)],
-                # nticks = 3,
                 showline=True, mirror=True, showgrid=False
             ),
             yaxis2=dict(
@@ -877,10 +875,6 @@ class DiffractionJob(JobBase):
         )
 
         fig = go.Figure(data=data, layout=layout)
-
-        # fig.update_xaxes(showline=True, mirror=True)
-        # fig.update_yaxes(showline=True, mirror=True)
-
         fig.show()
 
     def print_free_parameters(self):

@@ -888,7 +888,7 @@ class DiffractionJob(JobBase):
                 parameters['names'].append(parameter.display_name)
                 parameters['values'].append(parameter.raw_value)
                 parameters['errors'].append(parameter.error)
-                parameters['units'].append(f'{parameter.unit:~H}')
+                parameters['units'].append(f'{parameter.unit:~P}')
             df = pd.DataFrame(parameters)
             df.index += 1
             df.style.format(precision=5)

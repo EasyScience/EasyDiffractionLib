@@ -7,6 +7,7 @@ import time
 from copy import deepcopy
 from typing import TypeVar
 from typing import Union
+import os
 
 import numpy as np
 from easyscience.Datasets.xarray import xr  # type: ignore
@@ -891,7 +892,10 @@ class DiffractionJob(JobBase):
             df = pd.DataFrame(parameters)
             df.index += 1
             df.style.format(precision=5)
-            return df
+            if 'JPY_PARENT_PID' in os.environ:
+                display(df)
+            else:
+                print(df)
         else:
             for parameter in self.get_fit_parameters():
                 print(parameter)

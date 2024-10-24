@@ -11,7 +11,6 @@ from typing import TypeVar
 from typing import Union
 
 import numpy as np
-
 from easyscience import global_object
 from easyscience.Datasets.xarray import xr  # type: ignore
 
@@ -901,14 +900,14 @@ class DiffractionJob(JobBase):
                 phase_name = global_object.map.get_item_by_key(item).name
                 str_name += f".phases['{phase_name}']"
             if re.match('^PeriodicLattice_[0-9]+$', item):
-                str_name += f".cell"
+                str_name += ".cell"
             if re.match('^Site_[0-9]+$', item):
                 atom_site_name = global_object.map.get_item_by_key(item).name
                 str_name += f".atom_sites['{atom_site_name}']"
             if re.match('^Instrument1D(CW|TOF)Parameters_[0-9]+$', item):
-                str_name += f".instrument"
+                str_name += ".instrument"
             if re.match('^Powder1DParameters_[0-9]+$', item):
-                str_name += f".pattern"
+                str_name += ".pattern"
             if re.match('^PointBackground_[0-9]+$', item):
                 container_idx = int(re.sub("\D", "", item)) - 1
                 str_name += f".backgrounds[{container_idx}]"

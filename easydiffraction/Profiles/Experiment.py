@@ -101,6 +101,15 @@ class Experiment(coreExperiment):
         if hasattr(self._datastore, "_simulations"):
             self.pattern = self._datastore._simulations.pattern
             self.parameters = self._datastore._simulations.parameters
+    @property
+    def datastore(self):
+        return self._datastore
+
+    @datastore.setter
+    def datastore(self, value):
+        self._datastore = value
+        self.pattern = self._datastore._simulations.pattern
+        self.parameters = self._datastore._simulations.parameters
 
     def add_experiment_data(self, x, y, e, experiment_name="None"):
 
@@ -152,9 +161,9 @@ class Experiment(coreExperiment):
             if p['zero_shift'].get('error') is not None:
                 pattern.zero_shift.error = p['zero_shift'].get('error')
                 pattern.zero_shift.fixed = False
+            self.datastore._simulations.pattern.zero_shift = pattern.zero_shift
         if 'radiation' in p:
             pattern.radiation = p['radiation']
-
         self.pattern = pattern
 
     def parameters_from_cif_block(self, block) -> None:
@@ -400,7 +409,7 @@ class Experiment(coreExperiment):
         self.from_cif_block(block, experiment_name=experiment_name)
         phase_names = [phase.name for phase in self._datastore._simulations._phases]
         self.interface.updateExpCif(cif_string, phase_names)
-        # self.generate_bindings() # ???? NEEDED???
+        self.generate_bindings() # ???? NEEDED???
 
     def from_cif_block(self, block, experiment_name=None):
         """
@@ -418,9 +427,12 @@ class Experiment(coreExperiment):
         self.pattern_from_cif_block(block)
         bg = self.background_from_cif_block(block, experiment_name=experiment_name)
         self.pattern.backgrounds.append(bg)
+        self.datastore._simulations.pattern.backgrounds.append(bg)
         self.parameters_from_cif_block(block)
         self.phase_parameters_from_cif_block(block)
         self.data_from_cif_block(block, experiment_name)
+        #self.datastore._simulations.pattern = self.pattern # FAILS!! TODO: FIX
+        self.datastore._simulations.parameters = self.parameters
 
     @property
     def cif(self):

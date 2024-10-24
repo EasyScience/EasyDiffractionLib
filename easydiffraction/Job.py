@@ -87,7 +87,7 @@ class DiffractionJob(JobBase):
         # Generate the datastore for this job
         __dataset = datastore if datastore is not None else xr.Dataset()
         self.add_datastore(__dataset)
-        self._name = name if name is not None else "Job"
+        self._name = name if name is not None else "sim_"
 
         self.cif_string = ""
         # Dataset specific attributes
@@ -103,7 +103,8 @@ class DiffractionJob(JobBase):
             raise ValueError("Job type and experiment cannot be passed together.")
 
         # assign Experiment, so potential type assignment can be done
-        self.experiment = experiment
+        self._experiment = self.datastore._experiments
+        self._experiment.datastore = self.datastore
 
         self._summary = None  # TODO: implement
         self._info = None # TODO: implement
@@ -129,7 +130,8 @@ class DiffractionJob(JobBase):
             self.update_exp_type()
 
         # assign Job components
-        self.sample = sample # container for phases
+        self._sample = self.datastore._simulations
+        self._sample.parameters = self.datastore._simulations.parameters
         self.interface = self.sample._interface
         self.analysis = analysis
         # necessary for the fitter
@@ -294,7 +296,6 @@ class DiffractionJob(JobBase):
         '''
         if phase is None:
             phase = Phase(id)
-        # self.sample.phases.append(phase)
         cif_string = phase.cif
         self.sample.add_phase_from_string(cif_string)
 
@@ -402,16 +403,16 @@ class DiffractionJob(JobBase):
 
         self.update_job_type()
         # re-do the sample in case of type change.
-        if self.sample.parameters.name != self.experiment.parameters.name:
-            # Different type read in (likely TOF), so re-create the sample
-            parameters = self.experiment.parameters
-            pattern = self.experiment.pattern
-            phases = self.sample.phases
-            name = self.sample.name
-            self.sample = Sample(name, parameters=parameters, pattern=pattern, phases=phases)
-            self.sample.parameters = self.experiment.parameters
-            self.update_job_type()
-            self.update_interface()
+        # if self.sample.parameters.name != self.experiment.parameters.name:
+        #     # Different type read in (likely TOF), so re-create the sample
+        #     parameters = self.experiment.parameters
+        #     pattern = self.experiment.pattern
+        #     phases = self.sample.phases
+        #     name = self.sample.name
+        #     self.sample = Sample(name, parameters=parameters, pattern=pattern, phases=phases)
+        #     self.sample.parameters = self.experiment.parameters
+        #     self.update_job_type()
+        #     self.update_interface()
 
     def add_experiment_from_string(self, cif_string: str) -> None:
         '''
@@ -576,6 +577,8 @@ class DiffractionJob(JobBase):
             print("Fitting successful")
             print(f"Duration: {end - start:.2f} s")
             print(f"Reduced chi: {result.reduced_chi:.2f}")
+            print('Number of function '
+                 f'evaluations: {self.interface._InterfaceFactoryTemplate__interface_obj.calculator._counter}')
         else:
             print("Fitting failed.")
 

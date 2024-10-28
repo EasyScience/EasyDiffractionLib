@@ -1,6 +1,5 @@
-# This workflow will be verify that all PRs have at
-# least on the label: 'bugs', 'enhancement' before
-# they can be merged.
+# This action will verify if a pull request has at least one
+# label from a set of valid labels before it can be merged.
 
 name: Verify PR labels
 on:

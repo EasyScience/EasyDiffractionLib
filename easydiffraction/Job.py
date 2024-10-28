@@ -935,53 +935,60 @@ class DiffractionJob(JobBase):
             return f'{parent_name}.<a target="_blank" href="{url}">{display_name}</a>'
         return f'{parent_name}.{display_name}'
 
-    def show_parameters(self):
+    def _parameters(self):
+        parameters = {'name': [], 'value': [], 'error': [], 'unit': [], 'min': [], 'max': [], 'vary': []}
+        for parameter in self.get_parameters():
+            if parameter.enabled:
+                name = self.get_full_parameter_name(parameter.unique_name, parameter.display_name, parameter.url)
+                parameters['name'].append(name)
+                parameters['value'].append(parameter.raw_value)
+                parameters['error'].append(parameter.error) if parameter.error else parameters['error'].append('')
+                parameters['unit'].append(f'{parameter.unit:~P}')
+                parameters['min'].append(parameter.min)
+                parameters['max'].append(parameter.max)
+                parameters['vary'].append(parameter.free) if parameter.free else parameters['vary'].append('')
+        return parameters
+
+    def _free_parameters(self):
+        parameters = {'name': [], 'value': [], 'error': [], 'unit': []}
+        for parameter in self.get_fit_parameters():
+            name = self.get_full_parameter_name(parameter.unique_name, parameter.display_name, parameter.url)
+            parameters['name'].append(name)
+            parameters['value'].append(parameter.raw_value)
+            parameters['error'].append(parameter.error)
+            parameters['unit'].append(f'{parameter.unit:~P}')
+        return parameters
+
+    def _show_parameters(self, parameters):
         '''
-        Show all parameters (fixed and free).
+        Show parameters.
         '''
-        if importlib.util.find_spec("pandas") is not None:
-            parameters = {'name':[], 'value':[], 'error':[], 'unit':[], 'min':[], 'max':[], 'vary':[]}
-            for parameter in self.get_parameters():
-                if parameter.enabled:
-                    name = self.get_full_parameter_name(parameter.unique_name, parameter.display_name, parameter.url)
-                    parameters['name'].append(name)
-                    parameters['value'].append(parameter.raw_value)
-                    parameters['error'].append(parameter.error) if parameter.error else parameters['error'].append('')
-                    parameters['unit'].append(f'{parameter.unit:~P}')
-                    parameters['min'].append(parameter.min)
-                    parameters['max'].append(parameter.max)
-                    parameters['vary'].append(parameter.free) if parameter.free else parameters['vary'].append('')
+        if importlib.util.find_spec('pandas') is not None:
             df = pd.DataFrame(parameters)
             df.index += 1
             if self.is_notebook():
-                display(df.style.format(precision=5))
+                display(df.
+                        style.  # apply styles from below
+                        set_table_styles([dict(selector='th', props=[('text-align', 'left')])]).  # align header to left
+                        set_properties(subset=['name'], **{'text-align': 'left'}).  # align column 'name' to left
+                        format(precision=5))  # set precision
             else:
                 print(df)
         else:
             for parameter in self.get_parameters():
                 print(parameter)
 
+    def show_parameters(self):
+        '''
+        Show all parameters (fixed and free).
+        '''
+        self._show_parameters(self._parameters())
+
     def show_free_parameters(self):
         '''
         Show only free parameters.
         '''
-        if importlib.util.find_spec("pandas") is not None:
-            parameters = {'name': [], 'value': [], 'error': [], 'unit': []}
-            for parameter in self.get_fit_parameters():
-                name = self.get_full_parameter_name(parameter.unique_name, parameter.display_name, parameter.url)
-                parameters['name'].append(name)
-                parameters['value'].append(parameter.raw_value)
-                parameters['error'].append(parameter.error)
-                parameters['unit'].append(f'{parameter.unit:~P}')
-            df = pd.DataFrame(parameters)
-            df.index += 1
-            if self.is_notebook():
-                display(df.style.format(precision=5))
-            else:
-                print(df)
-        else:
-            for parameter in self.get_fit_parameters():
-                print(parameter)
+        self._show_parameters(self._free_parameters())
 
     ###### DUNDER METHODS ######
     def __copy__(self):

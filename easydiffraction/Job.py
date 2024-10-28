@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # © 2021-2024 Contributors to the EasyDiffraction project <https://github.com/easyscience/EasyDiffraction
 
+import builtins
 import importlib.util
 import os
 import re
@@ -62,8 +63,10 @@ try:
 except ImportError:
     print("pandas not installed")
 
-if 'JPY_PARENT_PID' in os.environ:
+try:
     from IPython.display import display
+except ImportError:
+    pass
 
 T_ = TypeVar('T_')
 
@@ -889,6 +892,12 @@ class DiffractionJob(JobBase):
         fig = go.Figure(data=data, layout=layout)
         fig.show()
 
+    def is_notebook(self):
+        '''
+        Check if the code is running in a Jupyter notebook.
+        '''
+        return hasattr(builtins, "__IPYTHON__")
+
     def get_parent_name(self, unique_name: str) -> str:
         '''
         Get the pretty name of the parameter.
@@ -922,7 +931,7 @@ class DiffractionJob(JobBase):
             display_name = 'b_iso_or_equiv'
         elif display_name == 'Uiso':
             display_name = 'u_iso_or_equiv'
-        if url and 'JPY_PARENT_PID' in os.environ:
+        if url and self.is_notebook():
             return f'{parent_name}.<a target="_blank" href="{url}">{display_name}</a>'
         return f'{parent_name}.{display_name}'
 
@@ -944,7 +953,7 @@ class DiffractionJob(JobBase):
                     parameters['vary'].append(parameter.free) if parameter.free else parameters['vary'].append('')
             df = pd.DataFrame(parameters)
             df.index += 1
-            if 'JPY_PARENT_PID' in os.environ:
+            if self.is_notebook():
                 display(df.style.format(precision=5))
             else:
                 print(df)
@@ -966,7 +975,7 @@ class DiffractionJob(JobBase):
                 parameters['unit'].append(f'{parameter.unit:~P}')
             df = pd.DataFrame(parameters)
             df.index += 1
-            if 'JPY_PARENT_PID' in os.environ:
+            if self.is_notebook():
                 display(df.style.format(precision=5))
             else:
                 print(df)

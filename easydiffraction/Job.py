@@ -652,7 +652,7 @@ class DiffractionJob(JobBase):
         print('Measured sy: ', self.experiment.e.data)
         print('Calculated y:', self.calculate_profile())
 
-    def show_experiment_chart(self):
+    def show_experiment_chart(self, show_legend=True):
         '''
         Show the experiment chart.
         '''
@@ -723,10 +723,11 @@ class DiffractionJob(JobBase):
 
         fig.update_xaxes(showline=True, mirror=True, zeroline=False)
         fig.update_yaxes(showline=True, mirror=True, zeroline=False)
+        fig.update_layout(showlegend=show_legend)
 
         fig.show()
 
-    def show_analysis_chart(self):
+    def show_analysis_chart(self, show_legend=True):
         '''
         Show the analysis chart.
         '''
@@ -889,6 +890,9 @@ class DiffractionJob(JobBase):
         )
 
         fig = go.Figure(data=data, layout=layout)
+
+        fig.update_layout(showlegend=show_legend)
+
         fig.show()
 
     def is_notebook(self):

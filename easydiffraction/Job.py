@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # © 2021-2024 Contributors to the EasyDiffraction project <https://github.com/easyscience/EasyDiffraction
 
+import builtins
 import importlib.util
-import os
 import time
 from copy import deepcopy
 from typing import TypeVar
@@ -60,8 +60,10 @@ try:
 except ImportError:
     print("pandas not installed")
 
-if 'JPY_PARENT_PID' in os.environ:
+try:
     from IPython.display import display
+except ImportError:
+    pass
 
 T_ = TypeVar('T_')
 
@@ -880,6 +882,12 @@ class DiffractionJob(JobBase):
         fig = go.Figure(data=data, layout=layout)
         fig.show()
 
+    def is_notebook(self):
+        '''
+        Check if the code is running in a Jupyter notebook.
+        '''
+        return hasattr(builtins, "__IPYTHON__")
+
     def print_free_parameters(self):
         '''
         Print the free parameters.
@@ -894,7 +902,7 @@ class DiffractionJob(JobBase):
             df = pd.DataFrame(parameters)
             df.index += 1
             df.style.format(precision=5)
-            if 'JPY_PARENT_PID' in os.environ:
+            if self.is_notebook():
                 display(df)
             else:
                 print(df)

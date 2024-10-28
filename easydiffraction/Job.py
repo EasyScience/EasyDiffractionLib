@@ -4,12 +4,14 @@
 
 import builtins
 import importlib.util
+import re
 import time
 from copy import deepcopy
 from typing import TypeVar
 from typing import Union
 
 import numpy as np
+from easyscience import global_object
 from easyscience.Datasets.xarray import xr  # type: ignore
 
 # from easyscience.fitting.fitter import Fitter as CoreFitter
@@ -254,6 +256,13 @@ class DiffractionJob(JobBase):
         elif hasattr(self.sample, '_pattern'):
             return self.sample._pattern
         return None
+
+    @property
+    def instrument(self):
+        '''
+        Alias to self.parameters
+        '''
+        return self.parameters
 
     @property
     def phases(self) -> Phases:
@@ -888,27 +897,97 @@ class DiffractionJob(JobBase):
         '''
         return hasattr(builtins, "__IPYTHON__")
 
-    def print_free_parameters(self):
+    def get_parent_name(self, unique_name: str) -> str:
         '''
-        Print the free parameters.
+        Get the pretty name of the parameter.
         '''
-        if importlib.util.find_spec("pandas") is not None:
-            parameters = {'names': [], 'values': [], 'errors': [], 'units': []}
-            for parameter in self.get_fit_parameters():
-                parameters['names'].append(parameter.display_name)
-                parameters['values'].append(parameter.raw_value)
-                parameters['errors'].append(parameter.error)
-                parameters['units'].append(f'{parameter.unit:~P}')
+        full_name_items = global_object.map.find_path('DiffractionJob_0', unique_name)
+        str_name = ''
+        for item in full_name_items:
+            if re.match('^Phase_[0-9]+$', item):
+                phase_name = global_object.map.get_item_by_key(item).name
+                str_name += f".phases['{phase_name}']"
+            if re.match('^PeriodicLattice_[0-9]+$', item):
+                str_name += ".cell"
+            if re.match('^Site_[0-9]+$', item):
+                atom_site_name = global_object.map.get_item_by_key(item).name
+                str_name += f".atom_sites['{atom_site_name}']"
+            if re.match('^Instrument1D(CW|TOF)Parameters_[0-9]+$', item):
+                str_name += ".instrument"
+            if re.match('^Powder1DParameters_[0-9]+$', item):
+                str_name += ".pattern"
+            if re.match('^PointBackground_[0-9]+$', item):
+                container_idx = int(re.sub("\D", "", item)) - 1
+                str_name += f".backgrounds[{container_idx}]"
+            if re.match('^BackgroundPoint_[0-9]+$', item):
+                name = global_object.map.get_item_by_key(item).name
+                str_name += f"['{name}']"
+        return str_name
+
+    def get_full_parameter_name(self, unique_name: str, display_name: str, url: str) -> str:
+        parent_name = self.get_parent_name(unique_name)
+        if display_name == 'Biso':
+            display_name = 'b_iso_or_equiv'
+        elif display_name == 'Uiso':
+            display_name = 'u_iso_or_equiv'
+        if url and self.is_notebook():
+            return f'{parent_name}.<a target="_blank" href="{url}">{display_name}</a>'
+        return f'{parent_name}.{display_name}'
+
+    def _parameters(self):
+        parameters = {'name': [], 'value': [], 'error': [], 'unit': [], 'min': [], 'max': [], 'vary': []}
+        for parameter in self.get_parameters():
+            if parameter.enabled:
+                name = self.get_full_parameter_name(parameter.unique_name, parameter.display_name, parameter.url)
+                parameters['name'].append(name)
+                parameters['value'].append(parameter.raw_value)
+                parameters['error'].append(parameter.error) if parameter.error else parameters['error'].append('')
+                parameters['unit'].append(f'{parameter.unit:~P}')
+                parameters['min'].append(parameter.min)
+                parameters['max'].append(parameter.max)
+                parameters['vary'].append(parameter.free) if parameter.free else parameters['vary'].append('')
+        return parameters
+
+    def _free_parameters(self):
+        parameters = {'name': [], 'value': [], 'error': [], 'unit': []}
+        for parameter in self.get_fit_parameters():
+            name = self.get_full_parameter_name(parameter.unique_name, parameter.display_name, parameter.url)
+            parameters['name'].append(name)
+            parameters['value'].append(parameter.raw_value)
+            parameters['error'].append(parameter.error)
+            parameters['unit'].append(f'{parameter.unit:~P}')
+        return parameters
+
+    def _show_parameters(self, parameters):
+        '''
+        Show parameters.
+        '''
+        if importlib.util.find_spec('pandas') is not None:
             df = pd.DataFrame(parameters)
             df.index += 1
-            df.style.format(precision=5)
             if self.is_notebook():
-                display(df)
+                display(df.
+                        style.  # apply styles from below
+                        set_table_styles([dict(selector='th', props=[('text-align', 'left')])]).  # align header to left
+                        set_properties(subset=['name'], **{'text-align': 'left'}).  # align column 'name' to left
+                        format(precision=5))  # set precision
             else:
                 print(df)
         else:
-            for parameter in self.get_fit_parameters():
+            for parameter in self.get_parameters():
                 print(parameter)
+
+    def show_parameters(self):
+        '''
+        Show all parameters (fixed and free).
+        '''
+        self._show_parameters(self._parameters())
+
+    def show_free_parameters(self):
+        '''
+        Show only free parameters.
+        '''
+        self._show_parameters(self._free_parameters())
 
     ###### DUNDER METHODS ######
     def __copy__(self):

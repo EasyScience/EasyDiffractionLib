@@ -320,18 +320,21 @@ class Instrument1DTOFParameters(BaseObj):
         "sigma0": {
             "name": "sigma0",
             "url": "https://docs.easydiffraction.org/lib/project/dictionaries/_pd_instr/",
+            "units": "microsec**2",
             "value": 0.409,
             "fixed": True,
         },
         "sigma1": {
             "name": "sigma1",
             "url": "https://docs.easydiffraction.org/lib/project/dictionaries/_pd_instr/",
+            "units": "microsec**2/angstrom**2",
             "value": 8.118,
             "fixed": True,
         },
         "sigma2": {
             "name": "sigma2",
             "url": "https://docs.easydiffraction.org/lib/project/dictionaries/_pd_instr/",
+            "units": "microsec**2/angstrom**4",
             "value": 0.0,
             "fixed": True,
         },

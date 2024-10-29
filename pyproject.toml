@@ -24,8 +24,8 @@ classifiers = [
 requires-python = '>=3.9,<3.13'
 dependencies = [
     'cryspy>=0.7.7',
-    'easyscience @ git+https://github.com/EasyScience/EasyScience.git@free-params',
-    'easycrystallography @ git+https://github.com/EasyScience/EasyCrystallography.git@develop',
+    'easyscience @ git+https://github.com/EasyScience/EasyScience.git@develop',
+    'easycrystallography @ git+https://github.com/EasyScience/EasyCrystallography.git@change_urls_to_edl_docs',
 ]
 
 [project.optional-dependencies]

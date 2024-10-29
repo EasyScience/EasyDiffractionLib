@@ -186,52 +186,62 @@ class Instrument1DCWParameters(BaseObj):
     _defaults = {
         "wavelength": {
             "name": "wavelength",
+            "url": "https://docs.easydiffraction.org/lib/project/dictionaries/_diffrn_radiation_wavelength/",
             "units": "angstrom",
             "value": 1.54056,
             "fixed": True,
         },
         "resolution_u": {
             "name": "resolution_u",
+            "url": "https://docs.easydiffraction.org/lib/project/dictionaries/_pd_instr/",
             "value": 0.0002,
             "fixed": True,
         },
         "resolution_v": {
             "name": "resolution_v",
+            "url": "https://docs.easydiffraction.org/lib/project/dictionaries/_pd_instr/",
             "value": -0.0002,
             "fixed": True,
         },
         "resolution_w": {
             "name": "resolution_w",
+            "url": "https://docs.easydiffraction.org/lib/project/dictionaries/_pd_instr/",
             "value": 0.012,
             "fixed": True,
         },
         "resolution_x": {
             "name": "resolution_x",
+            "url": "https://docs.easydiffraction.org/lib/project/dictionaries/_pd_instr/",
             "value": 0.0,
             "fixed": True,
         },
         "resolution_y": {
             "name": "resolution_y",
+            "url": "https://docs.easydiffraction.org/lib/project/dictionaries/_pd_instr/",
             "value": 0.0,
             "fixed": True,
         },
         "reflex_asymmetry_p1": {
             "name": "reflex_asymmetry_p1",
+            "url": "https://docs.easydiffraction.org/lib/project/dictionaries/_pd_instr/",
             "value": 0.0,
             "fixed": True,
         },
         "reflex_asymmetry_p2": {
             "name": "reflex_asymmetry_p2",
+            "url": "https://docs.easydiffraction.org/lib/project/dictionaries/_pd_instr/",
             "value": 0.0,
             "fixed": True,
         },
         "reflex_asymmetry_p3": {
             "name": "reflex_asymmetry_p3",
+            "url": "https://docs.easydiffraction.org/lib/project/dictionaries/_pd_instr/",
             "value": 0.0,
             "fixed": True,
         },
         "reflex_asymmetry_p4": {
             "name": "reflex_asymmetry_p4",
+            "url": "https://docs.easydiffraction.org/lib/project/dictionaries/_pd_instr/",
             "value": 0.0,
             "fixed": True,
         }

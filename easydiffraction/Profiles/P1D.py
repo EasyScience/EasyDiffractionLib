@@ -306,12 +306,14 @@ class Instrument1DTOFParameters(BaseObj):
         "dtt1": {
             "name": "dtt1",
             "url": "https://docs.easydiffraction.org/lib/project/dictionaries/_pd_instr/",
+            "units": "microsec/angstrom",
             "value": 6167.24700,
             "fixed": True,
         },
         "dtt2": {
             "name": "dtt2",
             "url": "https://docs.easydiffraction.org/lib/project/dictionaries/_pd_instr/",
+            "units": "microsec/angstrom**2",
             "value": -2.28000,
             "fixed": True,
         },

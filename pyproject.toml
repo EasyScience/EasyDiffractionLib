@@ -25,7 +25,7 @@ requires-python = '>=3.9,<3.13'
 dependencies = [
     'cryspy>=0.7.7',
     'EasyScience @ git+https://github.com/EasyScience/EasyScience.git@free-params',
-    'easycrystallography @ git+https://github.com/EasyScience/EasyCrystallography.git@adp_cif_naming',
+    'easycrystallography @ git+https://github.com/EasyScience/EasyCrystallography.git@develop',
     'pycifrw>=4.4.1',
     'pooch',
     'funcy'

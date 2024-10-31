@@ -32,6 +32,7 @@ dev = [
     'pytest',  # for testing
     'pytest-xdist',  # for parallel testing
     'pytest-cov',  # for coverage
+    'nbmake',  # for building notebooks
     'ruff',  # for linting
     'validate-pyproject[all]',  # for checking pyproject.toml
 ]

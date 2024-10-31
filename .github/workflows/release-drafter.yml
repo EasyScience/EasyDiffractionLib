@@ -7,9 +7,6 @@ on:
   push:
     branches: [master]
 
-permissions:
-  contents: read
-
 jobs:
   update-release-draft:
 

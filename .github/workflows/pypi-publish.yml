@@ -1,0 +1,38 @@
+name: Upload release to PyPI
+
+on:
+  # Runs on creating a new tag starting with 'v', e.g. 'v1.0.3'
+  push:
+    tags:
+      - 'v*'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  pypi-publish:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check-out repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Upgrade package installer for Python
+      run: pip install --upgrade pip
+
+    - name: Install Python dependencies
+      run: pip install '.[dev]'
+
+    - name: Create Python package
+      run: python -m build
+
+    - name: Publish distribution 📦 to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        password: ${{ secrets.PYPI_PASSWORD }}

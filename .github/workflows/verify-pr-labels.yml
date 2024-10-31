@@ -2,18 +2,21 @@
 # label from a set of valid labels before it can be merged.
 
 name: Verify PR labels
+
 on:
+  # Runs on pull requests to a repository
   pull_request_target:
     types: [opened, labeled, unlabeled, synchronize]
 
 jobs:
-  check_pr_labels:
+  verify-pr-labels:
+
     runs-on: ubuntu-latest
-    name: Verify that the PR has a valid label
+
     steps:
-    - name: Verify PR label action
+
+    - name: Verify pull request labels
       uses: jesusvasquez333/verify-pr-label-action@v1.4.0
-      id: verify-pr-label
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         valid-labels: chore, fix, bugfix, bug, enhancement, feature, dependencies, documentation

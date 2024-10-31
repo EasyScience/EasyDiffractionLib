@@ -1,0 +1,21 @@
+# Drafts your next Release notes as Pull Requests are merged into "master"
+
+name: Update release draft
+
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  update-release-draft:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: release-drafter/release-drafter@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

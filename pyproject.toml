@@ -73,6 +73,7 @@ line-length = 127
 indent-width = 4
 exclude = [
     'examples_old',
+    'examples',
     'tests'
 ]
 

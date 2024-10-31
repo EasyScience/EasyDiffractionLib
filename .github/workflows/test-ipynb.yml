@@ -6,9 +6,10 @@ name: Testing Jupyter Notebooks
 on: [push, pull_request, workflow_call]
 
 # Allow only one concurrent workflow, skipping runs queued between the run in-progress and latest queued.
+# And cancel in-progress runs.
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   test-ipynb:

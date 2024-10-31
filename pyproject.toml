@@ -71,7 +71,6 @@ packages = ['src/easycrystallography']
 line-length = 127
 indent-width = 4
 exclude = [
-    'docs_old',
     'examples_old',
     'tests'
 ]

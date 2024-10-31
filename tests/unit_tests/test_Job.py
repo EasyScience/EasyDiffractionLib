@@ -67,7 +67,7 @@ def test_job_tof():
 
 def test_get_job_from_file():
     j = Job()
-    j.set_job_from_file("examples/d1a.cif")
+    j.set_job_from_file("tests/resources/d1a.cif")
     assert j.name == "d1a"
     assert j.type.type_str == "pd-cwl-unp-1d-neut"
     assert j.type.is_pd
@@ -77,7 +77,7 @@ def test_get_job_from_file():
 
 def test_get_pol_job_from_file():
     j = Job("test")
-    j.set_job_from_file("examples/PolNPD5T.cif")
+    j.set_job_from_file("tests/resources/PolNPD5T.cif")
     assert j.name == "PolNPD5T"
     assert j.type.type_str == "pd-cwl-pol-1d-neut"
     assert j.type.is_pol
@@ -85,19 +85,19 @@ def test_get_pol_job_from_file():
 
 def test_add_experiment_from_file():
     j = Job("test")
-    j.add_experiment_from_file("examples/d1a.cif")
+    j.add_experiment_from_file("tests/resources/d1a.cif")
     assert j.experiment._name == "d1a"
     assert isinstance(j.experiment, Experiment)
 
 def test_add_sample_from_file():
     j = Job("test")
-    j.add_sample_from_file("examples/PbSO4.cif")
+    j.add_sample_from_file("tests/resources/PbSO4.cif")
     assert j.sample._name == "easySample"
     assert isinstance(j.sample, Sample)
 
 def test_add_analysis_from_file():
     j = Job("test")
-    j.add_analysis_from_file("examples/d1a.cif")
+    j.add_analysis_from_file("tests/resources/d1a.cif")
     assert j.analysis._name == "Analysis"
     assert isinstance(j.analysis, Analysis)
 
@@ -141,7 +141,7 @@ def test_analysis_assignment():
 
 def test_calculate_profile():
     j = Job("test")
-    j.add_sample_from_file("examples/PbSO4.cif")
+    j.add_sample_from_file("tests/resources/PbSO4.cif")
     x_data = np.linspace(20, 170, 500)
     y = j.calculate_profile(x=x_data)
     assert len(y) == len(x_data)
@@ -150,7 +150,7 @@ def test_calculate_profile():
 
 def test_copy():
     j = Job("test")
-    j.add_sample_from_file("examples/PbSO4.cif")
+    j.add_sample_from_file("tests/resources/PbSO4.cif")
     j2 = copy.copy(j)
     assert id(j) != id(j2)
     assert j2.name == j.name

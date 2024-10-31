@@ -34,6 +34,7 @@ dev = [
     'pytest-cov',  # for coverage
     'nbmake',  # for building notebooks
     'ruff',  # for linting
+    'jinja2',
 ]
 charts = [
     'darkdetect',

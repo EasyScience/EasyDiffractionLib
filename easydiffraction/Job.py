@@ -921,7 +921,7 @@ class DiffractionJob(JobBase):
             if re.match('^Powder1DParameters_[0-9]+$', item):
                 str_name += ".pattern"
             if re.match('^PointBackground_[0-9]+$', item):
-                container_idx = int(re.sub("\D", "", item)) - 1
+                container_idx = int(re.sub(r"\D", "", item)) - 1
                 str_name += f".backgrounds[{container_idx}]"
             if re.match('^BackgroundPoint_[0-9]+$', item):
                 name = global_object.map.get_item_by_key(item).name

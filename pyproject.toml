@@ -1,10 +1,8 @@
-[build-system]
-requires = ['hatchling']
-build-backend = 'hatchling.build'
+# Configuration for the EasyDiffractionLib project
 
 [project]
 name = 'easydiffraction'
-version = '0.1.1'
+version = '0.1.2'
 description = 'Making diffraction data analysis and modelling easy'
 authors = [{name = 'EasyDiffractionLib contributors'}]
 readme = 'README.md'
@@ -25,29 +23,17 @@ requires-python = '>=3.9,<3.13'
 dependencies = [
     'cryspy',
     'easyscience',
-    'easycrystallography @ git+https://github.com/EasyScience/EasyCrystallography.git@develop',
+    'easycrystallography @ git+https://github.com/EasyScience/EasyCrystallography.git@prepare_release',
 ]
 
 [project.optional-dependencies]
 dev = [
-    'six',
-    'build',
-    'codecov>=2.1.11',
-    'coverage',
-    'coveralls',
-    'flake8>=6.0.0',
-    'pytest>=5.2',
-    'pytest-cov>=3.0.0',
-    'pytest-xdist',  # used with nbmake to run parallel tests
-    'nbmake',  # testing jupyter notebooks
-    'playwright',  # needed for nbmake
-    'jinja2',  # nedeed for nbmake
-    'ruff',
-    'toml>=0.10',
-    'yapf>=0.31.0',
-    'requests',
-    'gemmi',
-    'periodictable',
+    'build',  # for building the package
+    'pytest',  # for testing
+    'pytest-xdist',  # for parallel testing
+    'pytest-cov',  # for coverage
+    'ruff',  # for linting
+    'validate-pyproject[all]',  # for checking pyproject.toml
 ]
 charts = [
     'darkdetect',
@@ -58,61 +44,66 @@ charts = [
 ]
 
 [project.urls]
-homepage = 'https://docs.easydiffraction.org'
+homepage = 'https://easydiffraction.org'
 documentation = 'https://docs.easydiffraction.org/lib'
-source = 'https://github.com/easyScience/easydiffractionlib'
-tracker = 'https://github.com/easyScience/easydiffractionlib/issues'
+source = 'https://github.com/EasyScience/EasyDiffractionLib'
+tracker = 'https://github.com/EasyScience/EasyDiffractionLib/issues'
+
+# Select the build system hatch -- Python project manager
+# https://hatch.pypa.io/
+
+[build-system]
+build-backend = 'hatchling.build'
+requires = ['hatchling']
+
+# Configuration for the hatch
 
 [tool.hatch.metadata]
 allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
-packages = ['easydiffraction']
+packages = ['src/easycrystallography']
 
-[tool.coverage.run]
-source = ['easyDiffractionLib']
-
-[tool.github.info]
-organization = 'EasyScience'
-repo = 'EasyDiffractionLib'
+# Configuration for ruff -- Python linter and code formatter
+# https://docs.astral.sh/ruff/rules/
 
 [tool.ruff]
 line-length = 127
+indent-width = 4
 exclude = [
-    'docs',
-    'examples',
-    'examples_unsorted',
-    'tests',
+    'docs_old',
+    'examples_old',
+    'tests'
 ]
 
 [tool.ruff.format]
 quote-style = 'single'
+indent-style = 'space'  # PEP 8 recommends using spaces over tabs for indentation.
+line-ending = 'lf'  # Line endings will be converted to \n. The default line ending on Unix.
+
+[tool.ruff.lint.isort]
+force-single-line = true
 
 [tool.ruff.lint.per-file-ignores]
-# allow asserts in test files
+# allow asserting in test files
 '*test_*.py' = ['S101']
 
 [tool.ruff.lint]
 select = [
     # flake8 settings from existing CI setup
     'E9', 'F63', 'F7', 'F82',
-    # Code should be polished to fulfill all cases bellow
-    # https://docs.astral.sh/ruff/rules/
     # pycodestyle
-    'E',
+    'E', 'W',
     # Pyflakes
     'F',
     # pyupgrade
-#    'UP',
+    #'UP',
     # flake8-bugbear
-#    'B',
+    #'B',
     # flake8-simplify
-#    'SIM',
+    #'SIM',
     # isort
     'I',
     # flake8-bandit
     'S',
 ]
-
-[tool.ruff.lint.isort]
-force-single-line = true

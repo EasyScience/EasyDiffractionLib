@@ -3,7 +3,7 @@ __version__ = "0.0.1"
 
 import os
 
-CIF_DIRECTORY = os.path.join("tests", "test_resources", "cifs")
+CIF_DIRECTORY = os.path.join("tests", "resources")
 AVAILABLE_PHASES = os.listdir(CIF_DIRECTORY)
 
 

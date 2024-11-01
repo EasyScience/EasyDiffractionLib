@@ -1,0 +1,161 @@
+# This workflow will for a variety of Python versions
+# - install the code base
+# - lint the code base
+# - test the code base
+# - upload the test coverage to codecov
+#
+# It will also
+# - build the package
+# - check the package
+#
+# https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
+
+name: Test code and build package
+
+# Trigger the workflow on push, pull request and manual trigger
+on: [push, pull_request, workflow_call]
+
+# Allow only one concurrent workflow, skipping runs queued between the run in-progress and latest queued.
+# And cancel in-progress runs.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  # Job 1: Check code consistency
+  code-consistency:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Check validity of pyproject.toml
+        run: |
+          pip install 'validate-pyproject[all]'
+          validate-pyproject pyproject.toml
+
+      - name: Install Python linter and code formatter and run in the project root
+        run: |
+          pip install ruff
+          ruff check .
+
+      - name: Suggestion to fix linter issues
+        if: ${{ failure() }}
+        run: |
+            echo "In project root run 'ruff check . --fix' and commit changes to fix issues."
+            exit 1
+
+  # Job 2: Test code and upload coverage to Codecov
+  code-testing:
+    needs: code-consistency  # previous job 'code-consistency' need to be finished first
+
+    # current job matrix. if modified, remember to UPDATE the strategy in the next job
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022, macos-13, macos-14]
+        python-version: ['3.10', '3.11', '3.12']
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Upgrade package installer for Python
+      run: python -m pip install --upgrade pip
+
+    - name: Install Python dependencies
+      run: pip install '.[dev]'
+
+    - name: Run tests and create coverage report
+      run: >
+        pytest tests/
+        --cov=./
+        --cov-report=xml:coverage/coverage.xml
+        --junitxml=./coverage/junit.xml
+        --color=yes
+        -n auto
+
+    #- name: Upload test results to Codecov
+    #  if: ${{ !cancelled() }}
+    #  uses: codecov/test-results-action@v1
+    #  with:
+    #    files: ./coverage/junit.xml
+    #    fail_ci_if_error: true  # optional (default = false)
+    #    name: Pytest results
+    #    token: ${{ secrets.CODECOV_TOKEN }}
+
+    #- name: Upload coverage report to Codecov
+    #  uses: codecov/codecov-action@v4
+    #  with:
+    #    files: ./coverage/coverage.xml
+    #    env_vars: OS,PYTHON
+    #    fail_ci_if_error: true  # optional (default = false)
+    #    name: Pytest coverage
+    #    token: ${{ secrets.CODECOV_TOKEN }}
+    #  env:
+    #    OS: ${{ matrix.os }}
+    #    PYTHON: ${{ matrix.python-version }}
+
+    - name: Create Python package  # dist/*.whl
+      run: python -m build --wheel --outdir dist
+
+    - name: Upload zipped Python package for next job
+      uses: actions/upload-artifact@v4
+      with:
+        name: EasyDiffractionLib_py${{ matrix.python-version }}_${{ matrix.os }}_${{ runner.arch }}
+        path: |
+          dist/*.whl
+          tests/
+        if-no-files-found: "error"
+        compression-level: 0
+
+  # Job 3: Test the package
+  package-testing:
+    needs: code-testing  # previous job 'code-testing' need to be finished first
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022, macos-13, macos-14]
+        python-version: ['3.10', '3.11', '3.12']
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Upgrade package installer for Python
+      run: python -m pip install --upgrade pip
+
+    - name: Download zipped Python package from previous job
+      uses: actions/download-artifact@v4
+      with:  # name or path are taken from the upload step of the previous job
+        name: EasyDiffractionLib_py${{ matrix.python-version }}_${{ matrix.os }}_${{ runner.arch }}
+        path: .  # directory to extract downloaded zipped artifacts
+
+    - name: Install Python package from previous job
+      shell: bash
+      run: pip install dist/*.whl
+
+    - name: Run tests
+      run: |
+        pip install pytest pytest-xdist
+        pytest tests/ -n auto --color=yes

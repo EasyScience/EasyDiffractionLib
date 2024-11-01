@@ -42,7 +42,8 @@ jobs:
           pip install 'validate-pyproject[all]'
           validate-pyproject pyproject.toml
 
-      - name: Install Python linter and code formatter and run in the project root
+      # Install Python linter and code formatter and run in the project root
+      - name: Install and run Ruff
         run: |
           pip install ruff
           ruff check .
@@ -51,6 +52,18 @@ jobs:
         if: ${{ failure() }}
         run: |
             echo "In project root run 'ruff check . --fix' and commit changes to fix issues."
+            exit 1
+
+      # Install quality assurance package for Jupyter notebooks and run in the sample directory
+      - name: Install and run nbQA
+        run: |
+          pip install nbqa
+          nbqa ruff examples/
+
+      - name: Suggestion to fix linter issues
+        if: ${{ failure() }}
+        run: |
+            echo "In project root run 'nbqa ruff examples/ --fix' and commit changes to fix issues."
             exit 1
 
   # Job 2: Test code and upload coverage to Codecov

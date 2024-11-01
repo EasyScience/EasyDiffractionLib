@@ -69,7 +69,7 @@ jobs:
       - name: Install Python dependencies
         run: pip install '.[dev,charts]'
 
-      - name: Run tests on Jupyter Notebooks
+      - name: Test Jupyter notebooks
         shell: bash
         run: >
           pytest 

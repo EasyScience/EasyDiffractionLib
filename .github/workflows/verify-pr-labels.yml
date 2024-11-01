@@ -1,7 +1,6 @@
-# This action will verify if a pull request has at least one
-# label from a set of valid labels before it can be merged.
+# Verifies if a pull request has at least one label from a set of valid labels before it can be merged.
 
-name: Verify PR labels
+name: Verify pull request labels
 
 on:
   # Runs on pull requests to a repository

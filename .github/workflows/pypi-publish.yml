@@ -1,3 +1,5 @@
+# Builds a Python package and publish it to PyPI when a new tag is created.
+
 name: Upload release to PyPI
 
 on:

@@ -1,8 +1,7 @@
-# This workflow integrates a collection of open source static analysis tools
-# with GitHub code scanning. For documentation, or to provide feedback, visit
+# Integrates a collection of open source static analysis tools with GitHub code scanning.
 # https://github.com/github/ossar-action
 
-name: Run open source static analysis
+name: Run security static analysis
 
 on:
   # Runs on pull requests

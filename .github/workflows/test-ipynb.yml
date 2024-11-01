@@ -1,6 +1,6 @@
-# This workflow will run tests on Jupyter Notebooks
+# Runs tests on Jupyter notebooks
 
-name: Testing Jupyter Notebooks
+name: Test Jupyter notebooks
 
 # Trigger the workflow on push, pull request and manual trigger
 on: [push, pull_request, workflow_call]

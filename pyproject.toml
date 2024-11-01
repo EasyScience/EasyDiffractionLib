@@ -86,7 +86,7 @@ line-ending = 'lf'  # Line endings will be converted to \n. The default line end
 force-single-line = true
 
 [tool.ruff.lint.per-file-ignores]
-# allow asserting in test files
+# allow asserts in test files
 '*test_*.py' = ['S101']
 
 [tool.ruff.lint]

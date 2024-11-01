@@ -32,9 +32,11 @@ dev = [
     'pytest',  # for testing
     'pytest-xdist',  # for parallel testing
     'pytest-cov',  # for coverage
-    'nbmake',  # for building notebooks
     'ruff',  # for linting
-    'jinja2',
+    'nbmake',  # for building notebooks
+    'nbqa',  # for linting notebooks
+    'pooch',  # for data fetching
+    'jinja2',  # for templating
 ]
 charts = [
     'darkdetect',
@@ -73,7 +75,6 @@ line-length = 127
 indent-width = 4
 exclude = [
     'examples_old',
-    'examples',
     'tests'
 ]
 

@@ -12,7 +12,37 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+
+  # Job 1: Check code consistency
+  code-consistency:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # Install quality assurance package for Jupyter notebooks and run in the sample directory
+      - name: Install and run nbQA
+        run: |
+          pip install ruff nbqa
+          nbqa ruff examples/
+
+      - name: Suggestion to fix linter issues
+        if: ${{ failure() }}
+        run: |
+            echo "In project root run 'nbqa ruff examples/ --fix' and commit changes to fix issues."
+            exit 1
+
+  # Job 2: Test Jupiter notebooks
   test-ipynb:
+    needs: code-consistency  # previous job 'code-consistency' need to be finished first
+
     timeout-minutes: 30
 
     strategy:

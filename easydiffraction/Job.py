@@ -2,13 +2,16 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # © 2021-2024 Contributors to the EasyDiffraction project <https://github.com/easyscience/EasyDiffraction
 
+import builtins
 import importlib.util
+import re
 import time
 from copy import deepcopy
 from typing import TypeVar
 from typing import Union
 
 import numpy as np
+from easyscience import global_object
 from easyscience.Datasets.xarray import xr  # type: ignore
 
 # from easyscience.fitting.fitter import Fitter as CoreFitter
@@ -59,6 +62,10 @@ try:
 except ImportError:
     print("pandas not installed")
 
+try:
+    from IPython.display import display
+except ImportError:
+    pass
 
 T_ = TypeVar('T_')
 
@@ -249,6 +256,13 @@ class DiffractionJob(JobBase):
         elif hasattr(self.sample, '_pattern'):
             return self.sample._pattern
         return None
+
+    @property
+    def instrument(self):
+        '''
+        Alias to self.parameters
+        '''
+        return self.parameters
 
     @property
     def phases(self) -> Phases:
@@ -638,7 +652,7 @@ class DiffractionJob(JobBase):
         print('Measured sy: ', self.experiment.e.data)
         print('Calculated y:', self.calculate_profile())
 
-    def show_experiment_chart(self):
+    def show_experiment_chart(self, show_legend=True):
         '''
         Show the experiment chart.
         '''
@@ -709,10 +723,11 @@ class DiffractionJob(JobBase):
 
         fig.update_xaxes(showline=True, mirror=True, zeroline=False)
         fig.update_yaxes(showline=True, mirror=True, zeroline=False)
+        fig.update_layout(showlegend=show_legend)
 
         fig.show()
 
-    def show_analysis_chart(self):
+    def show_analysis_chart(self, show_legend=True):
         '''
         Show the analysis chart.
         '''
@@ -744,7 +759,7 @@ class DiffractionJob(JobBase):
 
         y_calc = self.calculate_profile()
 
-        peak_idx, _ = find_peaks(y_calc)  #, prominence=1)
+        peak_idx, _ = find_peaks(y_calc)
         x_bragg = self.experiment.x.data[peak_idx]
         y_bragg = np.zeros_like(x_bragg)
 
@@ -759,8 +774,8 @@ class DiffractionJob(JobBase):
         )
 
         trace_bragg = go.Scatter(
-            x=x_bragg,  # np.random.uniform(low=self.experiment.x.data.min(), high=self.experiment.x.data.max(), size=(50,)),
-            y=y_bragg,  #np.zeros(50),
+            x=x_bragg,
+            y=y_bragg,
             xaxis='x2',
             yaxis='y2',
             line=dict(color='rgb(230, 171, 2)'),  #color=px.colors.qualitative.Plotly[9]),
@@ -778,7 +793,7 @@ class DiffractionJob(JobBase):
             y=self.background,
             xaxis='x3',
             yaxis='y3',
-            line=dict(color='gray'),  # default: width=2?
+            line=dict(color='gray'),
             mode='lines',
             name='Background (Ibkg)'
         )
@@ -841,19 +856,18 @@ class DiffractionJob(JobBase):
                 title_text=x_axis_title,
                 anchor='y',
                 range=[x_min, x_max],
-                # linecolor='blue',
                 showline=True, mirror=True, zeroline=False
             ),
             xaxis2=dict(
+                matches='x',
                 anchor='y2',
                 range=[x_min, x_max],
-                # linecolor='green',
                 showline=True, mirror=True, zeroline=False, showticklabels=False
             ),
             xaxis3=dict(
+                matches='x',
                 anchor='y3',
                 range=[x_min, x_max],
-                # linecolor='red',
                 showline=True, mirror=True, zeroline=False, showticklabels=False
             ),
             yaxis=dict(
@@ -861,7 +875,6 @@ class DiffractionJob(JobBase):
                 domain=[0, resid_height / full_height - 0.01],
                 range=[resid_y_min, resid_y_max],
                 tickvals=[int(resid_y_min), 0, int(resid_y_max)],
-                # nticks = 3,
                 showline=True, mirror=True, showgrid=False
             ),
             yaxis2=dict(
@@ -878,29 +891,107 @@ class DiffractionJob(JobBase):
 
         fig = go.Figure(data=data, layout=layout)
 
-        # fig.update_xaxes(showline=True, mirror=True)
-        # fig.update_yaxes(showline=True, mirror=True)
+        fig.update_layout(showlegend=show_legend)
 
         fig.show()
 
-    def print_free_parameters(self):
+    def is_notebook(self):
         '''
-        Print the free parameters.
+        Check if the code is running in a Jupyter notebook.
         '''
-        if importlib.util.find_spec("pandas") is not None:
-            parameters = {'names': [], 'values': [], 'errors': [], 'units': []}
-            for parameter in self.get_fit_parameters():
-                parameters['names'].append(parameter.display_name)
-                parameters['values'].append(parameter.raw_value)
-                parameters['errors'].append(parameter.error)
-                parameters['units'].append(f'{parameter.unit:~H}')
+        return hasattr(builtins, "__IPYTHON__")
+
+    def get_parent_name(self, unique_name: str) -> str:
+        '''
+        Get the pretty name of the parameter.
+        '''
+        full_name_items = global_object.map.find_path('DiffractionJob_0', unique_name)
+        str_name = ''
+        for item in full_name_items:
+            if re.match('^Phase_[0-9]+$', item):
+                phase_name = global_object.map.get_item_by_key(item).name
+                str_name += f".phases['{phase_name}']"
+            if re.match('^PeriodicLattice_[0-9]+$', item):
+                str_name += ".cell"
+            if re.match('^Site_[0-9]+$', item):
+                atom_site_name = global_object.map.get_item_by_key(item).name
+                str_name += f".atom_sites['{atom_site_name}']"
+            if re.match('^Instrument1D(CW|TOF)Parameters_[0-9]+$', item):
+                str_name += ".instrument"
+            if re.match('^Powder1DParameters_[0-9]+$', item):
+                str_name += ".pattern"
+            if re.match('^PointBackground_[0-9]+$', item):
+                container_idx = int(re.sub(r"\D", "", item)) - 1
+                str_name += f".backgrounds[{container_idx}]"
+            if re.match('^BackgroundPoint_[0-9]+$', item):
+                name = global_object.map.get_item_by_key(item).name
+                str_name += f"['{name}']"
+        return str_name
+
+    def get_full_parameter_name(self, unique_name: str, display_name: str, url: str) -> str:
+        parent_name = self.get_parent_name(unique_name)
+        if display_name == 'Biso':
+            display_name = 'b_iso_or_equiv'
+        elif display_name == 'Uiso':
+            display_name = 'u_iso_or_equiv'
+        if url and self.is_notebook():
+            return f'{parent_name}.<a target="_blank" href="{url}">{display_name}</a>'
+        return f'{parent_name}.{display_name}'
+
+    def _parameters(self):
+        parameters = {'name': [], 'value': [], 'error': [], 'unit': [], 'min': [], 'max': [], 'vary': []}
+        for parameter in self.get_parameters():
+            if parameter.enabled:
+                name = self.get_full_parameter_name(parameter.unique_name, parameter.display_name, parameter.url)
+                parameters['name'].append(name)
+                parameters['value'].append(parameter.raw_value)
+                parameters['error'].append(parameter.error) if parameter.error else parameters['error'].append('')
+                parameters['unit'].append(f'{parameter.unit:~P}')
+                parameters['min'].append(parameter.min)
+                parameters['max'].append(parameter.max)
+                parameters['vary'].append(parameter.free) if parameter.free else parameters['vary'].append('')
+        return parameters
+
+    def _free_parameters(self):
+        parameters = {'name': [], 'value': [], 'error': [], 'unit': []}
+        for parameter in self.get_fit_parameters():
+            name = self.get_full_parameter_name(parameter.unique_name, parameter.display_name, parameter.url)
+            parameters['name'].append(name)
+            parameters['value'].append(parameter.raw_value)
+            parameters['error'].append(parameter.error)
+            parameters['unit'].append(f'{parameter.unit:~P}')
+        return parameters
+
+    def _show_parameters(self, parameters):
+        '''
+        Show parameters.
+        '''
+        if importlib.util.find_spec('pandas') is not None:
             df = pd.DataFrame(parameters)
             df.index += 1
-            df.style.format(precision=5)
-            return df
+            if self.is_notebook():
+                display(df.
+                        style.  # apply styles from below
+                        set_table_styles([dict(selector='th', props=[('text-align', 'left')])]).  # align header to left
+                        set_properties(subset=['name'], **{'text-align': 'left'}).  # align column 'name' to left
+                        format(precision=5))  # set precision
+            else:
+                print(df)
         else:
-            for parameter in self.get_fit_parameters():
+            for parameter in self.get_parameters():
                 print(parameter)
+
+    def show_parameters(self):
+        '''
+        Show all parameters (fixed and free).
+        '''
+        self._show_parameters(self._parameters())
+
+    def show_free_parameters(self):
+        '''
+        Show only free parameters.
+        '''
+        self._show_parameters(self._free_parameters())
 
     ###### DUNDER METHODS ######
     def __copy__(self):

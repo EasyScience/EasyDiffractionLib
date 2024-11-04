@@ -12,8 +12,21 @@
 
 name: Test code
 
-# Trigger the workflow on push, pull request and manual trigger
-on: [push, pull_request, workflow_call]
+on:
+  # Trigger the workflow on push
+  push:
+    # Every branch
+    branches:
+      - "**"
+    # But do not run this workflow on creating a new tag starting with 'v', e.g. 'v1.0.3' (see pypi-publish.yml)
+    tags-ignore:
+      - 'v*'
+  # Trigger the workflow on pull request
+  pull_request:
+    branches:
+      - "**"
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 # Allow only one concurrent workflow, skipping runs queued between the run in-progress and latest queued.
 # And cancel in-progress runs.

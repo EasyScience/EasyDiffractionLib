@@ -63,6 +63,7 @@ except ImportError:
     print("pandas not installed")
 
 try:
+    from IPython.display import HTML
     from IPython.display import display
 except ImportError:
     pass
@@ -939,27 +940,27 @@ class DiffractionJob(JobBase):
         return f'{parent_name}.{display_name}'
 
     def _parameters(self):
-        parameters = {'name': [], 'value': [], 'error': [], 'unit': [], 'min': [], 'max': [], 'vary': []}
+        parameters = {'name': [], 'value': [], 'unit': [], 'error': [], 'min': [], 'max': [], 'vary': []}
         for parameter in self.get_parameters():
             if parameter.enabled:
                 name = self.get_full_parameter_name(parameter.unique_name, parameter.display_name, parameter.url)
-                parameters['name'].append(name)
+                parameters['name'].append(f'<name>{name}</name>')
                 parameters['value'].append(parameter.raw_value)
+                parameters['unit'].append(f'<unit>{parameter.unit:~P}</unit>')
                 parameters['error'].append(parameter.error) if parameter.error else parameters['error'].append('')
-                parameters['unit'].append(f'{parameter.unit:~P}')
                 parameters['min'].append(parameter.min)
                 parameters['max'].append(parameter.max)
                 parameters['vary'].append(parameter.free) if parameter.free else parameters['vary'].append('')
         return parameters
 
     def _free_parameters(self):
-        parameters = {'name': [], 'value': [], 'error': [], 'unit': []}
+        parameters = {'name': [], 'value': [], 'unit': [], 'error': []}
         for parameter in self.get_fit_parameters():
             name = self.get_full_parameter_name(parameter.unique_name, parameter.display_name, parameter.url)
-            parameters['name'].append(name)
+            parameters['name'].append(f'<name>{name}</name>')
             parameters['value'].append(parameter.raw_value)
+            parameters['unit'].append(f'<unit>{parameter.unit:~P}</unit>')
             parameters['error'].append(parameter.error)
-            parameters['unit'].append(f'{parameter.unit:~P}')
         return parameters
 
     def _show_parameters(self, parameters):
@@ -970,11 +971,19 @@ class DiffractionJob(JobBase):
             df = pd.DataFrame(parameters)
             df.index += 1
             if self.is_notebook():
-                display(df.
-                        style.  # apply styles from below
-                        set_table_styles([dict(selector='th', props=[('text-align', 'left')])]).  # align header to left
-                        set_properties(subset=['name'], **{'text-align': 'left'}).  # align column 'name' to left
-                        format(precision=5))  # set precision
+                # convert the DataFrame to HTML
+                html = df.to_html(escape=False)
+                # align the header of the column 'name' to the left
+                html = html.replace('<th>name', '<th style="text-align: left;">name')
+                # remove the header of the column 'unit'
+                html = html.replace('<th>unit', '<th>')
+                # align the cells in the column 'name' to the left
+                html = html.replace('<td><name>', '<td style="text-align: left;">')
+                html = html.replace('</name></td>', '</td>')
+                # align the cells in the column 'unit' to the left and remove the left padding
+                html = html.replace('<td><unit>', '<td style="text-align: left; padding-left: 0px">')
+                html = html.replace('</unit></td>', '</td>')
+                display(HTML(html))
             else:
                 print(df)
         else:

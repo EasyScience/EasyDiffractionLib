@@ -42,14 +42,15 @@ def parameters_from_cif_block(block) -> dict:
     if value is not None:
         parameters['resolution_u'] = {}
         parameters['resolution_u']['value'], parameters['resolution_u']['error'] = parse_with_error(value)
+
     value = block.find_value("_pd_instr_resolution_v") or block.find_value("_pd_instr.resolution_v")
     if value is not None:
         parameters['resolution_v'] = {}
         parameters['resolution_v']['value'], parameters['resolution_v']['error'] = parse_with_error(value)
     value = block.find_value("_pd_instr_resolution_w") or block.find_value("_pd_instr.resolution_w")
     if value is not None:
-        parameters['resolution_z'] = {}
-        parameters['resolution_z']['value'], parameters['resolution_z']['error'] = parse_with_error(value)
+        parameters['resolution_w'] = {}
+        parameters['resolution_w']['value'], parameters['resolution_w']['error'] = parse_with_error(value)
     value = block.find_value("_pd_instr_resolution_x") or block.find_value("_pd_instr.resolution_x")
     if value is not None:
         parameters['resolution_x'] = {}

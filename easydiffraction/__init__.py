@@ -3,7 +3,6 @@
 # © 2021-2024 Contributors to the EasyDiffraction project <https://github.com/easyscience/EasyDiffraction
 
 import pooch
-
 from easycrystallography.Components.Lattice import Lattice as Lattice
 from easycrystallography.Components.SpaceGroup import SpaceGroup as SpaceGroup
 

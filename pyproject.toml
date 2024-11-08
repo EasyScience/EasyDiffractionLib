@@ -24,6 +24,7 @@ dependencies = [
     'cryspy',
     'easyscience',
     'easycrystallography',
+    'pooch',
 ]
 
 [project.optional-dependencies]

@@ -12,4 +12,4 @@ from .components.site import Site as Site
 from .io.download import download_from_repository
 from .Job import DiffractionJob as Job
 
-__all__ = ['Job']
+__all__ = ['Job', 'download_from_repository']

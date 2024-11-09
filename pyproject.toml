@@ -2,7 +2,7 @@
 
 [project]
 name = 'easydiffraction'
-version = '0.1.4'
+version = '0.1.5'
 description = 'Making diffraction data analysis and modelling easy'
 authors = [{name = 'EasyDiffractionLib contributors'}]
 readme = 'README.md'
@@ -21,10 +21,10 @@ classifiers = [
 ]
 requires-python = '>=3.9,<3.13'
 dependencies = [
-    'cryspy',
+    'cryspy',  # for calculations of diffraction patterns
+    'pooch',  # for data fetching
     'easyscience',
     'easycrystallography',
-    'pooch',
 ]
 
 [project.optional-dependencies]
@@ -36,7 +36,6 @@ dev = [
     'ruff',  # for linting
     'nbmake',  # for building notebooks
     'nbqa',  # for linting notebooks
-    'pooch',  # for data fetching
     'jinja2',  # for templating
 ]
 charts = [

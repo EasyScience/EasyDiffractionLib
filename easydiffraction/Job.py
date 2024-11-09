@@ -632,7 +632,7 @@ class DiffractionJob(JobBase):
         phase = self.phases[id]
         cif = phase.cif
 
-        structure_view = py3Dmol.view(linked=False)
+        structure_view = py3Dmol.view(width=540, height=480, linked=False)
         structure_view.addModel(cif, 'cif')
         structure_view.setStyle({'sphere': {'colorscheme': 'Jmol', 'scale': .2},
                                  'stick': {'colorscheme': 'Jmol', 'radius': 0.1}})
@@ -640,8 +640,8 @@ class DiffractionJob(JobBase):
             structure_view.setBackgroundColor('#111')
         structure_view.addUnitCell()
         structure_view.replicateUnitCell(2, 2, 2)
-        structure_view.zoomTo()
-        structure_view.show()
+        structure_view.zoomTo()  # To zoom in to the center of the structure
+        structure_view.show()  # To display the contents of the view object on Jupyter notebook.
 
     def print_data(self):
         '''

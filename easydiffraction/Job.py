@@ -728,6 +728,58 @@ class DiffractionJob(JobBase):
 
         fig.show()
 
+    def show_simulation_chart(self, show_legend=True):
+        '''
+        Show the simulation chart.
+        '''
+        if importlib.util.find_spec("plotly") is None:
+            print("Warning: Plotly not installed. Try `pip install plotly`.")
+            return
+
+        if self.type.is_pd and self.type.is_cwl:
+            x_axis_title = '2θ (degree)'
+        elif self.type.is_pd and self.type.is_tof:
+            x_axis_title = 'TOF (µs)'
+        else:
+            x_axis_title = ''
+
+        x = np.arange(self.instrument.twotheta_range_min.raw_value,
+                      self.instrument.twotheta_range_max.raw_value + self.instrument.twotheta_range_inc.raw_value,
+                      self.instrument.twotheta_range_inc.raw_value)
+        y_calc = self.calculate_profile(x)
+
+        main_y_range = y_calc.max() - y_calc.min()
+        main_y_min = y_calc.min() - main_y_range / 10
+        main_y_max = y_calc.max() + main_y_range / 10
+
+        trace_calc = go.Scatter(
+            x=x,
+            y=y_calc,
+            line=dict(color='rgb(214, 39, 40)'),
+            mode='lines',
+            name='Total calculated (Icalc)'
+        )
+
+        data = [trace_calc]
+
+        layout = go.Layout(
+            autosize=True,
+            margin=dict(autoexpand=True,
+                        r=30, t=30, b=45),
+            legend=dict(yanchor="top", y=1.0,
+                        xanchor="right", x=1.0),
+            xaxis=dict(title_text=x_axis_title),
+            yaxis=dict(title_text='Icalc', range=[main_y_min, main_y_max]),
+        )
+
+        fig = go.Figure(data=data, layout=layout)
+
+        fig.update_xaxes(showline=True, mirror=True, zeroline=False)
+        fig.update_yaxes(showline=True, mirror=True, zeroline=False)
+        fig.update_layout(showlegend=show_legend)
+
+        fig.show()
+
     def show_analysis_chart(self, show_legend=True):
         '''
         Show the analysis chart.

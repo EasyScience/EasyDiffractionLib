@@ -738,14 +738,18 @@ class DiffractionJob(JobBase):
 
         if self.type.is_pd and self.type.is_cwl:
             x_axis_title = '2θ (degree)'
+            x = np.arange(self.instrument.twotheta_range_min.raw_value,
+                          self.instrument.twotheta_range_max.raw_value + self.instrument.twotheta_range_inc.raw_value,
+                          self.instrument.twotheta_range_inc.raw_value)
         elif self.type.is_pd and self.type.is_tof:
             x_axis_title = 'TOF (µs)'
+            x = np.arange(self.instrument.tof_range_min.raw_value,
+                          self.instrument.tof_range_max.raw_value + self.instrument.tof_range_inc.raw_value,
+                          self.instrument.tof_range_inc.raw_value)
         else:
-            x_axis_title = ''
+            print(f"Warning: Simulation chart not available for this type of job '{self.type}'")
+            print("Supported types: 'pd-cwl' and 'pd-tof'")
 
-        x = np.arange(self.instrument.twotheta_range_min.raw_value,
-                      self.instrument.twotheta_range_max.raw_value + self.instrument.twotheta_range_inc.raw_value,
-                      self.instrument.twotheta_range_inc.raw_value)
         y_calc = self.calculate_profile(x)
 
         main_y_range = y_calc.max() - y_calc.min()

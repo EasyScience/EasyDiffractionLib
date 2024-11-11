@@ -266,6 +266,27 @@ class Instrument1DCWParameters(BaseObj):
             "value": 0.1,
             "fixed": True,
             "enabled": False,
+        },
+        "tof_range_min": {
+            "name": "tof_range_min",
+            "url": "https://docs.easydiffraction.org/lib/project/dictionaries/_pd_meas/",
+            "value": 10000.0,
+            "fixed": True,
+            "enabled": False,
+        },
+        "tof_range_max": {
+            "name": "tof_range_max",
+            "url": "https://docs.easydiffraction.org/lib/project/dictionaries/_pd_meas/",
+            "value": 100000.0,
+            "fixed": True,
+            "enabled": False,
+        },
+        "tof_range_inc": {
+            "name": "tof_range_inc",
+            "url": "https://docs.easydiffraction.org/lib/project/dictionaries/_pd_meas/",
+            "value": 5.0,
+            "fixed": True,
+            "enabled": False,
         }
     }
 
@@ -282,6 +303,9 @@ class Instrument1DCWParameters(BaseObj):
     twotheta_range_min: ClassVar[Descriptor]
     twotheta_range_max: ClassVar[Descriptor]
     twotheta_range_inc: ClassVar[Descriptor]
+    tof_range_min: ClassVar[Descriptor]
+    tof_range_max: ClassVar[Descriptor]
+    tof_range_inc: ClassVar[Descriptor]
 
     def __init__(
         self,
@@ -298,6 +322,9 @@ class Instrument1DCWParameters(BaseObj):
         twotheta_range_min: Optional[Union[Descriptor, float]] = None,
         twotheta_range_max: Optional[Union[Descriptor, float]] = None,
         twotheta_range_inc: Optional[Union[Descriptor, float]] = None,
+        tof_range_min: Optional[Union[Descriptor, float]] = None,
+        tof_range_max: Optional[Union[Descriptor, float]] = None,
+        tof_range_inc: Optional[Union[Descriptor, float]] = None,
         interface: Optional[iF] = None,
     ):
         super(Instrument1DCWParameters, self).__init__(
@@ -333,6 +360,12 @@ class Instrument1DCWParameters(BaseObj):
             self.twotheta_range_max = twotheta_range_max
         if twotheta_range_inc is not None:
             self.twotheta_range_inc = twotheta_range_inc
+        if tof_range_min is not None:
+            self.tof_range_min = tof_range_min
+        if tof_range_max is not None:
+            self.tof_range_max = tof_range_max
+        if tof_range_inc is not None:
+            self.tof_range_inc = tof_range_inc
         self.name = self._name
         self.interface = interface
 

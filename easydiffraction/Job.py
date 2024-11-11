@@ -140,6 +140,7 @@ class DiffractionJob(JobBase):
         self.sample = sample # container for phases
         self.interface = self.sample._interface
         self.analysis = analysis
+        self.update_job_type()
         # necessary for the fitter
         # TODO: remove the dependency on kwargs
         self._kwargs = {}
@@ -329,7 +330,13 @@ class DiffractionJob(JobBase):
         self.type.is_tof = self.experiment.is_tof
         self.type.is_sc = self.experiment.is_single_crystal
         self.type.is_2d = self.experiment.is_2d
+        # radiation
+        if self.type.is_xray:
+            self.pattern.radiation = "x-ray"
+        elif self.type.is_neut:
+            self.pattern.radiation = "neutron"
 
+        # axis
         if self.type.is_tof:
             self._x_axis_name = "time"
             if self.pattern is not None:

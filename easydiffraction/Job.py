@@ -585,17 +585,17 @@ class DiffractionJob(JobBase):
         # result.success
         # result.reduced_chi
         if result is None:
-            raise ValueError("Fitting failed")
+            raise ValueError("Fitting 😩 failed")
 
         if result.success:
-            print("Fitting successful")
-            print(f"Duration: {end - start:.2f} s")
-            print(f"Reduced chi: {result.reduced_chi:.2f}")
+            print("Fitting result")
+            print("Status: 🥳 Success")
+            print(f"Duration: ⌛ {end - start:.2f} s")
+            print(f"Reduced χ²: 👍 {result.reduced_chi:.2f}")
         else:
-            print("Fitting failed.")
+            print("Fitting 😩 failed")
 
         self.fitting_results = result
-
 
     ###### UTILITY METHODS ######
     def add_datastore(self, datastore: xr.Dataset):

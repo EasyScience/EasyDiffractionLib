@@ -331,11 +331,11 @@ class DiffractionJob(JobBase):
         self.type.is_sc = self.experiment.is_single_crystal
         self.type.is_2d = self.experiment.is_2d
         # radiation
-        if self.pattern is not None:
+        if self.sample.pattern is not None:
             if self.type.is_xray:
-                self.pattern.radiation = "x-ray"
+                self.sample.pattern.radiation = "x-ray"
             elif self.type.is_neut:
-                self.pattern.radiation = "neutron"
+                self.sample.pattern.radiation = "neutron"
 
         # axis
         if self.type.is_tof:

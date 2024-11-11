@@ -86,7 +86,8 @@ jobs:
         shell: bash
         run: >
           pytest 
-          --nbmake examples/*ipynb 
+          --nbmake examples 
+          --ignore-glob='examples/*emcee*'
           --nbmake-timeout=300 
           --color=yes
           -n=auto

@@ -4,7 +4,7 @@
 name = 'easydiffraction'
 version = '0.1.5'
 description = 'Making diffraction data analysis and modelling easy'
-authors = [{name = 'EasyDiffractionLib contributors'}]
+authors = [{ name = 'EasyDiffraction contributors', email = 'support@easydiffraction.org' }]
 readme = 'README.md'
 license = { file = 'LICENSE' }
 classifiers = [
@@ -23,7 +23,7 @@ requires-python = '>=3.9,<3.13'
 dependencies = [
     'cryspy',  # for calculations of diffraction patterns
     'pooch',  # for data fetching
-    "easyscience @ git+https://github.com/EasyScience/EasyScience.git@more-examples",
+    'easyscience @ git+https://github.com/EasyScience/EasyScience.git@more-examples',
     'easycrystallography',
 ]
 

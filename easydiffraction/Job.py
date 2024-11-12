@@ -585,15 +585,26 @@ class DiffractionJob(JobBase):
         # result.success
         # result.reduced_chi
         if result is None:
-            raise ValueError("Fitting 😩 failed")
+            raise ValueError("Fitting failed")
 
+        # Print fitting result. If in a notebook, use emojis.
+        success_msg = "Success"
+        failure_msg = "Failure"
+        duration_msg = f"{end - start:.2f} s"
+        if self.is_notebook():
+            success_msg = f'🥳 {success_msg}'
+            failure_msg = f'😩 {failure_msg}'
+            duration_msg = f'⌛ {duration_msg}'
+        print("Fitting result")
         if result.success:
-            print("Fitting result")
-            print("Status: 🥳 Success")
-            print(f"Duration: ⌛ {end - start:.2f} s")
-            print(f"Reduced χ²: 👍 {result.reduced_chi:.2f}")
+            reduced_chi_msg = f"{result.reduced_chi:.2f}"
+            if self.is_notebook():
+                reduced_chi_msg = f'👍 {reduced_chi_msg}'
+            print(f'Status: {success_msg}')
+            print(f'Duration: {duration_msg}')
+            print(f'Reduced χ²: {reduced_chi_msg}')
         else:
-            print("Fitting 😩 failed")
+            print(f'Status: {failure_msg}')
 
         self.fitting_results = result
 

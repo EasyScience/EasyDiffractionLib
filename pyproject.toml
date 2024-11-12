@@ -23,7 +23,7 @@ requires-python = '>=3.9,<3.13'
 dependencies = [
     'cryspy',  # for calculations of diffraction patterns
     'pooch',  # for data fetching
-    'easyscience @ git+https://github.com/EasyScience/EasyScience.git@master',
+    'easyscience',
     'easycrystallography',
 ]
 

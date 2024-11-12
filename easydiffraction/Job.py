@@ -331,7 +331,7 @@ class DiffractionJob(JobBase):
         self.type.is_sc = self.experiment.is_single_crystal
         self.type.is_2d = self.experiment.is_2d
         # radiation
-        if hasattr(self.sample, 'sample') and self.sample.pattern is not None:
+        if hasattr(self.sample, 'pattern') and self.sample.pattern is not None:
             if self.type.is_xray:
                 self.sample.pattern.radiation = "x-ray"
             elif self.type.is_neut:

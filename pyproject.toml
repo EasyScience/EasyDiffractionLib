@@ -2,7 +2,7 @@
 
 [project]
 name = 'easydiffraction'
-version = '0.1.5'
+version = '0.1.6'
 description = 'Making diffraction data analysis and modelling easy'
 authors = [{ name = 'EasyDiffraction contributors', email = 'support@easydiffraction.org' }]
 readme = 'README.md'

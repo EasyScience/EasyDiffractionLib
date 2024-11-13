@@ -5,7 +5,7 @@
 import pooch
 
 
-def download_from_repository(fname : str, branch : str = 'more-examples', destination : str = 'data'):
+def download_from_repository(fname : str, branch : str = 'master', destination : str = 'data'):
     '''
     This function downloads a file from the EasyDiffraction repository on GitHub.
     :param fname: The name of the file to download

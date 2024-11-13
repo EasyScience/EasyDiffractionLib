@@ -9,6 +9,7 @@ from .components.phase import Phase as Phase
 from .components.phase import Phases as Phases
 from .components.site import Atoms as Atoms
 from .components.site import Site as Site
+from .io.download import download_from_repository
 from .Job import DiffractionJob as Job
 
-__all__ = ['Job']
+__all__ = ['Job', 'download_from_repository']

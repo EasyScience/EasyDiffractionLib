@@ -140,6 +140,7 @@ class DiffractionJob(JobBase):
         self.sample = sample # container for phases
         self.interface = self.sample._interface
         self.analysis = analysis
+        self.update_job_type()
         # necessary for the fitter
         # TODO: remove the dependency on kwargs
         self._kwargs = {}
@@ -329,7 +330,14 @@ class DiffractionJob(JobBase):
         self.type.is_tof = self.experiment.is_tof
         self.type.is_sc = self.experiment.is_single_crystal
         self.type.is_2d = self.experiment.is_2d
+        # radiation
+        if hasattr(self.sample, 'pattern') and self.sample.pattern is not None:
+            if self.type.is_xray:
+                self.sample.pattern.radiation = "x-ray"
+            elif self.type.is_neut:
+                self.sample.pattern.radiation = "neutron"
 
+        # axis
         if self.type.is_tof:
             self._x_axis_name = "time"
             if self.pattern is not None:
@@ -587,15 +595,26 @@ class DiffractionJob(JobBase):
         if result is None:
             raise ValueError("Fitting failed")
 
+        # Print fitting result. If in a notebook, use emojis.
+        success_msg = "Success"
+        failure_msg = "Failure"
+        duration_msg = f"{end - start:.2f} s"
+        if self.is_notebook():
+            success_msg = f'🥳 {success_msg}'
+            failure_msg = f'😩 {failure_msg}'
+            duration_msg = f'⌛ {duration_msg}'
+        print("Fitting result")
         if result.success:
-            print("Fitting successful")
-            print(f"Duration: {end - start:.2f} s")
-            print(f"Reduced chi: {result.reduced_chi:.2f}")
+            reduced_chi_msg = f"{result.reduced_chi:.2f}"
+            if self.is_notebook():
+                reduced_chi_msg = f'👍 {reduced_chi_msg}'
+            print(f'Status: {success_msg}')
+            print(f'Duration: {duration_msg}')
+            print(f'Reduced χ²: {reduced_chi_msg}')
         else:
-            print("Fitting failed.")
+            print(f'Status: {failure_msg}')
 
         self.fitting_results = result
-
 
     ###### UTILITY METHODS ######
     def add_datastore(self, datastore: xr.Dataset):
@@ -632,7 +651,7 @@ class DiffractionJob(JobBase):
         phase = self.phases[id]
         cif = phase.cif
 
-        structure_view = py3Dmol.view(linked=False)
+        structure_view = py3Dmol.view(width=540, height=480, linked=False)
         structure_view.addModel(cif, 'cif')
         structure_view.setStyle({'sphere': {'colorscheme': 'Jmol', 'scale': .2},
                                  'stick': {'colorscheme': 'Jmol', 'radius': 0.1}})
@@ -640,8 +659,8 @@ class DiffractionJob(JobBase):
             structure_view.setBackgroundColor('#111')
         structure_view.addUnitCell()
         structure_view.replicateUnitCell(2, 2, 2)
-        structure_view.zoomTo()
-        structure_view.show()
+        structure_view.zoomTo()  # To zoom in to the center of the structure
+        structure_view.show()  # To display the contents of the view object on Jupyter notebook.
 
     def print_data(self):
         '''
@@ -718,6 +737,62 @@ class DiffractionJob(JobBase):
                         xanchor="right", x=1.0),
             xaxis=dict(title_text=x_axis_title),
             yaxis=dict(title_text='Imeas, Ibkg', range=[main_y_min, main_y_max]),
+        )
+
+        fig = go.Figure(data=data, layout=layout)
+
+        fig.update_xaxes(showline=True, mirror=True, zeroline=False)
+        fig.update_yaxes(showline=True, mirror=True, zeroline=False)
+        fig.update_layout(showlegend=show_legend)
+
+        fig.show()
+
+    def show_simulation_chart(self, show_legend=True):
+        '''
+        Show the simulation chart.
+        '''
+        if importlib.util.find_spec("plotly") is None:
+            print("Warning: Plotly not installed. Try `pip install plotly`.")
+            return
+
+        if self.type.is_pd and self.type.is_cwl:
+            x_axis_title = '2θ (degree)'
+            x = np.arange(self.instrument.twotheta_range_min.raw_value,
+                          self.instrument.twotheta_range_max.raw_value + self.instrument.twotheta_range_inc.raw_value,
+                          self.instrument.twotheta_range_inc.raw_value)
+        elif self.type.is_pd and self.type.is_tof:
+            x_axis_title = 'TOF (µs)'
+            x = np.arange(self.instrument.tof_range_min.raw_value,
+                          self.instrument.tof_range_max.raw_value + self.instrument.tof_range_inc.raw_value,
+                          self.instrument.tof_range_inc.raw_value)
+        else:
+            print(f"Warning: Simulation chart not available for this type of job '{self.type}'")
+            print("Supported types: 'pd-cwl' and 'pd-tof'")
+
+        y_calc = self.calculate_profile(x)
+
+        main_y_range = y_calc.max() - y_calc.min()
+        main_y_min = y_calc.min() - main_y_range / 10
+        main_y_max = y_calc.max() + main_y_range / 10
+
+        trace_calc = go.Scatter(
+            x=x,
+            y=y_calc,
+            line=dict(color='rgb(214, 39, 40)'),
+            mode='lines',
+            name='Total calculated (Icalc)'
+        )
+
+        data = [trace_calc]
+
+        layout = go.Layout(
+            autosize=True,
+            margin=dict(autoexpand=True,
+                        r=30, t=30, b=45),
+            legend=dict(yanchor="top", y=1.0,
+                        xanchor="right", x=1.0),
+            xaxis=dict(title_text=x_axis_title),
+            yaxis=dict(title_text='Icalc', range=[main_y_min, main_y_max]),
         )
 
         fig = go.Figure(data=data, layout=layout)

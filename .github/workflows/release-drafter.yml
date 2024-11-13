@@ -16,3 +16,21 @@ jobs:
       - uses: release-drafter/release-drafter@v6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check-out repository
+        uses: actions/checkout@v4
+
+      # Zips the examples directory
+      - name: Zip examples directory
+        run: zip -r examples.zip examples/
+
+      # Uploads the zipped examples directory to the release draft
+      - name: Upload zipped examples directory
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the create_release step above
+          asset_path: ./examples.zip
+          asset_name: examples.zip
+          asset_content_type: application/zip

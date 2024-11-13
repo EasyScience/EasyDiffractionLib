@@ -14,6 +14,7 @@ from typing import Union
 
 from easyscience.Datasets.xarray import xr
 from easyscience.Objects.ObjectClasses import BaseObj
+from easyscience.Objects.ObjectClasses import Descriptor
 from easyscience.Objects.ObjectClasses import Parameter
 
 from easydiffraction.components.polarization import PolarizedBeam
@@ -244,6 +245,48 @@ class Instrument1DCWParameters(BaseObj):
             "url": "https://docs.easydiffraction.org/lib/project/dictionaries/_pd_instr/",
             "value": 0.0,
             "fixed": True,
+        },
+        "twotheta_range_min": {
+            "name": "twotheta_range_min",
+            "url": "https://docs.easydiffraction.org/lib/project/dictionaries/_pd_meas/",
+            "value": 10.0,
+            "fixed": True,
+            "enabled": False,
+        },
+        "twotheta_range_max": {
+            "name": "twotheta_range_max",
+            "url": "https://docs.easydiffraction.org/lib/project/dictionaries/_pd_meas/",
+            "value": 170.0,
+            "fixed": True,
+            "enabled": False,
+        },
+        "twotheta_range_inc": {
+            "name": "twotheta_range_inc",
+            "url": "https://docs.easydiffraction.org/lib/project/dictionaries/_pd_meas/",
+            "value": 0.1,
+            "fixed": True,
+            "enabled": False,
+        },
+        "tof_range_min": {
+            "name": "tof_range_min",
+            "url": "https://docs.easydiffraction.org/lib/project/dictionaries/_pd_meas/",
+            "value": 10000.0,
+            "fixed": True,
+            "enabled": False,
+        },
+        "tof_range_max": {
+            "name": "tof_range_max",
+            "url": "https://docs.easydiffraction.org/lib/project/dictionaries/_pd_meas/",
+            "value": 100000.0,
+            "fixed": True,
+            "enabled": False,
+        },
+        "tof_range_inc": {
+            "name": "tof_range_inc",
+            "url": "https://docs.easydiffraction.org/lib/project/dictionaries/_pd_meas/",
+            "value": 5.0,
+            "fixed": True,
+            "enabled": False,
         }
     }
 
@@ -257,6 +300,12 @@ class Instrument1DCWParameters(BaseObj):
     reflex_asymmetry_p2: ClassVar[Parameter]
     reflex_asymmetry_p3: ClassVar[Parameter]
     reflex_asymmetry_p4: ClassVar[Parameter]
+    twotheta_range_min: ClassVar[Descriptor]
+    twotheta_range_max: ClassVar[Descriptor]
+    twotheta_range_inc: ClassVar[Descriptor]
+    tof_range_min: ClassVar[Descriptor]
+    tof_range_max: ClassVar[Descriptor]
+    tof_range_inc: ClassVar[Descriptor]
 
     def __init__(
         self,
@@ -270,6 +319,12 @@ class Instrument1DCWParameters(BaseObj):
         reflex_asymmetry_p2: Optional[Union[Parameter, float]] = None,
         reflex_asymmetry_p3: Optional[Union[Parameter, float]] = None,
         reflex_asymmetry_p4: Optional[Union[Parameter, float]] = None,
+        twotheta_range_min: Optional[Union[Descriptor, float]] = None,
+        twotheta_range_max: Optional[Union[Descriptor, float]] = None,
+        twotheta_range_inc: Optional[Union[Descriptor, float]] = None,
+        tof_range_min: Optional[Union[Descriptor, float]] = None,
+        tof_range_max: Optional[Union[Descriptor, float]] = None,
+        tof_range_inc: Optional[Union[Descriptor, float]] = None,
         interface: Optional[iF] = None,
     ):
         super(Instrument1DCWParameters, self).__init__(
@@ -299,6 +354,18 @@ class Instrument1DCWParameters(BaseObj):
             self.reflex_asymmetry_p3 = reflex_asymmetry_p3
         if reflex_asymmetry_p4 is not None:
             self.reflex_asymmetry_p4 = reflex_asymmetry_p4
+        if twotheta_range_min is not None:
+            self.twotheta_range_min = twotheta_range_min
+        if twotheta_range_max is not None:
+            self.twotheta_range_max = twotheta_range_max
+        if twotheta_range_inc is not None:
+            self.twotheta_range_inc = twotheta_range_inc
+        if tof_range_min is not None:
+            self.tof_range_min = tof_range_min
+        if tof_range_max is not None:
+            self.tof_range_max = tof_range_max
+        if tof_range_inc is not None:
+            self.tof_range_inc = tof_range_inc
         self.name = self._name
         self.interface = interface
 

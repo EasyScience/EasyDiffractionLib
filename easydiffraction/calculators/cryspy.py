@@ -116,6 +116,8 @@ class Cryspy:
         self._first_experiment_name = ""
         self.exp_obj = None
         self.chisq = None
+        self.hm_symbol = ""
+        self.it_code = ""
         self.excluded_points = []
         self._cryspyData = Data() # {phase_name: CryspyPhase, exp_name: CryspyExperiment}
         self._cryspyObject = self._cryspyData._cryspyObj
@@ -218,8 +220,25 @@ class Cryspy:
         crystal.cell = cell
 
     def createSpaceGroup(
-        self, key: str = "spacegroup", name_hm_alt: str = "P 1"
+        self, key: str = "spacegroup", name_hm_alt: str = "", it_code: Optional[str] = ""
     ) -> str:
+        if not name_hm_alt and not self.hm_symbol:
+            self.hm_symbol = "P 1"
+        if not name_hm_alt:
+            name_hm_alt = self.hm_symbol
+        else:
+            self.hm_symbol = name_hm_alt
+
+        if not it_code and not self.it_code:
+            self.it_code = "1"
+        if not it_code:
+            it_code = self.it_code
+        else:
+            self.it_code = it_code
+
+        if it_code:
+            name_hm_alt += ":" + it_code
+
         sg_split = name_hm_alt.split(":")
         opts = {"name_hm_alt": sg_split[0]}
         if len(sg_split) > 1:

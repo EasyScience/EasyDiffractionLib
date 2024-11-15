@@ -126,8 +126,10 @@ class CryspyBase(Neutron_type, metaclass=ABCMeta):
             )
         # Interface with Spacegroup
         elif issubclass(t_, SpaceGroup):
-            s_key = self.calculator.createSpaceGroup(key=model_key, name_hm_alt="P 1")
-            keys = {"hermann_mauguin": "name_hm_alt"}
+            name = model.name_hm_alt.raw_value
+            s_key = self.calculator.createSpaceGroup(key=model_key, name_hm_alt=name)
+            keys = {"hermann_mauguin": "name_hm_alt", "coordinate-code": "it_code"}
+
             r_list.append(
                 ItemContainer(
                     s_key,

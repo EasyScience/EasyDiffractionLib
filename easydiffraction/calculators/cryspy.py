@@ -281,6 +281,13 @@ class Cryspy:
                     break
         sg_key = self.createSpaceGroup(key=sg_key, **kwargs)
         self.assignSpaceGroup_toCrystal(sg_key, previous_key)
+        # here, the CIF has the new group, so reload
+        if not self.current_crystal:
+            return
+        if 'it_code' in kwargs:
+            cif = self.cif_str
+            self.updateModelCif(cif)
+        pass
 
     def createAtom(self, atom_name: str, **kwargs) -> str:
         atom = cryspy.AtomSite(**kwargs)

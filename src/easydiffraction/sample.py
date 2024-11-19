@@ -15,8 +15,8 @@ from easyscience.Objects.ObjectClasses import BaseObj
 from easydiffraction import Phase
 from easydiffraction import Phases
 from easydiffraction.calculators.wrapper_factory import WrapperFactory
-from easydiffraction.Interfaces.types import Neutron
-from easydiffraction.Interfaces.types import Powder
+from easydiffraction.calculators.wrapper_types import Neutron
+from easydiffraction.calculators.wrapper_types import Powder
 from easydiffraction.Profiles.P1D import Instrument1DCWParameters
 from easydiffraction.Profiles.P1D import Instrument1DTOFParameters
 from easydiffraction.Profiles.P1D import PolPowder1DParameters as Pattern1D_Pol
@@ -79,19 +79,19 @@ class Sample(BaseObj):
         self._update_bases(Neutron)
 
         if getattr(pattern, "__old_class__", pattern.__class__) == Pattern1D:
-            from easydiffraction.Interfaces.types import UPol
+            from easydiffraction.calculators.wrapper_types import UPol
             self._update_bases(UPol)
 
         elif getattr(pattern, "__old_class__", pattern.__class__) == Pattern1D_Pol:
-            from easydiffraction.Interfaces.types import Pol
+            from easydiffraction.calculators.wrapper_types import Pol
             self._update_bases(Pol)
 
         if isinstance(parameters, Instrument1DCWParameters):
-            from easydiffraction.Interfaces.types import CW
+            from easydiffraction.calculators.wrapper_types import CW
             self._update_bases(CW)
 
         elif isinstance(parameters, Instrument1DTOFParameters):
-            from easydiffraction.Interfaces.types import TOF
+            from easydiffraction.calculators.wrapper_types import TOF
             self._update_bases(TOF)
 
         self.filename = os.path.join(tempfile.gettempdir(), "easydiffraction_temp.cif")
@@ -194,10 +194,10 @@ class Sample(BaseObj):
         if not isinstance(value, (Instrument1DCWParameters, Instrument1DTOFParameters)):
             raise ValueError
         if isinstance(value, Instrument1DTOFParameters):
-            from easydiffraction.Interfaces.types import TOF
+            from easydiffraction.calculators.wrapper_types import TOF
             self._update_bases(TOF)
         else:
-            from easydiffraction.Interfaces.types import CW
+            from easydiffraction.calculators.wrapper_types import CW
             self._update_bases(CW)
         self._parameters = value
         self._parameters.interface = self._interface

@@ -26,14 +26,14 @@ from easydiffraction import SpaceGroup
 from easydiffraction.calculators.cryspy.calculator import Cryspy as Cryspy_calc
 from easydiffraction.components.polarization import PolarizedBeam
 from easydiffraction.calculators.wrapper_base import WrapperBase
-from easydiffraction.Interfaces.types import CW as CW_type
-from easydiffraction.Interfaces.types import TOF as TOF_type
-from easydiffraction.Interfaces.types import Neutron as Neutron_type
-from easydiffraction.Interfaces.types import Pol as Pol_type
-from easydiffraction.Interfaces.types import Powder as Powder_type
-from easydiffraction.Interfaces.types import SingleCrystal as SingleCrystal_type
-from easydiffraction.Interfaces.types import UPol as UPol_type
-from easydiffraction.Interfaces.types import interfaceMixInMeta
+from easydiffraction.calculators.wrapper_types import CW as CW_type
+from easydiffraction.calculators.wrapper_types import TOF as TOF_type
+from easydiffraction.calculators.wrapper_types import Neutron as Neutron_type
+from easydiffraction.calculators.wrapper_types import Pol as Pol_type
+from easydiffraction.calculators.wrapper_types import Powder as Powder_type
+from easydiffraction.calculators.wrapper_types import SingleCrystal as SingleCrystal_type
+from easydiffraction.calculators.wrapper_types import UPol as UPol_type
+from easydiffraction.calculators.wrapper_types import interfaceMixInMeta
 from easydiffraction.Profiles.P1D import Instrument1DCWParameters
 from easydiffraction.Profiles.P1D import Instrument1DTOFParameters
 from easydiffraction.Profiles.P1D import Powder1DParameters

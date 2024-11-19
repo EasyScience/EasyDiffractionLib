@@ -11,7 +11,7 @@ import numpy as np
 from easyscience import global_object as borg
 
 
-class CFML:
+class Pycrysfml:
     def __init__(self, filename: str = None):
         self.filename = filename
         self.conditions = None

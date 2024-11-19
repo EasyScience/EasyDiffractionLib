@@ -7,16 +7,11 @@ try:
 except ImportError:
     print('Warning: CrysPy is not installed')
 
-# Temporarily disabling the CrysFML and GSASII interfaces
+# Temporarily disabling the PyCrysFML interface
 # try:
-#     from easydiffraction.Interfaces.CFML import CFML  # noqa: F401
+#     from easydiffraction.calculators.pycrysfml.wrapper import Pycrysfml  # noqa: F401
 # except ImportError:
 #     print('Warning: CrysFML is not installed')
-
-# try:
-#     from easydiffraction.Interfaces.GSASII import GSASII  # noqa: F401
-# except ImportError:
-#     print('Warning: GSAS-2 is not installed')
 
 try:
     from easydiffraction.Interfaces.pdffit2 import Pdffit2  # noqa: F401

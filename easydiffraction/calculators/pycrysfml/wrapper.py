@@ -14,13 +14,13 @@ from easydiffraction import Phase
 from easydiffraction import Phases
 from easydiffraction import Site
 from easydiffraction import SpaceGroup
-from easydiffraction.calculators.CFML import CFML as CFML_calc
+from easydiffraction.calculators.pycrysfml.calculator import Pycrysfml
 from easydiffraction.Interfaces.interfaceTemplate import InterfaceTemplate
 from easydiffraction.Profiles.P1D import Instrument1DCWParameters
 from easydiffraction.Profiles.P1D import Powder1DParameters
 
 
-class CFML(InterfaceTemplate):
+class PycrysfmlWrapper(InterfaceTemplate):
     """
     A simple FILE interface using CrysFML
     """
@@ -65,7 +65,7 @@ class CFML(InterfaceTemplate):
     name = "CrysFML"
 
     def __init__(self):
-        self.calculator = CFML_calc()
+        self.calculator = Pycrysfml()
         self._phase = None
         self._filename = None
 
@@ -83,7 +83,7 @@ class CFML(InterfaceTemplate):
             sample_type=sample_type,
             dimensionality=dimensionality,
             test_str=test_str,
-            FEATURES=CFML.feature_available,
+            FEATURES=Pycrysfml.feature_available,
         )
 
     def create(self, model):
@@ -93,7 +93,7 @@ class CFML(InterfaceTemplate):
         t_ = type(model)
         model_key = self.__identify(model)
         if issubclass(t_, Instrument1DCWParameters):
-            # These parameters are linked to the Resolution and Setup CFML objects. Note that we can set the job type!
+            # These parameters are linked to the Resolution and Setup Pycrysfml objects. Note that we can set the job type!
             self.calculator.createConditions(job_type="N")
             keys = self._instrument_link.copy()
             r_list.append(
@@ -105,7 +105,7 @@ class CFML(InterfaceTemplate):
                 )
             )
         elif issubclass(t_, Powder1DParameters):
-            # These parameters do not link directly to CFML objects.
+            # These parameters do not link directly to Pycrysfml objects.
             self.calculator.pattern = model
         elif issubclass(t_, Lattice):
             keys = self._crystal_link.copy()

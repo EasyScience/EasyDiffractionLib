@@ -3,7 +3,7 @@
 # © 2021-2024 Contributors to the EasyDiffraction project <https://github.com/easyscience/EasyDiffraction
 
 try:
-    from easydiffraction.Interfaces.cryspyV2 import CryspyBase  # noqa: F401
+    from easydiffraction.calculators.cryspy.wrapper import CryspyBase  # noqa: F401
 except ImportError:
     print('Warning: CrysPy is not installed')
 

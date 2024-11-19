@@ -658,7 +658,7 @@ class CryspyTOFPol(CryspyBase, TOF, Powder, POL):
 ##
 ## This is the main class which is called, implementing one of the above classes.
 ##
-class CryspyV2(InterfaceTemplate):
+class CryspyWrapper(InterfaceTemplate):
     name = "CrysPy"
 
     feature_available = {
@@ -688,7 +688,7 @@ class CryspyV2(InterfaceTemplate):
             dimensionality=dimensionality,
             polarization=polarization,
             test_str=test_str,
-            FEATURES=CryspyV2.feature_available,
+            FEATURES=CryspyWrapper.feature_available,
         )
 
     def create(self, model: B):

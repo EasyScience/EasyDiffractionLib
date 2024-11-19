@@ -21,10 +21,10 @@ classifiers = [
 ]
 requires-python = '>=3.9,<3.13'
 dependencies = [
-    'cryspy @ git+https://github.com/ikibalin/cryspy.git@no-bkg',  # for calculations of diffraction patterns
+    'cryspy',  # for calculations of diffraction patterns
     'pooch',  # for data fetching
-    'easyscience',
-    'easycrystallography',
+    'easyscience',  # the base library of the EasyScience framework
+    'easycrystallography',  # crystallography tools of the EasyScience framework
 ]
 
 [project.optional-dependencies]
@@ -39,10 +39,10 @@ dev = [
     'jinja2',  # for templating
 ]
 charts = [
-    'darkdetect',
-    'plotly',
-    'py3Dmol',
-    'pandas',
+    'darkdetect',  # for dark mode detection
+    'plotly',  # for interactive plots
+    'py3Dmol',  # for visualisation of crystal structures
+    'pandas',  # for displaying tables in juptyer notebooks
 ]
 
 [project.urls]
@@ -51,7 +51,7 @@ documentation = 'https://docs.easydiffraction.org/lib'
 source = 'https://github.com/EasyScience/EasyDiffractionLib'
 tracker = 'https://github.com/EasyScience/EasyDiffractionLib/issues'
 
-# Select the build system hatch -- Python project manager
+# Select the build system 'hatch' -- Python project manager
 # https://hatch.pypa.io/
 
 [build-system]
@@ -64,9 +64,9 @@ requires = ['hatchling']
 allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
-packages = ['easydiffraction']
+packages = ['src/easydiffraction']
 
-# Configuration for ruff -- Python linter and code formatter
+# Configuration for 'ruff' -- Python linter and code formatter
 # https://docs.astral.sh/ruff/rules/
 
 [tool.ruff]
@@ -91,20 +91,12 @@ force-single-line = true
 
 [tool.ruff.lint]
 select = [
-    # flake8 settings from existing CI setup
-    'E9', 'F63', 'F7', 'F82',
-    # pycodestyle
-    'E', 'W',
-    # Pyflakes
-    'F',
-    # pyupgrade
-    #'UP',
-    # flake8-bugbear
-    #'B',
-    # flake8-simplify
-    #'SIM',
-    # isort
-    'I',
-    # flake8-bandit
-    'S',
+    'E9', 'F63', 'F7', 'F82',  # flake8 settings from existing CI setup
+    'E', 'W',  # pycodestyle
+    'F',  # Pyflakes
+    #'UP',  # pyupgrade
+    #'B',  # flake8-bugbear
+    #'SIM',  # flake8-simplify
+    'I',  # isort
+    'S',  # flake8-bandit
 ]

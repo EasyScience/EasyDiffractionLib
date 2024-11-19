@@ -15,9 +15,9 @@ import numpy as np
 from cryspy.procedure_rhochi.rhochi_by_dictionary import rhochi_calc_chi_sq_by_dictionary
 from easyscience import global_object as borg
 
+from easydiffraction.calculators.cryspy.parser import CryspyParser
 from easydiffraction.calculators.cryspy.parser import cifV2ToV1
 from easydiffraction.calculators.cryspy.parser import cifV2ToV1_tof
-from easydiffraction.calculators.cryspy.parser import CryspyParser
 
 # from pathos import multiprocessing as mp
 

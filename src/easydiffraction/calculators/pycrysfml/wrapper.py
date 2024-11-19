@@ -83,7 +83,7 @@ class PycrysfmlWrapper(WrapperBase):
             sample_type=sample_type,
             dimensionality=dimensionality,
             test_str=test_str,
-            FEATURES=Pycrysfml.feature_available,
+            FEATURES=PycrysfmlWrapper.feature_available,
         )
 
     def create(self, model):

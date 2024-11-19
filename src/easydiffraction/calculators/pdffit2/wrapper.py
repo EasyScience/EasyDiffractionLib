@@ -98,7 +98,7 @@ class Pdffit2Wrapper(WrapperBase):
             dimensionality=dimensionality,
             polarization=polarization,
             test_str=test_str,
-            FEATURES=Pdffit2.feature_available,
+            FEATURES=Pdffit2Wrapper.feature_available,
         )
 
     def create(self, model) -> List[ItemContainer]:

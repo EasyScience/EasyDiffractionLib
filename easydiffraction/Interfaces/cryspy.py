@@ -15,7 +15,7 @@ from easydiffraction import Phase
 from easydiffraction import Phases
 from easydiffraction import Site
 from easydiffraction import SpaceGroup
-from easydiffraction.calculators.cryspy import Cryspy as Cryspy_calc
+from easydiffraction.calculators.cryspy.calculator import Cryspy as Cryspy_calc
 from easydiffraction.components.polarization import PolarizedBeam
 from easydiffraction.Interfaces.interfaceTemplate import InterfaceTemplate
 from easydiffraction.Profiles.P1D import Instrument1DCWParameters

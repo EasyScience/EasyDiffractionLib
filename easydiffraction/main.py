@@ -2,12 +2,12 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # © 2021-2024 Contributors to the EasyDiffraction project <https://github.com/easyscience/EasyDiffraction
 
-from easydiffraction.interface import InterfaceFactory
+from easydiffraction.calculators.wrapper_factory import WrapperFactory
 
 
 def main():
-    interface = InterfaceFactory()
-    print(f"Available interfaces: {interface.available_interfaces}")
+    interface = WrapperFactory()
+    print(f"Available calculators: {interface.available_interfaces}")
 
 if __name__ == '__main__':
     main()

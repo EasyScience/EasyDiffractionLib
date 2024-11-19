@@ -23,7 +23,7 @@ from easydiffraction import Phase
 from easydiffraction import Phases
 from easydiffraction.elements.Backgrounds.Point import BackgroundPoint
 from easydiffraction.elements.Backgrounds.Point import PointBackground
-from easydiffraction.interface import InterfaceFactory
+from easydiffraction.calculators.wrapper_factory import WrapperFactory
 from easydiffraction.Profiles.Analysis import Analysis
 from easydiffraction.Profiles.Container import DataContainer
 from easydiffraction.Profiles.Experiment import Experiment
@@ -89,7 +89,7 @@ class DiffractionJob(JobBase):
         )
         # The following assignment is necessary for proper binding
         if interface is None:
-            interface = InterfaceFactory()
+            interface = WrapperFactory()
         self.interface = interface
 
         # Generate the datastore for this job

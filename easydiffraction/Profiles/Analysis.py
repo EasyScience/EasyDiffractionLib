@@ -10,7 +10,7 @@ from easyscience.fitting.fitter import Fitter as CoreFitter
 from easyscience.fitting.minimizers.factory import AvailableMinimizers
 from easyscience.Objects.job.analysis import AnalysisBase as coreAnalysis
 
-from easydiffraction.interface import InterfaceFactory
+from easydiffraction.calculators.wrapper_factory import WrapperFactory
 
 
 class Analysis(coreAnalysis):
@@ -21,7 +21,7 @@ class Analysis(coreAnalysis):
         super(Analysis, self).__init__(name, *args, **kwargs)
         self.name = name
         if interface is None:
-            interface = InterfaceFactory()
+            interface = WrapperFactory()
         self.interface = interface
         self._fitter = CoreFitter(self, self.interface.fit_func)
 

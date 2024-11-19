@@ -14,7 +14,7 @@ from easyscience.Objects.ObjectClasses import BaseObj
 
 from easydiffraction import Phase
 from easydiffraction import Phases
-from easydiffraction.interface import InterfaceFactory
+from easydiffraction.calculators.wrapper_factory import WrapperFactory
 from easydiffraction.Interfaces.types import Neutron
 from easydiffraction.Interfaces.types import Powder
 from easydiffraction.Profiles.P1D import Instrument1DCWParameters
@@ -100,7 +100,7 @@ class Sample(BaseObj):
         if interface is not None:
             self.interface = interface
         else:
-            self.interface = InterfaceFactory()
+            self.interface = WrapperFactory()
 
     def add_phase_from_cif(self, cif_file):
         cif_string = ""

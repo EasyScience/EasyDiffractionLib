@@ -15,14 +15,14 @@ from easydiffraction import Phases
 from easydiffraction import Site
 from easydiffraction import SpaceGroup
 from easydiffraction.calculators.pdffit2.calculator import Pdffit2 as Pdffit2_calc
-from easydiffraction.Interfaces.interfaceTemplate import InterfaceTemplate
+from easydiffraction.calculators.wrapper_base import WrapperBase
 from easydiffraction.Profiles.P1D import PDFParameters
 from easydiffraction.Profiles.P1D import Powder1DParameters
 
 if TYPE_CHECKING:
     pass
 
-class Pdffit2Wrapper(InterfaceTemplate):
+class Pdffit2Wrapper(WrapperBase):
     """
     A simple interface using Pdffit2
     """
@@ -91,7 +91,7 @@ class Pdffit2Wrapper(InterfaceTemplate):
         polarization="unp",
         test_str=None,
     ):
-        return InterfaceTemplate.features(
+        return WrapperBase.features(
             radiation=radiation,
             exp_type=exp_type,
             sample_type=sample_type,

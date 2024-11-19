@@ -19,7 +19,7 @@ exp_type_strings = {
 }
 
 
-class InterfaceTemplate(ComponentSerializer, metaclass=ABCMeta):
+class WrapperBase(ComponentSerializer, metaclass=ABCMeta):
     """
     This class is a template and defines all properties that an interface should have.
     """
@@ -33,9 +33,9 @@ class InterfaceTemplate(ComponentSerializer, metaclass=ABCMeta):
 
         if FEATURES is None:
             raise AttributeError
-        feature_dict = InterfaceTemplate._feature_generator(radiation=radiation, exp_type=exp_type,
-                                                            sample_type=sample_type, dimensionality=dimensionality,
-                                                            polarization=polarization)
+        feature_dict = WrapperBase._feature_generator(radiation=radiation, exp_type=exp_type,
+                                                      sample_type=sample_type, dimensionality=dimensionality,
+                                                      polarization=polarization)
 
         for key in FEATURES.keys():
             feature_dict[key] = FEATURES[key]

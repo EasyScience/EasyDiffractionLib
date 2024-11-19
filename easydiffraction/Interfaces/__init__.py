@@ -19,4 +19,4 @@ except ImportError:
     pass
     #print('Warning: PdfFit2 is not installed')
 
-from easydiffraction.Interfaces.interfaceTemplate import InterfaceTemplate as InterfaceTemplate  # noqa: F401
+from easydiffraction.calculators.wrapper_base import WrapperBase  # noqa: F401

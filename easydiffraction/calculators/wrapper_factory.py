@@ -6,12 +6,12 @@ from typing import List
 
 from easyscience.Objects.Inferface import InterfaceFactoryTemplate
 
-from easydiffraction.Interfaces import InterfaceTemplate
+from easydiffraction.calculators.wrapper_base import WrapperBase
 
 
 class WrapperFactory(InterfaceFactoryTemplate):
     def __init__(self, *args, **kwargs):
-        super(WrapperFactory, self).__init__(InterfaceTemplate._interfaces, *args, **kwargs)
+        super(WrapperFactory, self).__init__(WrapperBase._interfaces, *args, **kwargs)
 
     def get_hkl(self, x_array=None, idx=None, phase_name=None, encoded_name=False) -> dict:
         return self().get_hkl(x_array, idx=idx, phase_name=phase_name, encoded_name=encoded_name)

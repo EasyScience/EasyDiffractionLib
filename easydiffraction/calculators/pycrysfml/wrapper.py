@@ -15,12 +15,12 @@ from easydiffraction import Phases
 from easydiffraction import Site
 from easydiffraction import SpaceGroup
 from easydiffraction.calculators.pycrysfml.calculator import Pycrysfml
-from easydiffraction.Interfaces.interfaceTemplate import InterfaceTemplate
+from easydiffraction.calculators.wrapper_base import WrapperBase
 from easydiffraction.Profiles.P1D import Instrument1DCWParameters
 from easydiffraction.Profiles.P1D import Powder1DParameters
 
 
-class PycrysfmlWrapper(InterfaceTemplate):
+class PycrysfmlWrapper(WrapperBase):
     """
     A simple FILE interface using CrysFML
     """
@@ -77,7 +77,7 @@ class PycrysfmlWrapper(InterfaceTemplate):
         dimensionality="1D",
         test_str=None,
     ):
-        return InterfaceTemplate.features(
+        return WrapperBase.features(
             radiation=radiation,
             exp_type=exp_type,
             sample_type=sample_type,

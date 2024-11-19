@@ -25,7 +25,7 @@ from easydiffraction import Site
 from easydiffraction import SpaceGroup
 from easydiffraction.calculators.cryspy.calculator import Cryspy as Cryspy_calc
 from easydiffraction.components.polarization import PolarizedBeam
-from easydiffraction.Interfaces.interfaceTemplate import InterfaceTemplate
+from easydiffraction.calculators.wrapper_base import WrapperBase
 from easydiffraction.Interfaces.types import CW as CW_type
 from easydiffraction.Interfaces.types import TOF as TOF_type
 from easydiffraction.Interfaces.types import Neutron as Neutron_type
@@ -658,7 +658,7 @@ class CryspyTOFPol(CryspyBase, TOF, Powder, POL):
 ##
 ## This is the main class which is called, implementing one of the above classes.
 ##
-class CryspyWrapper(InterfaceTemplate):
+class CryspyWrapper(WrapperBase):
     name = "CrysPy"
 
     feature_available = {
@@ -681,7 +681,7 @@ class CryspyWrapper(InterfaceTemplate):
         polarization="unp",
         test_str=None,
     ):
-        return InterfaceTemplate.features(
+        return WrapperBase.features(
             radiation=radiation,
             exp_type=exp_type,
             sample_type=sample_type,

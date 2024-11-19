@@ -17,14 +17,14 @@ from easydiffraction import Site
 from easydiffraction import SpaceGroup
 from easydiffraction.calculators.cryspy.calculator import Cryspy as Cryspy_calc
 from easydiffraction.components.polarization import PolarizedBeam
-from easydiffraction.Interfaces.interfaceTemplate import InterfaceTemplate
+from easydiffraction.calculators.wrapper_base import WrapperBase
 from easydiffraction.Profiles.P1D import Instrument1DCWParameters
 from easydiffraction.Profiles.P1D import Instrument1DCWPolParameters
 from easydiffraction.Profiles.P1D import Instrument1DTOFParameters
 from easydiffraction.Profiles.P1D import Powder1DParameters
 
 
-class Cryspy(InterfaceTemplate):
+class Cryspy(WrapperBase):
     """
     A simple example interface using Cryspy
     """
@@ -100,7 +100,7 @@ class Cryspy(InterfaceTemplate):
         polarization="unp",
         test_str=None,
     ):
-        return InterfaceTemplate.features(
+        return WrapperBase.features(
             radiation=radiation,
             exp_type=exp_type,
             sample_type=sample_type,

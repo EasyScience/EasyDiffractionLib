@@ -14,7 +14,7 @@ from easydiffraction import Lattice
 from easydiffraction import Phases
 from easydiffraction import Site
 from easydiffraction import SpaceGroup
-from easydiffraction.calculators.pdffit2 import Pdffit2 as Pdffit2_calc
+from easydiffraction.calculators.pdffit2.calculator import Pdffit2 as Pdffit2_calc
 from easydiffraction.Interfaces.interfaceTemplate import InterfaceTemplate
 from easydiffraction.Profiles.P1D import PDFParameters
 from easydiffraction.Profiles.P1D import Powder1DParameters
@@ -22,7 +22,7 @@ from easydiffraction.Profiles.P1D import Powder1DParameters
 if TYPE_CHECKING:
     pass
 
-class Pdffit2(InterfaceTemplate):
+class Pdffit2Wrapper(InterfaceTemplate):
     """
     A simple interface using Pdffit2
     """

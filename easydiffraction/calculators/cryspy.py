@@ -13,7 +13,9 @@ from typing import Tuple
 import cryspy
 import numpy as np
 from cryspy.procedure_rhochi.rhochi_by_dictionary import rhochi_calc_chi_sq_by_dictionary
+from easycrystallography.Components.SpaceGroup import SpaceGroup
 from easyscience import global_object as borg
+from gemmi import find_spacegroup_by_name
 
 from easydiffraction.io.cif import cifV2ToV1
 from easydiffraction.io.cif import cifV2ToV1_tof
@@ -116,7 +118,7 @@ class Cryspy:
         self._first_experiment_name = ""
         self.exp_obj = None
         self.chisq = None
-        self.hm_symbol = ""
+        self.name_hm_alt = ""
         self.it_code = ""
         self.excluded_points = []
         self._cryspyData = Data() # {phase_name: CryspyPhase, exp_name: CryspyExperiment}
@@ -222,19 +224,14 @@ class Cryspy:
     def createSpaceGroup(
         self, key: str = "spacegroup", name_hm_alt: str = "", it_code: Optional[str] = ""
     ) -> str:
-        if not name_hm_alt and not self.hm_symbol:
-            self.hm_symbol = "P 1"
-        if not name_hm_alt:
-            name_hm_alt = self.hm_symbol
-        else:
-            self.hm_symbol = name_hm_alt
+        self.name_hm_alt = name_hm_alt or self.name_hm_alt or "P 1"
+        name_hm_alt = self.name_hm_alt
 
-        if not it_code and not self.it_code:
-            self.it_code = "1"
         if not it_code:
-            it_code = self.it_code
-        else:
-            self.it_code = it_code
+            sg = find_spacegroup_by_name(name_hm_alt)
+            settings = SpaceGroup.find_settings_by_number(sg.number)
+            self.it_code = settings[0] if settings else ""
+        it_code = it_code or self.it_code
 
         if it_code:
             name_hm_alt += ":" + it_code

@@ -17,7 +17,7 @@ from easyscience import global_object as borg
 
 from easydiffraction.io.cif import cifV2ToV1
 from easydiffraction.io.cif import cifV2ToV1_tof
-from easydiffraction.io.cryspy_parser import CryspyParser
+from easydiffraction.calculators.cryspy.parser import CryspyParser
 
 # from pathos import multiprocessing as mp
 

@@ -5,7 +5,7 @@ import pytest
 
 import easydiffraction as ed
 from easydiffraction.interface import InterfaceFactory
-from easydiffraction.Job import DiffractionJob as Job
+from easydiffraction.job import DiffractionJob as Job
 from easydiffraction.Profiles.Analysis import Analysis
 from easydiffraction.Profiles.Experiment import Experiment
 from easydiffraction.Profiles.JobType import JobType

@@ -12,8 +12,8 @@ from typing import Tuple
 
 import cryspy
 import numpy as np
+from cryspy.A_functions_base.function_2_space_group import get_default_it_coordinate_system_code_by_it_number
 from cryspy.procedure_rhochi.rhochi_by_dictionary import rhochi_calc_chi_sq_by_dictionary
-from easycrystallography.Components.SpaceGroup import SpaceGroup
 from easyscience import global_object as borg
 from gemmi import find_spacegroup_by_name
 
@@ -229,8 +229,7 @@ class Cryspy:
 
         if not it_code:
             sg = find_spacegroup_by_name(name_hm_alt)
-            settings = SpaceGroup.find_settings_by_number(sg.number)
-            self.it_code = settings[0] if settings else ""
+            self.it_code = get_default_it_coordinate_system_code_by_it_number(sg.number)
         it_code = it_code or self.it_code
 
         if it_code:

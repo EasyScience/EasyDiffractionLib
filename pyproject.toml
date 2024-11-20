@@ -24,7 +24,7 @@ dependencies = [
     'cryspy',  # for calculations of diffraction patterns
     'pooch',  # for data fetching
     'easyscience',
-    'easycrystallography',
+    'easycrystallography @ git+https://github.com/easyscience/EasyCrystallography.git@it_system_fix',
 ]
 
 [project.optional-dependencies]

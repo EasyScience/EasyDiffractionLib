@@ -15,7 +15,7 @@ import numpy as np
 from cryspy.procedure_rhochi.rhochi_by_dictionary import rhochi_calc_chi_sq_by_dictionary
 from easyscience import global_object as borg
 
-from easydiffraction.calculators.cryspy.parser import CryspyParser
+from easydiffraction.calculators.cryspy.parser import calcObjAndDictToEdExperiments
 from easydiffraction.calculators.cryspy.parser import cifV2ToV1
 from easydiffraction.calculators.cryspy.parser import cifV2ToV1_tof
 
@@ -781,8 +781,8 @@ class Cryspy:
 
         calcDictBlockName = f'pd_{currentExperimentName}'
 
-        _, edExperimentsNoMeas = CryspyParser.calcObjAndDictToEdExperiments(calcExperimentsObj,
-                                                                            calcExperimentsDict)
+        _, edExperimentsNoMeas = calcObjAndDictToEdExperiments(calcExperimentsObj,
+                                                               calcExperimentsDict)
 
         # self._cryspyData._cryspyObj.items[calcObjBlockIdx] = calcExperimentsObj.items[0]
         self._cryspyData._cryspyObj.items[0] = calcExperimentsObj.items[0]

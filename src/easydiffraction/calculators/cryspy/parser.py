@@ -895,9 +895,9 @@ def cifV2ToV1_tof(edCif):
             '_pd_meas.intensity_total_su': '_tof_meas_intensity_sigma',  # before _pd_meas.intensity_total!
             '_pd_meas.intensity_total': '_tof_meas_intensity',
 
-            '_pd_data.point_id': '_tof_meas_point_id',  # Temporary fix for CrysPy to accept Scipp CIFs
-            '_pd_proc.intensity_norm_su': '_tof_meas_intensity_sigma',  # before _pd_proc.intensity_norm! # Temporary fix for CrysPy to accept Scipp CIFs
-            '_pd_proc.intensity_norm': '_tof_meas_intensity',  # Temporary fix for CrysPy to accept Scipp CIFs
+            '_pd_data.point_id': '_tof_meas_point_id',
+            '_pd_proc.intensity_norm_su': '_tof_meas_intensity_sigma',  # before _pd_proc.intensity_norm!
+            '_pd_proc.intensity_norm': '_tof_meas_intensity',
 
             '_pd_meas.tof_range_min': '_range_time_min',
             '_pd_meas.tof_range_max': '_range_time_max',

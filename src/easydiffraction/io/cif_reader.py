@@ -5,6 +5,7 @@
 import gemmi
 import numpy as np
 
+
 def value_from_loop_by_another_column(block: gemmi.cif.Block,
                                       category: str,
                                       desired_column: str,

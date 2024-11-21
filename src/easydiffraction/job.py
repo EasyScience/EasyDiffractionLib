@@ -425,16 +425,18 @@ class DiffractionJob(JobBase):
 
         self.update_job_type()
         # re-do the sample in case of type change.
-        if self.sample.parameters.name != self.experiment.parameters.name:
+        #if self.sample.parameters.name != self.experiment.parameters.name:
             # Different type read in (likely TOF), so re-create the sample
-            parameters = self.experiment.parameters
-            pattern = self.experiment.pattern
-            phases = self.sample.phases
-            name = self.sample.name
-            self.sample = Sample(name, parameters=parameters, pattern=pattern, phases=phases)
-            self.sample.parameters = self.experiment.parameters
-            self.update_job_type()
-            self.update_interface()
+        # re-do the sample always, as parameter values can change in the experiment.parameters compared to
+        # the sample.parameters (e.g. dtt1 read from CIF in Scipp format)
+        parameters = self.experiment.parameters
+        pattern = self.experiment.pattern
+        phases = self.sample.phases
+        name = self.sample.name
+        self.sample = Sample(name, parameters=parameters, pattern=pattern, phases=phases)
+        self.sample.parameters = self.experiment.parameters
+        self.update_job_type()
+        self.update_interface()
 
     def add_experiment_from_string(self, cif_string: str) -> None:
         '''

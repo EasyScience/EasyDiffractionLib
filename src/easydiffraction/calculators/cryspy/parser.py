@@ -830,7 +830,11 @@ def cifV2ToV1_tof(edCif):
             '_pd_phase_block.scale': '_phase_scale',
 
             '_model.cif_file_name': '_model_cif_file_name',
-            '_experiment.cif_file_name': '_experiment_cif_file_name'
+            '_experiment.cif_file_name': '_experiment_cif_file_name',
+
+            '_audit_contact_author.name': '_audit.contact_author_name',  # Temporary fix for CrysPy to accept CIFs
+            '_audit_contact_author.id_orcid': '_audit.contact_author_id_orcid',  # Temporary fix for CrysPy to accept CIFs
+
     }
     edToCryspyNamesMap['cwl'] = {
             '_diffrn_radiation_wavelength.wavelength': '_setup_wavelength',
@@ -890,6 +894,10 @@ def cifV2ToV1_tof(edCif):
             '_pd_meas.time_of_flight': '_tof_meas_time',
             '_pd_meas.intensity_total_su': '_tof_meas_intensity_sigma',  # before _pd_meas.intensity_total!
             '_pd_meas.intensity_total': '_tof_meas_intensity',
+
+            '_pd_data.point_id': '_tof_meas_point_id',  # Temporary fix for CrysPy to accept Scipp CIFs
+            '_pd_proc.intensity_norm_su': '_tof_meas_intensity_sigma',  # before _pd_proc.intensity_norm! # Temporary fix for CrysPy to accept Scipp CIFs
+            '_pd_proc.intensity_norm': '_tof_meas_intensity',  # Temporary fix for CrysPy to accept Scipp CIFs
 
             '_pd_meas.tof_range_min': '_range_time_min',
             '_pd_meas.tof_range_max': '_range_time_max',

@@ -4,6 +4,7 @@
 #    - Check the validity of pyproject.toml
 #    - Lint the code base
 #    - Lint the Jupyter notebooks
+#    - Check formatting of markdown, YAML, TOML files
 # 2. Test-code-and-notebooks:
 #    - Test the code base and upload coverage to Codecov
 #    - Test the Jupyter notebooks
@@ -89,6 +90,18 @@ jobs:
         if: ${{ failure() }}
         run: |
             echo "In project root run 'nbqa ruff examples/ --fix' and commit changes to fix issues."
+            exit 1
+
+      # Install code formatter for markdown, YAML, TOML files and run in the project root
+      - name: Install prettier and run in the project root
+        run: |
+          npm install prettier prettier-plugin-toml --save-dev --save-exact
+          npx prettier . --check --config=prettierrc.toml
+
+      - name: Suggestion to fix prettier issues (for *.md, *.yaml, *.toml files)
+        if: ${{ failure() }}
+        run: |
+            echo "In project root run 'npx prettier . --write --config=prettierrc.toml' and commit changes to fix issues."
             exit 1
 
   # Job 2: Test code and upload coverage to Codecov. Test Jupyter notebooks.

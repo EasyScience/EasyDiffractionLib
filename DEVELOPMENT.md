@@ -33,9 +33,19 @@ This is an example of a workflow that describes the development process.
   ```
 * Make changes in the code
 * Run Ruff - Python linter and code formatter (configuration is in pyproject.toml)
+  Linting (overwriting files)
   ```console
-  ruff check --fix  # Linting (overwriting files)
-  ruff format       # Formatting (overwriting files)
+  ruff check . --fix
+  ```
+  Formatting (overwriting files)
+  ```console
+  ruff format .
+  ```
+* Install and run Prettier - code formatter for markdown, YAML, TOML files
+  Formatting (overwriting files)
+  ```console
+  npm install prettier prettier-plugin-toml --save-dev --save-exact
+  npx prettier . --write --config=prettierrc.toml
   ```
 * Run python tests
   ```console

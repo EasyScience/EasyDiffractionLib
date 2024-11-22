@@ -20,5 +20,3 @@ If you are interested in contributing directly to the code, please see [CONTRIBU
 ## License
 
 EasyDiffraction is licensed under the [BSD 3-Clause License](https://raw.githubusercontent.com/EasyScience/EasyDiffractionLib/master/LICENSE).
-
-[DFO_LS](https://github.com/numericalalgorithmsgroup/dfols) is subject to the GPL license.

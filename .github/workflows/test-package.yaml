@@ -51,6 +51,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        fetch-tags: true  # fetch all tags for versioningit to work
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5

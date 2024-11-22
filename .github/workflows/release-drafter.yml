@@ -1,4 +1,5 @@
-# Drafts your next Release notes as pull requests are merged into default branch
+# Drafts your next Release notes as pull requests are merged into
+# default branch
 
 name: Update release draft
 

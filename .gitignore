@@ -18,17 +18,15 @@ __pycache__
 .coverage
 .pyc
 
-# Poetry
-dist
-poetry.lock
-*.egg-info
-
 # PyInstaller
 build
 *.spec
 
 # Jupyter
 .ipynb_checkpoints
+
+# npm
+node_modules
 
 # macOS
 .DS_Store

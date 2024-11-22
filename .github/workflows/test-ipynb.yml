@@ -35,7 +35,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-tags: true  # fetch all tags for versioningit to work
+          fetch-depth: '0'  # full history with tags to get the version number by versioningit
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -72,7 +72,7 @@ jobs:
       - name: Check-out repository
         uses: actions/checkout@v4
         with:
-          fetch-tags: true  # fetch all tags for versioningit to work
+          fetch-depth: '0'  # full history with tags to get the version number by versioningit
 
       - name: Set up Python environment
         uses: actions/setup-python@v5

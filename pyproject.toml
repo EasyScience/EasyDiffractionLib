@@ -95,6 +95,11 @@ distance = '{base_version}.post{distance}'  # Example: 1.2.3.post42
 dirty = '{base_version}'  # Example: 1.2.3
 distance-dirty = '{base_version}.post{distance}'  # Example: 1.2.3.post42
 
+[tool.versioningit.vcs]
+method = 'git'
+match = ['v*']
+default-tag = 'v999.0.0'
+
 ########################
 # Configuration for ruff
 ########################

@@ -24,11 +24,10 @@ from easydiffraction.Profiles.P1D import Powder1DParameters as Pattern1D
 
 
 class Sample(BaseObj):
-
     _REDIRECT = {
-        "phases": lambda obj: getattr(obj, '_phases'),
-        "parameters": lambda obj: getattr(obj, '_parameters'),
-        "pattern": lambda obj: getattr(obj, '_pattern')
+        'phases': lambda obj: getattr(obj, '_phases'),
+        'parameters': lambda obj: getattr(obj, '_parameters'),
+        'pattern': lambda obj: getattr(obj, '_pattern'),
     }
 
     _phases: ClassVar[Phases]
@@ -42,23 +41,23 @@ class Sample(BaseObj):
         parameters=None,
         pattern=None,
         interface=None,
-        name: str = "easySample",
+        name: str = 'easySample',
     ):
         if isinstance(phases, Phase):
-            phases = Phases("Phases", phases)
+            phases = Phases('Phases', phases)
         elif phases is None:
-            phases = Phases("Phases")
+            phases = Phases('Phases')
         elif isinstance(phases, Phases):
             pass
         elif isinstance(phases, list):
-            phases = Phases("Phases", phases[0])
+            phases = Phases('Phases', phases[0])
         elif isinstance(phases, ecPhases):
             if len(phases) > 0:
-                phases = Phases("Phases", phases[0])
+                phases = Phases('Phases', phases[0])
         else:
-            raise AttributeError("`phases` must be a Crystal or Crystals")
+            raise AttributeError('`phases` must be a Crystal or Crystals')
 
-        self._simulation_prefix = "sim_"
+        self._simulation_prefix = 'sim_'
         if dataset is not None:
             self._dataset = dataset
         else:
@@ -70,31 +69,33 @@ class Sample(BaseObj):
         if pattern is None:
             pattern = Pattern1D()
 
-        super(Sample, self).__init__(
-            name, _phases=phases, _parameters=parameters, _pattern=pattern
-        )
+        super(Sample, self).__init__(name, _phases=phases, _parameters=parameters, _pattern=pattern)
 
         # Set bases for easy identification
         self._update_bases(Powder)
         self._update_bases(Neutron)
 
-        if getattr(pattern, "__old_class__", pattern.__class__) == Pattern1D:
+        if getattr(pattern, '__old_class__', pattern.__class__) == Pattern1D:
             from easydiffraction.calculators.wrapper_types import UPol
+
             self._update_bases(UPol)
 
-        elif getattr(pattern, "__old_class__", pattern.__class__) == Pattern1D_Pol:
+        elif getattr(pattern, '__old_class__', pattern.__class__) == Pattern1D_Pol:
             from easydiffraction.calculators.wrapper_types import Pol
+
             self._update_bases(Pol)
 
         if isinstance(parameters, Instrument1DCWParameters):
             from easydiffraction.calculators.wrapper_types import CW
+
             self._update_bases(CW)
 
         elif isinstance(parameters, Instrument1DTOFParameters):
             from easydiffraction.calculators.wrapper_types import TOF
+
             self._update_bases(TOF)
 
-        self.filename = os.path.join(tempfile.gettempdir(), "easydiffraction_temp.cif")
+        self.filename = os.path.join(tempfile.gettempdir(), 'easydiffraction_temp.cif')
         # print(f"Temp CIF: {self.filename}")
         self.output_index = None
         if interface is not None:
@@ -103,8 +104,8 @@ class Sample(BaseObj):
             self.interface = WrapperFactory()
 
     def add_phase_from_cif(self, cif_file):
-        cif_string = ""
-        with open(cif_file, "r") as f:
+        cif_string = ''
+        with open(cif_file, 'r') as f:
             cif_string = f.read()
         self.add_phase_from_string(cif_string)
 
@@ -116,22 +117,22 @@ class Sample(BaseObj):
             self.phases.append(p)
 
     def phases_as_cif(self):
-        '''
+        """
         Returns a CIF representation of the phases names and scales.
-        '''
-        cif_phase = "loop_\n"
-        cif_phase += "_phase_label\n"
-        cif_phase += "_phase_scale\n"
-        cif_phase += "_phase_igsize\n"
+        """
+        cif_phase = 'loop_\n'
+        cif_phase += '_phase_label\n'
+        cif_phase += '_phase_scale\n'
+        cif_phase += '_phase_igsize\n'
         for phase in self.phases:
-            cif_phase += phase.name + " " + str(phase.scale.raw_value) + " 0.0\n"
+            cif_phase += phase.name + ' ' + str(phase.scale.raw_value) + ' 0.0\n'
         return cif_phase
 
     @property
     def cif(self):
-        '''
+        """
         Returns a CIF representation of the sample.
-        '''
+        """
         return self.phases_as_cif()
 
     @property
@@ -156,10 +157,7 @@ class Sample(BaseObj):
         self._pattern.backgrounds.append(background)
 
     def remove_background(self, background):
-        if (
-            background.linked_experiment.raw_value
-            in self._pattern.backgrounds.linked_experiments
-        ):
+        if background.linked_experiment.raw_value in self._pattern.backgrounds.linked_experiments:
             del self._pattern.backgrounds[background.linked_experiment.raw_value]
         else:
             raise ValueError
@@ -195,9 +193,11 @@ class Sample(BaseObj):
             raise ValueError
         if isinstance(value, Instrument1DTOFParameters):
             from easydiffraction.calculators.wrapper_types import TOF
+
             self._update_bases(TOF)
         else:
             from easydiffraction.calculators.wrapper_types import CW
+
             self._update_bases(CW)
         self._parameters = value
         self._parameters.interface = self._interface
@@ -207,7 +207,7 @@ class Sample(BaseObj):
         return self._pattern
 
     def _update_bases(self, new_base):
-        base_class = getattr(self, "__old_class__", self.__class__)
+        base_class = getattr(self, '__old_class__', self.__class__)
         old_bases = set(self.__class__.__bases__)
         old_bases = old_bases - {
             base_class,

@@ -28,17 +28,14 @@ class _Type:
         pass
 
 
-T = TypeVar("T", bound=_Type)
+T = TypeVar('T', bound=_Type)
 
 
 def interfaceMixInMeta(cls):
-
-    class_create = getattr(cls, "create", None)
+    class_create = getattr(cls, 'create', None)
 
     def create(self, model: B) -> List[ItemContainer]:
-        cls_s: List[Type[T]] = [
-            c_ for c_ in cls.__bases__ if getattr(c_, "_internal_type", False)
-        ]
+        cls_s: List[Type[T]] = [c_ for c_ in cls.__bases__ if getattr(c_, '_internal_type', False)]
         r_list = []
         if class_create is not None:
             r_list += class_create(self, model)
@@ -46,7 +43,7 @@ def interfaceMixInMeta(cls):
             r_list += cls_.create(self, model)
         return r_list
 
-    setattr(cls, "create", create)
+    setattr(cls, 'create', create)
     return cls
 
 

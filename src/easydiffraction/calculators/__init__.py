@@ -17,6 +17,6 @@ try:
     from easydiffraction.calculators.pdffit2.wrapper import Pdffit2Wrapper  # noqa: F401
 except ImportError:
     pass
-    #print('Warning: PdfFit2 is not installed')
+    # print('Warning: PdfFit2 is not installed')
 
 from easydiffraction.calculators.wrapper_base import WrapperBase  # noqa: F401

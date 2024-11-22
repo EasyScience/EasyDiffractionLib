@@ -12,5 +12,4 @@ from .components.site import Site as Site
 from .job import DiffractionJob as Job
 from .utils import download_from_repository
 
-__all__ = ['Job',
-           'download_from_repository']
+__all__ = ['Job', 'download_from_repository']

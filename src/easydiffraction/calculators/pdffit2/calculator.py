@@ -12,25 +12,25 @@ from diffpy.structure.parsers.p_cif import P_cif as cif_parser
 # silence the C++ engine output
 redirect_stdout(open(os.path.devnull, 'w'))
 
-class Pdffit2:
 
+class Pdffit2:
     def __init__(self):
         self.pattern = None
         self.conditions = {
-            "qmax": 30.0,
-            "qdamp": 0.01,
-            "delta1": 0.0,
-            "delta2": 0.0,
-            "qbroad": 0.0,
-            "spdiameter": 0.0,
+            'qmax': 30.0,
+            'qdamp': 0.01,
+            'delta1': 0.0,
+            'delta2': 0.0,
+            'qbroad': 0.0,
+            'spdiameter': 0.0,
         }
         self.background = None
         self.phases = None
         self.storage = {}
         self.current_crystal = {}
         self.model = None
-        self.type = "N"
-        self.cif_string = ""
+        self.type = 'N'
+        self.cif_string = ''
 
     def conditionsSet(self, model):
         self.model = model
@@ -63,18 +63,18 @@ class Pdffit2:
 
         # scale
         scale = self.phases[0].scale.raw_value
-        P.setvar("pscale", scale)
-        P.setvar("delta1", delta1)
-        P.setvar("delta2", delta2)
-        P.setvar("spdiameter", spdiameter)
+        P.setvar('pscale', scale)
+        P.setvar('delta1', delta1)
+        P.setvar('delta2', delta2)
+        P.setvar('spdiameter', spdiameter)
 
         # set the Uiso (current limitation to isotropic ADP)
         for i_atom, atom in enumerate(self.phases[0].atoms):
-            if not hasattr(atom, "adp"):
+            if not hasattr(atom, 'adp'):
                 continue
             Uiso = atom.adp.Uiso.raw_value
-            for i in range(1,4):
-                u_str = "u{}{}({})".format(i, i, i_atom+1)
+            for i in range(1, 4):
+                u_str = 'u{}{}({})'.format(i, i, i_atom + 1)
                 P.setvar(u_str, Uiso)
 
         # Errors
@@ -84,7 +84,7 @@ class Pdffit2:
         # Assign the data to the pdf calculator
         P.read_data_lists(stype, qmax, qdamp, list(x_array), list(noise_array))
         # qbroad must be set after read_data_string
-        P.setvar("qbroad", qbroad)
+        P.setvar('qbroad', qbroad)
 
         P.calc()
 

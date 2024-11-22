@@ -7,7 +7,8 @@ from easydiffraction.calculators.wrapper_factory import WrapperFactory
 
 def main():
     interface = WrapperFactory()
-    print(f"Available calculators: {interface.available_interfaces}")
+    print(f'Available calculators: {interface.available_interfaces}')
+
 
 if __name__ == '__main__':
     main()

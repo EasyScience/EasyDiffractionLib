@@ -18,6 +18,7 @@ class BackgroundFactor(BaseObj):
     """
     This class describes a polynomial factor. It contains an amplitude and a power. i.e. for x, Ax^p
     """
+
     def __init__(self, power: Descriptor, amp: Parameter):
         """
         Construct a background factor.
@@ -106,7 +107,7 @@ class FactorialBackground(Background):
         amps = self.sorted_amplitudes
 
         for power, amp in zip(powers, amps):
-            y += amp*x_array**power
+            y += amp * x_array**power
 
         return y.reshape(shape_x)
 
@@ -186,7 +187,7 @@ class FactorialBackground(Background):
         self.__index_contents()
 
     def get_parameters(self) -> List[Parameter]:
-        """"
+        """ "
         Redefine get_parameters so that the returned values are in the correct order
         """
         list_pars = np.array(super(FactorialBackground, self).get_parameters())
@@ -200,8 +201,4 @@ class FactorialBackground(Background):
         x = np.array([item.power.raw_value for item in self])
         idx = x.argsort()
         y = np.array([item.amp.raw_value for item in self])
-        self._sorted_self = {
-            'idx': idx,
-            'power': x[idx],
-            'amp': y[idx]
-        }
+        self._sorted_self = {'idx': idx, 'power': x[idx], 'amp': y[idx]}

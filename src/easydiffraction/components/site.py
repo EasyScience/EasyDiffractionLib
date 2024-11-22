@@ -38,7 +38,7 @@ class Site(ecSite):
         interface: Optional[iF] = None,
         **kwargs,
     ):
-        msp = kwargs.get("msp", None)
+        msp = kwargs.get('msp', None)
         if msp is not None:
             if isinstance(msp, str):
                 msp = MagneticSusceptibility(msp)
@@ -46,7 +46,7 @@ class Site(ecSite):
                 if parameter.name in kwargs.keys():
                     new_option = kwargs.pop(parameter.name)
                     parameter.value = new_option
-            kwargs["msp"] = msp
+            kwargs['msp'] = msp
 
         if adp is not None:
             if isinstance(adp, str):
@@ -55,7 +55,7 @@ class Site(ecSite):
                 if parameter.name in kwargs.keys():
                     new_option = kwargs.pop(parameter.name)
                     parameter.value = new_option
-            kwargs["adp"] = adp
+            kwargs['adp'] = adp
 
         super(Site, self).__init__(
             label=label,
@@ -71,14 +71,14 @@ class Site(ecSite):
     def add_adp(self, adp_type: Union[str, AtomicDisplacement], **kwargs):
         if isinstance(adp_type, str):
             adp_type = AtomicDisplacement(adp_type, **kwargs)
-        self._add_component("adp", adp_type)
+        self._add_component('adp', adp_type)
         if self.interface is not None:
             self.interface.generate_bindings()
 
     def add_msp(self, msp_type: Union[str, MagneticSusceptibility], **kwargs):
         if isinstance(msp_type, str):
             msp_type = MagneticSusceptibility(msp_type, **kwargs)
-        self._add_component("msp", msp_type)
+        self._add_component('msp', msp_type)
         if self.interface is not None:
             self.interface.generate_bindings()
 
@@ -87,15 +87,14 @@ class PeriodicSite(ecPeriodicSite):
     @classmethod
     def from_site(cls, lattice: PeriodicLattice, site: Site):
         kwargs = ecPeriodicSite._from_site_kwargs(lattice, site)
-        if hasattr(site, "adp"):
-            kwargs["adp"] = site.adp
-        if hasattr(site, "msp"):
-            kwargs["msp"] = site.msp
+        if hasattr(site, 'adp'):
+            kwargs['adp'] = site.adp
+        if hasattr(site, 'msp'):
+            kwargs['msp'] = site.msp
         return cls(**kwargs)
 
 
 class Atoms(ecAtoms):
-
     _SITE_CLASS = Site
 
     def to_star(self) -> List[StarLoop]:
@@ -110,20 +109,17 @@ class Atoms(ecAtoms):
         return loops
 
     def add_adp(self, main_loop, add_loops):
-
-        adps = [hasattr(item, "adp") for item in self]
+        adps = [hasattr(item, 'adp') for item in self]
         has_adp = any(adps)
         if not has_adp:
             return [main_loop]
         add_loops = []
         adp_types = [item.adp.adp_type.raw_value for item in self]
         if all(adp_types):
-            if adp_types[0] in ["Uiso", "Biso"]:
+            if adp_types[0] in ['Uiso', 'Biso']:
                 main_loop = main_loop.join(
-                    StarLoop.from_StarSections(
-                        [getattr(item, "adp").to_star(item.label) for item in self]
-                    ),
-                    "label",
+                    StarLoop.from_StarSections([getattr(item, 'adp').to_star(item.label) for item in self]),
+                    'label',
                 )
             else:
                 entries = []
@@ -131,18 +127,17 @@ class Atoms(ecAtoms):
                     entries.append(item.adp.to_star(item.label))
                 add_loops.append(StarLoop.from_StarSections(entries))
         else:
-            raise NotImplementedError("Multiple types of ADP are not supported")
+            raise NotImplementedError('Multiple types of ADP are not supported')
         return add_loops
 
     def add_msp(self, main_loop, add_loops):
-
         # msps = [hasattr(item, "msp") for item in self]
         # has_msp = any(msps)
         loops = []
         # if has_msp:
         for item in self:
-            if hasattr(item, "msp"):
-                loops.append(getattr(item, "msp").to_star(item.label))
+            if hasattr(item, 'msp'):
+                loops.append(getattr(item, 'msp').to_star(item.label))
         if loops:
             add_loops.append(StarLoop.from_StarSections(loops))
         # if not has_msp:

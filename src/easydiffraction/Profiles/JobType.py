@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # © 2021-2024 Contributors to the EasyDiffraction project <https://github.com/EasyScience/EasyDiffraction>
 
-class JobType():
+
+class JobType:
     """
     Specification of the diffraction job type.
 
@@ -32,28 +33,29 @@ class JobType():
     c = JobType("tof")
 
     """
+
     # Sample type
-    STR_POWDER = "pd"
-    STR_SINGLE_CRYSTAL = "sc"
+    STR_POWDER = 'pd'
+    STR_SINGLE_CRYSTAL = 'sc'
     # Beam type
-    STR_CW = "cwl"
-    STR_TOF = "tof"
+    STR_CW = 'cwl'
+    STR_TOF = 'tof'
     # Dimensionality
-    STR_1D = "1d"
-    STR_2D = "2d"
+    STR_1D = '1d'
+    STR_2D = '2d'
     # Radiation type
-    STR_XRAYS = "xray"
-    STR_NEUTRONS = "neut"
+    STR_XRAYS = 'xray'
+    STR_NEUTRONS = 'neut'
     # Polarization
-    STR_POL = "pol"
-    STR_UPOL = "unp"
-    STR_LPOL = "lpa"
-    STR_SPOL = "snp"
+    STR_POL = 'pol'
+    STR_UPOL = 'unp'
+    STR_LPOL = 'lpa'
+    STR_SPOL = 'snp'
 
     # Default values
-    DEFAULT_TYPE = "pd-cwl-unp-1d-neut"
+    DEFAULT_TYPE = 'pd-cwl-unp-1d-neut'
 
-    def __init__(self, job_type: str=""):
+    def __init__(self, job_type: str = ''):
         # Initialize the job type flags
         self.init_flags()
         # initialize the job type with defaults
@@ -212,14 +214,14 @@ class JobType():
         # and amend the existing job type
 
         # split the string into a list of flags
-        tokens = job_type.split("-")
+        tokens = job_type.split('-')
         # check for the presence of each flag
         for token in tokens:
             token = token.lower()
-            if hasattr(self, f"_is_{token}"):
-                setattr(self, f"is_{token}", True)
+            if hasattr(self, f'_is_{token}'):
+                setattr(self, f'is_{token}', True)
             else:
-                raise ValueError(f"Invalid job type flag: {token}")
+                raise ValueError(f'Invalid job type flag: {token}')
         self.validate()
 
     def to_typestr(self) -> None:
@@ -237,23 +239,23 @@ class JobType():
             pol_flag = self.STR_LPOL
         elif self._is_snp:
             pol_flag = self.STR_SPOL
-        self.type_str = f"{sample_flag}-{beam_flag}-{pol_flag}-{dim_flag}-{radiation_flag}"
+        self.type_str = f'{sample_flag}-{beam_flag}-{pol_flag}-{dim_flag}-{radiation_flag}'
 
     def validate(self):
         """
         Validate the job type
         """
         if self._is_pd and self._is_sc:
-            raise ValueError("Job type can not be both powder and single crystal")
+            raise ValueError('Job type can not be both powder and single crystal')
         if self._is_cwl and self._is_tof:
-            raise ValueError("Job type can not be both CWL and TOF")
+            raise ValueError('Job type can not be both CWL and TOF')
         if self._is_1d and self._is_2d:
-            raise ValueError("Job type can not be both 1D and 2D")
+            raise ValueError('Job type can not be both 1D and 2D')
         if self._is_pol and self._is_unp:
-            raise ValueError("Job type can not be both polarized and unpolarized")
+            raise ValueError('Job type can not be both polarized and unpolarized')
         if self._is_xray and self._is_neut:
-            raise ValueError("Job type can not be both X-rays and Neutrons")
+            raise ValueError('Job type can not be both X-rays and Neutrons')
         self.to_typestr()
 
     def __str__(self):
-        return f"Job type: {self.type_str}"
+        return f'Job type: {self.type_str}'

@@ -22,7 +22,7 @@ from easydiffraction.elements.Backgrounds.Background import BackgroundContainer
 from easydiffraction.Profiles.common import JobSetup
 from easydiffraction.Profiles.common import _DataClassBase
 
-T = TypeVar("T")
+T = TypeVar('T')
 
 if TYPE_CHECKING:
     from easyscience.Utils.typing import iF
@@ -31,11 +31,12 @@ if TYPE_CHECKING:
 class Powder1DSim(_DataClassBase):
     def __init__(self, dataset):
         super(Powder1DSim, self).__init__(dataset)
-        self._simulation_prefix = "sim_"
-        self.name = ""
+        self._simulation_prefix = 'sim_'
+        self.name = ''
 
     def add_simulation(self, simulation_name, simulation):
         self._dataset[self._simulation_prefix + simulation_name] = simulation
+
 
 class Powder1DExp(_DataClassBase):
     def __init__(self, dataset, simulation_prefix):
@@ -70,21 +71,21 @@ class Powder1DPolExp(Powder1DExp):
 
 
 class Powder1DParameters(BaseObj):
-    _name = "1DPowderProfile"
+    _name = '1DPowderProfile'
     _defaults = {
-        "zero_shift": {
-            "name": "zero_shift",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/",
-            "units": "degree",
-            "value": 0.0,
-            "fixed": True,
+        'zero_shift': {
+            'name': 'zero_shift',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
+            'units': 'degree',
+            'value': 0.0,
+            'fixed': True,
         },
-        "scale": {
-            "name": "scale",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_phase/",
-            "value": 1,
-            "fixed": True,
-            "enabled": False,
+        'scale': {
+            'name': 'scale',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_phase/',
+            'value': 1,
+            'fixed': True,
+            'enabled': False,
         },
     }
 
@@ -116,7 +117,7 @@ class Powder1DParameters(BaseObj):
         if radiation is not None:
             self.radiation = radiation
         else:
-            self.radiation = "neutrons"
+            self.radiation = 'neutrons'
 
         self.name = self._name
         self.interface = interface
@@ -129,7 +130,7 @@ class PolPowder1DParameters(Powder1DParameters):
     beam: ClassVar[PolarizedBeam]
 
     _defaults = {
-        "field": {"name": "magnetic_field", "value": 1.0, "units": "T", "fixed": True},
+        'field': {'name': 'magnetic_field', 'value': 1.0, 'units': 'T', 'fixed': True},
     }
     _defaults.update(Powder1DParameters._defaults)
 
@@ -144,11 +145,11 @@ class PolPowder1DParameters(Powder1DParameters):
         **kwargs,
     ):
         polarization = None
-        if "polarization" in kwargs.keys():
-            polarization = kwargs.pop("polarization")
+        if 'polarization' in kwargs.keys():
+            polarization = kwargs.pop('polarization')
         efficiency = None
-        if "efficiency" in kwargs.keys():
-            efficiency = kwargs.pop("efficiency")
+        if 'efficiency' in kwargs.keys():
+            efficiency = kwargs.pop('efficiency')
 
         if beam is None:
             beam = PolarizedBeam(polarization=polarization, efficiency=efficiency)
@@ -160,7 +161,7 @@ class PolPowder1DParameters(Powder1DParameters):
             if efficiency is not None:
                 beam.efficiency = efficiency
 
-        kwargs["beam"] = beam
+        kwargs['beam'] = beam
 
         super().__init__(
             zero_shift=zero_shift,
@@ -183,111 +184,111 @@ class PolPowder1DParameters(Powder1DParameters):
 
 
 class Instrument1DCWParameters(BaseObj):
-    _name = "InstrumentalParameters"
+    _name = 'InstrumentalParameters'
     _defaults = {
-        "wavelength": {
-            "name": "wavelength",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_diffrn_radiation_wavelength/",
-            "units": "angstrom",
-            "value": 1.54056,
-            "fixed": True,
+        'wavelength': {
+            'name': 'wavelength',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_diffrn_radiation_wavelength/',
+            'units': 'angstrom',
+            'value': 1.54056,
+            'fixed': True,
         },
-        "resolution_u": {
-            "name": "resolution_u",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/",
-            "value": 0.0002,
-            "fixed": True,
+        'resolution_u': {
+            'name': 'resolution_u',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
+            'value': 0.0002,
+            'fixed': True,
         },
-        "resolution_v": {
-            "name": "resolution_v",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/",
-            "value": -0.0002,
-            "fixed": True,
+        'resolution_v': {
+            'name': 'resolution_v',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
+            'value': -0.0002,
+            'fixed': True,
         },
-        "resolution_w": {
-            "name": "resolution_w",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/",
-            "value": 0.012,
-            "fixed": True,
+        'resolution_w': {
+            'name': 'resolution_w',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
+            'value': 0.012,
+            'fixed': True,
         },
-        "resolution_x": {
-            "name": "resolution_x",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/",
-            "value": 0.0,
-            "fixed": True,
+        'resolution_x': {
+            'name': 'resolution_x',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
+            'value': 0.0,
+            'fixed': True,
         },
-        "resolution_y": {
-            "name": "resolution_y",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/",
-            "value": 0.0,
-            "fixed": True,
+        'resolution_y': {
+            'name': 'resolution_y',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
+            'value': 0.0,
+            'fixed': True,
         },
-        "reflex_asymmetry_p1": {
-            "name": "reflex_asymmetry_p1",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/",
-            "value": 0.0,
-            "fixed": True,
+        'reflex_asymmetry_p1': {
+            'name': 'reflex_asymmetry_p1',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
+            'value': 0.0,
+            'fixed': True,
         },
-        "reflex_asymmetry_p2": {
-            "name": "reflex_asymmetry_p2",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/",
-            "value": 0.0,
-            "fixed": True,
+        'reflex_asymmetry_p2': {
+            'name': 'reflex_asymmetry_p2',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
+            'value': 0.0,
+            'fixed': True,
         },
-        "reflex_asymmetry_p3": {
-            "name": "reflex_asymmetry_p3",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/",
-            "value": 0.0,
-            "fixed": True,
+        'reflex_asymmetry_p3': {
+            'name': 'reflex_asymmetry_p3',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
+            'value': 0.0,
+            'fixed': True,
         },
-        "reflex_asymmetry_p4": {
-            "name": "reflex_asymmetry_p4",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/",
-            "value": 0.0,
-            "fixed": True,
+        'reflex_asymmetry_p4': {
+            'name': 'reflex_asymmetry_p4',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
+            'value': 0.0,
+            'fixed': True,
         },
-        "twotheta_range_min": {
-            "name": "twotheta_range_min",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_meas/",
-            "value": 10.0,
-            "fixed": True,
-            "enabled": False,
+        'twotheta_range_min': {
+            'name': 'twotheta_range_min',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_meas/',
+            'value': 10.0,
+            'fixed': True,
+            'enabled': False,
         },
-        "twotheta_range_max": {
-            "name": "twotheta_range_max",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_meas/",
-            "value": 170.0,
-            "fixed": True,
-            "enabled": False,
+        'twotheta_range_max': {
+            'name': 'twotheta_range_max',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_meas/',
+            'value': 170.0,
+            'fixed': True,
+            'enabled': False,
         },
-        "twotheta_range_inc": {
-            "name": "twotheta_range_inc",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_meas/",
-            "value": 0.1,
-            "fixed": True,
-            "enabled": False,
+        'twotheta_range_inc': {
+            'name': 'twotheta_range_inc',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_meas/',
+            'value': 0.1,
+            'fixed': True,
+            'enabled': False,
         },
-        "tof_range_min": {
-            "name": "tof_range_min",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_meas/",
-            "value": 10000.0,
-            "fixed": True,
-            "enabled": False,
+        'tof_range_min': {
+            'name': 'tof_range_min',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_meas/',
+            'value': 10000.0,
+            'fixed': True,
+            'enabled': False,
         },
-        "tof_range_max": {
-            "name": "tof_range_max",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_meas/",
-            "value": 100000.0,
-            "fixed": True,
-            "enabled": False,
+        'tof_range_max': {
+            'name': 'tof_range_max',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_meas/',
+            'value': 100000.0,
+            'fixed': True,
+            'enabled': False,
         },
-        "tof_range_inc": {
-            "name": "tof_range_inc",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_meas/",
-            "value": 5.0,
-            "fixed": True,
-            "enabled": False,
-        }
+        'tof_range_inc': {
+            'name': 'tof_range_inc',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_meas/',
+            'value': 5.0,
+            'fixed': True,
+            'enabled': False,
+        },
     }
 
     wavelength: ClassVar[Parameter]
@@ -371,94 +372,94 @@ class Instrument1DCWParameters(BaseObj):
 
 
 class Instrument1DTOFParameters(BaseObj):
-    _name = "InstrumentalParameters"
+    _name = 'InstrumentalParameters'
     _defaults = {
-        "ttheta_bank": {
-            "name": "ttheta_bank",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/",
-            "units": "deg",
-            "value": 145.00,
-            "fixed": True,
+        'ttheta_bank': {
+            'name': 'ttheta_bank',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
+            'units': 'deg',
+            'value': 145.00,
+            'fixed': True,
         },
-        "dtt1": {
-            "name": "dtt1",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/",
-            "units": "microsec/angstrom",
-            "value": 6167.24700,
-            "fixed": True,
+        'dtt1': {
+            'name': 'dtt1',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
+            'units': 'microsec/angstrom',
+            'value': 6167.24700,
+            'fixed': True,
         },
-        "dtt2": {
-            "name": "dtt2",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/",
-            "units": "microsec/angstrom**2",
-            "value": -2.28000,
-            "fixed": True,
+        'dtt2': {
+            'name': 'dtt2',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
+            'units': 'microsec/angstrom**2',
+            'value': -2.28000,
+            'fixed': True,
         },
-        "sigma0": {
-            "name": "sigma0",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/",
-            "units": "microsec**2",
-            "value": 0.409,
-            "fixed": True,
+        'sigma0': {
+            'name': 'sigma0',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
+            'units': 'microsec**2',
+            'value': 0.409,
+            'fixed': True,
         },
-        "sigma1": {
-            "name": "sigma1",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/",
-            "units": "microsec**2/angstrom**2",
-            "value": 8.118,
-            "fixed": True,
+        'sigma1': {
+            'name': 'sigma1',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
+            'units': 'microsec**2/angstrom**2',
+            'value': 8.118,
+            'fixed': True,
         },
-        "sigma2": {
-            "name": "sigma2",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/",
-            "units": "microsec**2/angstrom**4",
-            "value": 0.0,
-            "fixed": True,
+        'sigma2': {
+            'name': 'sigma2',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
+            'units': 'microsec**2/angstrom**4',
+            'value': 0.0,
+            'fixed': True,
         },
-        "gamma0": {
-            "name": "gamma0",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/",
-            "value": 0.0,
-            "fixed": True,
-            "enabled": False,
+        'gamma0': {
+            'name': 'gamma0',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
+            'value': 0.0,
+            'fixed': True,
+            'enabled': False,
         },
-        "gamma1": {
-            "name": "gamma1",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/",
-            "value": 0.0,
-            "fixed": True,
-            "enabled": False,
+        'gamma1': {
+            'name': 'gamma1',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
+            'value': 0.0,
+            'fixed': True,
+            'enabled': False,
         },
-        "gamma2": {
-            "name": "gamma2",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/",
-            "value": 0.0,
-            "fixed": True,
-            "enabled": False,
+        'gamma2': {
+            'name': 'gamma2',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
+            'value': 0.0,
+            'fixed': True,
+            'enabled': False,
         },
-        "alpha0": {
-            "name": "alpha0",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/",
-            "value": 0.0,
-            "fixed": True,
+        'alpha0': {
+            'name': 'alpha0',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
+            'value': 0.0,
+            'fixed': True,
         },
-        "alpha1": {
-            "name": "alpha1",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/",
-            "value": 0.29710,
-            "fixed": True,
+        'alpha1': {
+            'name': 'alpha1',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
+            'value': 0.29710,
+            'fixed': True,
         },
-        "beta0": {
-            "name": "beta0",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/",
-            "value": 0.04182,
-            "fixed": True,
+        'beta0': {
+            'name': 'beta0',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
+            'value': 0.04182,
+            'fixed': True,
         },
-        "beta1": {
-            "name": "beta1",
-            "url": "https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/",
-            "value": 0.00224,
-            "fixed": True,
+        'beta1': {
+            'name': 'beta1',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
+            'value': 0.00224,
+            'fixed': True,
         },
     }
 
@@ -533,63 +534,55 @@ class Instrument1DCWPolParameters(Instrument1DCWParameters):
     pass
 
 
-Unpolarized1DClasses = JobSetup(
-    [Powder1DSim, Powder1DExp], Powder1DParameters, Instrument1DCWParameters
-)
+Unpolarized1DClasses = JobSetup([Powder1DSim, Powder1DExp], Powder1DParameters, Instrument1DCWParameters)
 
-Unpolarized1DTOFClasses = JobSetup(
-    [Powder1DSim, Powder1DExp], Powder1DParameters, Instrument1DTOFParameters
-)
+Unpolarized1DTOFClasses = JobSetup([Powder1DSim, Powder1DExp], Powder1DParameters, Instrument1DTOFParameters)
 
-Polarized1DClasses = JobSetup(
-    [Powder1DSim, Powder1DExp], PolPowder1DParameters, Instrument1DCWParameters
-)
+Polarized1DClasses = JobSetup([Powder1DSim, Powder1DExp], PolPowder1DParameters, Instrument1DCWParameters)
 
-Polarized1DTOFClasses = JobSetup(
-    [Powder1DSim, Powder1DExp], PolPowder1DParameters, Instrument1DTOFParameters
-)
+Polarized1DTOFClasses = JobSetup([Powder1DSim, Powder1DExp], PolPowder1DParameters, Instrument1DTOFParameters)
+
 
 class PDFParameters(Instrument1DCWParameters):
-
     qmax: ClassVar[Parameter]
     qdamp: ClassVar[Parameter]
 
     _defaults = {
-        "qmax": {
-            "name": "Q_max",
-            "units": "1/angstrom",
-            "value": 30.0,
-            "fixed": True,
+        'qmax': {
+            'name': 'Q_max',
+            'units': '1/angstrom',
+            'value': 30.0,
+            'fixed': True,
         },
-        "qdamp": {
-            "name": "Q_damp",
-            "units": "1/angstrom",
-            "value": 0.01,
-            "fixed": True,
+        'qdamp': {
+            'name': 'Q_damp',
+            'units': '1/angstrom',
+            'value': 0.01,
+            'fixed': True,
         },
-        "qbroad": {
-            "name": "Q_broad",
-            "value": 0.0,
-            "fixed": True,
+        'qbroad': {
+            'name': 'Q_broad',
+            'value': 0.0,
+            'fixed': True,
         },
-        "delta1": {
-            "name": "delta1",
-            "units": "angstrom",
-            "value": 0.0,
-            "fixed": True,
+        'delta1': {
+            'name': 'delta1',
+            'units': 'angstrom',
+            'value': 0.0,
+            'fixed': True,
         },
-        "delta2": {
-            "name": "delta2",
-            "units": "angstrom**2",
-            "value": 0.0,
-            "fixed": True,
+        'delta2': {
+            'name': 'delta2',
+            'units': 'angstrom**2',
+            'value': 0.0,
+            'fixed': True,
         },
-        "spdiameter": {
-            "name": "spdiameter",
-            "units": "angstrom",
-            "min": 0.0,
-            "value": 0.0,
-            "fixed": True,
+        'spdiameter': {
+            'name': 'spdiameter',
+            'units': 'angstrom',
+            'min': 0.0,
+            'value': 0.0,
+            'fixed': True,
         },
     }
     _defaults.update(Instrument1DCWParameters._defaults)
@@ -615,7 +608,6 @@ class PDFParameters(Instrument1DCWParameters):
         interface: Optional[iF] = None,
         **kwargs,
     ):
-
         super().__init__(
             wavelength=wavelength,
             resolution_u=resolution_u,

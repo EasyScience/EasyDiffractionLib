@@ -17,21 +17,21 @@ if TYPE_CHECKING:
 
 
 class PolarizedBeam(BaseObj):
-    _name = "polarized_beam"
+    _name = 'polarized_beam'
     _defaults = {
-        "polarization": {
-            "name": "polarization",
-            "value": 1.0,
-            "min": 0.0,
-            "max": 1.0,
-            "fixed": True,
+        'polarization': {
+            'name': 'polarization',
+            'value': 1.0,
+            'min': 0.0,
+            'max': 1.0,
+            'fixed': True,
         },
-        "efficiency": {
-            "name": "efficiency",
-            "value": 1.0,
-            "min": 0.0,
-            "max": 1.0,
-            "fixed": True,
+        'efficiency': {
+            'name': 'efficiency',
+            'value': 1.0,
+            'min': 0.0,
+            'max': 1.0,
+            'fixed': True,
         },
     }
 
@@ -46,8 +46,8 @@ class PolarizedBeam(BaseObj):
     ):
         super().__init__(
             self._name,
-            polarization=Parameter(**self._defaults["polarization"]),
-            efficiency=Parameter(**self._defaults["efficiency"]),
+            polarization=Parameter(**self._defaults['polarization']),
+            efficiency=Parameter(**self._defaults['efficiency']),
         )
         if polarization is not None:
             self.polarization = polarization

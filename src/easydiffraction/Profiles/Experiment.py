@@ -78,10 +78,12 @@ _pd_meas.intensity_total
 _pd_meas.intensity_total_su
 """
 
+
 class Experiment(coreExperiment):
     """
     Diffraction-specific Experiment object.
     """
+
     def __init__(self, job_name: str, datastore: xr.Dataset = None, *args, **kwargs):
         super(Experiment, self).__init__(job_name, *args, **kwargs)
         self.job_name = job_name
@@ -90,21 +92,20 @@ class Experiment(coreExperiment):
         self.is_polarized = False
         self.is_single_crystal = False
         self.is_2d = False
-        self._simulation_prefix = "sim_"
+        self._simulation_prefix = 'sim_'
         self._datastore = datastore if datastore is not None else xr.Dataset()
-        self._x_axis_name = "tth"
-        self._y_axis_prefix = "Intensity_"
+        self._x_axis_name = 'tth'
+        self._y_axis_prefix = 'Intensity_'
         self.job_number = 0
-        self.cif_string = ""
+        self.cif_string = ''
         self.name = job_name
         # local references to pattern and parameters
-        if hasattr(self._datastore, "_simulations"):
+        if hasattr(self._datastore, '_simulations'):
             self.pattern = self._datastore._simulations.pattern
             self.parameters = self._datastore._simulations.parameters
 
-    def add_experiment_data(self, x, y, e, experiment_name="None"):
-
-        coord_name = self.job_name + "_" + experiment_name + "_" + self._x_axis_name
+    def add_experiment_data(self, x, y, e, experiment_name='None'):
+        coord_name = self.job_name + '_' + experiment_name + '_' + self._x_axis_name
         self._datastore.store.easyscience.add_coordinate(coord_name, x)
 
         j = 0
@@ -112,16 +113,14 @@ class Experiment(coreExperiment):
             data_y = y[i]
             data_e = e[i]
             self._datastore.store.easyscience.add_variable(
-                self.job_name + "_" + experiment_name + f"_I{j}", [coord_name], data_y
+                self.job_name + '_' + experiment_name + f'_I{j}', [coord_name], data_y
             )
-            self._datastore.store.easyscience.sigma_attach(
-                self.job_name + "_" + experiment_name + f"_I{j}", data_e
-            )
+            self._datastore.store.easyscience.sigma_attach(self.job_name + '_' + experiment_name + f'_I{j}', data_e)
             j += 1
 
     def add_experiment(self, experiment_name, file_path):
         data = np.loadtxt(file_path, unpack=True)
-        coord_name = self.job_name + "_" + experiment_name + "_" + self._x_axis_name
+        coord_name = self.job_name + '_' + experiment_name + '_' + self._x_axis_name
 
         self._datastore.store.easyscience.add_coordinate(coord_name, data[0])
 
@@ -130,17 +129,15 @@ class Experiment(coreExperiment):
             data_y = data[i]
             data_e = data[i + 1]
             self._datastore.store.easyscience.add_variable(
-                self.job_name + "_" + experiment_name + f"_I{j}", [coord_name], data_y
+                self.job_name + '_' + experiment_name + f'_I{j}', [coord_name], data_y
             )
-            self._datastore.store.easyscience.sigma_attach(
-                self.job_name + "_" + experiment_name + f"_I{j}", data_e
-            )
+            self._datastore.store.easyscience.sigma_attach(self.job_name + '_' + experiment_name + f'_I{j}', data_e)
             j += 1
 
     def pattern_from_cif_block(self, block) -> None:
         p = pattern_from_cif(block)
         self.is_polarized = False
-        pattern = Powder1DParameters() # default
+        pattern = Powder1DParameters()  # default
         if 'beam.polarization' in p or 'beam.efficiency' in p:
             self.is_polarized = True
             pattern = PolPowder1DParameters()
@@ -158,17 +155,17 @@ class Experiment(coreExperiment):
         self.pattern = pattern
 
     def parameters_from_cif_block(self, block) -> None:
-       # Various instrumental parameters
+        # Various instrumental parameters
         p = parameters_from_cif(block)
         if 'wavelength' in p:
             self.is_tof = False
             self.cw_parameters_from_dict(p)
         elif 'dtt1' in p:
             self.is_tof = True
-            self._x_axis_name = "time"
+            self._x_axis_name = 'time'
             self.tof_parameters_from_dict(p)
         else:
-            raise ValueError("Unknown instrumental parameters in CIF file")
+            raise ValueError('Unknown instrumental parameters in CIF file')
 
     def cw_parameters_from_dict(self, p: dict):
         # Constant Wavelength instrumental parameters
@@ -195,7 +192,6 @@ class Experiment(coreExperiment):
             if p['resolution_w'].get('error') is not None:
                 parameters.resolution_w.error = p['resolution_w'].get('error')
                 parameters.resolution_w.fixed = False
-
 
         if 'resolution_x' in p:
             parameters.resolution_x = p['resolution_x'].get('value', 0.0)
@@ -236,7 +232,7 @@ class Experiment(coreExperiment):
         self.parameters = parameters
 
     def tof_parameters_from_dict(self, p: dict):
-       # Time of Flight instrumental parameters
+        # Time of Flight instrumental parameters
         parameters = Instrument1DTOFParameters()
         if 'dtt1' in p:
             parameters.dtt1 = p['dtt1'].get('value', 0.0)
@@ -327,26 +323,24 @@ class Experiment(coreExperiment):
         data_y = data['y']
         data_e = data['e']
 
-        coord_name = self.job_name + "_" + experiment_name + "_" + self._x_axis_name
+        coord_name = self.job_name + '_' + experiment_name + '_' + self._x_axis_name
 
         self._datastore.store.easyscience.add_coordinate(coord_name, data_x)
         self.is_polarized = False if len(data_y) == 1 else True
 
         for i in range(0, len(data_y)):
             self._datastore.store.easyscience.add_variable(
-                self.job_name + "_" + experiment_name + f"_I{i}", [coord_name], data_y[i]
+                self.job_name + '_' + experiment_name + f'_I{i}', [coord_name], data_y[i]
             )
-            self._datastore.store.easyscience.sigma_attach(
-                self.job_name + "_" + experiment_name + f"_I{i}", data_e[i]
-            )
+            self._datastore.store.easyscience.sigma_attach(self.job_name + '_' + experiment_name + f'_I{i}', data_e[i])
 
     @staticmethod
-    def background_from_cif_block(block, experiment_name:str=None) -> PointBackground:
+    def background_from_cif_block(block, experiment_name: str = None) -> PointBackground:
         # The background
         background_2thetas, background_intensities = background_from_cif(block)
 
         bkg = PointBackground(linked_experiment=experiment_name)
-        for (x, y) in zip(background_2thetas, background_intensities):
+        for x, y in zip(background_2thetas, background_intensities):
             bg_x = Descriptor('x', x)
             intensity = background_intensities[y]['value']
             error = background_intensities[y]['error']
@@ -362,31 +356,31 @@ class Experiment(coreExperiment):
         All instrumental parameters are set to default values, defined in the
         Instrument1DCWParameters class.
         """
-        with open(file_url, "r") as f:
+        with open(file_url, 'r') as f:
             data = f.read()
         if experiment_name is None:
             experiment_name = 'pnd'
         if self.is_tof:
-            string = _DEFAULT_DATA_BLOCK_NO_MEAS_PD_TOF + "\n" + data
+            string = _DEFAULT_DATA_BLOCK_NO_MEAS_PD_TOF + '\n' + data
         else:
-            string = _DEFAULT_DATA_BLOCK_NO_MEAS_PD_CWL + "\n" + data
+            string = _DEFAULT_DATA_BLOCK_NO_MEAS_PD_CWL + '\n' + data
         self.from_cif_string(string)
 
     def from_cif_file(self, file_url, experiment_name=None):
-            """
-            Load a CIF file into the experiment.
-            """
-            # content
-            # update the reference to parameters and pattern
-            # self.pattern = self._datastore._simulations.pattern
-            # self.parameters = self._datastore._simulations.parameters
-            cif_string = ""
-            with open(file_url, "r") as f:
-                cif_string = f.read()
-            self.cif_string = cif_string
-            self.from_cif_string(cif_string, experiment_name=experiment_name)
-            if hasattr(self.interface._InterfaceFactoryTemplate__interface_obj,"set_exp_cif"):
-                self.interface._InterfaceFactoryTemplate__interface_obj.set_exp_cif(self.cif_string)
+        """
+        Load a CIF file into the experiment.
+        """
+        # content
+        # update the reference to parameters and pattern
+        # self.pattern = self._datastore._simulations.pattern
+        # self.parameters = self._datastore._simulations.parameters
+        cif_string = ''
+        with open(file_url, 'r') as f:
+            cif_string = f.read()
+        self.cif_string = cif_string
+        self.from_cif_string(cif_string, experiment_name=experiment_name)
+        if hasattr(self.interface._InterfaceFactoryTemplate__interface_obj, 'set_exp_cif'):
+            self.interface._InterfaceFactoryTemplate__interface_obj.set_exp_cif(self.cif_string)
 
     def from_cif_string(self, cif_string, experiment_name=None):
         """
@@ -424,23 +418,23 @@ class Experiment(coreExperiment):
 
     @property
     def cif(self):
-        '''
+        """
         Returns a CIF representation of the experiment.
         (pattern, background, instrument, data points etc.)
-        '''
+        """
         # header
         is_tof = self.is_tof
         is_pol = self.is_polarized
-        cif = "data_" + self.job_name + "\n\n"
+        cif = 'data_' + self.job_name + '\n\n'
         if is_tof:
-            cif += self.tof_param_as_cif(pattern=self.pattern, parameters=self.parameters) + "\n\n"
+            cif += self.tof_param_as_cif(pattern=self.pattern, parameters=self.parameters) + '\n\n'
         else:
-            cif += self.cw_param_as_cif(parameters=self.parameters, pattern=self.pattern)+  "\n\n"
+            cif += self.cw_param_as_cif(parameters=self.parameters, pattern=self.pattern) + '\n\n'
         if is_pol:
-            cif += self.polar_param_as_cif(pattern=self.pattern) + "\n\n"
+            cif += self.polar_param_as_cif(pattern=self.pattern) + '\n\n'
         background = self.pattern.backgrounds[0]
-        cif += self.background_as_cif(background=background, is_tof=is_tof) + "\n\n"
-        cif += self.exp_data_as_cif() + "\n\n"
+        cif += self.background_as_cif(background=background, is_tof=is_tof) + '\n\n'
+        cif += self.exp_data_as_cif() + '\n\n'
         return cif
 
     def update_bindings(self):
@@ -451,47 +445,47 @@ class Experiment(coreExperiment):
     #
     @property
     def x(self):
-        '''
+        """
         Returns the x-axis data as xarray
-        '''
-        coord = self.job_name + "_" + self.name + "_" + self._x_axis_name
+        """
+        coord = self.job_name + '_' + self.name + '_' + self._x_axis_name
         if coord in self._datastore.store:
             return self._datastore.store[coord]
         return None
 
     @property
     def y(self):
-        '''
+        """
         Returns the y-axis experimental data as xarray
-        '''
-        coord = self.job_name + "_" + self.name + "_I0"
+        """
+        coord = self.job_name + '_' + self.name + '_I0'
         if coord in self._datastore.store:
             return self._datastore.store[coord]
         return None
 
     @property
     def y_alpha(self):
-        '''
+        """
         Returns the y-axis experimental data as xarray
-        '''
+        """
         return self.y
 
     @property
     def y_beta(self):
-        '''
+        """
         Returns the y-axis experimental data as xarray
-        '''
-        coord = self.job_name + "_" + self.name + "_I1"
+        """
+        coord = self.job_name + '_' + self.name + '_I1'
         if coord in self._datastore.store:
             return self._datastore.store[coord]
         return None
 
     @property
     def e(self):
-        '''
+        """
         Returns the error data as xarray
-        '''
-        coord = "s_" + self.job_name + "_" + self.name + "_I0"
+        """
+        coord = 's_' + self.job_name + '_' + self.name + '_I0'
         if coord in self._datastore.store:
             return self._datastore.store[coord]
         return None
@@ -502,7 +496,7 @@ class Experiment(coreExperiment):
         Load the experiment from a CIF file
         """
         # TODO: Implement this
-        return Experiment("Experiment")
+        return Experiment('Experiment')
 
     @staticmethod
     def from_cif_strig(cif_string: str):
@@ -510,103 +504,111 @@ class Experiment(coreExperiment):
         Load the experiment from a string
         """
         # TODO: Implement this
-        return Experiment("Experiment")
+        return Experiment('Experiment')
 
     def exp_data_as_cif(self):
-        '''
+        """
         Returns a CIF representation of the experimental datapoints x,y,e.
-        '''
+        """
         if self.y is None or not len(self.y):
-            return ""
+            return ''
 
         # for both sim and exp
-        cif_exp_data = "_range_2theta_min " + str(self.x.values[0]) + "\n"
-        cif_exp_data += "_range_2theta_max " + str(self.x.values[-1]) + "\n"
-        cif_exp_data += "_setup_radiation neutrons\n"
+        cif_exp_data = '_range_2theta_min ' + str(self.x.values[0]) + '\n'
+        cif_exp_data += '_range_2theta_max ' + str(self.x.values[-1]) + '\n'
+        cif_exp_data += '_setup_radiation neutrons\n'
 
         # only when exp present
-        cif_exp_data += "\nloop_"
+        cif_exp_data += '\nloop_'
 
         if self.is_tof:
-            cif_exp_data += "\n_tof_meas_time"
-            cif_prefix = "_tof_"
+            cif_exp_data += '\n_tof_meas_time'
+            cif_prefix = '_tof_'
         else:
-            cif_exp_data += "\n_pd_meas_2theta"
-            cif_prefix = "_pd_"
+            cif_exp_data += '\n_pd_meas_2theta'
+            cif_prefix = '_pd_'
 
         if self.is_polarized:
-            cif_exp_data += "\n" + \
-                            cif_prefix + "meas_intensity_up\n" + \
-                            cif_prefix + "meas_intensity_up_sigma\n" + \
-                            cif_prefix + "meas_intensity_down\n" + \
-                            cif_prefix + "meas_intensity_down_sigma"
+            cif_exp_data += (
+                '\n'
+                + cif_prefix
+                + 'meas_intensity_up\n'
+                + cif_prefix
+                + 'meas_intensity_up_sigma\n'
+                + cif_prefix
+                + 'meas_intensity_down\n'
+                + cif_prefix
+                + 'meas_intensity_down_sigma'
+            )
         else:
-            cif_exp_data += "\n" + \
-                            cif_prefix + "meas_intensity\n" + \
-                            cif_prefix + "meas_intensity_sigma"
+            cif_exp_data += '\n' + cif_prefix + 'meas_intensity\n' + cif_prefix + 'meas_intensity_sigma'
 
         for i in range(len(self.x)):
-            cif_exp_data += "\n" + str(self.x.values[i]) + " "
+            cif_exp_data += '\n' + str(self.x.values[i]) + ' '
             if self.is_polarized:
-                cif_exp_data += str(self.y.values[i]) + " " + \
-                    str(self.e.values[i]) + " " + \
-                    str(self.y_beta.values[i]) + " " + \
-                    str(self.e_beta.values[i])
+                cif_exp_data += (
+                    str(self.y.values[i])
+                    + ' '
+                    + str(self.e.values[i])
+                    + ' '
+                    + str(self.y_beta.values[i])
+                    + ' '
+                    + str(self.e_beta.values[i])
+                )
             else:
-                cif_exp_data += str(self.y.values[i]) + " " + \
-                    str(self.e.values[i])
+                cif_exp_data += str(self.y.values[i]) + ' ' + str(self.e.values[i])
 
         return cif_exp_data
 
     @staticmethod
     def cw_param_as_cif(parameters=None, pattern=None):
-        '''
+        """
         Returns a CIF representation of the CW instrument parameters
-        '''
-        cif_ipar_data = ""
-        cif_ipar_data += "\n_setup_wavelength " + str(parameters.wavelength.raw_value)
-        cif_ipar_data += "\n_setup_offset_2theta  " + str(pattern.zero_shift.raw_value)
-        cif_ipar_data += "\n"
-        cif_ipar_data += "\n_pd_instr_resolution_u " + str(parameters.resolution_u.raw_value)
-        cif_ipar_data += "\n_pd_instr_resolution_v " + str(parameters.resolution_v.raw_value)
-        cif_ipar_data += "\n_pd_instr_resolution_w " + str(parameters.resolution_w.raw_value)
-        cif_ipar_data += "\n_pd_instr_resolution_x " + str(parameters.resolution_x.raw_value)
-        cif_ipar_data += "\n_pd_instr_resolution_y " + str(parameters.resolution_y.raw_value)
-        cif_ipar_data += "\n"
-        cif_ipar_data += "\n_pd_instr_reflex_asymmetry_p1 " + str(parameters.reflex_asymmetry_p1.raw_value)
-        cif_ipar_data += "\n_pd_instr_reflex_asymmetry_p2 " + str(parameters.reflex_asymmetry_p2.raw_value)
-        cif_ipar_data += "\n_pd_instr_reflex_asymmetry_p3 " + str(parameters.reflex_asymmetry_p3.raw_value)
-        cif_ipar_data += "\n_pd_instr_reflex_asymmetry_p4 " + str(parameters.reflex_asymmetry_p4.raw_value)
+        """
+        cif_ipar_data = ''
+        cif_ipar_data += '\n_setup_wavelength ' + str(parameters.wavelength.raw_value)
+        cif_ipar_data += '\n_setup_offset_2theta  ' + str(pattern.zero_shift.raw_value)
+        cif_ipar_data += '\n'
+        cif_ipar_data += '\n_pd_instr_resolution_u ' + str(parameters.resolution_u.raw_value)
+        cif_ipar_data += '\n_pd_instr_resolution_v ' + str(parameters.resolution_v.raw_value)
+        cif_ipar_data += '\n_pd_instr_resolution_w ' + str(parameters.resolution_w.raw_value)
+        cif_ipar_data += '\n_pd_instr_resolution_x ' + str(parameters.resolution_x.raw_value)
+        cif_ipar_data += '\n_pd_instr_resolution_y ' + str(parameters.resolution_y.raw_value)
+        cif_ipar_data += '\n'
+        cif_ipar_data += '\n_pd_instr_reflex_asymmetry_p1 ' + str(parameters.reflex_asymmetry_p1.raw_value)
+        cif_ipar_data += '\n_pd_instr_reflex_asymmetry_p2 ' + str(parameters.reflex_asymmetry_p2.raw_value)
+        cif_ipar_data += '\n_pd_instr_reflex_asymmetry_p3 ' + str(parameters.reflex_asymmetry_p3.raw_value)
+        cif_ipar_data += '\n_pd_instr_reflex_asymmetry_p4 ' + str(parameters.reflex_asymmetry_p4.raw_value)
         return cif_ipar_data
 
     @staticmethod
     def tof_param_as_cif(pattern=None, parameters=None):
-        '''
+        """
         Returns a CIF representation of the TOF instrument parameters
-        '''
-        cif_tof_data = ""
-        cif_tof_data += "\n_tof_parameters_zero " + str(pattern.zero_shift.raw_value)
-        cif_tof_data += "\n_tof_parameters_dtt1 " + str(parameters.dtt1.raw_value)
-        cif_tof_data += "\n_tof_parameters_dtt2 " + str(parameters.dtt2.raw_value)
-        cif_tof_data += "\n_tof_parameters_2theta_bank " + str(parameters.ttheta_bank.raw_value)
-        cif_tof_data += "\n_tof_profile_sigma0 " + str(parameters.sigma0.raw_value)
-        cif_tof_data += "\n_tof_profile_sigma1 " + str(parameters.sigma1.raw_value)
-        cif_tof_data += "\n_tof_profile_sigma2 " + str(parameters.sigma2.raw_value)
-        cif_tof_data += "\n_tof_profile_gamma0 " + str(parameters.gamma0.raw_value)
-        cif_tof_data += "\n_tof_profile_gamma1 " + str(parameters.gamma1.raw_value)
-        cif_tof_data += "\n_tof_profile_gamma2 " + str(parameters.gamma2.raw_value)
-        cif_tof_data += "\n_tof_profile_alpha0 " + str(parameters.alpha0.raw_value)
-        cif_tof_data += "\n_tof_profile_alpha1 " + str(parameters.alpha1.raw_value)
-        cif_tof_data += "\n_tof_profile_beta0 " + str(parameters.beta0.raw_value)
-        cif_tof_data += "\n_tof_profile_beta1 " + str(parameters.beta1.raw_value)
+        """
+        cif_tof_data = ''
+        cif_tof_data += '\n_tof_parameters_zero ' + str(pattern.zero_shift.raw_value)
+        cif_tof_data += '\n_tof_parameters_dtt1 ' + str(parameters.dtt1.raw_value)
+        cif_tof_data += '\n_tof_parameters_dtt2 ' + str(parameters.dtt2.raw_value)
+        cif_tof_data += '\n_tof_parameters_2theta_bank ' + str(parameters.ttheta_bank.raw_value)
+        cif_tof_data += '\n_tof_profile_sigma0 ' + str(parameters.sigma0.raw_value)
+        cif_tof_data += '\n_tof_profile_sigma1 ' + str(parameters.sigma1.raw_value)
+        cif_tof_data += '\n_tof_profile_sigma2 ' + str(parameters.sigma2.raw_value)
+        cif_tof_data += '\n_tof_profile_gamma0 ' + str(parameters.gamma0.raw_value)
+        cif_tof_data += '\n_tof_profile_gamma1 ' + str(parameters.gamma1.raw_value)
+        cif_tof_data += '\n_tof_profile_gamma2 ' + str(parameters.gamma2.raw_value)
+        cif_tof_data += '\n_tof_profile_alpha0 ' + str(parameters.alpha0.raw_value)
+        cif_tof_data += '\n_tof_profile_alpha1 ' + str(parameters.alpha1.raw_value)
+        cif_tof_data += '\n_tof_profile_beta0 ' + str(parameters.beta0.raw_value)
+        cif_tof_data += '\n_tof_profile_beta1 ' + str(parameters.beta1.raw_value)
         return cif_tof_data
 
     @staticmethod
     def polar_param_as_cif(pattern=None):
-        cif_pat_data = ""
-        cif_pat_data += "\n_diffrn_radiation_polarization " + str(pattern.beam.polarization.raw_value)
-        cif_pat_data += "\n_diffrn_radiation_efficiency " + str(pattern.efficiency.raw_value)
-        cif_pat_data += "\n_setup_field " + str(pattern.field.raw_value)
+        cif_pat_data = ''
+        cif_pat_data += '\n_diffrn_radiation_polarization ' + str(pattern.beam.polarization.raw_value)
+        cif_pat_data += '\n_diffrn_radiation_efficiency ' + str(pattern.efficiency.raw_value)
+        cif_pat_data += '\n_setup_field ' + str(pattern.field.raw_value)
         # cif_pat_data += "\n_chi2_sum " + str(self._refine_sum)
         # cif_pat_data += "\n_chi2_diff " + str(self._refine_diff)
         # cif_pat_data += "\n_chi2_up " + str(self._refine_up)
@@ -615,25 +617,25 @@ class Experiment(coreExperiment):
 
     @staticmethod
     def background_as_cif(background=None, is_tof=False):
-        '''
+        """
         Returns a CIF representation of the background.
-        '''
-        cif_background = ""
+        """
+        cif_background = ''
         if background is None:
             return cif_background
 
         if is_tof:
-            cif_background += "\nloop_\n_tof_background_time\n_tof_background_intensity"
+            cif_background += '\nloop_\n_tof_background_time\n_tof_background_intensity'
         else:
-            cif_background += "\nloop_ \n_pd_background_2theta\n_pd_background_intensity"
+            cif_background += '\nloop_ \n_pd_background_2theta\n_pd_background_intensity'
         # background = self.parent.l_background._background_as_obj
         for i in range(len(background.data)):
-            cif_background += "\n" + str(background.data[i].x.raw_value) + " " + str(background.data[i].y.raw_value)
+            cif_background += '\n' + str(background.data[i].x.raw_value) + ' ' + str(background.data[i].y.raw_value)
         return cif_background
 
     # required dunder methods
     def __str__(self):
-        return f"Experiment: {self._name}"
+        return f'Experiment: {self._name}'
 
     def as_dict(self, skip: list = []) -> dict:
         this_dict = super(Experiment, self).as_dict(skip=skip)

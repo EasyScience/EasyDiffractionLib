@@ -5,11 +5,10 @@
 import pooch
 
 
-def download_from_repository(file_name : str,
-                             branch : str = 'master',
-                             destination : str = 'data'):
+def download_from_repository(file_name: str, branch: str = 'master', destination: str = 'data'):
     """
-    This function downloads a file from the EasyDiffraction repository on GitHub.
+    This function downloads a file from the EasyDiffraction repository
+    on GitHub.
     :param file_name: The name of the file to download
     :param branch: The branch of the repository to download from
     :param destination: The destination folder to save the file

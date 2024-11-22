@@ -30,12 +30,12 @@ from easycrystallography.Symmetry.groups import SpaceGroup as SpaceGroup2
 
 from easydiffraction.components.site import Atoms
 
-sub_spgrp = partial(re.sub, r"[\s_]", "")
-space_groups = {sub_spgrp(k): k for k in [opt["hermann_mauguin_fmt"] for opt in SpaceGroup2.SYMM_OPS]}  # type: ignore
+sub_spgrp = partial(re.sub, r'[\s_]', '')
+space_groups = {sub_spgrp(k): k for k in [opt['hermann_mauguin_fmt'] for opt in SpaceGroup2.SYMM_OPS]}  # type: ignore
 
 
 class CifIO:
-    def __init__(self, parser: "CifParser" = None):
+    def __init__(self, parser: 'CifParser' = None):
         self._parser: CifParser = parser
         self._writer: List[CifWriter] = []
         if parser is not None:
@@ -70,11 +70,11 @@ class CifIO:
         return self.__str__(cif_index)
 
     def to_file(self, file_name: Union[str, Path, TextIOWrapper], cif_index=None):
-        with open(file_name, "w") as writer:
+        with open(file_name, 'w') as writer:
             writer.write(self.__str__(cif_index))
 
     def __str__(self, index: Union[int, slice] = None):
-        out_str = ""
+        out_str = ''
         items = self._writer
         if index is not None:
             if isinstance(index, int):
@@ -82,21 +82,19 @@ class CifIO:
             elif isinstance(index, slice):
                 items = items[index]
             else:
-                raise AttributeError("Index must be a slice or int")
+                raise AttributeError('Index must be a slice or int')
         for writer in items:
             if writer is not None:
-                out_str += str(writer) + "\n"
+                out_str += str(writer) + '\n'
         return out_str
 
     def to_crystal_form(self, cif_index: int = 0, atoms_class=Atoms):
         if self._parser is None:
             raise AttributeError
-        return self._parser._cif[cif_index]["header"].name, {
-            "cell": self._parser.get_lattice(cif_index=cif_index),
-            "spacegroup": self._parser.get_symmetry(cif_index=cif_index),
-            "atoms": self._parser.get_atoms(
-                cif_index=cif_index, atoms_class=atoms_class
-            ),
+        return self._parser._cif[cif_index]['header'].name, {
+            'cell': self._parser.get_lattice(cif_index=cif_index),
+            'spacegroup': self._parser.get_symmetry(cif_index=cif_index),
+            'atoms': self._parser.get_atoms(cif_index=cif_index, atoms_class=atoms_class),
         }
 
 
@@ -124,7 +122,7 @@ class CifParser:
         """
         self._occupancy_tolerance = occupancy_tolerance
         self._site_tolerance = site_tolerance
-        if hasattr(filename, "__str__") and os.path.isfile(str(filename)):
+        if hasattr(filename, '__str__') and os.path.isfile(str(filename)):
             in_data = StarCollection.from_file(filename)
         elif isinstance(filename, (TextIOWrapper, StringIO)):
             in_data = StarCollection.from_string(filename.read())
@@ -148,20 +146,20 @@ class CifParser:
             # Doesn't seem to be a canonical way to test if file is magCIF or
             # not, so instead check for magnetic symmetry datanames
             prefixes = [
-                "space_group_magn",
-                "atom_site_moment",
-                "space_group_symop_magn",
+                'space_group_magn',
+                'atom_site_moment',
+                'space_group_symop_magn',
             ]
             logic = []
             for cif in self._cif:
                 found = False
                 for prefix in prefixes:
-                    if prefix in cif["data"].keys():
+                    if prefix in cif['data'].keys():
                         found = True
                 logic.append(found)
             return logic
 
-        self.feature_flags["magcif"] = is_magcif()
+        self.feature_flags['magcif'] = is_magcif()
 
         def is_magcif_incommensurate() -> List[bool]:
             """
@@ -174,29 +172,29 @@ class CifParser:
             logic = []
             for idx, cif in enumerate(self._cif):
                 found = False
-                if not self.feature_flags["magcif"][idx]:
+                if not self.feature_flags['magcif'][idx]:
                     logic.append(False)
                     continue
-                prefixes = ["cell_modulation_dimension", "cell_wave_vector"]
+                prefixes = ['cell_modulation_dimension', 'cell_wave_vector']
                 for prefix in prefixes:
-                    if prefix in cif["data"].keys():
+                    if prefix in cif['data'].keys():
                         found = True
                 logic.append(found)
             return logic
 
-        self.feature_flags["magcif_incommensurate"] = is_magcif_incommensurate()
+        self.feature_flags['magcif_incommensurate'] = is_magcif_incommensurate()
 
         for cif in self._cif:
             new_data = {}
-            for k in cif["data"].keys():
+            for k in cif['data'].keys():
                 # pass individual CifBlocks to _sanitize_data
-                obj = self._sanitize_data(cif["data"][k])
+                obj = self._sanitize_data(cif['data'][k])
                 new_data[obj.name] = obj
-            cif["data"] = new_data
+            cif['data'] = new_data
 
             # Sanitize the loops
-            for idx, loop in enumerate(cif["loops"]):
-                cif["loops"][idx] = self._sanitize_loop(loop)
+            for idx, loop in enumerate(cif['loops']):
+                cif['loops'][idx] = self._sanitize_loop(loop)
 
     @property
     def number_of_cifs(self) -> int:
@@ -242,23 +240,22 @@ class CifParser:
         # """
 
         # check for implicit hydrogens, warn if any present
-        if "atom_site_attached_hydrogens" in data.labels:
+        if 'atom_site_attached_hydrogens' in data.labels:
             attached_hydrogens = [
-                x._kwargs["atom_site_attached_hydrogens"].raw_value
+                x._kwargs['atom_site_attached_hydrogens'].raw_value
                 for x in data.data
-                if x._kwargs["atom_site_attached_hydrogens"].raw_value != 0
+                if x._kwargs['atom_site_attached_hydrogens'].raw_value != 0
             ]
             if len(attached_hydrogens) > 0:
                 self.warnings.append(
-                    "Structure has implicit hydrogens defined, "
-                    "parsed structure unlikely to be suitable for use "
-                    "in calculations unless hydrogens added."
+                    'Structure has implicit hydrogens defined, '
+                    'parsed structure unlikely to be suitable for use '
+                    'in calculations unless hydrogens added.'
                 )
 
         # Check to see if "_atom_site_type_symbol" exists, as some test CIFs do
         # not contain this key.
-        if "atom_site_type_symbol" in data.labels:
-
+        if 'atom_site_type_symbol' in data.labels:
             # Keep a track of which data row needs to be removed.
             # Example of a row: Nb,Zr '0.8Nb + 0.2Zr' .2a .m-3m 0 0 0 1 14
             # 'rhombic dodecahedron, Nb<sub>14</sub>'
@@ -272,43 +269,36 @@ class CifParser:
             new_atoms = []
 
             for idx, this_data in enumerate(data.data):
-
                 # CIF files from the Springer Materials/Pauling File have
                 # switched the label and symbol. Thus, in the
                 # above shown example row, '0.8Nb + 0.2Zr' is the symbol.
                 # Below, we split the strings on ' + ' to
                 # check if the length (or number of elements) in the label and
                 # symbol are equal.
-                if len(
-                    this_data._kwargs["atom_site_type_symbol"].raw_value.split(" + ")
-                ) > len(this_data._kwargs["atom_site_label"].raw_value.split(" + ")):
-
+                if len(this_data._kwargs['atom_site_type_symbol'].raw_value.split(' + ')) > len(
+                    this_data._kwargs['atom_site_label'].raw_value.split(' + ')
+                ):
                     # parse symbol to get element names and occupancy and store
                     # in "els_occu"
-                    symbol_str = this_data._kwargs["atom_site_type_symbol"].raw_value
-                    symbol_str_lst = symbol_str.split(" + ")
+                    symbol_str = this_data._kwargs['atom_site_type_symbol'].raw_value
+                    symbol_str_lst = symbol_str.split(' + ')
                     for elocc_idx, sym in enumerate(symbol_str_lst):
                         # Remove any bracketed items in the string
-                        symbol_str_lst[elocc_idx] = re.sub(
-                            r"\([0-9]*\)", "", sym.strip()
-                        )
+                        symbol_str_lst[elocc_idx] = re.sub(r'\([0-9]*\)', '', sym.strip())
 
                         # Extract element name and its occupancy from the
                         # string, and store it as a
                         # key-value pair in "els_occ".
                         new_item: FakeCore = deepcopy(this_data)
-                        new_item._kwargs["atom_site_type_symbol"].raw_value = str(
-                            re.findall(r"\D+", symbol_str_lst[elocc_idx].strip())[1]
-                        ).replace("<sup>", "")
-                        new_item._kwargs["atom_site_label"].raw_value = (
-                            new_item._kwargs["atom_site_type_symbol"].raw_value + "_fix"
+                        new_item._kwargs['atom_site_type_symbol'].raw_value = str(
+                            re.findall(r'\D+', symbol_str_lst[elocc_idx].strip())[1]
+                        ).replace('<sup>', '')
+                        new_item._kwargs['atom_site_label'].raw_value = (
+                            new_item._kwargs['atom_site_type_symbol'].raw_value + '_fix'
                         )
-                        if "atom_site_occupancy" in new_item._kwargs.keys():
-                            new_item._kwargs["atom_site_label"].raw_value = float(
-                                "0"
-                                + re.findall(
-                                    r"\.?\d+", symbol_str_lst[elocc_idx].strip()
-                                )[1]
+                        if 'atom_site_occupancy' in new_item._kwargs.keys():
+                            new_item._kwargs['atom_site_label'].raw_value = float(
+                                '0' + re.findall(r'\.?\d+', symbol_str_lst[elocc_idx].strip())[1]
                             )
                         new_atoms.append(new_item)
                     idxs_to_remove.append(idx)
@@ -325,16 +315,13 @@ class CifParser:
                 data.data = data.data.extend[new_atoms]
 
             if len(idxs_to_remove) > 0:
-                self.warnings.append("Pauling file corrections applied.")
+                self.warnings.append('Pauling file corrections applied.')
 
         # Now some CIF's dont have occupancy....
-        if (
-            "atom_site_type_symbol" in data.labels
-            and "atom_site_occupancy" not in data.labels
-        ):
+        if 'atom_site_type_symbol' in data.labels and 'atom_site_occupancy' not in data.labels:
             for this_data in data.data:
-                this_data._kwargs["atom_site_occupancy"] = FakeItem(1)
-            data.labels.append("atom_site_occupancy")
+                this_data._kwargs['atom_site_occupancy'] = FakeItem(1)
+            data.labels.append('atom_site_occupancy')
 
         # """
         # This fixes inconsistencies in naming of several magCIF tags
@@ -346,12 +333,12 @@ class CifParser:
         # this can sometimes cause serious issues when applying symmetry operations
         important_fracs = (1 / 3.0, 2 / 3.0)
         fracs_changed = False
-        if "atom_site_fract_x" in data.labels:
+        if 'atom_site_fract_x' in data.labels:
             for this_data in data.data:
                 for label in (
-                    "atom_site_fract_x",
-                    "atom_site_fract_y",
-                    "atom_site_fract_z",
+                    'atom_site_fract_x',
+                    'atom_site_fract_y',
+                    'atom_site_fract_z',
                 ):
                     if label in this_data._kwargs.keys():
                         frac = this_data._kwargs[label].raw_value
@@ -361,8 +348,7 @@ class CifParser:
                                 fracs_changed = True
         if fracs_changed:
             self.warnings.append(
-                "Some fractional co-ordinates rounded to ideal values to "
-                "avoid issues with finite precision."
+                'Some fractional co-ordinates rounded to ideal values to ' 'avoid issues with finite precision.'
             )
         return data
 
@@ -374,8 +360,8 @@ class CifParser:
     def get_lattice(
         self,
         cif_index: int = 0,
-        length_strings=("a", "b", "c"),
-        angle_strings=("alpha", "beta", "gamma"),
+        length_strings=('a', 'b', 'c'),
+        angle_strings=('alpha', 'beta', 'gamma'),
         lattice_type=None,
     ):
         """
@@ -396,12 +382,12 @@ class CifParser:
 
         if cif_index > self.number_of_cifs:
             raise AttributeError
-        data = self._cif[cif_index]["data"]
-        find_keys = ["cell_length_" + key for key in length_strings]
-        find_keys.extend(["cell_angle_" + key for key in angle_strings])
+        data = self._cif[cif_index]['data']
+        find_keys = ['cell_length_' + key for key in length_strings]
+        find_keys.extend(['cell_angle_' + key for key in angle_strings])
         if lattice_type is None:
-            dict_keys = ["length_" + key for key in length_strings]
-            dict_keys.extend(["angle_" + key for key in angle_strings])
+            dict_keys = ['length_' + key for key in length_strings]
+            dict_keys.extend(['angle_' + key for key in angle_strings])
         else:
             dict_keys = [key for key in length_strings]
             dict_keys.extend([key for key in angle_strings])
@@ -419,35 +405,25 @@ class CifParser:
                 lattice = cls(**data_dict)
             for idx, key in enumerate(dict_keys):
                 obj = getattr(lattice, key)
-                if (
-                    hasattr(data[find_keys[idx]], "fixed")
-                    and data[find_keys[idx]].fixed is not None
-                ):
+                if hasattr(data[find_keys[idx]], 'fixed') and data[find_keys[idx]].fixed is not None:
                     obj.fixed = data[find_keys[idx]].fixed
-                if (
-                    hasattr(data[find_keys[idx]], "error")
-                    and data[find_keys[idx]].error is not None
-                ):
+                if hasattr(data[find_keys[idx]], 'error') and data[find_keys[idx]].error is not None:
                     obj.error = data[find_keys[idx]].error
             return lattice
         except KeyError:
             # Missing Key search for cell setting
             for lattice_label in [
-                "symmetry_cell_setting",
-                "space_group_crystal_system",
+                'symmetry_cell_setting',
+                'space_group_crystal_system',
             ]:
                 if data.get(lattice_label):
                     lattice_type = data.get(lattice_label).value.lower()
                     try:
                         sig = signature(getattr(Lattice, lattice_type))
-                        required_args = [
-                            arg for arg in sig.parameters.keys() if arg != "interface"
-                        ]
+                        required_args = [arg for arg in sig.parameters.keys() if arg != 'interface']
                         lengths = [len for len in length_strings if len in required_args]
                         angles = [a for a in angle_strings if a in required_args]
-                        return self.get_lattice(
-                            lengths, angles, lattice_type=lattice_type
-                        )
+                        return self.get_lattice(lengths, angles, lattice_type=lattice_type)
                     except AttributeError as exc:
                         self.warnings.append(str(exc))
                 else:
@@ -467,20 +443,20 @@ class CifParser:
 
         if cif_index > self.number_of_cifs:
             raise AttributeError
-        loops = self._cif[cif_index]["loops"]
+        loops = self._cif[cif_index]['loops']
 
-        atoms_obj_name = "atoms"
+        atoms_obj_name = 'atoms'
         atoms = Atoms(atoms_obj_name)
         # We should have parsed the loop so that there is at least the following
         required_fields = [
-            "atom_site_label",
-            "atom_site_type_symbol",
-            "atom_site_occupancy",
-            "atom_site_fract_x",
-            "atom_site_fract_y",
-            "atom_site_fract_z",
+            'atom_site_label',
+            'atom_site_type_symbol',
+            'atom_site_occupancy',
+            'atom_site_fract_x',
+            'atom_site_fract_y',
+            'atom_site_fract_z',
         ]
-        our_fields = ["label", "specie", "occupancy", "fract_x", "fract_y", "fract_z"]
+        our_fields = ['label', 'specie', 'occupancy', 'fract_x', 'fract_y', 'fract_z']
 
         found = False
         for loop in loops:
@@ -502,40 +478,30 @@ class CifParser:
                     for idx, key in enumerate(our_fields):
                         obj = getattr(atom, key)
                         if (
-                            hasattr(
-                                loop.data[idx0]._kwargs[required_fields[idx]], "fixed"
-                            )
-                            and loop.data[idx0]._kwargs[required_fields[idx]].fixed
-                            is not None
+                            hasattr(loop.data[idx0]._kwargs[required_fields[idx]], 'fixed')
+                            and loop.data[idx0]._kwargs[required_fields[idx]].fixed is not None
                         ):
-                            obj.fixed = (
-                                loop.data[idx0]._kwargs[required_fields[idx]].fixed
-                            )
+                            obj.fixed = loop.data[idx0]._kwargs[required_fields[idx]].fixed
                         if (
-                            hasattr(
-                                loop.data[idx0]._kwargs[required_fields[idx]], "error"
-                            )
-                            and loop.data[idx0]._kwargs[required_fields[idx]].error
-                            is not None
+                            hasattr(loop.data[idx0]._kwargs[required_fields[idx]], 'error')
+                            and loop.data[idx0]._kwargs[required_fields[idx]].error is not None
                         ):
-                            obj.error = (
-                                loop.data[idx0]._kwargs[required_fields[idx]].error
-                            )
+                            obj.error = loop.data[idx0]._kwargs[required_fields[idx]].error
                 break
         if not found:
             raise AttributeError
         # Now look for atomic displacement
         fields = [
-            "atom_site_U_iso_or_equiv",
-            "atom_site_aniso_U_11",
-            "atom_site_B_iso_or_equiv",
-            "atom_site_aniso_B_11",
+            'atom_site_U_iso_or_equiv',
+            'atom_site_aniso_U_11',
+            'atom_site_B_iso_or_equiv',
+            'atom_site_aniso_B_11',
         ]
         adp_types = {
-            "Uiso": ["Uiso"],
-            "Uani": ["U_11", "U_12", "U_13", "U_22", "U_23", "U_33"],
-            "Biso": ["Biso"],
-            "Bani": ["B_11", "B_12", "B_13", "B_22", "B_23", "B_33"],
+            'Uiso': ['Uiso'],
+            'Uani': ['U_11', 'U_12', 'U_13', 'U_22', 'U_23', 'U_33'],
+            'Biso': ['Biso'],
+            'Bani': ['B_11', 'B_12', 'B_13', 'B_22', 'B_23', 'B_33'],
         }
 
         found = False
@@ -544,37 +510,31 @@ class CifParser:
                 if field in loop.labels:
                     found = True
                     needed_labels = []
-                    adp_type = "Uiso"
-                    if "aniso" in field:
-                        adp_type = "Uani"
+                    adp_type = 'Uiso'
+                    if 'aniso' in field:
+                        adp_type = 'Uani'
                         # Aniso should always be accompanied by atom_site_aniso_label
-                        if (
-                            "atom_site_aniso_label" not in loop.labels
-                            and "atom_site_label" in loop.labels
-                        ):
-                            needed_labels.append("atom_site_label")
+                        if 'atom_site_aniso_label' not in loop.labels and 'atom_site_label' in loop.labels:
+                            needed_labels.append('atom_site_label')
                         else:
-                            needed_labels.append("atom_site_aniso_label")
+                            needed_labels.append('atom_site_aniso_label')
                         needed_labels.extend(
                             [
-                                "atom_site_aniso_U_11",
-                                "atom_site_aniso_U_12",
-                                "atom_site_aniso_U_13",
-                                "atom_site_aniso_U_22",
-                                "atom_site_aniso_U_23",
-                                "atom_site_aniso_U_33",
+                                'atom_site_aniso_U_11',
+                                'atom_site_aniso_U_12',
+                                'atom_site_aniso_U_13',
+                                'atom_site_aniso_U_22',
+                                'atom_site_aniso_U_23',
+                                'atom_site_aniso_U_33',
                             ]
                         )
-                        if "_B_" in field:
-                            needed_labels = [
-                                this_str.replace("_U_", "_B_")
-                                for this_str in needed_labels
-                            ]
-                            adp_type = "Bani"
+                        if '_B_' in field:
+                            needed_labels = [this_str.replace('_U_', '_B_') for this_str in needed_labels]
+                            adp_type = 'Bani'
                     else:
-                        needed_labels = ["atom_site_label", field]
-                        if "_B_" in field:
-                            adp_type = "Biso"
+                        needed_labels = ['atom_site_label', field]
+                        if '_B_' in field:
+                            adp_type = 'Biso'
                     these_sections = loop.to_StarSections()
                     for idx, section in enumerate(these_sections):
                         if set(loop.labels).issuperset(set(needed_labels)):
@@ -584,8 +544,8 @@ class CifParser:
                                 if not isinstance(temp_value, Number):
                                     temp_value = 0
                                     self.append = self.warnings.append(
-                                        f"Atom {section.data[0]._kwargs[needed_labels[0]].raw_value} has non-numeric "
-                                        f"{key}. Setting to 0"
+                                        f'Atom {section.data[0]._kwargs[needed_labels[0]].raw_value} has non-numeric '
+                                        f'{key}. Setting to 0'
                                     )
                                 data_dict[adp_types[adp_type][idx2]] = temp_value
                             adps = AtomicDisplacement.from_pars(adp_type, **data_dict)
@@ -594,59 +554,39 @@ class CifParser:
                                 obj = getattr(adps, key)
                                 if (
                                     hasattr(
-                                        section.data[0]._kwargs[
-                                            needed_labels[1 + idx2]
-                                        ],
-                                        "fixed",
+                                        section.data[0]._kwargs[needed_labels[1 + idx2]],
+                                        'fixed',
                                     )
-                                    and section.data[0]
-                                    ._kwargs[needed_labels[1 + idx2]]
-                                    .fixed
-                                    is not None
+                                    and section.data[0]._kwargs[needed_labels[1 + idx2]].fixed is not None
                                 ):
-                                    obj.fixed = (
-                                        section.data[0]
-                                        ._kwargs[needed_labels[1 + idx2]]
-                                        .fixed
-                                    )
+                                    obj.fixed = section.data[0]._kwargs[needed_labels[1 + idx2]].fixed
                                 if (
                                     hasattr(
-                                        section.data[0]._kwargs[
-                                            needed_labels[1 + idx2]
-                                        ],
-                                        "error",
+                                        section.data[0]._kwargs[needed_labels[1 + idx2]],
+                                        'error',
                                     )
-                                    and section.data[0]
-                                    ._kwargs[needed_labels[1 + idx2]]
-                                    .error
-                                    is not None
+                                    and section.data[0]._kwargs[needed_labels[1 + idx2]].error is not None
                                 ):
-                                    obj.error = (
-                                        section.data[0]
-                                        ._kwargs[needed_labels[1 + idx2]]
-                                        .error
-                                    )
+                                    obj.error = section.data[0]._kwargs[needed_labels[1 + idx2]].error
 
-                            current_atom_label = (
-                                section.data[0]._kwargs[needed_labels[0]].raw_value
-                            )
+                            current_atom_label = section.data[0]._kwargs[needed_labels[0]].raw_value
                             # Add to an atom
                             if current_atom_label in atoms.atom_labels:
                                 idx2 = atoms.atom_labels.index(current_atom_label)
-                                atoms[idx2]._add_component("adp", adps)
+                                atoms[idx2]._add_component('adp', adps)
                         else:
                             raise AttributeError
                     break
         # There is no adp in the cif. Add default
         if not found:
             for atom in atoms:
-                self.warnings.append("There is no ADP defined in the CIF")
+                self.warnings.append('There is no ADP defined in the CIF')
 
         # Now look for magnetic susceptibility
-        fields = ["atom_site_susceptibility_label", "atom_site_susceptibility_chi_type"]
+        fields = ['atom_site_susceptibility_label', 'atom_site_susceptibility_chi_type']
         msp_types = {
-            "Ciso": ["chi"],
-            "Cani": ["chi_11", "chi_22", "chi_33", "chi_12", "chi_13", "chi_23"],
+            'Ciso': ['chi'],
+            'Cani': ['chi_11', 'chi_22', 'chi_33', 'chi_12', 'chi_13', 'chi_23'],
         }
         found = False
         for loop in loops:
@@ -654,99 +594,72 @@ class CifParser:
                 if field in loop.labels:
                     found = True
                     needed_labels = [
-                        "atom_site_susceptibility_label",
-                        "atom_site_susceptibility_chi_11",
+                        'atom_site_susceptibility_label',
+                        'atom_site_susceptibility_chi_11',
                     ]
                     these_sections = loop.to_StarSections()
                     for idx, section in enumerate(these_sections):
                         if set(loop.labels).issuperset(set(needed_labels)):
                             data_dict = {}
-                            msp_type_ext = (
-                                section.data[0]
-                                ._kwargs["atom_site_susceptibility_chi_type"]
-                                .raw_value
-                            )
-                            msp_type = "Ciso"
-                            if "ani" in msp_type_ext.lower():
-                                msp_type = "Cani"
+                            msp_type_ext = section.data[0]._kwargs['atom_site_susceptibility_chi_type'].raw_value
+                            msp_type = 'Ciso'
+                            if 'ani' in msp_type_ext.lower():
+                                msp_type = 'Cani'
                                 needed_labels = [
-                                    "atom_site_susceptibility_label",
-                                    "atom_site_susceptibility_chi_11",
-                                    "atom_site_susceptibility_chi_22",
-                                    "atom_site_susceptibility_chi_33",
-                                    "atom_site_susceptibility_chi_12",
-                                    "atom_site_susceptibility_chi_13",
-                                    "atom_site_susceptibility_chi_23",
+                                    'atom_site_susceptibility_label',
+                                    'atom_site_susceptibility_chi_11',
+                                    'atom_site_susceptibility_chi_22',
+                                    'atom_site_susceptibility_chi_33',
+                                    'atom_site_susceptibility_chi_12',
+                                    'atom_site_susceptibility_chi_13',
+                                    'atom_site_susceptibility_chi_23',
                                 ]
                             for idx2, key in enumerate(needed_labels[1:]):
                                 temp_value = section.data[0]._kwargs[key].raw_value
                                 if not isinstance(temp_value, Number):
                                     temp_value = 0
                                     self.append = self.warnings.append(
-                                        f"Atom {section.data[0]._kwargs[needed_labels[0]].raw_value} has non-numeric "
-                                        f"{key}. Setting to 0"
+                                        f'Atom {section.data[0]._kwargs[needed_labels[0]].raw_value} has non-numeric '
+                                        f'{key}. Setting to 0'
                                     )
                                 data_dict[msp_types[msp_type][idx2]] = temp_value
-                            msps = MagneticSusceptibility.from_pars(
-                                msp_type, **data_dict
-                            )
+                            msps = MagneticSusceptibility.from_pars(msp_type, **data_dict)
                             # Add the errors/fixed
                             for idx2, key in enumerate(msp_types[msp_type]):
                                 obj = getattr(msps, key)
                                 if (
                                     hasattr(
-                                        section.data[0]._kwargs[
-                                            needed_labels[1 + idx2]
-                                        ],
-                                        "fixed",
+                                        section.data[0]._kwargs[needed_labels[1 + idx2]],
+                                        'fixed',
                                     )
-                                    and section.data[0]
-                                    ._kwargs[needed_labels[1 + idx2]]
-                                    .fixed
-                                    is not None
+                                    and section.data[0]._kwargs[needed_labels[1 + idx2]].fixed is not None
                                 ):
-                                    obj.fixed = (
-                                        section.data[0]
-                                        ._kwargs[needed_labels[1 + idx2]]
-                                        .fixed
-                                    )
+                                    obj.fixed = section.data[0]._kwargs[needed_labels[1 + idx2]].fixed
                                 if (
                                     hasattr(
-                                        section.data[0]._kwargs[
-                                            needed_labels[1 + idx2]
-                                        ],
-                                        "error",
+                                        section.data[0]._kwargs[needed_labels[1 + idx2]],
+                                        'error',
                                     )
-                                    and section.data[0]
-                                    ._kwargs[needed_labels[1 + idx2]]
-                                    .error
-                                    is not None
+                                    and section.data[0]._kwargs[needed_labels[1 + idx2]].error is not None
                                 ):
-                                    obj.error = (
-                                        section.data[0]
-                                        ._kwargs[needed_labels[1 + idx2]]
-                                        .error
-                                    )
+                                    obj.error = section.data[0]._kwargs[needed_labels[1 + idx2]].error
 
-                            current_atom_label = (
-                                section.data[0]._kwargs[needed_labels[0]].raw_value
-                            )
+                            current_atom_label = section.data[0]._kwargs[needed_labels[0]].raw_value
                             # Add to an atom
                             if current_atom_label in atoms.atom_labels:
                                 idx2 = atoms.atom_labels.index(current_atom_label)
-                                atoms[idx2]._add_component("msp", msps)
+                                atoms[idx2]._add_component('msp', msps)
                         else:
                             raise AttributeError
                     break
         # There is no adp in the cif. Add default
         if not found:
             for atom in atoms:
-                self.warnings.append("There is no MSP defined in the CIF")
+                self.warnings.append('There is no MSP defined in the CIF')
         return atoms
 
     def get_symmetry(self, cif_index: int = 0):
-
-        data = self._cif[cif_index]["data"]
+        data = self._cif[cif_index]['data']
         space_group = None
         # All of these keys can be upper and lower case.
         lower_labels = [key.lower() for key in data.keys()]
@@ -769,7 +682,7 @@ class CifParser:
             if test_label in lower_labels:
                 is_found = True
             if not is_found:
-                test_label = test_label + "_"
+                test_label = test_label + '_'
                 if test_label in lower_labels:
                     is_found = True
             return is_found, test_label
@@ -786,9 +699,9 @@ class CifParser:
             found_op = None
             for op in SpaceGroup2.SYMM_OPS:
                 if code in [
-                    op["hermann_mauguin_fmt"],
-                    op["hermann_mauguin"],
-                    op["universal_h_m"],
+                    op['hermann_mauguin_fmt'],
+                    op['hermann_mauguin'],
+                    op['universal_h_m'],
                 ]:
                     found_op = op
                     break
@@ -805,7 +718,7 @@ class CifParser:
             """
             found_op = None
             for op in SpaceGroup2.SYMM_OPS:
-                if op["hall"] in [code, " " + code]:
+                if op['hall'] in [code, ' ' + code]:
                     found_op = op
                     break
             return found_op
@@ -822,25 +735,24 @@ class CifParser:
             code = sub_spgrp(code)
             found_op = None
             for key in SpaceGroup2.sgencoding.keys():
-                if code in [SpaceGroup2.sgencoding[key]["full_symbol"]]:
+                if code in [SpaceGroup2.sgencoding[key]['full_symbol']]:
                     found_op = check_hm(key)
                     break
             return found_op
 
-        seps = ["_", "."]
+        seps = ['_', '.']
         # Do the standard H-M lookup. All of these keys may have the form:
         #   'C m c m'
         #   'C 2/c 2/m 21/m'
         #   'A m a m'
         for symmetry_label in [
-            ["symmetry_space", "group_name_H-M"],
-            ["space_group", "name_Hall"],
-            ["space_group", "name_H-M_alt"],
-            ["symmetry_space", "group_name_Hall"],
+            ['symmetry_space', 'group_name_H-M'],
+            ['space_group', 'name_Hall'],
+            ['space_group', 'name_H-M_alt'],
+            ['symmetry_space', 'group_name_Hall'],
         ]:
-
             found = False
-            this_label = ""
+            this_label = ''
             for sep in seps:
                 found, this_label = caller(symmetry_label[0], symmetry_label[1], sep)
                 if found:
@@ -859,10 +771,10 @@ class CifParser:
                     break
             if op is None:
                 pass
-            setting = ""
-            if ":" in sg:
-                setting = sg.split(":")[1]
-            setting_additional = "space_group.IT_coordinate_system_code"
+            setting = ''
+            if ':' in sg:
+                setting = sg.split(':')[1]
+            setting_additional = 'space_group.IT_coordinate_system_code'
             if setting_additional.lower() in lower_labels:
                 key_idx = lower_labels.index(setting_additional.lower())
                 real_symmetry_setting = list(data.keys())[key_idx]
@@ -870,7 +782,7 @@ class CifParser:
                 if isinstance(setting, float) and setting.is_integer():
                     setting = int(setting)
             setting = str(setting)
-            in_string = op["hermann_mauguin_fmt"].split(":")[0]
+            in_string = op['hermann_mauguin_fmt'].split(':')[0]
             space_group = SpaceGroup.from_pars(in_string, setting=setting)
             if space_group is not None:
                 return space_group
@@ -878,10 +790,9 @@ class CifParser:
         # All of these keys can be upper and lower case.
         # All of these keys may have the form:
         #   'C m c m'
-        for symmetry_label in [["space_group", "name_H-M_ref"]]:
-
+        for symmetry_label in [['space_group', 'name_H-M_ref']]:
             found = False
-            this_label = ""
+            this_label = ''
             for sep in seps:
                 found, this_label = caller(symmetry_label[0], symmetry_label[1], sep)
                 if found:
@@ -900,17 +811,16 @@ class CifParser:
                     break
             if op is None:
                 pass
-            space_group = SpaceGroup.from_pars(op["hermann_mauguin_fmt"])
+            space_group = SpaceGroup.from_pars(op['hermann_mauguin_fmt'])
             if space_group is not None:
                 return space_group
 
         # All of these keys can be upper and lower case.
         # All of these keys may have the form:
         #   'C 2/c 2/m 21/m'
-        for symmetry_label in [["space_group", "name_H-M_full"]]:
-
+        for symmetry_label in [['space_group', 'name_H-M_full']]:
             found = False
-            this_label = ""
+            this_label = ''
             for sep in seps:
                 found, this_label = caller(symmetry_label[0], symmetry_label[1], sep)
                 if found:
@@ -929,19 +839,18 @@ class CifParser:
                     break
             if op is None:
                 pass
-            space_group = SpaceGroup.from_pars(op["hermann_mauguin_fmt"])
+            space_group = SpaceGroup.from_pars(op['hermann_mauguin_fmt'])
 
             if space_group is not None:
                 return space_group
 
         # Sometimes there's only the spacegroup number
         for symmetry_label in [
-            ["space_group", "IT_number"],
-            ["symmetry_Int", "Tables_number"],
+            ['space_group', 'IT_number'],
+            ['symmetry_Int', 'Tables_number'],
         ]:
-
             found = False
-            this_label = ""
+            this_label = ''
             for sep in seps:
                 found, this_label = caller(symmetry_label[0], symmetry_label[1], sep)
                 if found:
@@ -975,7 +884,6 @@ class CifWriter:
     #     """
 
     def __init__(self, name, *args, decimal_places: int = 8):
-
         self.name = name
         self._items = list(args)
         self.decimal_places = decimal_places
@@ -991,21 +899,20 @@ class CifWriter:
         self._cif = self._create_cif_obj()
 
     def _create_cif_obj(self) -> dict:
-
-        atoms_must = ["label", "specie", "occupancy", "fract_x", "fract_y", "fract_z"]
+        atoms_must = ['label', 'specie', 'occupancy', 'fract_x', 'fract_y', 'fract_z']
         atoms_must_conv = [
-            "atom_site_label",
-            "atom_site_type_symbol",
-            "atom_site_occupancy",
-            "atom_site_fract_x",
-            "atom_site_fract_y",
-            "atom_site_fract_z",
+            'atom_site_label',
+            'atom_site_type_symbol',
+            'atom_site_occupancy',
+            'atom_site_fract_x',
+            'atom_site_fract_y',
+            'atom_site_fract_z',
         ]
-        atoms_optional = ["adp_type", "Biso", "Uiso"]
+        atoms_optional = ['adp_type', 'Biso', 'Uiso']
         atoms_optional_conv = [
-            "atom_site_adp_type",
-            "atom_site_B_iso_or_equiv",
-            "atom_site_U_iso_or_equiv",
+            'atom_site_adp_type',
+            'atom_site_B_iso_or_equiv',
+            'atom_site_U_iso_or_equiv',
         ]
 
         # These two lines will be used when we have a full implementation of the ADP
@@ -1013,50 +920,50 @@ class CifWriter:
         # adp_U_must = ["label", "U_11", "U_12", "U_13", "U_22", "U_23", "U_33"]
         # adp_B_must = [item.replace("U_", "B_") for item in adp_U_must]
         adp_U_must_conv = [
-            "atom_site_aniso_label",
-            "atom_site_adp_type",
-            "atom_site_aniso_U_11",
-            "atom_site_aniso_U_12",
-            "atom_site_aniso_U_13",
-            "atom_site_aniso_U_22",
-            "atom_site_aniso_U_23",
-            "atom_site_aniso_U_33",
+            'atom_site_aniso_label',
+            'atom_site_adp_type',
+            'atom_site_aniso_U_11',
+            'atom_site_aniso_U_12',
+            'atom_site_aniso_U_13',
+            'atom_site_aniso_U_22',
+            'atom_site_aniso_U_23',
+            'atom_site_aniso_U_33',
         ]
 
         msp_conv = [
-            "atom_site_susceptibility_label",
-            "atom_site_susceptibility_chi_type",
-            "atom_site_susceptibility_chi_11",
-            "atom_site_susceptibility_chi_12",
-            "atom_site_susceptibility_chi_13",
-            "atom_site_susceptibility_chi_22",
-            "atom_site_susceptibility_chi_23",
-            "atom_site_susceptibility_chi_33",
+            'atom_site_susceptibility_label',
+            'atom_site_susceptibility_chi_type',
+            'atom_site_susceptibility_chi_11',
+            'atom_site_susceptibility_chi_12',
+            'atom_site_susceptibility_chi_13',
+            'atom_site_susceptibility_chi_22',
+            'atom_site_susceptibility_chi_23',
+            'atom_site_susceptibility_chi_33',
         ]
 
-        adp_B_must_conv = [item.replace("U_", "B_") for item in adp_U_must_conv]
+        adp_B_must_conv = [item.replace('U_', 'B_') for item in adp_U_must_conv]
 
         lattice_must = [
-            "length_a",
-            "length_b",
-            "length_c",
-            "angle_alpha",
-            "angle_beta",
-            "angle_gamma",
+            'length_a',
+            'length_b',
+            'length_c',
+            'angle_alpha',
+            'angle_beta',
+            'angle_gamma',
         ]
         lattice_conv = [
-            "cell_length_a",
-            "cell_length_b",
-            "cell_length_c",
-            "cell_angle_alpha",
-            "cell_angle_beta",
-            "cell_angle_gamma",
+            'cell_length_a',
+            'cell_length_b',
+            'cell_length_c',
+            'cell_angle_alpha',
+            'cell_angle_beta',
+            'cell_angle_gamma',
         ]
 
-        sg_must = ["_space_group_HM_name"]
-        sg_conv = ["space_group_name_H-M_alt"]
+        sg_must = ['_space_group_HM_name']
+        sg_conv = ['space_group_name_H-M_alt']
 
-        blocks = {"header": StarHeader(self.name), "loops": [], "data": {}}
+        blocks = {'header': StarHeader(self.name), 'loops': [], 'data': {}}
 
         def parse_block(item: StarLoop):
             if set(item.labels).issuperset(set(atoms_must)):
@@ -1065,11 +972,11 @@ class CifWriter:
                     if option in item.labels:
                         labels.append(atoms_optional_conv[idx2])
                 item.labels = labels
-            elif any(["U_" in opt for opt in item.labels]):
+            elif any(['U_' in opt for opt in item.labels]):
                 item.labels = adp_U_must_conv.copy()
-            elif any(["B_" in opt for opt in item.labels]):
+            elif any(['B_' in opt for opt in item.labels]):
                 item.labels = adp_B_must_conv.copy()
-            elif any(["chi" in opt for opt in item.labels]):
+            elif any(['chi' in opt for opt in item.labels]):
                 if len(item.labels) == 8:
                     item.labels = msp_conv.copy()
                 else:
@@ -1092,38 +999,37 @@ class CifWriter:
             if isinstance(block, list):
                 for item in block:
                     parse_block(item)
-                blocks["loops"].extend(block)
+                blocks['loops'].extend(block)
             elif isinstance(block, StarLoop):
                 parse_block(block)
-                blocks["loops"].append(block)
+                blocks['loops'].append(block)
             elif isinstance(block, StarSection):
                 parse_section(block)
                 entries = block.to_StarEntries()
                 for entry in entries:
-                    blocks["data"][entry.name] = entry
+                    blocks['data'][entry.name] = entry
             elif isinstance(block, StarEntry):
                 parse_entry(block)
-                blocks["data"][block.name] = block
+                blocks['data'][block.name] = block
         return blocks
 
     def __str__(self) -> str:
-        out_str = ""
-        if self._cif["header"]:
-            out_str += str(self._cif["header"]) + "\n\n"
+        out_str = ''
+        if self._cif['header']:
+            out_str += str(self._cif['header']) + '\n\n'
 
-            for key in self._cif["data"].keys():
-                out_str += str(self._cif["data"][key]) + "\n"
-            out_str += "\n"
-            for item in self._cif["loops"]:
-                out_str += str(item) + "\n"
+            for key in self._cif['data'].keys():
+                out_str += str(self._cif['data'][key]) + '\n'
+            out_str += '\n'
+            for item in self._cif['loops']:
+                out_str += str(item) + '\n'
         return out_str
 
     @classmethod
     def from_CifParser(cls, cif_parser: CifParser):
-
         obj = []
         for idx in range(cif_parser.number_of_cifs):
-            this_obj = cls(cif_parser._cif[idx]["header"].name)
+            this_obj = cls(cif_parser._cif[idx]['header'].name)
             this_obj._cif = cif_parser._cif[idx]
             obj.append(this_obj)
         if len(obj) == 1:
@@ -1139,14 +1045,15 @@ def str2float(text):
     try:
         # Note that the ending ) is sometimes missing. That is why the code has
         # been modified to treat it as optional. Same logic applies to lists.
-        return float(re.sub(r"\(.+\)*", "", text))
+        return float(re.sub(r'\(.+\)*', '', text))
     except TypeError:
         if isinstance(text, list) and len(text) == 1:
-            return float(re.sub(r"\(.+\)*", "", text[0]))
+            return float(re.sub(r'\(.+\)*', '', text[0]))
     except ValueError as ex:
-        if text.strip() == ".":
+        if text.strip() == '.':
             return 0
         raise ex
+
 
 def dataBlockToCif(block, includeBlockName=True):
     cif = ''
@@ -1155,10 +1062,10 @@ def dataBlockToCif(block, includeBlockName=True):
         cif += '\n\n'
     if 'params' in block:
         for category in block['params'].values():
-            #for param in category.values():
+            # for param in category.values():
             for param in category.values():
                 # `param` is an easyCore Parameter object
-                #if param["optional"]:
+                # if param["optional"]:
                 #    continue
                 value = param['value']
                 if value is None:
@@ -1193,16 +1100,16 @@ def dataBlockToCif(block, includeBlockName=True):
                 continue
             row0 = category[0]
             for param in row0.values():
-                if 'optional' in param and param["optional"]:
+                if 'optional' in param and param['optional']:
                     continue
                 cif += f'{categoryName}.{param["name"]}\n'
             # loop data
             for row in category:
                 line = ''
                 for param in row.values():
-                    if 'optional' in param and param["optional"]:
+                    if 'optional' in param and param['optional']:
                         continue
-                    value = param["value"]
+                    value = param['value']
                     if value is None:
                         continue
                     # convert
@@ -1213,15 +1120,15 @@ def dataBlockToCif(block, includeBlockName=True):
                     # add brackets with error for free params
                     error = 0
                     if 'error' in param:
-                        error = param["error"]
+                        error = param['error']
                     if error == 0:
                         error = ''
                     else:
-                        if param["error"] > 1:
+                        if param['error'] > 1:
                             error = f'{round(error, 6):.10g}'
                         else:
                             error = f'{round(error, 6):.17f}'.rstrip('0').lstrip('0').lstrip('.').lstrip('0')  # NEED FIX
-                    if 'fit' in param and param["fit"]:
+                    if 'fit' in param and param['fit']:
                         line += f'{value}({error})'
                     else:
                         line += f'{value}'
@@ -1232,153 +1139,129 @@ def dataBlockToCif(block, includeBlockName=True):
     cif = cif.replace('\n\n\n', '\n\n')
     return cif
 
+
 def cifV2ToV1_tof(edCif):
-        rawToEdNamesCif = {
-            '_symmetry_space_group_name_H-M': '_space_group.name_H-M_alt',
-            '_atom_site_thermal_displace_type': '_atom_site.ADP_type',
-            '_atom_site_adp_type': '_atom_site.ADP_type',
-            '_atom_site_U_iso_or_equiv': '_atom_site.U_iso_or_equiv',
-            '_atom_site_B_iso_or_equiv': '_atom_site.B_iso_or_equiv',
-            '_space_group_IT_coordinate_system_code': '_space_group.IT_coordinate_system_code',
-        }
-        edToCryspyNamesMap = {}
-        edToCryspyNamesMap['base'] = {
-            '_space_group.name_H-M_alt': '_space_group_name_H-M_alt',
-            '_space_group.IT_coordinate_system_code': '_space_group_IT_coordinate_system_code',
+    rawToEdNamesCif = {
+        '_symmetry_space_group_name_H-M': '_space_group.name_H-M_alt',
+        '_atom_site_thermal_displace_type': '_atom_site.ADP_type',
+        '_atom_site_adp_type': '_atom_site.ADP_type',
+        '_atom_site_U_iso_or_equiv': '_atom_site.U_iso_or_equiv',
+        '_atom_site_B_iso_or_equiv': '_atom_site.B_iso_or_equiv',
+        '_space_group_IT_coordinate_system_code': '_space_group.IT_coordinate_system_code',
+    }
+    edToCryspyNamesMap = {}
+    edToCryspyNamesMap['base'] = {
+        '_space_group.name_H-M_alt': '_space_group_name_H-M_alt',
+        '_space_group.IT_coordinate_system_code': '_space_group_IT_coordinate_system_code',
+        '_cell.length': '_cell_length',
+        '_cell.angle': '_cell_angle',
+        '_atom_site.label': '_atom_site_label',
+        '_atom_site.type_symbol': '_atom_site_type_symbol',
+        '_atom_site.fract': '_atom_site_fract',
+        '_atom_site.occupancy': '_atom_site_occupancy',
+        '_atom_site.ADP_type': '_atom_site_adp_type',
+        '_atom_site.B_iso_or_equiv': '_atom_site_B_iso_or_equiv',
+        '_atom_site.site_symmetry_multiplicity': '_atom_site_multiplicity',
+        '_diffrn_radiation.probe': '_setup_radiation',
+        '_pd_phase_block.id': '_phase_label',
+        '_pd_phase_block.scale': '_phase_scale',
+        '_model.cif_file_name': '_model_cif_file_name',
+        '_experiment.cif_file_name': '_experiment_cif_file_name',
+    }
+    edToCryspyNamesMap['cwl'] = {
+        '_diffrn_radiation_wavelength.wavelength': '_setup_wavelength',
+        '_pd_calib.2theta_offset': '_setup_offset_2theta',
+        '_pd_instr.resolution_u': '_pd_instr_resolution_u',
+        '_pd_instr.resolution_v': '_pd_instr_resolution_v',
+        '_pd_instr.resolution_w': '_pd_instr_resolution_w',
+        '_pd_instr.resolution_x': '_pd_instr_resolution_x',
+        '_pd_instr.resolution_y': '_pd_instr_resolution_y',
+        '_pd_instr.reflex_asymmetry_p1': '_pd_instr_reflex_asymmetry_p1',
+        '_pd_instr.reflex_asymmetry_p2': '_pd_instr_reflex_asymmetry_p2',
+        '_pd_instr.reflex_asymmetry_p3': '_pd_instr_reflex_asymmetry_p3',
+        '_pd_instr.reflex_asymmetry_p4': '_pd_instr_reflex_asymmetry_p4',
+        '_pd_meas.2theta_scan': '_pd_meas_2theta',
+        '_pd_meas.intensity_total_su': '_pd_meas_intensity_sigma',  # before _pd_meas.intensity_total!
+        '_pd_meas.intensity_total': '_pd_meas_intensity',
+        # NEED see if we can hide this as for TOF case
+        '_pd_meas.2theta_range_min': '_range_2theta_min',
+        '_pd_meas.2theta_range_max': '_range_2theta_max',
+        # NEED to remove this and use our handling of a background as for TOF case
+        '_pd_background.line_segment_X': '_pd_background_2theta',
+        '_pd_background.line_segment_intensity': '_pd_background_intensity',
+        '_pd_background.X_coordinate': '_pd_background_X_coordinate',
+    }
+    edToCryspyNamesMap['tof'] = {
+        '_pd_instr.zero': '_tof_parameters_Zero',
+        '_pd_instr.dtt1': '_tof_parameters_Dtt1',
+        '_pd_instr.dtt2': '_tof_parameters_dtt2',
+        '_pd_instr.2theta_bank': '_tof_parameters_2theta_bank',
+        '_pd_instr.peak_shape': '_tof_profile_peak_shape',
+        '_pd_instr.alpha0': '_tof_profile_alpha0',
+        '_pd_instr.alpha1': '_tof_profile_alpha1',
+        '_pd_instr.beta0': '_tof_profile_beta0',
+        '_pd_instr.beta1': '_tof_profile_beta1',
+        '_pd_instr.gamma0': '_tof_profile_gamma0',
+        '_pd_instr.gamma1': '_tof_profile_gamma1',
+        '_pd_instr.gamma2': '_tof_profile_gamma2',
+        '_pd_instr.sigma0': '_tof_profile_sigma0',
+        '_pd_instr.sigma1': '_tof_profile_sigma1',
+        '_pd_instr.sigma2': '_tof_profile_sigma2',
+        ###'_tof_background.time_max': '_tof_background_time_max',
+        ###'_tof_background.coeff': '_tof_background_coeff',
+        '_pd_background.line_segment_X': '_tof_backgroundpoint_time',
+        '_pd_background.line_segment_intensity': '_tof_backgroundpoint_intensity',
+        '_pd_background.X_coordinate': '_tof_backgroundpoint.X_coordinate',
+        '_pd_meas.time_of_flight': '_tof_meas_time',
+        '_pd_meas.intensity_total_su': '_tof_meas_intensity_sigma',  # before _pd_meas.intensity_total!
+        '_pd_meas.intensity_total': '_tof_meas_intensity',
+        '_pd_meas.tof_range_min': '_range_time_min',
+        '_pd_meas.tof_range_max': '_range_time_max',
+    }
+    edToCryspyValuesMap = {
+        'x-ray': 'X-rays',
+        'neutron': 'neutrons',
+        'neutronss': 'neutrons',
+    }
+    cryspyCif = edCif
+    diffrn_radiation_type = 'cwl' if '2theta_scan' in cryspyCif else 'tof'
+    for rawName, edName in rawToEdNamesCif.items():
+        cryspyCif = cryspyCif.replace(rawName, edName)
+    for edName, cryspyName in edToCryspyNamesMap['base'].items():
+        cryspyCif = cryspyCif.replace(edName, cryspyName)
+    for edName, cryspyName in edToCryspyNamesMap[diffrn_radiation_type].items():
+        cryspyCif = cryspyCif.replace(edName, cryspyName)
+    for edValue, cryspyValue in edToCryspyValuesMap.items():
+        cryspyCif = cryspyCif.replace(edValue, cryspyValue)
+    return cryspyCif
 
-            '_cell.length': '_cell_length',
-            '_cell.angle': '_cell_angle',
-
-            '_atom_site.label': '_atom_site_label',
-            '_atom_site.type_symbol': '_atom_site_type_symbol',
-            '_atom_site.fract': '_atom_site_fract',
-            '_atom_site.occupancy': '_atom_site_occupancy',
-            '_atom_site.ADP_type': '_atom_site_adp_type',
-            '_atom_site.B_iso_or_equiv': '_atom_site_B_iso_or_equiv',
-
-            '_atom_site.site_symmetry_multiplicity': '_atom_site_multiplicity',
-
-            '_diffrn_radiation.probe': '_setup_radiation',
-
-            '_pd_phase_block.id': '_phase_label',
-            '_pd_phase_block.scale': '_phase_scale',
-
-            '_model.cif_file_name': '_model_cif_file_name',
-            '_experiment.cif_file_name': '_experiment_cif_file_name'
-        }
-        edToCryspyNamesMap['cwl'] = {
-            '_diffrn_radiation_wavelength.wavelength': '_setup_wavelength',
-
-            '_pd_calib.2theta_offset': '_setup_offset_2theta',
-
-            '_pd_instr.resolution_u': '_pd_instr_resolution_u',
-            '_pd_instr.resolution_v': '_pd_instr_resolution_v',
-            '_pd_instr.resolution_w': '_pd_instr_resolution_w',
-            '_pd_instr.resolution_x': '_pd_instr_resolution_x',
-            '_pd_instr.resolution_y': '_pd_instr_resolution_y',
-
-            '_pd_instr.reflex_asymmetry_p1': '_pd_instr_reflex_asymmetry_p1',
-            '_pd_instr.reflex_asymmetry_p2': '_pd_instr_reflex_asymmetry_p2',
-            '_pd_instr.reflex_asymmetry_p3': '_pd_instr_reflex_asymmetry_p3',
-            '_pd_instr.reflex_asymmetry_p4': '_pd_instr_reflex_asymmetry_p4',
-
-            '_pd_meas.2theta_scan': '_pd_meas_2theta',
-            '_pd_meas.intensity_total_su': '_pd_meas_intensity_sigma',  # before _pd_meas.intensity_total!
-            '_pd_meas.intensity_total': '_pd_meas_intensity',
-
-            # NEED see if we can hide this as for TOF case
-            '_pd_meas.2theta_range_min': '_range_2theta_min',
-            '_pd_meas.2theta_range_max': '_range_2theta_max',
-
-            # NEED to remove this and use our handling of a background as for TOF case
-            '_pd_background.line_segment_X': '_pd_background_2theta',
-            '_pd_background.line_segment_intensity': '_pd_background_intensity',
-            '_pd_background.X_coordinate': '_pd_background_X_coordinate',
-
-        }
-        edToCryspyNamesMap['tof'] = {
-            '_pd_instr.zero': '_tof_parameters_Zero',
-            '_pd_instr.dtt1': '_tof_parameters_Dtt1',
-            '_pd_instr.dtt2': '_tof_parameters_dtt2',
-            '_pd_instr.2theta_bank': '_tof_parameters_2theta_bank',
-
-            '_pd_instr.peak_shape': '_tof_profile_peak_shape',
-            '_pd_instr.alpha0': '_tof_profile_alpha0',
-            '_pd_instr.alpha1': '_tof_profile_alpha1',
-            '_pd_instr.beta0':  '_tof_profile_beta0',
-            '_pd_instr.beta1':  '_tof_profile_beta1',
-            '_pd_instr.gamma0': '_tof_profile_gamma0',
-            '_pd_instr.gamma1': '_tof_profile_gamma1',
-            '_pd_instr.gamma2': '_tof_profile_gamma2',
-            '_pd_instr.sigma0': '_tof_profile_sigma0',
-            '_pd_instr.sigma1': '_tof_profile_sigma1',
-            '_pd_instr.sigma2': '_tof_profile_sigma2',
-
-            ###'_tof_background.time_max': '_tof_background_time_max',
-            ###'_tof_background.coeff': '_tof_background_coeff',
-
-            '_pd_background.line_segment_X': '_tof_backgroundpoint_time',
-            '_pd_background.line_segment_intensity': '_tof_backgroundpoint_intensity',
-            '_pd_background.X_coordinate': '_tof_backgroundpoint.X_coordinate',
-
-            '_pd_meas.time_of_flight': '_tof_meas_time',
-            '_pd_meas.intensity_total_su': '_tof_meas_intensity_sigma',  # before _pd_meas.intensity_total!
-            '_pd_meas.intensity_total': '_tof_meas_intensity',
-
-            '_pd_meas.tof_range_min': '_range_time_min',
-            '_pd_meas.tof_range_max': '_range_time_max',
-        }
-        edToCryspyValuesMap = {
-            'x-ray': 'X-rays',
-            'neutron': 'neutrons',
-            'neutronss': 'neutrons',
-        }
-        cryspyCif = edCif
-        diffrn_radiation_type = 'cwl' if '2theta_scan' in cryspyCif else 'tof'
-        for rawName, edName in rawToEdNamesCif.items():
-            cryspyCif = cryspyCif.replace(rawName, edName)
-        for edName, cryspyName in edToCryspyNamesMap['base'].items():
-            cryspyCif = cryspyCif.replace(edName, cryspyName)
-        for edName, cryspyName in edToCryspyNamesMap[diffrn_radiation_type].items():
-            cryspyCif = cryspyCif.replace(edName, cryspyName)
-        for edValue, cryspyValue in edToCryspyValuesMap.items():
-            cryspyCif = cryspyCif.replace(edValue, cryspyValue)
-        return cryspyCif
 
 def cifV2ToV1(edCif):
     cryspyCif = edCif
     edToCryspyNamesMap = {
         '_diffrn_radiation.probe': '_setup_radiation',
         '_diffrn_radiation_wavelength.wavelength': '_setup_wavelength',
-
         '_pd_calib.2theta_offset': '_setup_offset_2theta',
-
         '_pd_instr.resolution_u': '_pd_instr_resolution_u',
         '_pd_instr.resolution_v': '_pd_instr_resolution_v',
         '_pd_instr.resolution_w': '_pd_instr_resolution_w',
         '_pd_instr.resolution_x': '_pd_instr_resolution_x',
         '_pd_instr.resolution_y': '_pd_instr_resolution_y',
-
         '_pd_instr.reflex_asymmetry_p1': '_pd_instr_reflex_asymmetry_p1',
         '_pd_instr.reflex_asymmetry_p2': '_pd_instr_reflex_asymmetry_p2',
         '_pd_instr.reflex_asymmetry_p3': '_pd_instr_reflex_asymmetry_p3',
         '_pd_instr.reflex_asymmetry_p4': '_pd_instr_reflex_asymmetry_p4',
-
         '_pd_phase_block.id': '_phase_label',
         '_pd_phase_block.scale': '_phase_scale',
-
         '_pd_meas.2theta_range_min': '_range_2theta_min',
         '_pd_meas.2theta_range_max': '_range_2theta_max',
         '_pd_meas.2theta_scan': '_pd_meas_2theta',
-
         '_pd_meas.intensity_total_su': '_pd_meas_intensity_sigma',  # before intensity_total!
         '_pd_meas.intensity_total': '_pd_meas_intensity',
-
         '_pd_background.line_segment_X': '_pd_background_2theta',
         '_pd_background.line_segment_intensity': '_pd_background_intensity',
-
         '_model.cif_file_name': '_model_cif_file_name',
-        '_experiment.cif_file_name': '_experiment_cif_file_name'
+        '_experiment.cif_file_name': '_experiment_cif_file_name',
     }
     edToCryspyValuesMap = {
         'x-ray': 'X-rays',

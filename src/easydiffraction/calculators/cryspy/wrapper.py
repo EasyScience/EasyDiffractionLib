@@ -48,29 +48,29 @@ class CryspyBase(Neutron_type, metaclass=ABCMeta):
     it only creates the crystal structure and inherits all the experiment types from the plugins.
     """
 
-    _sample_link = {"cif_str": "cif_str"}
+    _sample_link = {'cif_str': 'cif_str'}
 
     _crystal_link = {
-        "length_a": "length_a",
-        "length_b": "length_b",
-        "length_c": "length_c",
-        "angle_alpha": "angle_alpha",
-        "angle_beta": "angle_beta",
-        "angle_gamma": "angle_gamma",
+        'length_a': 'length_a',
+        'length_b': 'length_b',
+        'length_c': 'length_c',
+        'angle_alpha': 'angle_alpha',
+        'angle_beta': 'angle_beta',
+        'angle_gamma': 'angle_gamma',
     }
 
     _atom_link = {
-        "label": "label",
-        "specie": "type_symbol",
-        "fract_x": "fract_x",
-        "fract_y": "fract_y",
-        "fract_z": "fract_z",
-        "occupancy": "occupancy",
-        "adp_type": "adp_type",
-        "Uiso": "u_iso_or_equiv",
-        "Biso": "b_iso_or_equiv",
-        "Uani": "u_iso_or_equiv",
-        "Bani": "b_iso_or_equiv",
+        'label': 'label',
+        'specie': 'type_symbol',
+        'fract_x': 'fract_x',
+        'fract_y': 'fract_y',
+        'fract_z': 'fract_z',
+        'occupancy': 'occupancy',
+        'adp_type': 'adp_type',
+        'Uiso': 'u_iso_or_equiv',
+        'Biso': 'b_iso_or_equiv',
+        'Uani': 'u_iso_or_equiv',
+        'Bani': 'b_iso_or_equiv',
     }
     _subsets = []
     _borg = borg
@@ -126,8 +126,8 @@ class CryspyBase(Neutron_type, metaclass=ABCMeta):
             )
         # Interface with Spacegroup
         elif issubclass(t_, SpaceGroup):
-            s_key = self.calculator.createSpaceGroup(key=model_key, name_hm_alt="P 1")
-            keys = {"hermann_mauguin": "name_hm_alt"}
+            s_key = self.calculator.createSpaceGroup(key=model_key, name_hm_alt='P 1')
+            keys = {'hermann_mauguin': 'name_hm_alt'}
             r_list.append(
                 ItemContainer(
                     s_key,
@@ -163,18 +163,16 @@ class CryspyBase(Neutron_type, metaclass=ABCMeta):
             )
         # Interface with the phase object
         elif issubclass(t_, Phase):
-            ident = str(model_key) + "_phase"
+            ident = str(model_key) + '_phase'
             self.calculator.createPhase(ident)
             _ = self.calculator.createEmptyCrystal(model.name, key=model_key)
             self.calculator.assignCell_toCrystal(self._identify(model.cell), model_key)
-            self.calculator.assignSpaceGroup_toCrystal(
-                self._identify(model._spacegroup), model_key
-            )
+            self.calculator.assignSpaceGroup_toCrystal(self._identify(model._spacegroup), model_key)
             self.calculator.setPhaseScale(str(model_key), scale=model.scale.raw_value)
             r_list.append(
                 ItemContainer(
                     model_key,
-                    {"scale": "scale"},
+                    {'scale': 'scale'},
                     self.calculator.getPhaseScale,
                     self.calculator.setPhaseScale,
                 )
@@ -184,7 +182,7 @@ class CryspyBase(Neutron_type, metaclass=ABCMeta):
         # Interface with the Phases object
         elif issubclass(t_, Phases) and len(model) > 0:
             for phase in model:
-                ident = self._identify(phase, as_str=True) + "_phase"
+                ident = self._identify(phase, as_str=True) + '_phase'
                 self.calculator.assignPhase(model_key, ident)
 
         return r_list
@@ -207,17 +205,15 @@ class CryspyBase(Neutron_type, metaclass=ABCMeta):
         """
         Add a phase to the phases object.
         """
-        ident = self._identify(phase_obj, as_str=True) + "_phase"
+        ident = self._identify(phase_obj, as_str=True) + '_phase'
         self.calculator.assignPhase(self._identify(phases_obj), ident)
-        self.calculator.setPhaseScale(
-            self._identify(phase_obj), scale=phase_obj.scale.raw_value
-        )
+        self.calculator.setPhaseScale(self._identify(phase_obj), scale=phase_obj.scale.raw_value)
 
     def remove_phase(self, phases_obj: Phases, phase_obj: Phase) -> None:
         """
         Remove a phase from the phases object.
         """
-        ident = self._identify(phase_obj, as_str=True) + "_phase"
+        ident = self._identify(phase_obj, as_str=True) + '_phase'
         self.calculator.removePhase(self._identify(phases_obj), ident)
 
     def get_hkl(
@@ -256,12 +252,11 @@ class CryspyBase(Neutron_type, metaclass=ABCMeta):
         """
         Helper function to identify objects.
         """
-        if hasattr(obj, "unique_name"):
+        if hasattr(obj, 'unique_name'):
             obj_id = obj.unique_name
         else:
             obj_id = None
         return obj_id
-
 
 
 class Powder(Powder_type):
@@ -293,22 +288,22 @@ class CW(CW_type):
     """
 
     _instrument_link = {
-        "wavelength": "wavelength",
-        "resolution_u": "u",
-        "resolution_v": "v",
-        "resolution_w": "w",
-        "resolution_x": "x",
-        "resolution_y": "y",
-        "reflex_asymmetry_p1": "p1",
-        "reflex_asymmetry_p2": "p2",
-        "reflex_asymmetry_p3": "p3",
-        "reflex_asymmetry_p4": "p4"
+        'wavelength': 'wavelength',
+        'resolution_u': 'u',
+        'resolution_v': 'v',
+        'resolution_w': 'w',
+        'resolution_x': 'x',
+        'resolution_y': 'y',
+        'reflex_asymmetry_p1': 'p1',
+        'reflex_asymmetry_p2': 'p2',
+        'reflex_asymmetry_p3': 'p3',
+        'reflex_asymmetry_p4': 'p4',
     }
 
     def create(self, model: B) -> List[ItemContainer]:
         r_list = []
         t_ = type(model)
-        #model_key = self._identify(model)
+        # model_key = self._identify(model)
 
         # Link the Instrumental parameters to the calculator.
         if issubclass(t_, Instrument1DCWParameters):
@@ -348,7 +343,7 @@ class CW(CW_type):
                     self.calculator.genericUpdate,
                 )
             )
-            self.calculator.createModel("powder1DCW")
+            self.calculator.createModel('powder1DCW')
         return r_list
 
 
@@ -362,29 +357,29 @@ class TOF(TOF_type):
     def create(self, model: B) -> List[ItemContainer]:
         r_list = []
         t_ = type(model)
-        #model_key = self._identify(model)
+        # model_key = self._identify(model)
 
         if issubclass(t_, Instrument1DTOFParameters):
-            self.calculator.createModel("powder1DTOF")
+            self.calculator.createModel('powder1DTOF')
             # These parameters are linked to the Resolution and Setup cryspy objects
-            res_key = self.calculator.createResolution(cls_type="powder1DTOF")
-            setup_key = self.calculator.createSetup(cls_type="powder1DTOF")
+            res_key = self.calculator.createResolution(cls_type='powder1DTOF')
+            setup_key = self.calculator.createSetup(cls_type='powder1DTOF')
             keys = self._instrument_tof_link.copy()
             self.calculator.parameters = model
-            setup_keys = {k: keys[k] for k in ["ttheta_bank", "dtt1", "dtt2"]}
+            setup_keys = {k: keys[k] for k in ['ttheta_bank', 'dtt1', 'dtt2']}
             res_keys = {
                 k: keys[k]
                 for k in [
-                    "sigma0",
-                    "sigma1",
-                    "sigma2",
-                    "gamma0",
-                    "gamma1",
-                    "gamma2",
-                    "alpha0",
-                    "alpha1",
-                    "beta0",
-                    "beta1",
+                    'sigma0',
+                    'sigma1',
+                    'sigma2',
+                    'gamma0',
+                    'gamma1',
+                    'gamma2',
+                    'alpha0',
+                    'alpha1',
+                    'beta0',
+                    'beta1',
                 ]
             }
             r_list.append(
@@ -412,17 +407,17 @@ class POL(Pol_type):
     """
 
     _polarization_link = {
-        "polarization": "polarization",
-        "efficiency": "efficiency",
+        'polarization': 'polarization',
+        'efficiency': 'efficiency',
     }
 
-    _field_link = {"magnetic_field": "field"}
+    _field_link = {'magnetic_field': 'field'}
 
     _chi2_link = {
-        "sum": "sum",
-        "diff": "diff",
-        "up": "up",
-        "down": "down",
+        'sum': 'sum',
+        'diff': 'diff',
+        'up': 'up',
+        'down': 'down',
     }
 
     def create(self, model: B) -> List[ItemContainer]:
@@ -452,7 +447,7 @@ class POL(Pol_type):
             )
         # We have already created a Site in cryspy, now add the MSP
         elif issubclass(t_, Site) or issubclass(t_, Site_base):
-            if not hasattr(model, "msp"):
+            if not hasattr(model, 'msp'):
                 return r_list
             msp_type = model.msp.msp_type.raw_value
             pars = model.msp.get_parameters()
@@ -467,10 +462,10 @@ class POL(Pol_type):
                 )
             )
         elif issubclass(t_, Powder1DParameters):
-            if hasattr(model, "field"):
+            if hasattr(model, 'field'):
                 r_list.append(
                     ItemContainer(
-                        "setup",
+                        'setup',
                         self._field_link,
                         self.calculator.genericReturn,
                         self.calculator.genericUpdate,
@@ -578,11 +573,11 @@ class CryspyCW(CryspyBase, CW, Powder, UPol):
         r_list = []
         t_ = type(model)
         model_key = self._identify(model)
-        base = "powder1DCW"
-        if t_.__name__ == "Sample" or t_.__name__ in [
-            "Powder1DCW",
-            "powder1DCW",
-            "Npowder1DCW",
+        base = 'powder1DCW'
+        if t_.__name__ == 'Sample' or t_.__name__ in [
+            'Powder1DCW',
+            'powder1DCW',
+            'Npowder1DCW',
         ]:
             self._createModel(model_key, base)
         return r_list
@@ -594,11 +589,11 @@ class CryspyTOF(CryspyBase, TOF, Powder, UPol):
         r_list = []
         t_ = type(model)
         model_key = self._identify(model)
-        base = "powder1DTOF"
-        if t_.__name__ == "Sample" or t_.__name__ in [
-            "Powder1DTOF",
-            "powder1DTOF",
-            "Npowder1DTOF",
+        base = 'powder1DTOF'
+        if t_.__name__ == 'Sample' or t_.__name__ in [
+            'Powder1DTOF',
+            'powder1DTOF',
+            'Npowder1DTOF',
         ]:
             self._createModel(model_key, base)
         return r_list
@@ -610,12 +605,12 @@ class CryspyCWPol(CryspyBase, CW, Powder, POL):
         r_list = []
         t_ = type(model)
         model_key = self._identify(model)
-        base = "powder1DCWpol"
-        if t_.__name__ == "Sample" or t_.__name__ in [
-            "PolPowder1DCW",
-            "Powder1DCWpol",
-            "powder1DCWpol",
-            "Npowder1DCWpol",
+        base = 'powder1DCWpol'
+        if t_.__name__ == 'Sample' or t_.__name__ in [
+            'PolPowder1DCW',
+            'Powder1DCWpol',
+            'powder1DCWpol',
+            'Npowder1DCWpol',
         ]:
             p_key = self.calculator.createPolarization()
             r_list.append(
@@ -645,11 +640,11 @@ class CryspyTOFPol(CryspyBase, TOF, Powder, POL):
         r_list = []
         t_ = type(model)
         model_key = self._identify(model)
-        base = "powder1DTOFpol"
-        if t_.__name__ == "Sample" or t_.__name__ in [
-            "Powder1DTOFpol",
-            "powder1DTOFpol",
-            "Npowder1DTOFpol",
+        base = 'powder1DTOFpol'
+        if t_.__name__ == 'Sample' or t_.__name__ in [
+            'Powder1DTOFpol',
+            'powder1DTOFpol',
+            'Npowder1DTOFpol',
         ]:
             self._createModel(model_key, base)
         return r_list
@@ -659,12 +654,12 @@ class CryspyTOFPol(CryspyBase, TOF, Powder, POL):
 ## This is the main class which is called, implementing one of the above classes.
 ##
 class CryspyWrapper(WrapperBase):
-    name = "CrysPy"
+    name = 'CrysPy'
 
     feature_available = {
-        "Npowder1DCWunp": True,
-        "Npowder1DTOFunp": True,
-        "Npowder1DCWpol": True,
+        'Npowder1DCWunp': True,
+        'Npowder1DTOFunp': True,
+        'Npowder1DCWpol': True,
     }
 
     def __init__(self):
@@ -674,11 +669,11 @@ class CryspyWrapper(WrapperBase):
 
     @staticmethod
     def feature_checker(
-        radiation="N",
-        exp_type="CW",
-        sample_type="powder",
-        dimensionality="1D",
-        polarization="unp",
+        radiation='N',
+        exp_type='CW',
+        sample_type='powder',
+        dimensionality='1D',
+        polarization='unp',
         test_str=None,
     ):
         return WrapperBase.features(
@@ -720,15 +715,13 @@ class CryspyWrapper(WrapperBase):
 
     def fit_func(self, x_array: np.ndarray, *args, **kwargs) -> Union[np.ndarray, None]:
         if self._internal is not None:
-            calculation, self._last_callback = self._internal.full_callback(
-                x_array, *args, **kwargs
-            )
+            calculation, self._last_callback = self._internal.full_callback(x_array, *args, **kwargs)
             return calculation
 
     def set_exp_cif(self, cif: str) -> None:
         self.calculator.set_exp_cif(cif)
 
-    def set_job_type(self, tof: bool, pol:bool) -> None:
+    def set_job_type(self, tof: bool, pol: bool) -> None:
         self.calculator.set_job_type(tof, pol)
 
     def generate_pol_fit_func(
@@ -740,23 +733,17 @@ class CryspyWrapper(WrapperBase):
     ) -> Callable:
         num_components = len(components)
         dummy_x = np.repeat(x_array[..., np.newaxis], num_components, axis=x_array.ndim)
-        calculated_y = np.array(
-            [fun(spin_up, spin_down) for fun in components]
-        ).swapaxes(0, x_array.ndim)
+        calculated_y = np.array([fun(spin_up, spin_down) for fun in components]).swapaxes(0, x_array.ndim)
 
         def pol_fit_fuction(dummy_x: np.ndarray, **kwargs) -> np.ndarray:
-            results, results_dict = self.calculator.full_calculate(
-                x_array, pol_fn=components[0], **kwargs
-            )
-            phases = list(results_dict["phases"].keys())[0]
+            results, results_dict = self.calculator.full_calculate(x_array, pol_fn=components[0], **kwargs)
+            phases = list(results_dict['phases'].keys())[0]
             up, down = (
-                results_dict["phases"][phases]["components"]["up"],
-                results_dict["phases"][phases]["components"]["down"],
+                results_dict['phases'][phases]['components']['up'],
+                results_dict['phases'][phases]['components']['down'],
             )
-            bg = results_dict["f_background"]
-            sim_y = np.array(
-                [fun(up, down) + fun(bg, bg) for fun in components]
-            ).swapaxes(0, x_array.ndim)
+            bg = results_dict['f_background']
+            sim_y = np.array([fun(up, down) + fun(bg, bg) for fun in components]).swapaxes(0, x_array.ndim)
             return sim_y.flatten()
 
         return dummy_x.flatten(), calculated_y.flatten(), pol_fit_fuction

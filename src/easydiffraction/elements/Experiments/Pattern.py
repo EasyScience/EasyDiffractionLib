@@ -22,37 +22,41 @@ class Pattern1D(BaseObj):
             'name': 'zero_shift',
             'units': 'degree',
             'value': 0.0,
-            'fixed': True
+            'fixed': True,
         },
-        'scale':   {
-            '@module':  'easyscience.Objects.Base',
-            '@class':   'Parameter',
+        'scale': {
+            '@module': 'easyscience.Objects.Base',
+            '@class': 'Parameter',
             '@version': '0.0.1',
-            'name':     'scale',
-            'value':    1,
-            'fixed': True
+            'name': 'scale',
+            'value': 1,
+            'fixed': True,
         },
         'backgrounds': {
             '@module': 'easydiffraction.elements.Backgrounds.Background',
             '@class': 'BackgroundContainer',
             '@version': '0.0.1',
             'data': [],
-        }
+        },
     }
 
     zero_shift: ClassVar[Parameter]
     scale: ClassVar[Parameter]
     backgrounds: ClassVar[BackgroundContainer]
 
-    def __init__(self,
-                 zero_shift: Optional[Union[Parameter, float]] = None,
-                 scale: Optional[Union[Parameter, float]] = None,
-                 backgrounds: Optional[BackgroundContainer] = None,
-                 interface=None):
-        super().__init__(self.__class__.__name__,
-                         zero_shift=Parameter.from_dict(self._defaults['zero_shift']),
-                         scale=Parameter.from_dict(self._defaults['scale']),
-                         backgrounds=BackgroundContainer())
+    def __init__(
+        self,
+        zero_shift: Optional[Union[Parameter, float]] = None,
+        scale: Optional[Union[Parameter, float]] = None,
+        backgrounds: Optional[BackgroundContainer] = None,
+        interface=None,
+    ):
+        super().__init__(
+            self.__class__.__name__,
+            zero_shift=Parameter.from_dict(self._defaults['zero_shift']),
+            scale=Parameter.from_dict(self._defaults['scale']),
+            backgrounds=BackgroundContainer(),
+        )
         self.name = self._name
         self.interface = interface
 

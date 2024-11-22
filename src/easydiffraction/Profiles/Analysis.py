@@ -17,6 +17,7 @@ class Analysis(coreAnalysis):
     """
     Diffraction-specific Experiment object.
     """
+
     def __init__(self, name: str, interface=None, *args, **kwargs):
         super(Analysis, self).__init__(name, *args, **kwargs)
         self.name = name
@@ -26,16 +27,16 @@ class Analysis(coreAnalysis):
         self._fitter = CoreFitter(self, self.interface.fit_func)
 
     def calculate_theory(self, x: Union[xr.DataArray, np.ndarray], **kwargs) -> np.ndarray:
-        '''
+        """
         Implementation of the abstract method from JobBase.
         Just a wrapper around the profile calculation.
-        '''
+        """
         return self.calculate_profile(x, **kwargs)
 
     def calculate_profile(self, x: Union[xr.DataArray, np.ndarray] = None, coord=None, **kwargs) -> np.ndarray:
-        '''
+        """
         Calculate the profile based on current phase.
-        '''
+        """
         x_store, f = coord.EasyScience.fit_prep(
             self.interface.fit_func,
             bdims=xr.broadcast(coord.transpose()),
@@ -43,13 +44,16 @@ class Analysis(coreAnalysis):
         y = xr.apply_ufunc(f, *x_store, kwargs=kwargs)
         return y
 
-    def fit(self, x: Union[xr.DataArray, np.ndarray],
-                  y: Union[xr.DataArray, np.ndarray],
-                  e: Union[xr.DataArray, np.ndarray],
-                  **kwargs):
-        '''
+    def fit(
+        self,
+        x: Union[xr.DataArray, np.ndarray],
+        y: Union[xr.DataArray, np.ndarray],
+        e: Union[xr.DataArray, np.ndarray],
+        **kwargs,
+    ):
+        """
         Fit the profile based on current phase and experiment.
-        '''
+        """
         # cursory checks
         if x is None or y is None or e is None:
             return None
@@ -73,7 +77,7 @@ class Analysis(coreAnalysis):
             res = self._fitter.fit(x, y, **kwargs)
 
         except Exception as ex:
-            print(f"Error in fitting: {ex}")
+            print(f'Error in fitting: {ex}')
             return None
         return res
 
@@ -101,7 +105,7 @@ class Analysis(coreAnalysis):
         """
         # Convert the string to an enum
         if minimizer not in AvailableMinimizers.__members__:
-            raise ValueError(f"Minimizer {minimizer} not available")
+            raise ValueError(f'Minimizer {minimizer} not available')
         minimizer = AvailableMinimizers[minimizer]
         self._fitter.switch_minimizer(minimizer)
 
@@ -111,8 +115,8 @@ class Analysis(coreAnalysis):
         Load the analysis from a CIF file
         """
         # TODO: Implement this
-        return Analysis("Analysis")
+        return Analysis('Analysis')
 
     # required dunder methods
     def __str__(self):
-        return f"Analysis: {self.name}"
+        return f'Analysis: {self.name}'

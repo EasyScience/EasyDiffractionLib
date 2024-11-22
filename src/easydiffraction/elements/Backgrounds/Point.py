@@ -19,6 +19,7 @@ class BackgroundPoint(BaseObj):
     This class describes a background point. It contains x position and y intensities. Note that the label for x
     varies with it's value!!!
     """
+
     def __init__(self, x: Union[float, Descriptor] = 0.0, y: Union[float, Parameter] = 0.0, name: str = None):
         """
         Construct a background point from a x-Descriptor any y-parameter.
@@ -35,10 +36,8 @@ class BackgroundPoint(BaseObj):
         if not isinstance(y, Parameter):
             y = Parameter('intensity', y, fixed=True)
         if name is None:
-            name = '{:.1f}_deg'.format(x.raw_value).replace(".", ",")
-        x._callback = property(fget=None,
-                               fset=lambda x_value: self._modify_x_label(x_value),
-                               fdel=None)
+            name = '{:.1f}_deg'.format(x.raw_value).replace('.', ',')
+        x._callback = property(fget=None, fset=lambda x_value: self._modify_x_label(x_value), fdel=None)
         super(BackgroundPoint, self).__init__(name, x=x, y=y)
 
     def set(self, value: float):
@@ -59,11 +58,11 @@ class BackgroundPoint(BaseObj):
         :type value: float
         :rtype: None
         """
-        self.name = '{:.1f}_deg'.format(value).replace(".", ",")
+        self.name = '{:.1f}_deg'.format(value).replace('.', ',')
 
     def __repr__(self) -> str:
         y_str = str(self.y).split(': ')[1][:-1]
-        return f'<{self.__class__.__name__} \'{self.name}\': {y_str}>'
+        return f"<{self.__class__.__name__} '{self.name}': {y_str}>"
 
 
 class PointBackground(Background):
@@ -198,7 +197,7 @@ class PointBackground(Background):
         super(PointBackground, self).append(item)
 
     def get_parameters(self) -> List[Parameter]:
-        """"
+        """ "
         Redefine get_parameters so that the returned values are in the correct order
         """
         list_pars = np.array(super(PointBackground, self).get_parameters())

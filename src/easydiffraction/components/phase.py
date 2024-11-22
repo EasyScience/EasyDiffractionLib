@@ -13,20 +13,8 @@ class Phase(ecPhase):
     _SITE_CLASS = Site
     _ATOMS_CLASS = Atoms
 
-    def __init__(
-        self,
-        name,
-        spacegroup=None,
-        cell=None,
-        atoms=None,
-        scale=None,
-        interface=None,
-        enforce_sym=True,
-        **kwargs
-    ):
-        super(Phase, self).__init__(
-            name, spacegroup, cell, atoms, scale, enforce_sym=enforce_sym
-        )
+    def __init__(self, name, spacegroup=None, cell=None, atoms=None, scale=None, interface=None, enforce_sym=True, **kwargs):
+        super(Phase, self).__init__(name, spacegroup, cell, atoms, scale, enforce_sym=enforce_sym)
         self.interface = interface
 
     def add_atom(self, *args, **kwargs):
@@ -42,10 +30,11 @@ class Phase(ecPhase):
 
     @property
     def atom_sites(self):
-        '''
+        """
         Vanity method to alias `atoms`
-        '''
+        """
         return self.atoms
+
 
 class Phases(ecPhases):
     _SITE_CLASS = Site

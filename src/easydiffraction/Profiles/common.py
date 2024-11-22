@@ -15,7 +15,7 @@ from easyscience.Objects.ObjectClasses import BaseObj
 from easydiffraction import Phase
 from easydiffraction import Phases
 
-DataClassBaseType = TypeVar("DataClassBaseType", bound="_DataClassBase")
+DataClassBaseType = TypeVar('DataClassBaseType', bound='_DataClassBase')
 
 
 class _DataClassBase:
@@ -24,7 +24,6 @@ class _DataClassBase:
 
 
 class DataContainer(ComponentSerializer):
-
     def __init__(self, sim_store: DataClassBaseType, exp_store: DataClassBaseType):
         self._simulations = sim_store
         self._experiments = exp_store
@@ -43,21 +42,20 @@ class DataContainer(ComponentSerializer):
                 """
                 :return: Json-able dictionary representation.
                 """
-                d = {"@module": self.__class__.__module__,
-                    "@class": self.__class__.__name__}
-                d["simulations"] = self._dataset.as_dict()
+                d = {'@module': self.__class__.__module__, '@class': self.__class__.__name__}
+                d['simulations'] = self._dataset.as_dict()
                 return d
 
         class Experiment(experiment_class):
             def __init__(self, sim_prefix):
                 super(Experiment, self).__init__(dataset, sim_prefix)
+
             def as_dict(self, skip=None):
                 """
                 :return: Json-able dictionary representation.
                 """
-                d = {"@module": self.__class__.__module__,
-                    "@class": self.__class__.__name__}
-                d["simulations"] = self._dataset.as_dict()
+                d = {'@module': self.__class__.__module__, '@class': self.__class__.__name__}
+                d['simulations'] = self._dataset.as_dict()
                 return d
 
         s = Simulation()
@@ -77,10 +75,9 @@ class DataContainer(ComponentSerializer):
         """
         :return: Json-able dictionary representation.
         """
-        d = {"@module": self.__class__.__module__,
-             "@class": self.__class__.__name__}
-        d["simulations"] = self._simulations.as_dict()
-        d["experiments"] = self._experiments.as_dict()
+        d = {'@module': self.__class__.__module__, '@class': self.__class__.__name__}
+        d['simulations'] = self._simulations.as_dict()
+        d['experiments'] = self._experiments.as_dict()
         return d
 
     @classmethod
@@ -89,7 +86,8 @@ class DataContainer(ComponentSerializer):
         :param d: Dict representation.
         :return: Species.
         """
-        return cls(d["simulations"], d["experiments"])
+        return cls(d['simulations'], d['experiments'])
+
 
 class JobSetup:
     def __init__(self, datastore_classes, instrumental_parameter_class, pattern_class):
@@ -101,7 +99,7 @@ class JobSetup:
 class _PowderBase(BaseObj):
     def __init__(
         self,
-        name: str = "",
+        name: str = '',
         job_type=None,
         datastore: xr.Dataset = None,
         phases: Union[Phase, Phases] = None,
@@ -110,12 +108,12 @@ class _PowderBase(BaseObj):
         interface=None,
     ):
         if isinstance(phases, Phase):
-            phases = Phases("Phases", phases)
+            phases = Phases('Phases', phases)
         elif phases is None:
-            phases = Phases("Phases")
+            phases = Phases('Phases')
 
         if not isinstance(phases, Phases):
-            raise AttributeError("`phases` must be a Crystal or Crystals")
+            raise AttributeError('`phases` must be a Crystal or Crystals')
 
         if parameters is None:
             parameters = job_type.pattern_class()
@@ -123,9 +121,7 @@ class _PowderBase(BaseObj):
         if pattern is None:
             pattern = job_type.instrumental_parameter_class()
 
-        super(_PowderBase, self).__init__(
-            name, _phases=phases, _parameters=parameters, _pattern=pattern
-        )
+        super(_PowderBase, self).__init__(name, _phases=phases, _parameters=parameters, _pattern=pattern)
 
         from easydiffraction.calculators.wrapper_types import Neutron
         from easydiffraction.calculators.wrapper_types import Powder
@@ -138,11 +134,11 @@ class _PowderBase(BaseObj):
         self._update_bases(Powder)
         self._update_bases(Neutron)
 
-        if getattr(pattern, "__old_class__", pattern.__class__) == Pattern1D:
+        if getattr(pattern, '__old_class__', pattern.__class__) == Pattern1D:
             from easydiffraction.calculators.wrapper_types import UPol
 
             self._update_bases(UPol)
-        elif getattr(pattern, "__old_class__", pattern.__class__) == Pattern1D_Pol:
+        elif getattr(pattern, '__old_class__', pattern.__class__) == Pattern1D_Pol:
             from easydiffraction.calculators.wrapper_types import Pol
 
             self._update_bases(Pol)
@@ -157,11 +153,9 @@ class _PowderBase(BaseObj):
 
         self.__constituting_classes = job_type
         self.__dataset = datastore
-        self.datastore = DataContainer.prepare(
-            self.__dataset, *job_type.datastore_classes
-        )
+        self.datastore = DataContainer.prepare(self.__dataset, *job_type.datastore_classes)
 
-        self.filename = os.path.join(tempfile.gettempdir(), "easydiffraction_temp.cif")
+        self.filename = os.path.join(tempfile.gettempdir(), 'easydiffraction_temp.cif')
         self.output_index = None
         self.interface = interface
 
@@ -175,10 +169,7 @@ class _PowderBase(BaseObj):
         self._pattern.backgrounds.append(background)
 
     def remove_background(self, background):
-        if (
-            background.linked_experiment.raw_value
-            in self._pattern.backgrounds.linked_experiments
-        ):
+        if background.linked_experiment.raw_value in self._pattern.backgrounds.linked_experiments:
             del self._pattern.backgrounds[background.linked_experiment.raw_value]
         else:
             raise ValueError
@@ -195,7 +186,7 @@ class _PowderBase(BaseObj):
     @property_stack_deco
     def phases(self, value):
         if isinstance(value, Phase):
-            value = Phases("Phases", value)
+            value = Phases('Phases', value)
         if not isinstance(value, Phases):
             raise ValueError
         self._phases = value
@@ -221,7 +212,7 @@ class _PowderBase(BaseObj):
         return this_dict
 
     def _update_bases(self, new_base):
-        base_class = getattr(self, "__old_class__", self.__class__)
+        base_class = getattr(self, '__old_class__', self.__class__)
         old_bases = set(self.__class__.__bases__)
         old_bases = old_bases - {
             base_class,

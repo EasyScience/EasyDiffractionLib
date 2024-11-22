@@ -60,27 +60,37 @@ requires = ['hatchling']
 
 # Configuration for the hatch
 
-[tool.hatch.metadata]
-allow-direct-references = true
-
 [tool.hatch.build.targets.wheel]
 packages = ['src/easydiffraction']
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 # Configuration for 'ruff' -- Python linter and code formatter
 # https://docs.astral.sh/ruff/rules/
 
 [tool.ruff]
-line-length = 127
-indent-width = 4
 exclude = [
     'examples_old',
     'tests'
 ]
+indent-width = 4
+line-length = 127  # 79, 88, 97, 124
 
 [tool.ruff.format]
-quote-style = 'single'
-indent-style = 'space'  # PEP 8 recommends using spaces over tabs for indentation.
-line-ending = 'lf'  # Line endings will be converted to \n. The default line ending on Unix.
+docstring-code-format = true  # Whether to format code snippets in docstrings
+indent-style = 'space'  # PEP 8 recommends using spaces over tabs
+line-ending = 'lf'  # Line endings will be converted to \n
+quote-style = 'single'  # But double quotes in docstrings (PEP 8, PEP 257)
+
+[tool.ruff.lint]
+select = [
+    'E9', 'F63', 'F7', 'F82',  # flake8 settings from existing CI setup
+    'E', 'W',  # pycodestyle
+    'F',  # Pyflakes
+    'I',  # isort
+    'S',  # flake8-bandit
+]
 
 [tool.ruff.lint.isort]
 force-single-line = true
@@ -89,14 +99,6 @@ force-single-line = true
 # allow asserts in test files
 '*test_*.py' = ['S101']
 
-[tool.ruff.lint]
-select = [
-    'E9', 'F63', 'F7', 'F82',  # flake8 settings from existing CI setup
-    'E', 'W',  # pycodestyle
-    'F',  # Pyflakes
-    #'UP',  # pyupgrade
-    #'B',  # flake8-bugbear
-    #'SIM',  # flake8-simplify
-    'I',  # isort
-    'S',  # flake8-bandit
-]
+#[tool.ruff.lint.pycodestyle]
+#max-line-length = 79  # https://peps.python.org/pep-0008/#maximum-line-length
+#max-doc-length = 72  # https://peps.python.org/pep-0008/#maximum-line-length

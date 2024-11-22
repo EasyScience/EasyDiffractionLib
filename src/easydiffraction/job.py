@@ -39,28 +39,29 @@ from easydiffraction.sample import Sample
 try:
     import darkdetect
 except ImportError:
-    print("darkdetect not installed")
+    print('darkdetect not installed')
 
 try:
     # import plotly.express as px # unused
     import plotly.graph_objects as go
     import plotly.io as pio
-    if importlib.util.find_spec("darkdetect") is None:
-        print("Warning: Darkdetect not installed. Try `pip install darkdetect`.")
+
+    if importlib.util.find_spec('darkdetect') is None:
+        print('Warning: Darkdetect not installed. Try `pip install darkdetect`.')
     else:
-        pio.templates.default = "plotly_dark" if darkdetect.isDark() else "plotly_white"
+        pio.templates.default = 'plotly_dark' if darkdetect.isDark() else 'plotly_white'
 except ImportError:
-    print("plotly not installed")
+    print('plotly not installed')
 
 try:
     import py3Dmol
 except ImportError:
-    print("py3Dmol not installed")
+    print('py3Dmol not installed')
 
 try:
     import pandas as pd
 except ImportError:
-    print("pandas not installed")
+    print('pandas not installed')
 
 try:
     from IPython.display import HTML
@@ -70,10 +71,12 @@ except ImportError:
 
 T_ = TypeVar('T_')
 
+
 class DiffractionJob(JobBase):
     """
     This class is the base class for all diffraction specific jobs
     """
+
     def __init__(
         self,
         name: str = None,
@@ -84,9 +87,7 @@ class DiffractionJob(JobBase):
         analysis=None,
         interface=None,
     ):
-        super(DiffractionJob, self).__init__(
-            name
-        )
+        super(DiffractionJob, self).__init__(name)
         # The following assignment is necessary for proper binding
         if interface is None:
             interface = WrapperFactory()
@@ -95,26 +96,26 @@ class DiffractionJob(JobBase):
         # Generate the datastore for this job
         __dataset = datastore if datastore is not None else xr.Dataset()
         self.add_datastore(__dataset)
-        self._name = name if name is not None else "Job"
+        self._name = name if name is not None else 'Job'
 
-        self.cif_string = ""
+        self.cif_string = ''
         # Dataset specific attributes
-        self._x_axis_name = "tth" # default for CW, can be `time` for TOF
-        self._y_axis_prefix = "Intensity_" # constant for all techniques
-        self.job_number = 0 # for keeping track of multiple simulations within the dataset
+        self._x_axis_name = 'tth'  # default for CW, can be `time` for TOF
+        self._y_axis_prefix = 'Intensity_'  # constant for all techniques
+        self.job_number = 0  # for keeping track of multiple simulations within the dataset
 
         # Fitting related attributes
         self.fitting_results = None
 
         # can't have type and experiment together
         if type is not None and experiment is not None:
-            raise ValueError("Job type and experiment cannot be passed together.")
+            raise ValueError('Job type and experiment cannot be passed together.')
 
         # assign Experiment, so potential type assignment can be done
         self.experiment = experiment
 
         self._summary = None  # TODO: implement
-        self._info = None # TODO: implement
+        self._info = None  # TODO: implement
 
         # Instead of creating separate classes for all techniques,
         # as in old EDL (Powder1DCW, PolPowder1DCW, Powder1DTOF, etc)
@@ -137,7 +138,7 @@ class DiffractionJob(JobBase):
             self.update_exp_type()
 
         # assign Job components
-        self.sample = sample # container for phases
+        self.sample = sample  # container for phases
         self.interface = self.sample._interface
         self.analysis = analysis
         self.update_job_type()
@@ -147,7 +148,6 @@ class DiffractionJob(JobBase):
         self._kwargs['_phases'] = self.sample.phases
         self._kwargs['_parameters'] = self.sample.parameters
         self._kwargs['_pattern'] = self.sample.pattern
-
 
     @property
     def sample(self) -> Sample:
@@ -169,7 +169,7 @@ class DiffractionJob(JobBase):
                 parameters = Instrument1DCWParameters()
             elif self.type.is_tof:
                 parameters = Instrument1DTOFParameters()
-            self._sample = Sample("Sample", parameters=parameters, pattern=pattern)
+            self._sample = Sample('Sample', parameters=parameters, pattern=pattern)
 
     @property
     def theoretical_model(self) -> Sample:
@@ -192,9 +192,7 @@ class DiffractionJob(JobBase):
         if value is not None:
             self._experiment = deepcopy(value)
         else:
-            self._experiment = Experiment(job_name=self._name,
-                                          datastore=self.datastore,
-                                          interface=self.interface)
+            self._experiment = Experiment(job_name=self._name, datastore=self.datastore, interface=self.interface)
 
     @property
     def analysis(self) -> Union[Analysis, None]:
@@ -206,8 +204,7 @@ class DiffractionJob(JobBase):
         if value is not None:
             self._analysis = deepcopy(value)
         else:
-            self._analysis = Analysis(self._name,
-                                      interface=self.interface)
+            self._analysis = Analysis(self._name, interface=self.interface)
 
     @property
     def summary(self):
@@ -261,9 +258,9 @@ class DiffractionJob(JobBase):
 
     @property
     def instrument(self):
-        '''
+        """
         Alias to self.parameters
-        '''
+        """
         return self.parameters
 
     @property
@@ -281,17 +278,17 @@ class DiffractionJob(JobBase):
         return self.experiment.pattern.backgrounds
 
     def set_job_from_file(self, file_url: str) -> None:
-        '''
+        """
         Set the job from a CIF file.
 
         Based on keywords in the CIF file, the job type is determined,
         the job is modified and the data is loaded from the CIF file.
-        '''
+        """
         block = cif.read(file_url).sole_block()
         self.cif_string = block.as_string()
-        value_cwpol = block.find_value("_diffrn_radiation_polarization")
-        value_tof = block.find_loop("_tof_meas_time")  or block.find_loop("_pd_meas_time_of_flight")
-        value_cw = block.find_value("_setup_wavelength") or block.find_value("_diffrn_radiation_wavelength.wavelength")
+        value_cwpol = block.find_value('_diffrn_radiation_polarization')
+        value_tof = block.find_loop('_tof_meas_time') or block.find_loop('_pd_meas_time_of_flight')
+        value_cw = block.find_value('_setup_wavelength') or block.find_value('_diffrn_radiation_wavelength.wavelength')
 
         if value_cwpol is not None:
             self.type.is_pol = True
@@ -300,14 +297,14 @@ class DiffractionJob(JobBase):
         elif value_cw is not None:
             self.type.is_cwl = True
         else:
-            raise ValueError("Could not determine job type from file.")
+            raise ValueError('Could not determine job type from file.')
 
         self._name = block.name
 
-    def add_phase(self, id: str="", phase: Union[Phase, None]=None) -> None:
-        '''
+    def add_phase(self, id: str = '', phase: Union[Phase, None] = None) -> None:
+        """
         Add a phase to the Sample.
-        '''
+        """
         if phase is None:
             phase = Phase(id)
         # self.sample.phases.append(phase)
@@ -315,17 +312,17 @@ class DiffractionJob(JobBase):
         self.sample.add_phase_from_string(cif_string)
 
     def remove_phase(self, id: str) -> None:
-        '''
+        """
         Remove a phase from the Sample.
-        '''
+        """
         del self.sample.phases[id]
 
     # TODO: extend for analysis and info
 
     def update_job_type(self) -> None:
-        '''
+        """
         Update the job type based on the experiment.
-        '''
+        """
         self.type.is_pol = self.experiment.is_polarized
         self.type.is_tof = self.experiment.is_tof
         self.type.is_sc = self.experiment.is_single_crystal
@@ -333,41 +330,41 @@ class DiffractionJob(JobBase):
         # radiation
         if hasattr(self.sample, 'pattern') and self.sample.pattern is not None:
             if self.type.is_xray:
-                self.sample.pattern.radiation = "x-ray"
+                self.sample.pattern.radiation = 'x-ray'
             elif self.type.is_neut:
-                self.sample.pattern.radiation = "neutron"
+                self.sample.pattern.radiation = 'neutron'
 
         # axis
         if self.type.is_tof:
-            self._x_axis_name = "time"
+            self._x_axis_name = 'time'
             if self.pattern is not None:
-                self.pattern.zero_shift.unit = "μs"
+                self.pattern.zero_shift.unit = 'μs'
         else:
-            self._x_axis_name = "tth"
+            self._x_axis_name = 'tth'
             if self.pattern is not None:
-                self.pattern.zero_shift.unit = "degree"
+                self.pattern.zero_shift.unit = 'degree'
 
     def update_exp_type(self) -> None:
-        '''
+        """
         Update the experiment type based on the job.
-        '''
+        """
         self.experiment.is_polarized = self.type.is_pol
         self.experiment.is_tof = self.type.is_tof
         self.experiment.is_single_crystal = self.type.is_sc
         self.experiment.is_2d = self.type.is_2d
 
     def update_phase_scale(self) -> None:
-        '''
+        """
         Update the phase scale based on the experiment.
-        '''
+        """
         for phase in self.sample.phases:
             phase.scale = self.experiment.phase_scale.get(phase.name, phase.scale)
 
     ###### BACKGROUNDS ######
     def set_background(self, points: list) -> None:
-        '''
+        """
         Sets a background on the pattern.
-        '''
+        """
         # extract experiment name so we can link the background to it
         experiment_name = self.experiment.name
         bkg = PointBackground(linked_experiment=experiment_name)
@@ -385,8 +382,8 @@ class DiffractionJob(JobBase):
     ###### CIF RELATED METHODS ######
 
     @classmethod
-    def from_cif_file(cls, phase: Union[Sample, None]=None, experiment: Union[Experiment, None]=None):
-        '''
+    def from_cif_file(cls, phase: Union[Sample, None] = None, experiment: Union[Experiment, None] = None):
+        """
         Create the job from a CIF file.
         Allows for instatiation of the job with a sample and experiment from CIF files.
 
@@ -396,8 +393,8 @@ class DiffractionJob(JobBase):
         e.g.
         job = Job.from_cif_file(phase="d1a_phase.cif", experiment="d1a_exp.cif")
         job = Job.from_cif_file("d1a.cif")
-        '''
-        job_name = "Job"
+        """
+        job_name = 'Job'
         if phase is not None:
             sample = Sample.from_cif(phase)
 
@@ -412,21 +409,21 @@ class DiffractionJob(JobBase):
         return cls(name=job_name, sample=sample, experiment=exp)
 
     def add_experiment_from_file(self, file_url: str) -> None:
-        '''
+        """
         Add an experiment to the job from a CIF file.
         Just a wrapper around the Experiment class method.
-        '''
+        """
         # experiment can be either xye or cif
         # check the extension first and then call the appropriate method
-        if file_url.endswith(".xye"):
+        if file_url.endswith('.xye'):
             self.experiment.from_xye_file(file_url)
         else:
             self.experiment.from_cif_file(file_url)
 
         self.update_job_type()
         # re-do the sample in case of type change.
-        #if self.sample.parameters.name != self.experiment.parameters.name:
-            # Different type read in (likely TOF), so re-create the sample
+        # if self.sample.parameters.name != self.experiment.parameters.name:
+        # Different type read in (likely TOF), so re-create the sample
         # re-do the sample always, as parameter values can change in the experiment.parameters compared to
         # the sample.parameters (e.g. dtt1 read from CIF in Scipp format)
         parameters = self.experiment.parameters
@@ -439,19 +436,19 @@ class DiffractionJob(JobBase):
         self.update_interface()
 
     def add_experiment_from_string(self, cif_string: str) -> None:
-        '''
+        """
         Add an experiment to the job from a CIF string.
         Just a wrapper around the Experiment class method.
-        '''
+        """
         self.experiment.from_cif_string(cif_string)
         self.update_job_type()
 
     def add_sample_from_file(self, file_url: str) -> None:
-        '''
+        """
         Deprecated. Use add_phase_from_file instead.
         Add a sample to the job from a CIF file.
         Just a wrapper around the Sample class method.
-        '''
+        """
         self.sample.add_phase_from_cif(file_url)
         # sample doesn't hold any information about the job type
         # so no call to update_job_type
@@ -461,95 +458,80 @@ class DiffractionJob(JobBase):
     add_phase_from_file = add_sample_from_file
 
     def add_sample_from_string(self, cif_string: str) -> None:
-        '''
+        """
         Add a sample to the job from a CIF string.
         Just a wrapper around the Sample class method.
-        '''
+        """
         self.sample.add_phase_from_string(cif_string)
         self.datastore._simulations = self.sample
         # sample doesn't hold any information about the job type
         # so no call to update_job_type
 
     def add_analysis_from_file(self, file_url: str) -> None:
-        '''
+        """
         Add an analysis to the job from a CIF file.
         Just a wrapper around the Analysis class method.
-        '''
+        """
         self.analysis = Analysis.from_cif(file_url)
         # analysis doesn't hold any information about the job type
         # so no call to update_job_type
 
     def to_cif(self) -> str:
-        '''
+        """
         Convert the job to a CIF file.
-        '''
-        phase_cif = self.phases[0].cif # temporarily only one phase
+        """
+        phase_cif = self.phases[0].cif  # temporarily only one phase
         sample_cif = self.sample.cif
         experiment_cif = self.experiment.cif
-        analysis_cif = "" # TODO: implement
+        analysis_cif = ''  # TODO: implement
         # analysis_cif = self.analysis.to_cif()
 
         # combine all CIFs
-        job_cif = phase_cif + "\n\n" + \
-                sample_cif + "\n\n" + \
-                experiment_cif + "\n\n" + \
-                analysis_cif
+        job_cif = phase_cif + '\n\n' + sample_cif + '\n\n' + experiment_cif + '\n\n' + analysis_cif
         return job_cif
 
     ###### CALCULATE METHODS ######
     @property
     def calculator(self):
-        '''
+        """
         Get the calculator from the interface.
-        '''
-        #return self.interface.current_interface_name
+        """
+        # return self.interface.current_interface_name
         return self.analysis.calculator
 
     @calculator.setter
     def calculator(self, value: str):
-        '''
+        """
         Set the calculator on the interface.
-        '''
+        """
         self.analysis.calculator = value
 
-    def calculate_theory(self, x: Union[xr.DataArray, np.ndarray], simulation_name:str="", **kwargs) -> np.ndarray:
-        '''
+    def calculate_theory(self, x: Union[xr.DataArray, np.ndarray], simulation_name: str = '', **kwargs) -> np.ndarray:
+        """
         Implementation of the abstract method from JobBase.
         Just a wrapper around the profile calculation.
-        '''
+        """
         return self.calculate_profile(x, simulation_name, **kwargs)
 
-    def calculate_profile(self, x: Union[xr.DataArray, np.ndarray] = None, simulation_name:str="", **kwargs) -> np.ndarray:
-        '''
+    def calculate_profile(self, x: Union[xr.DataArray, np.ndarray] = None, simulation_name: str = '', **kwargs) -> np.ndarray:
+        """
         Pull out necessary data from the datastore and calculate the profile.
-        '''
+        """
         if x is None:
-            x_coord_name = (
-                self._name
-                + "_"
-                + self.experiment.name
-                + "_"
-                + self._x_axis_name
-            )
+            x_coord_name = self._name + '_' + self.experiment.name + '_' + self._x_axis_name
             if x_coord_name not in self.datastore.store:
-                raise ValueError("x-axis data not found in the datastore.")
+                raise ValueError('x-axis data not found in the datastore.')
             x = self.datastore.store[x_coord_name]
         if not isinstance(x, xr.DataArray):
-            coord_name = (
-                self.datastore._simulations._simulation_prefix
-                + self._name
-                + "_"
-                + self._x_axis_name
-            )
-            if coord_name in self.datastore.store and \
-                len(self.datastore.store[coord_name]) != len(x):
+            coord_name = self.datastore._simulations._simulation_prefix + self._name + '_' + self._x_axis_name
+            if coord_name in self.datastore.store and len(self.datastore.store[coord_name]) != len(x):
                 self.datastore.store.EasyScience.remove_coordinate(coord_name)
                 self.job_number += 1
                 coord_name = (
                     self.datastore._simulations._simulation_prefix
                     + self._name
                     + str(self.job_number)
-                    + "_"
+                    + '_'
                     + self._x_axis_name
                 )
             self.datastore.add_coordinate(coord_name, x)
@@ -559,11 +541,11 @@ class DiffractionJob(JobBase):
         coord = self.datastore.store[coord_name]
         y = self.analysis.calculate_profile(x, coord, **kwargs)
 
-        y.name = self._y_axis_prefix + self._name + "_sim"
+        y.name = self._y_axis_prefix + self._name + '_sim'
         if not simulation_name:
             simulation_name = self._name
         else:
-            simulation_name = self._name + "_" + simulation_name
+            simulation_name = self._name + '_' + simulation_name
         self.datastore.store[self.datastore._simulations._simulation_prefix + simulation_name] = y
         # fitter expects ndarrays
         if isinstance(y, xr.DataArray):
@@ -571,9 +553,9 @@ class DiffractionJob(JobBase):
         return y
 
     def fit(self, **kwargs):
-        '''
+        """
         Fit the profile based on current phase and experiment.
-        '''
+        """
         x = self.experiment.x
         y = self.experiment.y
         e = self.experiment.e
@@ -595,19 +577,19 @@ class DiffractionJob(JobBase):
         # result.success
         # result.reduced_chi
         if result is None:
-            raise ValueError("Fitting failed")
+            raise ValueError('Fitting failed')
 
         # Print fitting result. If in a notebook, use emojis.
-        success_msg = "Success"
-        failure_msg = "Failure"
-        duration_msg = f"{end - start:.2f} s"
+        success_msg = 'Success'
+        failure_msg = 'Failure'
+        duration_msg = f'{end - start:.2f} s'
         if self.is_notebook():
             success_msg = f'🥳 {success_msg}'
             failure_msg = f'😩 {failure_msg}'
             duration_msg = f'⌛ {duration_msg}'
-        print("Fitting result")
+        print('Fitting result')
         if result.success:
-            reduced_chi_msg = f"{result.reduced_chi:.2f}"
+            reduced_chi_msg = f'{result.reduced_chi:.2f}'
             if self.is_notebook():
                 reduced_chi_msg = f'👍 {reduced_chi_msg}'
             print(f'Status: {success_msg}')
@@ -620,18 +602,20 @@ class DiffractionJob(JobBase):
 
     ###### UTILITY METHODS ######
     def add_datastore(self, datastore: xr.Dataset):
-        '''
+        """
         Add a datastore to the job.
-        '''
+        """
         self.datastore = DataContainer.prepare(
-            datastore, Sample, Experiment #*type.datastore_classes
+            datastore,
+            Sample,
+            Experiment,  # *type.datastore_classes
         )
 
     def update_interface(self):
-        '''
+        """
         Update the interface based on the current job.
-        '''
-        if hasattr(self.interface._InterfaceFactoryTemplate__interface_obj,"set_job_type"):
+        """
+        if hasattr(self.interface._InterfaceFactoryTemplate__interface_obj, 'set_job_type'):
             self.interface._InterfaceFactoryTemplate__interface_obj.set_job_type(tof=self.type.is_tof, pol=self.type.is_pol)
         self.interface.generate_bindings(self)
         self.generate_bindings()
@@ -639,15 +623,15 @@ class DiffractionJob(JobBase):
     # Charts
 
     def show_crystal_structure(self, id=None):
-        '''
+        """
         Show the crystal structure.
-        '''
-        if importlib.util.find_spec("py3Dmol") is None:
-            print("Warning: py3Dmol not installed. Try `pip install py3Dmol`.")
+        """
+        if importlib.util.find_spec('py3Dmol') is None:
+            print('Warning: py3Dmol not installed. Try `pip install py3Dmol`.')
             return
 
         if id is None:
-            print("Warning: phase id is not given.")
+            print('Warning: phase id is not given.')
             return
 
         phase = self.phases[id]
@@ -655,9 +639,10 @@ class DiffractionJob(JobBase):
 
         structure_view = py3Dmol.view(width=540, height=480, linked=False)
         structure_view.addModel(cif, 'cif')
-        structure_view.setStyle({'sphere': {'colorscheme': 'Jmol', 'scale': .2},
-                                 'stick': {'colorscheme': 'Jmol', 'radius': 0.1}})
-        if importlib.util.find_spec("darkdetect") is not None and darkdetect.isDark():
+        structure_view.setStyle(
+            {'sphere': {'colorscheme': 'Jmol', 'scale': 0.2}, 'stick': {'colorscheme': 'Jmol', 'radius': 0.1}}
+        )
+        if importlib.util.find_spec('darkdetect') is not None and darkdetect.isDark():
             structure_view.setBackgroundColor('#111')
         structure_view.addUnitCell()
         structure_view.replicateUnitCell(2, 2, 2)
@@ -665,9 +650,9 @@ class DiffractionJob(JobBase):
         structure_view.show()  # To display the contents of the view object on Jupyter notebook.
 
     def print_data(self):
-        '''
+        """
         Print the datastore.
-        '''
+        """
         np.set_printoptions(precision=2)
         print('Measured x:  ', self.experiment.x.data)
         print('Measured y:  ', self.experiment.y.data)
@@ -675,11 +660,11 @@ class DiffractionJob(JobBase):
         print('Calculated y:', self.calculate_profile())
 
     def show_experiment_chart(self, show_legend=True):
-        '''
+        """
         Show the experiment chart.
-        '''
-        if importlib.util.find_spec("plotly") is None:
-            print("Warning: Plotly not installed. Try `pip install plotly`.")
+        """
+        if importlib.util.find_spec('plotly') is None:
+            print('Warning: Plotly not installed. Try `pip install plotly`.')
             return
 
         if self.type.is_pd and self.type.is_cwl:
@@ -698,7 +683,7 @@ class DiffractionJob(JobBase):
             y=self.background,
             line=dict(color='gray'),  # default: width=2?
             mode='lines',
-            name='Background (Ibkg)'
+            name='Background (Ibkg)',
         )
 
         trace_meas = go.Scatter(
@@ -706,7 +691,7 @@ class DiffractionJob(JobBase):
             y=self.experiment.y.data,
             line=dict(color='rgb(31, 119, 180)'),
             mode='lines',
-            name='Measured (Imeas)'
+            name='Measured (Imeas)',
         )
 
         trace_meas_upper = go.Scatter(
@@ -714,8 +699,8 @@ class DiffractionJob(JobBase):
             y=self.experiment.y.data + self.experiment.e.data,
             mode='lines',
             line=dict(width=0),
-            hoverinfo="skip",
-            showlegend=False
+            hoverinfo='skip',
+            showlegend=False,
         )
 
         trace_meas_lower = go.Scatter(
@@ -725,18 +710,16 @@ class DiffractionJob(JobBase):
             line=dict(width=0),
             fillcolor='rgba(31, 119, 180, 0.3)',
             fill='tonexty',
-            hoverinfo="skip",
-            showlegend=False
+            hoverinfo='skip',
+            showlegend=False,
         )
 
         data = [trace_bkg, trace_meas, trace_meas_lower, trace_meas_upper]
 
         layout = go.Layout(
             autosize=True,
-            margin=dict(autoexpand=True,
-                        r=30, t=30, b=45),
-            legend=dict(yanchor="top", y=1.0,
-                        xanchor="right", x=1.0),
+            margin=dict(autoexpand=True, r=30, t=30, b=45),
+            legend=dict(yanchor='top', y=1.0, xanchor='right', x=1.0),
             xaxis=dict(title_text=x_axis_title),
             yaxis=dict(title_text='Imeas, Ibkg', range=[main_y_min, main_y_max]),
         )
@@ -750,23 +733,27 @@ class DiffractionJob(JobBase):
         fig.show()
 
     def show_simulation_chart(self, show_legend=True):
-        '''
+        """
         Show the simulation chart.
-        '''
-        if importlib.util.find_spec("plotly") is None:
-            print("Warning: Plotly not installed. Try `pip install plotly`.")
+        """
+        if importlib.util.find_spec('plotly') is None:
+            print('Warning: Plotly not installed. Try `pip install plotly`.')
             return
 
         if self.type.is_pd and self.type.is_cwl:
             x_axis_title = '2θ (degree)'
-            x = np.arange(self.instrument.twotheta_range_min.raw_value,
-                          self.instrument.twotheta_range_max.raw_value + self.instrument.twotheta_range_inc.raw_value,
-                          self.instrument.twotheta_range_inc.raw_value)
+            x = np.arange(
+                self.instrument.twotheta_range_min.raw_value,
+                self.instrument.twotheta_range_max.raw_value + self.instrument.twotheta_range_inc.raw_value,
+                self.instrument.twotheta_range_inc.raw_value,
+            )
         elif self.type.is_pd and self.type.is_tof:
             x_axis_title = 'TOF (µs)'
-            x = np.arange(self.instrument.tof_range_min.raw_value,
-                          self.instrument.tof_range_max.raw_value + self.instrument.tof_range_inc.raw_value,
-                          self.instrument.tof_range_inc.raw_value)
+            x = np.arange(
+                self.instrument.tof_range_min.raw_value,
+                self.instrument.tof_range_max.raw_value + self.instrument.tof_range_inc.raw_value,
+                self.instrument.tof_range_inc.raw_value,
+            )
         else:
             print(f"Warning: Simulation chart not available for this type of job '{self.type}'")
             print("Supported types: 'pd-cwl' and 'pd-tof'")
@@ -778,21 +765,15 @@ class DiffractionJob(JobBase):
         main_y_max = y_calc.max() + main_y_range / 10
 
         trace_calc = go.Scatter(
-            x=x,
-            y=y_calc,
-            line=dict(color='rgb(214, 39, 40)'),
-            mode='lines',
-            name='Total calculated (Icalc)'
+            x=x, y=y_calc, line=dict(color='rgb(214, 39, 40)'), mode='lines', name='Total calculated (Icalc)'
         )
 
         data = [trace_calc]
 
         layout = go.Layout(
             autosize=True,
-            margin=dict(autoexpand=True,
-                        r=30, t=30, b=45),
-            legend=dict(yanchor="top", y=1.0,
-                        xanchor="right", x=1.0),
+            margin=dict(autoexpand=True, r=30, t=30, b=45),
+            legend=dict(yanchor='top', y=1.0, xanchor='right', x=1.0),
             xaxis=dict(title_text=x_axis_title),
             yaxis=dict(title_text='Icalc', range=[main_y_min, main_y_max]),
         )
@@ -806,11 +787,11 @@ class DiffractionJob(JobBase):
         fig.show()
 
     def show_analysis_chart(self, show_legend=True):
-        '''
+        """
         Show the analysis chart.
-        '''
-        if importlib.util.find_spec("plotly") is None:
-            print("Warning: Plotly not installed. Try `pip install plotly`.")
+        """
+        if importlib.util.find_spec('plotly') is None:
+            print('Warning: Plotly not installed. Try `pip install plotly`.')
             return
 
         if self.type.is_pd and self.type.is_cwl:
@@ -848,7 +829,7 @@ class DiffractionJob(JobBase):
             yaxis='y',
             line=dict(color='rgb(44, 160, 44)'),
             mode='lines',
-            name='Residual (Imeas - Icalc)'
+            name='Residual (Imeas - Icalc)',
         )
 
         trace_bragg = go.Scatter(
@@ -856,14 +837,10 @@ class DiffractionJob(JobBase):
             y=y_bragg,
             xaxis='x2',
             yaxis='y2',
-            line=dict(color='rgb(230, 171, 2)'),  #color=px.colors.qualitative.Plotly[9]),
+            line=dict(color='rgb(230, 171, 2)'),  # color=px.colors.qualitative.Plotly[9]),
             mode='markers',
-            marker=dict(
-                symbol='line-ns-open',
-                size=10,
-                line=dict(width=1)
-            ),
-            name='Bragg peaks'
+            marker=dict(symbol='line-ns-open', size=10, line=dict(width=1)),
+            name='Bragg peaks',
         )
 
         trace_bkg = go.Scatter(
@@ -873,7 +850,7 @@ class DiffractionJob(JobBase):
             yaxis='y3',
             line=dict(color='gray'),
             mode='lines',
-            name='Background (Ibkg)'
+            name='Background (Ibkg)',
         )
 
         trace_calc = go.Scatter(
@@ -883,7 +860,7 @@ class DiffractionJob(JobBase):
             yaxis='y3',
             line=dict(color='rgb(214, 39, 40)'),
             mode='lines',
-            name='Total calculated (Icalc)'
+            name='Total calculated (Icalc)',
         )
 
         trace_meas = go.Scatter(
@@ -893,7 +870,7 @@ class DiffractionJob(JobBase):
             yaxis='y3',
             line=dict(color='rgb(31, 119, 180)'),
             mode='lines',
-            name='Measured (Imeas)'
+            name='Measured (Imeas)',
         )
 
         trace_meas_upper = go.Scatter(
@@ -903,8 +880,8 @@ class DiffractionJob(JobBase):
             yaxis='y3',
             mode='lines',
             line=dict(width=0),
-            hoverinfo="skip",
-            showlegend=False
+            hoverinfo='skip',
+            showlegend=False,
         )
 
         trace_meas_lower = go.Scatter(
@@ -916,55 +893,60 @@ class DiffractionJob(JobBase):
             line=dict(width=0),
             fillcolor='rgba(31, 119, 180, 0.3)',
             fill='tonexty',
-            hoverinfo="skip",
-            showlegend=False
+            hoverinfo='skip',
+            showlegend=False,
         )
 
-        data = [trace_bragg,
-                trace_resid,
-                trace_bkg, trace_meas, trace_meas_lower, trace_meas_upper, trace_calc]
+        data = [trace_bragg, trace_resid, trace_bkg, trace_meas, trace_meas_lower, trace_meas_upper, trace_calc]
 
         layout = go.Layout(
             # autosize = True,
-            margin=dict(autoexpand=True,
-                        r=30, t=30, b=45),
-            legend=dict(yanchor="top", y=1.0,
-                        xanchor="right", x=1.0),
-            xaxis=dict(
-                title_text=x_axis_title,
-                anchor='y',
-                range=[x_min, x_max],
-                showline=True, mirror=True, zeroline=False
-            ),
+            margin=dict(autoexpand=True, r=30, t=30, b=45),
+            legend=dict(yanchor='top', y=1.0, xanchor='right', x=1.0),
+            xaxis=dict(title_text=x_axis_title, anchor='y', range=[x_min, x_max], showline=True, mirror=True, zeroline=False),
             xaxis2=dict(
                 matches='x',
                 anchor='y2',
                 range=[x_min, x_max],
-                showline=True, mirror=True, zeroline=False, showticklabels=False
+                showline=True,
+                mirror=True,
+                zeroline=False,
+                showticklabels=False,
             ),
             xaxis3=dict(
                 matches='x',
                 anchor='y3',
                 range=[x_min, x_max],
-                showline=True, mirror=True, zeroline=False, showticklabels=False
+                showline=True,
+                mirror=True,
+                zeroline=False,
+                showticklabels=False,
             ),
             yaxis=dict(
                 title_text='Imeas - Icalc',
                 domain=[0, resid_height / full_height - 0.01],
                 range=[resid_y_min, resid_y_max],
                 tickvals=[int(resid_y_min), 0, int(resid_y_max)],
-                showline=True, mirror=True, showgrid=False
+                showline=True,
+                mirror=True,
+                showgrid=False,
             ),
             yaxis2=dict(
                 domain=[resid_height / full_height + 0.01, (resid_height + bragg_height) / full_height - 0.01],
-                showline=True, mirror=True, showgrid=False, zeroline=False, showticklabels=False
+                showline=True,
+                mirror=True,
+                showgrid=False,
+                zeroline=False,
+                showticklabels=False,
             ),
             yaxis3=dict(
                 title_text='Imeas, Icalc, Ibkg',
                 domain=[(resid_height + bragg_height) / full_height + 0.01, 1],
                 range=[main_y_min, main_y_max],
-                showline=True, mirror=True, zeroline=False
-            )
+                showline=True,
+                mirror=True,
+                zeroline=False,
+            ),
         )
 
         fig = go.Figure(data=data, layout=layout)
@@ -974,15 +956,15 @@ class DiffractionJob(JobBase):
         fig.show()
 
     def is_notebook(self):
-        '''
+        """
         Check if the code is running in a Jupyter notebook.
-        '''
-        return hasattr(builtins, "__IPYTHON__")
+        """
+        return hasattr(builtins, '__IPYTHON__')
 
     def get_parent_name(self, unique_name: str) -> str:
-        '''
+        """
         Get the pretty name of the parameter.
-        '''
+        """
         full_name_items = global_object.map.find_path('DiffractionJob_0', unique_name)
         str_name = ''
         for item in full_name_items:
@@ -990,17 +972,17 @@ class DiffractionJob(JobBase):
                 phase_name = global_object.map.get_item_by_key(item).name
                 str_name += f".phases['{phase_name}']"
             if re.match('^PeriodicLattice_[0-9]+$', item):
-                str_name += ".cell"
+                str_name += '.cell'
             if re.match('^Site_[0-9]+$', item):
                 atom_site_name = global_object.map.get_item_by_key(item).name
                 str_name += f".atom_sites['{atom_site_name}']"
             if re.match('^Instrument1D(CW|TOF)Parameters_[0-9]+$', item):
-                str_name += ".instrument"
+                str_name += '.instrument'
             if re.match('^Powder1DParameters_[0-9]+$', item):
-                str_name += ".pattern"
+                str_name += '.pattern'
             if re.match('^PointBackground_[0-9]+$', item):
-                container_idx = int(re.sub(r"\D", "", item)) - 1
-                str_name += f".backgrounds[{container_idx}]"
+                container_idx = int(re.sub(r'\D', '', item)) - 1
+                str_name += f'.backgrounds[{container_idx}]'
             if re.match('^BackgroundPoint_[0-9]+$', item):
                 name = global_object.map.get_item_by_key(item).name
                 str_name += f"['{name}']"
@@ -1041,9 +1023,9 @@ class DiffractionJob(JobBase):
         return parameters
 
     def _show_parameters(self, parameters):
-        '''
+        """
         Show parameters.
-        '''
+        """
         if importlib.util.find_spec('pandas') is not None:
             df = pd.DataFrame(parameters)
             df.index += 1
@@ -1068,40 +1050,32 @@ class DiffractionJob(JobBase):
                 print(parameter)
 
     def show_parameters(self):
-        '''
+        """
         Show all parameters (fixed and free).
-        '''
+        """
         self._show_parameters(self._parameters())
 
     def show_free_parameters(self):
-        '''
+        """
         Show only free parameters.
-        '''
+        """
         self._show_parameters(self._free_parameters())
 
     ###### DUNDER METHODS ######
     def __copy__(self):
         # Re-create the current object
         return DiffractionJob(
-            name=self._name,
-            sample=self.sample,
-            experiment=self.experiment,
-            analysis=self.analysis,
-            interface=self.interface
+            name=self._name, sample=self.sample, experiment=self.experiment, analysis=self.analysis, interface=self.interface
         )
 
     def __deepcopy__(self, j):
         # Re-create the current object
         return DiffractionJob(
-            name=j._name,
-            sample=j.sample,
-            experiment=j.experiment,
-            analysis=j.analysis,
-            interface=j.interface
+            name=j._name, sample=j.sample, experiment=j.experiment, analysis=j.analysis, interface=j.interface
         )
 
     def __str__(self) -> str:
-        return f"Job: {self._name}"
+        return f'Job: {self._name}'
 
     def __repr__(self) -> str:
         return self.__str__()

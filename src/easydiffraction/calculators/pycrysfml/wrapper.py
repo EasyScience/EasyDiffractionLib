@@ -25,44 +25,44 @@ class PycrysfmlWrapper(WrapperBase):
     A simple FILE interface using CrysFML
     """
 
-    _sample_link = {"filename": "filename"}
+    _sample_link = {'filename': 'filename'}
 
     _crystal_link = {
-        "length_a": "length_a",
-        "length_b": "length_b",
-        "length_c": "length_c",
-        "angle_alpha": "angle_alpha",
-        "angle_beta": "angle_beta",
-        "angle_gamma": "angle_gamma",
+        'length_a': 'length_a',
+        'length_b': 'length_b',
+        'length_c': 'length_c',
+        'angle_alpha': 'angle_alpha',
+        'angle_beta': 'angle_beta',
+        'angle_gamma': 'angle_gamma',
     }
 
     _instrument_link = {
-        "resolution_u": "u_resolution",
-        "resolution_v": "v_resolution",
-        "resolution_w": "w_resolution",
-        "resolution_x": "x_resolution",
-        "resolution_y": "y_resolution",
-        "wavelength": "lamb",
+        'resolution_u': 'u_resolution',
+        'resolution_v': 'v_resolution',
+        'resolution_w': 'w_resolution',
+        'resolution_x': 'x_resolution',
+        'resolution_y': 'y_resolution',
+        'wavelength': 'lamb',
     }
 
     _atom_link = {
-        "label": "label",
-        "specie": "specie",
-        "fract_x": "fract_x",
-        "fract_y": "fract_y",
-        "fract_z": "fract_z",
-        "occupancy": "occupancy",
-        "adp_type": "adp_type",
-        "Uiso": "Uiso",
-        "Biso": "Biso",
-        "Uani": "Uani",
-        "Bani": "Bani",
+        'label': 'label',
+        'specie': 'specie',
+        'fract_x': 'fract_x',
+        'fract_y': 'fract_y',
+        'fract_z': 'fract_z',
+        'occupancy': 'occupancy',
+        'adp_type': 'adp_type',
+        'Uiso': 'Uiso',
+        'Biso': 'Biso',
+        'Uani': 'Uani',
+        'Bani': 'Bani',
     }
-    _pattern_link = {"scale": "scale", "x_offset": "x_offset"}
+    _pattern_link = {'scale': 'scale', 'x_offset': 'x_offset'}
 
-    feature_available = {"Npowder1DCW": True, "Npowder1DCWunp": True}
+    feature_available = {'Npowder1DCW': True, 'Npowder1DCWunp': True}
 
-    name = "CrysFML"
+    name = 'CrysFML'
 
     def __init__(self):
         self.calculator = Pycrysfml()
@@ -71,10 +71,10 @@ class PycrysfmlWrapper(WrapperBase):
 
     @staticmethod
     def feature_checker(
-        radiation="N",
-        exp_type="CW",
-        sample_type="powder",
-        dimensionality="1D",
+        radiation='N',
+        exp_type='CW',
+        sample_type='powder',
+        dimensionality='1D',
         test_str=None,
     ):
         return WrapperBase.features(
@@ -94,7 +94,7 @@ class PycrysfmlWrapper(WrapperBase):
         model_key = self.__identify(model)
         if issubclass(t_, Instrument1DCWParameters):
             # These parameters are linked to the Resolution and Setup Pycrysfml objects. Note that we can set the job type!
-            self.calculator.createConditions(job_type="N")
+            self.calculator.createConditions(job_type='N')
             keys = self._instrument_link.copy()
             r_list.append(
                 ItemContainer(
@@ -111,7 +111,7 @@ class PycrysfmlWrapper(WrapperBase):
             keys = self._crystal_link.copy()
             r_list.append(ItemContainer(model_key, keys, self.get_value, self.dump_cif))
         elif issubclass(t_, SpaceGroup):
-            keys = {"_space_group_HM_name": "_space_group_HM_name"}
+            keys = {'_space_group_HM_name': '_space_group_HM_name'}
             r_list.append(ItemContainer(model_key, keys, self.get_value, self.dump_cif))
         elif issubclass(t_, Site):
             keys = self._atom_link.copy()
@@ -122,7 +122,7 @@ class PycrysfmlWrapper(WrapperBase):
             r_list.append(
                 ItemContainer(
                     model_key,
-                    {"scale": "scale"},
+                    {'scale': 'scale'},
                     self.calculator.getPhaseScale,
                     self.calculator.setPhaseScale,
                 )
@@ -130,7 +130,7 @@ class PycrysfmlWrapper(WrapperBase):
             self.calculator.add_phase(str(model_key), model.name)
         elif issubclass(t_, Sample):
             self.__createModel(model)
-        elif t_.__name__ in ["Powder1DCW", "powder1DCW", "Npowder1DCW", "Npowder1DCWunp"]:
+        elif t_.__name__ in ['Powder1DCW', 'powder1DCW', 'Npowder1DCW', 'Npowder1DCWunp']:
             self.__createModel(model)
         return r_list
 
@@ -168,8 +168,8 @@ class PycrysfmlWrapper(WrapperBase):
         self.remove_cif()
         # naive and silly workaround for something mysterious happening in easyCrystallography
         content = str(self._phase.cif)
-        content = content.replace("H-M_ref", "H-M_alt")
-        with open(self._filename, "w") as fid:
+        content = content.replace('H-M_ref', 'H-M_alt')
+        with open(self._filename, 'w') as fid:
             # fid.write(str(self._phase.cif))
             fid.write(content)
         base, file = os.path.split(self._filename)
@@ -177,9 +177,9 @@ class PycrysfmlWrapper(WrapperBase):
         file = file[:-4]
         for idx, phase in enumerate(self._phase):
             content = str(phase.cif)
-            content = content.replace("H-M_ref", "H-M_alt")
-            with open(f"{os.path.join(base, file)}_{idx}.{ext}", "w") as fid:
-                #fid.write(str(phase.cif))
+            content = content.replace('H-M_ref', 'H-M_alt')
+            with open(f'{os.path.join(base, file)}_{idx}.{ext}', 'w') as fid:
+                # fid.write(str(phase.cif))
                 fid.write(content)
 
     def remove_cif(self):
@@ -203,8 +203,8 @@ class PycrysfmlWrapper(WrapperBase):
 
     def get_value(self, key, item_key):
         item = borg.map.get_item_by_key(key)
-        if item_key in ["Uiso", "Uani", "Biso", "Bani"]:
-            return getattr(getattr(item, "adp"), item_key).raw_value
+        if item_key in ['Uiso', 'Uani', 'Biso', 'Bani']:
+            return getattr(getattr(item, 'adp'), item_key).raw_value
         return getattr(item, item_key).raw_value
 
     def get_phase_components(self, phase_name):

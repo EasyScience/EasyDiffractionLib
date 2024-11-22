@@ -30,8 +30,9 @@ class Background(BaseCollection):
 
         #  Convert `linked_experiment` to a Descriptor
         if linked_experiment is None:
-            raise AttributeError('Backgrounds need to be associated with an experiment. '
-                                 'Use the `linked_experiment` key word argument.')
+            raise AttributeError(
+                'Backgrounds need to be associated with an experiment. ' 'Use the `linked_experiment` key word argument.'
+            )
         elif isinstance(linked_experiment, str):
             linked_experiment = Descriptor('linked_experiment', linked_experiment)
 
@@ -90,6 +91,7 @@ class BackgroundContainer(BaseCollection):
     any type and have to be associated to an experiment. There can't be multiple backgrounds associated with an
     experiment!!
     """
+
     def __init__(self, *args, interface=None, **kwargs):
         """
         Constructor, with a link to an interface.

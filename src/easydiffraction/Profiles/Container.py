@@ -9,7 +9,6 @@ from easydiffraction.Profiles.Sample import Sample
 
 
 class DataContainer(ComponentSerializer):
-
     def __init__(self, sim_store: Sample, exp_store: Experiment):
         self._simulations = sim_store
         self._experiments = exp_store
@@ -29,21 +28,20 @@ class DataContainer(ComponentSerializer):
                 """
                 :return: Json-able dictionary representation.
                 """
-                d = {"@module": self.__class__.__module__,
-                    "@class": self.__class__.__name__}
-                d["simulations"] = self._dataset.as_dict()
+                d = {'@module': self.__class__.__module__, '@class': self.__class__.__name__}
+                d['simulations'] = self._dataset.as_dict()
                 return d
 
         class Experiment(experiment_class):
             def __init__(self, sim_prefix):
                 super(Experiment, self).__init__(sim_prefix, dataset)
+
             def as_dict(self, skip=None):
                 """
                 :return: Json-able dictionary representation.
                 """
-                d = {"@module": self.__class__.__module__,
-                    "@class": self.__class__.__name__}
-                d["simulations"] = self._dataset.as_dict()
+                d = {'@module': self.__class__.__module__, '@class': self.__class__.__name__}
+                d['simulations'] = self._dataset.as_dict()
                 return d
 
         s = Simulation(dataset=dataset)
@@ -63,10 +61,9 @@ class DataContainer(ComponentSerializer):
         """
         :return: Json-able dictionary representation.
         """
-        d = {"@module": self.__class__.__module__,
-             "@class": self.__class__.__name__}
-        d["simulations"] = self._simulations.as_dict()
-        d["experiments"] = self._experiments.as_dict()
+        d = {'@module': self.__class__.__module__, '@class': self.__class__.__name__}
+        d['simulations'] = self._simulations.as_dict()
+        d['experiments'] = self._experiments.as_dict()
         return d
 
     @classmethod
@@ -75,4 +72,4 @@ class DataContainer(ComponentSerializer):
         :param d: Dict representation.
         :return: Species.
         """
-        return cls(d["simulations"], d["experiments"])
+        return cls(d['simulations'], d['experiments'])

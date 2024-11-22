@@ -14,30 +14,29 @@ on:
 
 jobs:
   pypi-publish:
-
     runs-on: ubuntu-latest
 
     steps:
-    - name: Check-out repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: '0'  # full history with tags to get the version number by versioningit
+      - name: Check-out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: '0' # full history with tags to get the version number by versioningit
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.12'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
 
-    - name: Upgrade package installer for Python
-      run: pip install --upgrade pip
+      - name: Upgrade package installer for Python
+        run: pip install --upgrade pip
 
-    - name: Install Python dependencies
-      run: pip install '.[dev]'
+      - name: Install Python dependencies
+        run: pip install '.[dev]'
 
-    - name: Create Python package
-      run: python -m build
+      - name: Create Python package
+        run: python -m build
 
-    - name: Publish distribution 📦 to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        password: ${{ secrets.PYPI_PASSWORD }}
+      - name: Publish distribution 📦 to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_PASSWORD }}

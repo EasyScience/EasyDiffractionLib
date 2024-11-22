@@ -1,10 +1,14 @@
-# Configuration for the EasyDiffractionLib project
+###############################
+# Configuration for the project
+###############################
 
 [project]
 name = 'easydiffraction'
-version = '0.1.8'
+dynamic = ['version']  # use versioningit to manage the version
 description = 'Making diffraction data analysis and modelling easy'
-authors = [{ name = 'EasyDiffraction contributors', email = 'support@easydiffraction.org' }]
+authors = [
+    { name = 'EasyDiffraction contributors', email = 'support@easydiffraction.org' }
+]
 readme = 'README.md'
 license = { file = 'LICENSE' }
 classifiers = [
@@ -37,10 +41,11 @@ dev = [
     'nbmake',  # for building notebooks
     'nbqa',  # for linting notebooks
     'jinja2',  # for templating
+    'versioningit',  # for versioning
 ]
 charts = [
-    'darkdetect',  # for dark mode detection
-    'plotly',  # for interactive plots
+    'darkdetect',# for dark mode detection
+    'plotly',    # for interactive plots
     'py3Dmol',  # for visualisation of crystal structures
     'pandas',  # for displaying tables in juptyer notebooks
 ]
@@ -51,14 +56,26 @@ documentation = 'https://docs.easydiffraction.org/lib'
 source = 'https://github.com/EasyScience/EasyDiffractionLib'
 tracker = 'https://github.com/EasyScience/EasyDiffractionLib/issues'
 
-# Select the build system 'hatch' -- Python project manager
+############################
+# Build system configuration
+############################
+
+# Build system 'hatch' -- Python project manager
 # https://hatch.pypa.io/
+
+# Versioning system 'versioningit' -- Versioning from git tags
+# https://versioningit.readthedocs.io/
 
 [build-system]
 build-backend = 'hatchling.build'
-requires = ['hatchling']
+requires = [
+  'hatchling',
+  'versioningit'
+]
 
-# Configuration for the hatch
+#############################
+# Configuration for hatchling
+#############################
 
 [tool.hatch.build.targets.wheel]
 packages = ['src/easydiffraction']
@@ -66,16 +83,33 @@ packages = ['src/easydiffraction']
 [tool.hatch.metadata]
 allow-direct-references = true
 
-# Configuration for 'ruff' -- Python linter and code formatter
+[tool.hatch.version]
+source = 'versioningit'
+
+################################
+# Configuration for versioningit
+################################
+
+[tool.versioningit.format]
+distance = '{base_version}.post{distance}'  # Example: 1.2.3.post42
+dirty = '{base_version}'  # Example: 1.2.3
+distance-dirty = '{base_version}.post{distance}'  # Example: 1.2.3.post42
+
+########################
+# Configuration for ruff
+########################
+
+# 'ruff' -- Python linter and code formatter
 # https://docs.astral.sh/ruff/rules/
 
 [tool.ruff]
 exclude = [
-    'examples_old',
-    'tests'
+  'examples',
+  'examples_old',
+  'tests'
 ]
 indent-width = 4
-line-length = 127  # 79, 88, 97, 124
+line-length = 127
 
 [tool.ruff.format]
 docstring-code-format = true  # Whether to format code snippets in docstrings

@@ -1,21 +1,21 @@
 # This file is used to configure the Release Drafter GitHub Action
 # https://github.com/marketplace/actions/release-drafter
 
-name-template: 'v$RESOLVED_VERSION 🌈'
+name-template: 'EasyDiffraction $RESOLVED_VERSION'
 tag-template: 'v$RESOLVED_VERSION'
 categories:
-- title: '🚀 Features'
+- title: 'Added'
   labels:  # Labels to use to categorize a pull request as a feature
     - 'enhancement'
-- title: '🐛 Bug Fixes'
+- title: 'Fixed'
   labels:  # Labels to use to categorize a pull request as a bug fix
     - 'bug'
-- title: '🧰 Maintenance'
+- title: 'Changed'
   labels:  # Labels to use to categorize a pull request as a maintenance task
     - 'chore'
     - 'documentation'
     - 'refactor'
-change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
+change-template: '- $TITLE (#$NUMBER)'
 change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
 version-resolver:
   major:
@@ -26,11 +26,10 @@ version-resolver:
       - 'enhancement'
   patch:
     labels:
+      - 'bug'
       - 'chore'
       - 'documentation'
       - 'refactor'
   default: patch
 template: |
-  ## Changes
-
   $CHANGES

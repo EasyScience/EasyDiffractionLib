@@ -51,6 +51,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        fetch-depth: '0'  # full history with tags to get the version number by versioningit
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
@@ -104,6 +106,10 @@ jobs:
         name: EasyDiffractionLib_py${{ matrix.python-version }}_${{ matrix.os }}_${{ runner.arch }}
         path: .  # directory to extract downloaded zipped artifacts
 
+    # The local version must be higher than the PyPI version for pip to
+    # prefer the local version. So, after a new release and a new tag,
+    # remember to merge the master branch with the develop branch,
+    # and then create a new feature branch from the develop branch.
     - name: Install Python package from previous job with 'dev' extras
       run: pip install 'easydiffraction[dev]' --find-links=dist
 
@@ -117,7 +123,7 @@ jobs:
       shell: bash
       run: >
         pytest 
-        --nbmake examples 
+        --nbmake examples/
         --ignore-glob='examples/*emcee*'
         --nbmake-timeout=300 
         --color=yes

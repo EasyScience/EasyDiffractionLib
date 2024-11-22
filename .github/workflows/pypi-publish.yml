@@ -1,4 +1,5 @@
-# Builds a Python package and publish it to PyPI when a new tag is created.
+# Builds a Python package and publish it to PyPI when a new tag is
+# created.
 
 name: Upload release to PyPI
 
@@ -19,6 +20,8 @@ jobs:
     steps:
     - name: Check-out repository
       uses: actions/checkout@v4
+      with:
+        fetch-depth: '0'  # full history with tags to get the version number by versioningit
 
     - name: Set up Python
       uses: actions/setup-python@v5

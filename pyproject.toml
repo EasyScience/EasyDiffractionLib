@@ -1,10 +1,14 @@
-# Configuration for the EasyDiffractionLib project
+###############################
+# Configuration for the project
+###############################
 
 [project]
 name = 'easydiffraction'
-version = '0.1.7'
+dynamic = ['version']  # Use versioningit to manage the version
 description = 'Making diffraction data analysis and modelling easy'
-authors = [{ name = 'EasyDiffraction contributors', email = 'support@easydiffraction.org' }]
+authors = [
+    { name = 'EasyDiffraction contributors', email = 'support@easydiffraction.org' }
+]
 readme = 'README.md'
 license = { file = 'LICENSE' }
 classifiers = [
@@ -21,28 +25,29 @@ classifiers = [
 ]
 requires-python = '>=3.9,<3.13'
 dependencies = [
-    'cryspy',  # for calculations of diffraction patterns
-    'pooch',  # for data fetching
-    'easyscience',
-    'easycrystallography',
+    'cryspy',  # For calculations of diffraction patterns
+    'pooch',  # For data fetching
+    'easyscience',  # The base library of the EasyScience framework
+    'easycrystallography',  # Crystallography tools of the EasyScience framework
 ]
 
 [project.optional-dependencies]
 dev = [
-    'build',  # for building the package
-    'pytest',  # for testing
-    'pytest-xdist',  # for parallel testing
-    'pytest-cov',  # for coverage
-    'ruff',  # for linting
-    'nbmake',  # for building notebooks
-    'nbqa',  # for linting notebooks
-    'jinja2',  # for templating
+    'build',  # For building the package
+    'pytest',  # For testing
+    'pytest-xdist',  # For parallel testing
+    'pytest-cov',  # For coverage
+    'ruff',  # For linting
+    'nbmake',  # For building notebooks
+    'nbqa',  # For linting notebooks
+    'jinja2',  # For templating
+    'versioningit',  # For versioning
 ]
 charts = [
-    'darkdetect',
-    'plotly',
-    'py3Dmol',
-    'pandas',
+    'darkdetect',  # For dark mode detection
+    'plotly',  # For interactive plots
+    'py3Dmol',  # For visualisation of crystal structures
+    'pandas',  # For displaying tables in juptyer notebooks
 ]
 
 [project.urls]
@@ -51,36 +56,84 @@ documentation = 'https://docs.easydiffraction.org/lib'
 source = 'https://github.com/EasyScience/EasyDiffractionLib'
 tracker = 'https://github.com/EasyScience/EasyDiffractionLib/issues'
 
-# Select the build system hatch -- Python project manager
+############################
+# Build system configuration
+############################
+
+# Build system 'hatch' -- Python project manager
 # https://hatch.pypa.io/
+
+# Versioning system 'versioningit' -- Versioning from git tags
+# https://versioningit.readthedocs.io/
 
 [build-system]
 build-backend = 'hatchling.build'
-requires = ['hatchling']
+requires = [
+  'hatchling',
+  'versioningit'
+]
 
-# Configuration for the hatch
+#############################
+# Configuration for hatchling
+#############################
+
+[tool.hatch.build.targets.wheel]
+packages = ['src/easydiffraction']
 
 [tool.hatch.metadata]
 allow-direct-references = true
 
-[tool.hatch.build.targets.wheel]
-packages = ['easydiffraction']
+[tool.hatch.version]
+source = 'versioningit'  # Use versioningit to manage the version
 
-# Configuration for ruff -- Python linter and code formatter
+################################
+# Configuration for versioningit
+################################
+
+# Versioningit generates versions from git tags, so we don't need to
+# either specify them statically in pyproject.toml or save them in the
+# source code.
+
+[tool.versioningit.format]
+distance = '{base_version}.post{distance}'  # example: 1.2.3.post42
+dirty = '{base_version}'  # example: 1.2.3
+distance-dirty = '{base_version}.post{distance}'  # example: 1.2.3.post42
+
+[tool.versioningit.vcs]
+method = 'git'
+match = ['v*']
+default-tag = 'v999.0.0'
+
+########################
+# Configuration for ruff
+########################
+
+# 'ruff' -- Python linter and code formatter
 # https://docs.astral.sh/ruff/rules/
 
 [tool.ruff]
-line-length = 127
-indent-width = 4
 exclude = [
-    'examples_old',
-    'tests'
+  'examples',
+  'examples_old',
+  'tests'
 ]
+indent-width = 4
+line-length = 127
 
 [tool.ruff.format]
-quote-style = 'single'
-indent-style = 'space'  # PEP 8 recommends using spaces over tabs for indentation.
-line-ending = 'lf'  # Line endings will be converted to \n. The default line ending on Unix.
+docstring-code-format = true  # Whether to format code snippets in docstrings
+indent-style = 'space'  # PEP 8 recommends using spaces over tabs
+line-ending = 'lf'  # Line endings will be converted to \n
+quote-style = 'single'  # But double quotes in docstrings (PEP 8, PEP 257)
+
+[tool.ruff.lint]
+select = [
+    'E9', 'F63', 'F7', 'F82',  # flake8 settings from existing CI setup
+    'E', 'W',  # pycodestyle
+    'F',  # Pyflakes
+    'I',  # isort
+    'S',  # flake8-bandit
+]
 
 [tool.ruff.lint.isort]
 force-single-line = true
@@ -89,22 +142,6 @@ force-single-line = true
 # allow asserts in test files
 '*test_*.py' = ['S101']
 
-[tool.ruff.lint]
-select = [
-    # flake8 settings from existing CI setup
-    'E9', 'F63', 'F7', 'F82',
-    # pycodestyle
-    'E', 'W',
-    # Pyflakes
-    'F',
-    # pyupgrade
-    #'UP',
-    # flake8-bugbear
-    #'B',
-    # flake8-simplify
-    #'SIM',
-    # isort
-    'I',
-    # flake8-bandit
-    'S',
-]
+#[tool.ruff.lint.pycodestyle]
+#max-line-length = 79  # https://peps.python.org/pep-0008/#maximum-line-length
+#max-doc-length = 72  # https://peps.python.org/pep-0008/#maximum-line-length

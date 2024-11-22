@@ -1,6 +1,6 @@
 # Development
 
-This is an example of a workflow that describes the development process. 
+This is an example of a workflow that describes the development process.
 
 * Clone EasyDiffractionLib repository
   ```console
@@ -27,18 +27,19 @@ This is an example of a workflow that describes the development process.
   ```console
   python -m pip install --upgrade pip
   ```
-* Install easydiffraction from root with `dev` extras for development 
+* Install easydiffraction from root with `dev` extras for development
   ```console
   pip install '.[dev]'
   ```
 * Make changes in the code
 * Run Ruff - Python linter and code formatter (configuration is in pyproject.toml)
   ```console
-  ruff check . --fix 
+  ruff check --fix  # Linting (overwriting files)
+  ruff format       # Formatting (overwriting files)
   ```
 * Run python tests
   ```console
-  pytest tests/ --color=yes -n auto 
+  pytest tests/ --color=yes -n auto
   ```
 * Clear all Jupyter notebooks output
   ```console

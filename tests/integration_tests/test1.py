@@ -6,7 +6,7 @@ import numpy as np
 from easycrystallography.Components.Susceptibility import MagneticSusceptibility
 
 from easydiffraction import Phase
-from easydiffraction.interface import InterfaceFactory as Calculator
+from easydiffraction.calculators.wrapper_factory import WrapperFactory as Calculator
 from easydiffraction.Profiles.P1D import Instrument1DCWParameters
 from easydiffraction.sample import Sample
 

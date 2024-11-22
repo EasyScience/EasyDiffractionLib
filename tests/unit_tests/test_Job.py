@@ -4,8 +4,8 @@ import numpy as np
 import pytest
 
 import easydiffraction as ed
-from easydiffraction.interface import InterfaceFactory
-from easydiffraction.Job import DiffractionJob as Job
+from easydiffraction.calculators.wrapper_factory import WrapperFactory
+from easydiffraction.job import DiffractionJob as Job
 from easydiffraction.Profiles.Analysis import Analysis
 from easydiffraction.Profiles.Experiment import Experiment
 from easydiffraction.Profiles.JobType import JobType
@@ -21,7 +21,7 @@ from easydiffraction.sample import Sample
 def test_job_init():
     j = Job()
     assert j.name == "Job"
-    assert isinstance(j.interface, InterfaceFactory)
+    assert isinstance(j.interface, WrapperFactory)
     assert isinstance(j.sample, Sample)
     assert isinstance(j.experiment, Experiment)
     assert isinstance(j.analysis, Analysis)

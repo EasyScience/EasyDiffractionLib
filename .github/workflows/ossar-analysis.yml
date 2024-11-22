@@ -1,4 +1,5 @@
-# Integrates a collection of open source static analysis tools with GitHub code scanning.
+# Integrates a collection of open source static analysis tools with
+# GitHub code scanning.
 # https://github.com/github/ossar-action
 
 name: Run security static analysis

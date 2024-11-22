@@ -1,4 +1,5 @@
-# This workflow will delete old workflow runs based on the input parameters.
+# This workflow will delete old workflow runs based on the input
+# parameters.
 # https://github.com/Mattraks/delete-workflow-runs
 
 name: Delete old workflow runs

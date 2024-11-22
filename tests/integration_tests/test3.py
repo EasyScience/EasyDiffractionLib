@@ -5,11 +5,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from easydiffraction import Phases
-from easydiffraction.interface import InterfaceFactory
+from easydiffraction.calculators.wrapper_factory import WrapperFactory
 from easydiffraction.Profiles.P1D import Instrument1DCWParameters
 from easydiffraction.sample import Sample
 
-i = InterfaceFactory()
+i = WrapperFactory()
 
 c = Phases.from_cif_file('tests/SrTiO3.cif')
 

@@ -10,10 +10,10 @@ from easydiffraction.elements.Backgrounds.Point import BackgroundPoint
 from easydiffraction.elements.Backgrounds.Point import PointBackground
 from easydiffraction.elements.Experiments.Experiment import Pars1D
 from easydiffraction.elements.Experiments.Pattern import Pattern1D
-from easydiffraction.interface import InterfaceFactory
+from easydiffraction.calculators.wrapper_factory import WrapperFactory
 from easydiffraction.sample import Sample
 
-interface = InterfaceFactory()
+interface = WrapperFactory()
 c = Phases.from_cif_file('PbSO4.cif')
 S = Sample(phases=c, parameters=Pars1D.default(), pattern=Pattern1D.default(), interface=interface)
 

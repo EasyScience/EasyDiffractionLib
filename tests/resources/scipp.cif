@@ -1,0 +1,40 @@
+#\#CIF_1.1
+# Simple test data
+data_test_data
+
+loop_
+_audit_conform.dict_name
+_audit_conform.dict_version
+_audit_conform.dict_location
+coreCIF 3.3.0 https://github.com/COMCIFS/cif_core/blob/6f8502e81b623eb0fd779c79efaf191d49fa198c/cif_core.dic
+pdCIF 2.5.0 https://github.com/COMCIFS/Powder_Dictionary/blob/970c2b2850a923796db5f4e9b7207d10ab5fd8e5/cif_pow.dic
+
+_audit.creation_date 2024-11-20T20:48:33+00:00
+_audit.creation_method 'Written by scippneutron v24.11.0'
+_computing.diffrn_reduction integration_test
+
+_audit_contact_author.name 'Jane Doe'
+_audit_contact_author.id_orcid https://orcid.org/0000-0000-0000-0001
+
+_diffrn_radiation.probe neutron
+_diffrn_source.beamline dream
+_diffrn_source.facility ESS
+_diffrn_source.device spallation
+
+loop_
+_pd_calib_d_to_tof.id
+_pd_calib_d_to_tof.power
+_pd_calib_d_to_tof.coeff
+ZERO 0 3.4
+DIFC 1 0.2
+DIFA 2 -0.8
+
+# Totally made up
+loop_
+_pd_data.point_id
+_pd_meas.time_of_flight
+_pd_proc.intensity_norm
+_pd_proc.intensity_norm_su
+0 1.2 13.6 0.8366600265340756
+1 1.4 26.0 1.0488088481701516
+2 2.3 9.7 0.7071067811865476

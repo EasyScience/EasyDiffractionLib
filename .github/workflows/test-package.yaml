@@ -106,8 +106,12 @@ jobs:
         name: EasyDiffractionLib_py${{ matrix.python-version }}_${{ matrix.os }}_${{ runner.arch }}
         path: .  # directory to extract downloaded zipped artifacts
 
+    # The local version must be higher than the PyPI version for pip to
+    # prefer the local version. So, after a new release and a new tag,
+    # remember to merge the master branch with the develop branch,
+    # and then create a new feature branch from the develop branch.
     - name: Install Python package from previous job with 'dev' extras
-      run: pip install 'easydiffraction[dev]' --find-links=dist  # local version must be higher than the one on PyPI
+      run: pip install 'easydiffraction[dev]' --find-links=dist
 
     - name: Run Python tests
       run: >

@@ -12,6 +12,7 @@ from easyscience.Objects.Inferface import ItemContainer
 
 from easydiffraction import Lattice
 from easydiffraction import Phases
+from easydiffraction import Phase
 from easydiffraction import Site
 from easydiffraction import SpaceGroup
 from easydiffraction.calculators.pdffit2 import Pdffit2 as Pdffit2_calc
@@ -140,6 +141,12 @@ class Pdffit2(InterfaceTemplate):
             self._phase = model
             self.calculator.phases = model
 
+        elif issubclass(t_, Phase):
+            self._phase = model
+            if self.calculator.phases is None:
+                self.calculator.phases = Phases()
+            self.calculator.phases.append(model)
+
         elif issubclass(t_, Sample):
             self.updateCif()
 
@@ -179,6 +186,16 @@ class Pdffit2(InterfaceTemplate):
         if self._phase is not None:
             self.calculator.cif_string = str(self._phase.cif)
         pass
+
+    def updateModelCif(self, cif_string: str):
+        self.calculator.cif_string = cif_string
+
+    def add_phase(self, phases_obj: Phases, phase_obj: Phase) -> None:
+        """
+        Add a phase to the phases object.
+        """
+        self.calculator.phases = phases_obj
+        self.calculator.phases[0].scale = phase_obj.scale.raw_value
 
     @staticmethod
     def __identify(obj):

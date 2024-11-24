@@ -24,13 +24,15 @@ class JobType():
         polarized: pol
         longitudinal polarized: lpa
         spherical polarimetry: snp
+    special experiment type:
+        PDF: pdf
 
     String-based specification can be provided in any order, in any combination.
     Example:
     a = JobType("pd-cwl-unp-1d-xray")
     b = JobType("cwl-unp-neut")
     c = JobType("tof")
-
+    d = JobType("pdf")
     """
     # Sample type
     STR_POWDER = "pd"
@@ -49,6 +51,8 @@ class JobType():
     STR_UPOL = "unp"
     STR_LPOL = "lpa"
     STR_SPOL = "snp"
+    # Special experiment type
+    STR_PDF = "pdf"
 
     # Default values
     DEFAULT_TYPE = "pd-cwl-unp-1d-neut"
@@ -86,7 +90,7 @@ class JobType():
         self._is_unp = False
         self._is_lpa = False
         self._is_snp = False
-
+        self._is_pdf = False
     @property
     def is_pd(self):
         return self._is_pd
@@ -207,6 +211,15 @@ class JobType():
         self._is_lpa = not value
         self.validate()
 
+    @property
+    def is_pdf(self):
+        return self._is_pdf
+
+    @is_pdf.setter
+    def is_pdf(self, value):
+        self._is_pdf = value
+        self.validate()
+
     def parse_job_type(self, job_type: str):
         # this will parse the substrings of the job type
         # and amend the existing job type
@@ -238,6 +251,9 @@ class JobType():
         elif self._is_snp:
             pol_flag = self.STR_SPOL
         self.type_str = f"{sample_flag}-{beam_flag}-{pol_flag}-{dim_flag}-{radiation_flag}"
+        # special experiment type
+        if self._is_pdf:
+            self.type_str = f"{self.STR_PDF}"
 
     def validate(self):
         """

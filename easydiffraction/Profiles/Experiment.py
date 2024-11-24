@@ -8,6 +8,7 @@ from easyscience.Objects.job.experiment import ExperimentBase as coreExperiment
 from easyscience.Objects.ObjectClasses import Descriptor
 from easyscience.Objects.ObjectClasses import Parameter
 from gemmi import cif
+from easydiffraction.Interfaces.pdffit2 import readGRData
 
 from easydiffraction.elements.Backgrounds.Point import BackgroundPoint
 from easydiffraction.elements.Backgrounds.Point import PointBackground
@@ -20,6 +21,7 @@ from easydiffraction.Profiles.P1D import Instrument1DCWParameters
 from easydiffraction.Profiles.P1D import Instrument1DTOFParameters
 from easydiffraction.Profiles.P1D import PolPowder1DParameters
 from easydiffraction.Profiles.P1D import Powder1DParameters
+from easydiffraction.Profiles.P1D import PDFParameters
 
 _DEFAULT_DATA_BLOCK_NO_MEAS_PD_CWL = """data_pnd
 
@@ -326,7 +328,26 @@ class Experiment(coreExperiment):
         data_x = data['x']
         data_y = data['y']
         data_e = data['e']
+        self.assign_data(data_x, data_y, data_e, experiment_name)
 
+    def from_gr_file(self, file_url, experiment_name=None):
+        """
+        Load a GR file into the experiment.
+        """
+        data = readGRData(file_url)
+        data_x = data[:, 0]
+        data_y = [data[:, 1]]
+        data_e = [data[:, 3]]
+        self.parameters = PDFParameters()
+        if experiment_name is None:
+            experiment_name = 'pdf'
+            self.name = experiment_name
+        self.assign_data(data_x, data_y, data_e, experiment_name)
+
+    def assign_data(self, data_x, data_y, data_e, experiment_name):
+        """
+        Assign data to the experiment store.
+        """
         coord_name = self.job_name + "_" + experiment_name + "_" + self._x_axis_name
 
         self._datastore.store.easyscience.add_coordinate(coord_name, data_x)

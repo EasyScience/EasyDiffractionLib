@@ -32,8 +32,8 @@ from easydiffraction.Profiles.P1D import Instrument1DCWParameters
 from easydiffraction.Profiles.P1D import Instrument1DTOFParameters
 from easydiffraction.Profiles.P1D import PolPowder1DParameters
 from easydiffraction.Profiles.P1D import Powder1DParameters
+from easydiffraction.Profiles.P1D import PDFParameters
 
-# from easydiffraction.Profiles.Sample import Sample
 from easydiffraction.sample import Sample
 
 try:
@@ -148,6 +148,10 @@ class DiffractionJob(JobBase):
         self._kwargs['_parameters'] = self.sample.parameters
         self._kwargs['_pattern'] = self.sample.pattern
 
+        # set the appropriate calculator, if needed
+        if self.type.is_pdf:
+            self.calculator = "Pdffit2"
+
 
     @property
     def sample(self) -> Sample:
@@ -169,6 +173,9 @@ class DiffractionJob(JobBase):
                 parameters = Instrument1DCWParameters()
             elif self.type.is_tof:
                 parameters = Instrument1DTOFParameters()
+            # special experiment type
+            if self.type.is_pdf:
+                parameters = PDFParameters()
             self._sample = Sample("Sample", parameters=parameters, pattern=pattern)
 
     @property
@@ -420,6 +427,9 @@ class DiffractionJob(JobBase):
         # check the extension first and then call the appropriate method
         if file_url.endswith(".xye"):
             self.experiment.from_xye_file(file_url)
+        elif file_url.endswith(".gr"):
+            # PDF data
+            self.experiment.from_gr_file(file_url)
         else:
             self.experiment.from_cif_file(file_url)
 

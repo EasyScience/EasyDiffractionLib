@@ -78,6 +78,14 @@ class Analysis(coreAnalysis):
         return res
 
     @property
+    def calculator(self):
+        return self.interface.current_interface_name
+
+    @calculator.setter
+    def calculator(self, value: str):
+        self.interface.switch(value)
+
+    @property
     def available_minimizers(self) -> list:
         """
         Return a list of available minimizers, converted to a list of strings.

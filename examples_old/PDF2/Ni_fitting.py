@@ -1,30 +1,17 @@
 
 import os
 
-from easyCore.Fitting.Fitting import Fitter
-from easyDiffractionLib import Phases
-from easyDiffractionLib.Jobs import Powder1DCW
-from easyDiffractionLib.interface import InterfaceFactory as Calculator
-from easyDiffractionLib.Profiles.P1D import PDFParameters
-from easyDiffractionLib.Interfaces.pdffit2 import readGRData
+import easydiffraction as ed
 
 
-# data_fname = "D:\\projects\\easyScience\\easyDiffractionLib\\examples\\PDF\\Ni-xray.gr"
-data_fname = os.path.realpath('Ni-xray.gr')
-data = readGRData(data_fname)
+job = ed.Job(type='pdf')
 
-# phase_cif_name = "D:\\projects\\easyScience\\easyDiffractionLib\\examples\\PDF\\Ni.cif"
-phase_cif_name = "Ni.cif"
-phases = Phases.from_cif_file(phase_cif_name)
+data_fname = r"C:\projects\easy\test\EasyDiffractionLib\examples_old\PDF2\Ni-xray.gr"
+job.add_experiment_from_file(data_fname)
 
-parameters = PDFParameters()
+phase_cif_name = r"C:\projects\easy\test\EasyDiffractionLib\examples_old\PDF2\\Ni.cif"
+job.add_sample_from_file(phase_cif_name)
 
-calculator = Calculator()
-calculator.switch("Pdffit2")
-
-job = Powder1DCW('Ni', parameters=parameters, phases=phases, interface=calculator)
-
-fitter = Fitter(job, calculator.fit_func)
 
 parameters = job.parameters
 # initial values to not be too far from optimized ones
@@ -44,8 +31,6 @@ job.phases[0].atoms[0].adp.Uiso = 0.005445
 job.phases[0].scale = 0.366013
 job.phases[0].cell.length_a = 3.52
 
-x_data = data[:, 0]
-
 # define params to optimize
 job.phases[0].cell.length_a.fixed = False
 job.phases[0].scale.fixed = False
@@ -58,20 +43,23 @@ parameters.qbroad.fixed = False
 
 fit_parameters = job.get_fit_parameters()
 
-result = fitter.fit(x_data, data[:, 1], 
-                    method='least_squares', minimizer_kwargs={'diff_step': 1e-5})
+calc_y_pdffit = job.calculate_profile()
 
-print("The fit has been successful: {}".format(result.success))  
-print("The gooodness of fit (chi2) is: {}".format(result.reduced_chi))
+job.fit()
+
+
+print("The fit has been successful: {}".format(job.fitting_results.success))  
+print("The gooodness of fit (chi2) is: {}".format(job.fitting_results.reduced_chi))
 
 print("The optimized parameters are:")
 for param in fit_parameters:
     print("{}: {}".format(param.name, param.raw_value))
 
-y_data = calculator.fit_func(x_data)
+y_data = job.calculate_profile()
 
 # obtain data from PdfFit calculator object
-Gobs = data[:, 1]
+x_data = job.experiment.x
+Gobs = job.experiment.y
 Gfit = y_data
 Gdiff = Gobs - Gfit
 Gdiff_baseline = -10

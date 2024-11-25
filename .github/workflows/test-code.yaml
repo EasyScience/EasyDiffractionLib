@@ -162,8 +162,8 @@ jobs:
       - name: Run Jupyter Notebooks as tests
         shell: bash
         run: >
-          pytest  --nbmake examples  --ignore-glob='examples/*emcee*'
-          --nbmake-timeout=300  --color=yes -n=auto
+          pytest --nbmake examples --ignore-glob='examples/*emcee*'
+          --nbmake-timeout=300 --color=yes -n=auto
 
       - name: Create Python package # dist/*.whl
         run: python -m build --wheel --outdir dist
@@ -184,7 +184,7 @@ jobs:
 
   # Job 3: Test the package
   test-package:
-    needs: test-code-and-notebooks # the previous job needs to be finished first
+    needs: test-code # the previous job needs to be finished first
 
     strategy:
       fail-fast: false
@@ -227,5 +227,5 @@ jobs:
       - name: Run Jupyter Notebooks as tests
         shell: bash
         run: >
-          pytest  --nbmake examples/ --ignore-glob='examples/*emcee*'
-          --nbmake-timeout=300  --color=yes -n=auto
+          pytest --nbmake examples/ --ignore-glob='examples/*emcee*'
+          --nbmake-timeout=300 --color=yes -n=auto

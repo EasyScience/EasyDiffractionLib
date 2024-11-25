@@ -25,6 +25,7 @@ dependencies = [
     'pooch',  # for data fetching
     'easyscience',
     'easycrystallography',
+    'pdffit==0.0.2',
 ]
 
 [project.optional-dependencies]

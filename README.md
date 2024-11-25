@@ -1,5 +1,5 @@
-![](https://raw.githubusercontent.com/EasyScience/EasyDiffraction/master/resources/images/easydiffraction-logo_lightmode.svg#gh-light-mode-only)
-![](https://raw.githubusercontent.com/EasyScience/EasyDiffraction/master/resources/images/easydiffraction-logo_darkmode.svg#gh-dark-mode-only)
+![](https://raw.githubusercontent.com/EasyScience/EasyDiffraction/master/resources/images/EasyDiffractionLib-logo_lightmode.svg#gh-light-mode-only)
+![](https://raw.githubusercontent.com/EasyScience/EasyDiffraction/master/resources/images/EasyDiffractionLib-logo_darkmode.svg#gh-dark-mode-only)
 
 EasyDiffraction is a Python library for calculating neutron powder diffraction
 pattern based on a structural model and refining its parameters against

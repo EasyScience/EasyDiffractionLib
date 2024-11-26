@@ -3,7 +3,7 @@
 # © 2021-2024 Contributors to the EasyDiffraction project <https://github.com/EasyScience/EasyDiffraction>
 
 
-class JobType:
+class ExperimentType:
     """
     Specification of the diffraction job type.
 
@@ -28,9 +28,9 @@ class JobType:
 
     String-based specification can be provided in any order, in any combination.
     Example:
-    a = JobType("pd-cwl-unp-1d-xray")
-    b = JobType("cwl-unp-neut")
-    c = JobType("tof")
+    a = ExperimentType("pd-cwl-unp-1d-xray")
+    b = ExperimentType("cwl-unp-neut")
+    c = ExperimentType("tof")
 
     """
 
@@ -55,14 +55,14 @@ class JobType:
     # Default values
     DEFAULT_TYPE = 'pd-cwl-unp-1d-neut'
 
-    def __init__(self, job_type: str = ''):
+    def __init__(self, experiment_type: str = ''):
         # Initialize the job type flags
         self.init_flags()
         # initialize the job type with defaults
-        self.parse_job_type(self.DEFAULT_TYPE)
+        self.parse_experiment_type(self.DEFAULT_TYPE)
         # Modify the job type if a string is provided
-        if job_type:
-            self.parse_job_type(job_type)
+        if experiment_type:
+            self.parse_experiment_type(experiment_type)
 
     @property
     def type(self):
@@ -70,7 +70,7 @@ class JobType:
 
     @type.setter
     def type(self, value):
-        self.parse_job_type(value)
+        self.parse_experiment_type(value)
 
     def init_flags(self):
         """
@@ -209,12 +209,12 @@ class JobType:
         self._is_lpa = not value
         self.validate()
 
-    def parse_job_type(self, job_type: str):
+    def parse_experiment_type(self, experiment_type: str):
         # this will parse the substrings of the job type
         # and amend the existing job type
 
         # split the string into a list of flags
-        tokens = job_type.split('-')
+        tokens = experiment_type.split('-')
         # check for the presence of each flag
         for token in tokens:
             token = token.lower()

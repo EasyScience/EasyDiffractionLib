@@ -27,7 +27,7 @@ from easydiffraction.job.experiment.backgrounds.point import PointBackground
 from easydiffraction.job.analysis.analysis import Analysis
 from easydiffraction.job.experiment.data_container import DataContainer
 from easydiffraction.job.experiment.experiment import Experiment
-from easydiffraction.Profiles.JobType import JobType
+from easydiffraction.job.experiment.experiment_type import ExperimentType
 from easydiffraction.Profiles.P1D import Instrument1DCWParameters
 from easydiffraction.Profiles.P1D import Instrument1DTOFParameters
 from easydiffraction.Profiles.P1D import PolPowder1DParameters
@@ -80,7 +80,7 @@ class DiffractionJob(JobBase):
     def __init__(
         self,
         name: str = None,
-        type: Union[JobType, str] = None,
+        type: Union[ExperimentType, str] = None,
         datastore: xr.Dataset = None,
         sample=None,
         experiment=None,
@@ -128,11 +128,11 @@ class DiffractionJob(JobBase):
         # assign Experiment parameters to Sample
         if self.experiment is not None and self.sample is not None and hasattr(experiment, 'parameters'):
             self.sample.parameters = self.experiment.parameters
-        self.type = JobType() if type is None else type
+        self.type = ExperimentType() if type is None else type
         if isinstance(type, str):
-            self.type = JobType(type)
+            self.type = ExperimentType(type)
         if type is None:
-            self.update_job_type()
+            self.update_experiment_type()
         else:
             # update experiment with right type
             self.update_exp_type()
@@ -141,7 +141,7 @@ class DiffractionJob(JobBase):
         self.sample = sample  # container for phases
         self.interface = self.sample._interface
         self.analysis = analysis
-        self.update_job_type()
+        self.update_experiment_type()
         # necessary for the fitter
         # TODO: remove the dependency on kwargs
         self._kwargs = {}
@@ -223,13 +223,13 @@ class DiffractionJob(JobBase):
         self._info = value
 
     @property
-    def type(self) -> JobType:
+    def type(self) -> ExperimentType:
         return self._type
 
     @type.setter
-    def type(self, value: Union[JobType, str]) -> None:
+    def type(self, value: Union[ExperimentType, str]) -> None:
         if isinstance(value, str):
-            self._type = JobType(value)
+            self._type = ExperimentType(value)
         else:
             self._type = value
         # we modified the type - this job goes back to the default state
@@ -319,7 +319,7 @@ class DiffractionJob(JobBase):
 
     # TODO: extend for analysis and info
 
-    def update_job_type(self) -> None:
+    def update_experiment_type(self) -> None:
         """
         Update the job type based on the experiment.
         """
@@ -420,7 +420,7 @@ class DiffractionJob(JobBase):
         else:
             self.experiment.from_cif_file(file_url)
 
-        self.update_job_type()
+        self.update_experiment_type()
         # re-do the sample in case of type change.
         # if self.sample.parameters.name != self.experiment.parameters.name:
         # Different type read in (likely TOF), so re-create the sample
@@ -432,7 +432,7 @@ class DiffractionJob(JobBase):
         name = self.sample.name
         self.sample = Sample(name, parameters=parameters, pattern=pattern, phases=phases)
         self.sample.parameters = self.experiment.parameters
-        self.update_job_type()
+        self.update_experiment_type()
         self.update_interface()
 
     def add_experiment_from_string(self, cif_string: str) -> None:
@@ -441,7 +441,7 @@ class DiffractionJob(JobBase):
         Just a wrapper around the Experiment class method.
         """
         self.experiment.from_cif_string(cif_string)
-        self.update_job_type()
+        self.update_experiment_type()
 
     def add_sample_from_file(self, file_url: str) -> None:
         """
@@ -451,7 +451,7 @@ class DiffractionJob(JobBase):
         """
         self.sample.add_phase_from_cif(file_url)
         # sample doesn't hold any information about the job type
-        # so no call to update_job_type
+        # so no call to update_experiment_type
         self.datastore._simulations = self.sample
 
     # Alias to deprecated add_sample_from_file. This is for consistency with the old EDL.
@@ -465,7 +465,7 @@ class DiffractionJob(JobBase):
         self.sample.add_phase_from_string(cif_string)
         self.datastore._simulations = self.sample
         # sample doesn't hold any information about the job type
-        # so no call to update_job_type
+        # so no call to update_experiment_type
 
     def add_analysis_from_file(self, file_url: str) -> None:
         """
@@ -474,7 +474,7 @@ class DiffractionJob(JobBase):
         """
         self.analysis = Analysis.from_cif(file_url)
         # analysis doesn't hold any information about the job type
-        # so no call to update_job_type
+        # so no call to update_experiment_type
 
     def to_cif(self) -> str:
         """
@@ -615,8 +615,8 @@ class DiffractionJob(JobBase):
         """
         Update the interface based on the current job.
         """
-        if hasattr(self.interface._InterfaceFactoryTemplate__interface_obj, 'set_job_type'):
-            self.interface._InterfaceFactoryTemplate__interface_obj.set_job_type(tof=self.type.is_tof, pol=self.type.is_pol)
+        if hasattr(self.interface._InterfaceFactoryTemplate__interface_obj, 'set_experiment_type'):
+            self.interface._InterfaceFactoryTemplate__interface_obj.set_experiment_type(tof=self.type.is_tof, pol=self.type.is_pol)
         self.interface.generate_bindings(self)
         self.generate_bindings()
 

@@ -8,7 +8,7 @@ from easydiffraction.calculators.wrapper_factory import WrapperFactory
 from easydiffraction.job.job import DiffractionJob as Job
 from easydiffraction.job.analysis.analysis import Analysis
 from easydiffraction.job.experiment.experiment import Experiment
-from easydiffraction.Profiles.JobType import JobType
+from easydiffraction.job.experiment.experiment_type import ExperimentType
 from easydiffraction.Profiles.P1D import Instrument1DCWParameters
 from easydiffraction.Profiles.P1D import Instrument1DTOFParameters
 from easydiffraction.Profiles.P1D import PolPowder1DParameters
@@ -36,7 +36,7 @@ def test_job_direct_import():
     assert j.name == "Job"
 
 def test_powder1dcw():
-    j = Job(type=JobType())
+    j = Job(type=ExperimentType())
     assert j.type.is_pd
     assert j.type.is_cwl
     assert j.type.is_1d
@@ -49,7 +49,7 @@ def test_switch_job_TOF():
     assert j.type.is_1d
 
 def test_switch_job_TOF_2():
-    j = Job(type=JobType("pd-cwl-unp"))
+    j = Job(type=ExperimentType("pd-cwl-unp"))
     j.type.is_tof = True
     assert j.type.is_tof
     assert j.type.is_pd

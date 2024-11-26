@@ -721,8 +721,8 @@ class CryspyWrapper(WrapperBase):
     def set_exp_cif(self, cif: str) -> None:
         self.calculator.set_exp_cif(cif)
 
-    def set_job_type(self, tof: bool, pol: bool) -> None:
-        self.calculator.set_job_type(tof, pol)
+    def set_experiment_type(self, tof: bool, pol: bool) -> None:
+        self.calculator.set_experiment_type(tof, pol)
 
     def generate_pol_fit_func(
         self,

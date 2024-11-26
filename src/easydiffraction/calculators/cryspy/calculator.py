@@ -387,7 +387,7 @@ class Cryspy:
         for r_key in kwargs.keys():
             setattr(reflex_asymmetry, r_key, kwargs[key])
 
-    def set_job_type(self, tof=False, pol=False):
+    def set_experiment_type(self, tof=False, pol=False):
         self.type = 'powder1DCW'
         self.polarized = False
         if tof:

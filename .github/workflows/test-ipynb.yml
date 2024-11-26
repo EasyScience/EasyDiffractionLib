@@ -79,6 +79,12 @@ jobs:
         shell: bash
         run: python -m pip install --upgrade pip
 
+      - name: Enable extra repository
+        shell: bash
+        run: |
+          pip config --user set global.extra-index-url https://easyscience.github.io/pypi/
+          pip config --user set global.trusted-host easyscience.github.io
+
       - name: Install Python dependencies
         run: pip install '.[dev,charts]'
 

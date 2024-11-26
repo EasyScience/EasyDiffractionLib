@@ -110,8 +110,17 @@ jobs:
         name: EasyDiffractionLib_py${{ matrix.python-version }}_${{ matrix.os }}_${{ runner.arch }}
         path: .  # directory to extract downloaded zipped artifacts
 
+    - name: Enable extra repository
+      shell: bash
+      run: |
+          pip config --user set global.extra-index-url https://easyscience.github.io/pypi/
+          pip config --user set global.trusted-host easyscience.github.io
+
     - name: Install Python package from previous job with 'dev' extras
-      run: pip install 'easydiffraction[dev]' --find-links=dist
+      run: |
+        for file in dist/*.whl; do
+          pip install "$file[dev] --extra-index-url https://easyscience.github.io/pypi/"
+        done
 
     - name: Run Python tests
       run: >

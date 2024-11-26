@@ -13,16 +13,13 @@ from typing import Union
 
 import numpy as np
 from easycrystallography.Components.AtomicDisplacement import Anisotropic as Anisotropic_base
+from easycrystallography.Components.Lattice import Lattice
 from easycrystallography.Components.Site import Site as Site_base
+from easycrystallography.Components.SpaceGroup import SpaceGroup
 from easyscience import global_object as borg
 from easyscience.Objects.Inferface import ItemContainer
 from numpy import ndarray
 
-from easydiffraction import Lattice
-from easydiffraction import Phase
-from easydiffraction import Phases
-from easydiffraction import Site
-from easydiffraction import SpaceGroup
 from easydiffraction.calculators.cryspy.calculator import Cryspy as Cryspy_calc
 from easydiffraction.calculators.wrapper_base import WrapperBase
 from easydiffraction.calculators.wrapper_types import CW as CW_type
@@ -37,6 +34,9 @@ from easydiffraction.job.experiment.pd_1d import Instrument1DCWParameters
 from easydiffraction.job.experiment.pd_1d import Instrument1DTOFParameters
 from easydiffraction.job.experiment.pd_1d import Powder1DParameters
 from easydiffraction.job.experiment.polarization import PolarizedBeam
+from easydiffraction.job.model.phase import Phase
+from easydiffraction.job.model.phase import Phases
+from easydiffraction.job.model.site import Site
 
 if TYPE_CHECKING:
     from easyscience.Utils.typing import B

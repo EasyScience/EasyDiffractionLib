@@ -6,18 +6,18 @@ import glob
 import os
 
 import numpy as np
+from easycrystallography.Components.Lattice import Lattice
+from easycrystallography.Components.SpaceGroup import SpaceGroup
 from easyscience import global_object as borg
 from easyscience.Objects.Inferface import ItemContainer
 
-from easydiffraction import Lattice
-from easydiffraction import Phase
-from easydiffraction import Phases
-from easydiffraction import Site
-from easydiffraction import SpaceGroup
 from easydiffraction.calculators.pycrysfml.calculator import Pycrysfml
 from easydiffraction.calculators.wrapper_base import WrapperBase
 from easydiffraction.job.experiment.pd_1d import Instrument1DCWParameters
 from easydiffraction.job.experiment.pd_1d import Powder1DParameters
+from easydiffraction.job.model.phase import Phase
+from easydiffraction.job.model.phase import Phases
+from easydiffraction.job.model.site import Site
 
 
 class PycrysfmlWrapper(WrapperBase):

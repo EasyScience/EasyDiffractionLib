@@ -28,7 +28,7 @@ from easycrystallography.io.star_base import StarLoop
 from easycrystallography.io.star_base import StarSection
 from easycrystallography.Symmetry.groups import SpaceGroup as SpaceGroup2
 
-from easydiffraction.components.site import Atoms
+from easydiffraction.job.model.site import Atoms
 
 sub_spgrp = partial(re.sub, r'[\s_]', '')
 space_groups = {sub_spgrp(k): k for k in [opt['hermann_mauguin_fmt'] for opt in SpaceGroup2.SYMM_OPS]}  # type: ignore

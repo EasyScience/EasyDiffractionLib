@@ -5,8 +5,6 @@
 from easyscience.Datasets.xarray import xr
 from easyscience.Objects.job.theoreticalmodel import TheoreticalModelBase as coreSample
 
-# this really should be easydiffraction.sample.Sample
-
 
 class Sample(coreSample):
     """

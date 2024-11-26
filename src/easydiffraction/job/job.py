@@ -19,8 +19,6 @@ from easyscience.Objects.job.job import JobBase
 from gemmi import cif
 from scipy.signal import find_peaks
 
-from easydiffraction import Phase
-from easydiffraction import Phases
 from easydiffraction.calculators.wrapper_factory import WrapperFactory
 from easydiffraction.job.analysis.analysis import Analysis
 from easydiffraction.job.experiment.backgrounds.point import BackgroundPoint
@@ -32,6 +30,8 @@ from easydiffraction.job.experiment.pd_1d import Instrument1DCWParameters
 from easydiffraction.job.experiment.pd_1d import Instrument1DTOFParameters
 from easydiffraction.job.experiment.pd_1d import PolPowder1DParameters
 from easydiffraction.job.experiment.pd_1d import Powder1DParameters
+from easydiffraction.job.model.phase import Phase
+from easydiffraction.job.model.phase import Phases
 from easydiffraction.job.old_sample.old_sample import Sample
 
 try:

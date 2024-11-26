@@ -25,6 +25,7 @@ dependencies = [
     'pooch',  # for data fetching
     'easyscience',
     'easycrystallography',
+    'diffpy.utils',
     'diffpy.pdffit2==0.0.2',
 ]
 

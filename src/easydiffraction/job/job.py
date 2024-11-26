@@ -25,8 +25,8 @@ from easydiffraction.calculators.wrapper_factory import WrapperFactory
 from easydiffraction.job.experiment.backgrounds.point import BackgroundPoint
 from easydiffraction.job.experiment.backgrounds.point import PointBackground
 from easydiffraction.job.analysis.analysis import Analysis
-from easydiffraction.Profiles.Container import DataContainer
-from easydiffraction.Profiles.Experiment import Experiment
+from easydiffraction.job.experiment.data_container import DataContainer
+from easydiffraction.job.experiment.experiment import Experiment
 from easydiffraction.Profiles.JobType import JobType
 from easydiffraction.Profiles.P1D import Instrument1DCWParameters
 from easydiffraction.Profiles.P1D import Instrument1DTOFParameters

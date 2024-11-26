@@ -4,7 +4,7 @@ import tempfile
 import os
 import numpy.testing as npt
 
-from easydiffraction.Profiles.Experiment import Experiment
+from easydiffraction.job.experiment.experiment import Experiment
 
 from unittest.mock import MagicMock, call
 

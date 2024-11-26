@@ -10,10 +10,7 @@ from typing import Optional
 from typing import Union
 
 from easycrystallography.Components.AtomicDisplacement import AtomicDisplacement
-from easycrystallography.Components.Lattice import PeriodicLattice
 from easycrystallography.Components.Site import Atoms as ecAtoms
-from easycrystallography.Components.Site import PeriodicAtoms as ecPeriodicAtoms
-from easycrystallography.Components.Site import PeriodicSite as ecPeriodicSite
 from easycrystallography.Components.Site import Site as ecSite
 from easycrystallography.Components.Specie import Specie
 from easycrystallography.Components.Susceptibility import MagneticSusceptibility
@@ -81,17 +78,6 @@ class Site(ecSite):
         self._add_component('msp', msp_type)
         if self.interface is not None:
             self.interface.generate_bindings()
-
-
-class PeriodicSite(ecPeriodicSite):
-    @classmethod
-    def from_site(cls, lattice: PeriodicLattice, site: Site):
-        kwargs = ecPeriodicSite._from_site_kwargs(lattice, site)
-        if hasattr(site, 'adp'):
-            kwargs['adp'] = site.adp
-        if hasattr(site, 'msp'):
-            kwargs['msp'] = site.msp
-        return cls(**kwargs)
 
 
 class Atoms(ecAtoms):
@@ -176,7 +162,3 @@ class Atoms(ecAtoms):
         # else:
         #     raise NotImplementedError("Multiple types of MSP are not supported")
         # return add_loops
-
-
-class PeriodicAtoms(ecPeriodicAtoms):
-    _SITE_CLASS = PeriodicSite

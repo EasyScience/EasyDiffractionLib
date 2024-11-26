@@ -5,9 +5,9 @@ EasyDiffraction is a Python library for calculating neutron powder diffraction
 pattern based on a structural model and refining its parameters against
 experimental data.
 
-EasyDiffraction library is the foundation of the [EasyDiffraction application], an
-intuitive graphical user interface that aims to simplify and speed up the analysis
-of diffraction experiments.
+EasyDiffraction library is the foundation of the [EasyDiffraction application],
+an intuitive graphical user interface that aims to simplify and speed up the
+analysis of diffraction experiments.
 
 - [Website]
 - [Documentation]
@@ -20,7 +20,8 @@ We absolutely welcome contributions, and our goal is for EasyDiffraction to be a
 community-driven open source project developed by a diverse group of
 contributors.
 
-EasyDiffraction is currently maintained by [European Spallation Source ERIC], Sweden.
+EasyDiffraction is currently maintained by [European Spallation Source ERIC],
+Sweden.
 
 If you are interested in contributing directly to the code, please see
 [CONTRIBUTING.md] for details on our code of conduct and the process for

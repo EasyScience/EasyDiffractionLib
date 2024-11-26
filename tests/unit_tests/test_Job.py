@@ -6,7 +6,7 @@ import pytest
 import easydiffraction as ed
 from easydiffraction.calculators.wrapper_factory import WrapperFactory
 from easydiffraction.job.job import DiffractionJob as Job
-from easydiffraction.Profiles.Analysis import Analysis
+from easydiffraction.job.analysis.analysis import Analysis
 from easydiffraction.Profiles.Experiment import Experiment
 from easydiffraction.Profiles.JobType import JobType
 from easydiffraction.Profiles.P1D import Instrument1DCWParameters

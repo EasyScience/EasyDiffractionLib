@@ -24,7 +24,7 @@ from easydiffraction import Phases
 from easydiffraction.calculators.wrapper_factory import WrapperFactory
 from easydiffraction.job.experiment.backgrounds.point import BackgroundPoint
 from easydiffraction.job.experiment.backgrounds.point import PointBackground
-from easydiffraction.Profiles.Analysis import Analysis
+from easydiffraction.job.analysis.analysis import Analysis
 from easydiffraction.Profiles.Container import DataContainer
 from easydiffraction.Profiles.Experiment import Experiment
 from easydiffraction.Profiles.JobType import JobType

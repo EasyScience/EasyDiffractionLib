@@ -17,10 +17,10 @@ from easydiffraction import Phases
 from easydiffraction.calculators.wrapper_factory import WrapperFactory
 from easydiffraction.calculators.wrapper_types import Neutron
 from easydiffraction.calculators.wrapper_types import Powder
-from easydiffraction.Profiles.P1D import Instrument1DCWParameters
-from easydiffraction.Profiles.P1D import Instrument1DTOFParameters
-from easydiffraction.Profiles.P1D import PolPowder1DParameters as Pattern1D_Pol
-from easydiffraction.Profiles.P1D import Powder1DParameters as Pattern1D
+from easydiffraction.job.experiment.pd_1d import Instrument1DCWParameters
+from easydiffraction.job.experiment.pd_1d import Instrument1DTOFParameters
+from easydiffraction.job.experiment.pd_1d import PolPowder1DParameters as Pattern1D_Pol
+from easydiffraction.job.experiment.pd_1d import Powder1DParameters as Pattern1D
 
 
 class Sample(BaseObj):

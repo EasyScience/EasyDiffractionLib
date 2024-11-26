@@ -34,9 +34,9 @@ from easydiffraction.calculators.wrapper_types import SingleCrystal as SingleCry
 from easydiffraction.calculators.wrapper_types import UPol as UPol_type
 from easydiffraction.calculators.wrapper_types import interfaceMixInMeta
 from easydiffraction.job.experiment.polarization import PolarizedBeam
-from easydiffraction.Profiles.P1D import Instrument1DCWParameters
-from easydiffraction.Profiles.P1D import Instrument1DTOFParameters
-from easydiffraction.Profiles.P1D import Powder1DParameters
+from easydiffraction.job.experiment.pd_1d import Instrument1DCWParameters
+from easydiffraction.job.experiment.pd_1d import Instrument1DTOFParameters
+from easydiffraction.job.experiment.pd_1d import Powder1DParameters
 
 if TYPE_CHECKING:
     from easyscience.Utils.typing import B

@@ -16,8 +16,8 @@ from easydiffraction import Site
 from easydiffraction import SpaceGroup
 from easydiffraction.calculators.pdffit2.calculator import Pdffit2 as Pdffit2_calc
 from easydiffraction.calculators.wrapper_base import WrapperBase
-from easydiffraction.Profiles.P1D import PDFParameters
-from easydiffraction.Profiles.P1D import Powder1DParameters
+from easydiffraction.job.experiment.pd_1d import PDFParameters
+from easydiffraction.job.experiment.pd_1d import Powder1DParameters
 
 if TYPE_CHECKING:
     pass

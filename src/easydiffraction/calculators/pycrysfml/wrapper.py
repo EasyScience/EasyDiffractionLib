@@ -16,8 +16,8 @@ from easydiffraction import Site
 from easydiffraction import SpaceGroup
 from easydiffraction.calculators.pycrysfml.calculator import Pycrysfml
 from easydiffraction.calculators.wrapper_base import WrapperBase
-from easydiffraction.Profiles.P1D import Instrument1DCWParameters
-from easydiffraction.Profiles.P1D import Powder1DParameters
+from easydiffraction.job.experiment.pd_1d import Instrument1DCWParameters
+from easydiffraction.job.experiment.pd_1d import Powder1DParameters
 
 
 class PycrysfmlWrapper(WrapperBase):

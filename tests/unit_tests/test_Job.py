@@ -9,10 +9,10 @@ from easydiffraction.job.job import DiffractionJob as Job
 from easydiffraction.job.analysis.analysis import Analysis
 from easydiffraction.job.experiment.experiment import Experiment
 from easydiffraction.job.experiment.experiment_type import ExperimentType
-from easydiffraction.Profiles.P1D import Instrument1DCWParameters
-from easydiffraction.Profiles.P1D import Instrument1DTOFParameters
-from easydiffraction.Profiles.P1D import PolPowder1DParameters
-from easydiffraction.Profiles.P1D import Powder1DParameters
+from easydiffraction.job.experiment.pd_1d import Instrument1DCWParameters
+from easydiffraction.job.experiment.pd_1d import Instrument1DTOFParameters
+from easydiffraction.job.experiment.pd_1d import PolPowder1DParameters
+from easydiffraction.job.experiment.pd_1d import Powder1DParameters
 
 # from easydiffraction.Profiles.Sample import Sample
 from easydiffraction.sample import Sample

@@ -16,10 +16,10 @@ from easydiffraction.io.cif_reader import data_from_cif_block as data_from_cif
 from easydiffraction.io.cif_reader import parameters_from_cif_block as parameters_from_cif
 from easydiffraction.io.cif_reader import pattern_from_cif_block as pattern_from_cif
 from easydiffraction.io.cif_reader import phase_parameters_from_cif_block as phase_parameters_from_cif
-from easydiffraction.Profiles.P1D import Instrument1DCWParameters
-from easydiffraction.Profiles.P1D import Instrument1DTOFParameters
-from easydiffraction.Profiles.P1D import PolPowder1DParameters
-from easydiffraction.Profiles.P1D import Powder1DParameters
+from easydiffraction.job.experiment.pd_1d import Instrument1DCWParameters
+from easydiffraction.job.experiment.pd_1d import Instrument1DTOFParameters
+from easydiffraction.job.experiment.pd_1d import PolPowder1DParameters
+from easydiffraction.job.experiment.pd_1d import Powder1DParameters
 
 _DEFAULT_DATA_BLOCK_NO_MEAS_PD_CWL = """data_pnd
 

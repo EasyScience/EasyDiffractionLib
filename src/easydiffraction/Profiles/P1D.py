@@ -17,7 +17,7 @@ from easyscience.Objects.ObjectClasses import BaseObj
 from easyscience.Objects.ObjectClasses import Descriptor
 from easyscience.Objects.ObjectClasses import Parameter
 
-from easydiffraction.components.polarization import PolarizedBeam
+from easydiffraction.job.experiment.polarization import PolarizedBeam
 from easydiffraction.elements.Backgrounds.Background import BackgroundContainer
 from easydiffraction.Profiles.common import JobSetup
 from easydiffraction.Profiles.common import _DataClassBase

@@ -109,7 +109,7 @@ class Pdffit2Wrapper(WrapperBase):
         :param model: Object to be created
         :return: Item containers of the objects
         """
-        from easydiffraction.sample import Sample
+        from easydiffraction.job.old_sample.old_sample import Sample
 
         r_list = []
         t_ = type(model)

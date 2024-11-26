@@ -7,7 +7,7 @@ import numpy as np
 from easydiffraction import Phases
 from easydiffraction.calculators.wrapper_factory import WrapperFactory
 from easydiffraction.job.experiment.pd_1d import Instrument1DCWParameters
-from easydiffraction.sample import Sample
+from easydiffraction.job.old_sample.old_sample import Sample
 
 i = WrapperFactory()
 

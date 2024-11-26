@@ -11,7 +11,7 @@ from easydiffraction.job.experiment.backgrounds.point import PointBackground
 from easydiffraction.elements.Experiments.Experiment import Pars1D
 from easydiffraction.elements.Experiments.Pattern import Pattern1D
 from easydiffraction.calculators.wrapper_factory import WrapperFactory
-from easydiffraction.sample import Sample
+from easydiffraction.job.old_sample.old_sample import Sample
 
 interface = WrapperFactory()
 c = Phases.from_cif_file('PbSO4.cif')

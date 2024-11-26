@@ -15,7 +15,7 @@ from easydiffraction.job.experiment.pd_1d import PolPowder1DParameters
 from easydiffraction.job.experiment.pd_1d import Powder1DParameters
 
 # from easydiffraction.Profiles.Sample import Sample
-from easydiffraction.sample import Sample
+from easydiffraction.job.old_sample.old_sample import Sample
 
 
 def test_job_init():

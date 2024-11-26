@@ -8,7 +8,7 @@ from easycrystallography.Components.Susceptibility import MagneticSusceptibility
 from easydiffraction import Phase
 from easydiffraction.calculators.wrapper_factory import WrapperFactory as Calculator
 from easydiffraction.job.experiment.pd_1d import Instrument1DCWParameters
-from easydiffraction.sample import Sample
+from easydiffraction.job.old_sample.old_sample import Sample
 
 calculator = Calculator()
 

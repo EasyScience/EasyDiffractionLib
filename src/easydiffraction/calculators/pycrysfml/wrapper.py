@@ -87,7 +87,7 @@ class PycrysfmlWrapper(WrapperBase):
         )
 
     def create(self, model):
-        from easydiffraction.sample import Sample
+        from easydiffraction.job.old_sample.old_sample import Sample
 
         r_list = []
         t_ = type(model)

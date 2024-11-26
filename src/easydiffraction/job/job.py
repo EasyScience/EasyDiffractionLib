@@ -22,9 +22,9 @@ from scipy.signal import find_peaks
 from easydiffraction import Phase
 from easydiffraction import Phases
 from easydiffraction.calculators.wrapper_factory import WrapperFactory
+from easydiffraction.job.analysis.analysis import Analysis
 from easydiffraction.job.experiment.backgrounds.point import BackgroundPoint
 from easydiffraction.job.experiment.backgrounds.point import PointBackground
-from easydiffraction.job.analysis.analysis import Analysis
 from easydiffraction.job.experiment.data_container import DataContainer
 from easydiffraction.job.experiment.experiment import Experiment
 from easydiffraction.job.experiment.experiment_type import ExperimentType
@@ -32,7 +32,6 @@ from easydiffraction.job.experiment.pd_1d import Instrument1DCWParameters
 from easydiffraction.job.experiment.pd_1d import Instrument1DTOFParameters
 from easydiffraction.job.experiment.pd_1d import PolPowder1DParameters
 from easydiffraction.job.experiment.pd_1d import Powder1DParameters
-
 from easydiffraction.job.old_sample.old_sample import Sample
 
 try:
@@ -615,7 +614,8 @@ class DiffractionJob(JobBase):
         Update the interface based on the current job.
         """
         if hasattr(self.interface._InterfaceFactoryTemplate__interface_obj, 'set_experiment_type'):
-            self.interface._InterfaceFactoryTemplate__interface_obj.set_experiment_type(tof=self.type.is_tof, pol=self.type.is_pol)
+            self.interface._InterfaceFactoryTemplate__interface_obj.set_experiment_type(tof=self.type.is_tof,
+                                                                                        pol=self.type.is_pol)
         self.interface.generate_bindings(self)
         self.generate_bindings()
 

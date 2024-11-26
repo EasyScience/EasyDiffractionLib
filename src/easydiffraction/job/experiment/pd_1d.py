@@ -17,10 +17,10 @@ from easyscience.Objects.ObjectClasses import BaseObj
 from easyscience.Objects.ObjectClasses import Descriptor
 from easyscience.Objects.ObjectClasses import Parameter
 
-from easydiffraction.job.experiment.polarization import PolarizedBeam
 from easydiffraction.job.experiment.backgrounds.background import BackgroundContainer
 from easydiffraction.job.experiment.common import JobSetup
 from easydiffraction.job.experiment.common import _DataClassBase
+from easydiffraction.job.experiment.polarization import PolarizedBeam
 
 T = TypeVar('T')
 

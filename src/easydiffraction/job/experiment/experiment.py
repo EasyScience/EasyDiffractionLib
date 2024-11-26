@@ -9,13 +9,13 @@ from easyscience.Objects.ObjectClasses import Descriptor
 from easyscience.Objects.ObjectClasses import Parameter
 from gemmi import cif
 
-from easydiffraction.job.experiment.backgrounds.point import BackgroundPoint
-from easydiffraction.job.experiment.backgrounds.point import PointBackground
 from easydiffraction.io.cif_reader import background_from_cif_block as background_from_cif
 from easydiffraction.io.cif_reader import data_from_cif_block as data_from_cif
 from easydiffraction.io.cif_reader import parameters_from_cif_block as parameters_from_cif
 from easydiffraction.io.cif_reader import pattern_from_cif_block as pattern_from_cif
 from easydiffraction.io.cif_reader import phase_parameters_from_cif_block as phase_parameters_from_cif
+from easydiffraction.job.experiment.backgrounds.point import BackgroundPoint
+from easydiffraction.job.experiment.backgrounds.point import PointBackground
 from easydiffraction.job.experiment.pd_1d import Instrument1DCWParameters
 from easydiffraction.job.experiment.pd_1d import Instrument1DTOFParameters
 from easydiffraction.job.experiment.pd_1d import PolPowder1DParameters

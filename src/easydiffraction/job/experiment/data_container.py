@@ -7,6 +7,7 @@ from easyscience.Objects.core import ComponentSerializer
 from easydiffraction.job.experiment.experiment import Experiment
 from easydiffraction.job.experiment.simulation import Sample
 
+
 class DataContainer(ComponentSerializer):
     def __init__(self, sim_store: Sample, exp_store: Experiment):
         self._simulations = sim_store

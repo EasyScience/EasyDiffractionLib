@@ -118,9 +118,9 @@ jobs:
 
     - name: Install Python package from previous job with 'dev' extras
       run: |
-        for file in dist/*.whl; do
-          pip install "$file[dev] --extra-index-url https://easyscience.github.io/pypi/"
-        done
+        pip install dist/*.whl --extra-index-url https://easyscience.github.io/pypi/
+        pip install easydiffraction[dev]
+
 
     - name: Run Python tests
       run: >

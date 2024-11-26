@@ -30,10 +30,9 @@ from easydiffraction.Profiles.Experiment import Experiment
 from easydiffraction.Profiles.JobType import JobType
 from easydiffraction.Profiles.P1D import Instrument1DCWParameters
 from easydiffraction.Profiles.P1D import Instrument1DTOFParameters
+from easydiffraction.Profiles.P1D import PDFParameters
 from easydiffraction.Profiles.P1D import PolPowder1DParameters
 from easydiffraction.Profiles.P1D import Powder1DParameters
-from easydiffraction.Profiles.P1D import PDFParameters
-
 from easydiffraction.sample import Sample
 
 try:

@@ -8,10 +8,10 @@ from easyscience.Objects.job.experiment import ExperimentBase as coreExperiment
 from easyscience.Objects.ObjectClasses import Descriptor
 from easyscience.Objects.ObjectClasses import Parameter
 from gemmi import cif
-from easydiffraction.Interfaces.pdffit2 import readGRData
 
 from easydiffraction.elements.Backgrounds.Point import BackgroundPoint
 from easydiffraction.elements.Backgrounds.Point import PointBackground
+from easydiffraction.Interfaces.pdffit2 import readGRData
 from easydiffraction.io.cif_reader import background_from_cif_block as background_from_cif
 from easydiffraction.io.cif_reader import data_from_cif_block as data_from_cif
 from easydiffraction.io.cif_reader import parameters_from_cif_block as parameters_from_cif
@@ -19,9 +19,9 @@ from easydiffraction.io.cif_reader import pattern_from_cif_block as pattern_from
 from easydiffraction.io.cif_reader import phase_parameters_from_cif_block as phase_parameters_from_cif
 from easydiffraction.Profiles.P1D import Instrument1DCWParameters
 from easydiffraction.Profiles.P1D import Instrument1DTOFParameters
+from easydiffraction.Profiles.P1D import PDFParameters
 from easydiffraction.Profiles.P1D import PolPowder1DParameters
 from easydiffraction.Profiles.P1D import Powder1DParameters
-from easydiffraction.Profiles.P1D import PDFParameters
 
 _DEFAULT_DATA_BLOCK_NO_MEAS_PD_CWL = """data_pnd
 

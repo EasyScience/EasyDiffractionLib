@@ -11,8 +11,8 @@ from easyscience import global_object as borg
 from easyscience.Objects.Inferface import ItemContainer
 
 from easydiffraction import Lattice
-from easydiffraction import Phases
 from easydiffraction import Phase
+from easydiffraction import Phases
 from easydiffraction import Site
 from easydiffraction import SpaceGroup
 from easydiffraction.calculators.pdffit2 import Pdffit2 as Pdffit2_calc

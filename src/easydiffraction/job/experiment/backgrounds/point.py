@@ -11,7 +11,7 @@ from easyscience.Objects.ObjectClasses import BaseObj
 from easyscience.Objects.ObjectClasses import Descriptor
 from easyscience.Objects.ObjectClasses import Parameter
 
-from .Background import Background
+from .background import Background
 
 
 class BackgroundPoint(BaseObj):

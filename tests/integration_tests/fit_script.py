@@ -6,8 +6,8 @@ from easyscience.Datasets.xarray import xr
 from easyscience.fitting.fitter import Fitter
 
 from easydiffraction import Phases
-from easydiffraction.elements.Backgrounds.Point import BackgroundPoint
-from easydiffraction.elements.Backgrounds.Point import PointBackground
+from easydiffraction.job.experiment.backgrounds.point import BackgroundPoint
+from easydiffraction.job.experiment.backgrounds.point import PointBackground
 from easydiffraction.elements.Experiments.Experiment import Pars1D
 from easydiffraction.elements.Experiments.Pattern import Pattern1D
 from easydiffraction.calculators.wrapper_factory import WrapperFactory

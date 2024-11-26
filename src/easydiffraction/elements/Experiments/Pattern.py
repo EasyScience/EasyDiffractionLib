@@ -9,7 +9,7 @@ from typing import Union
 from easyscience.Objects.ObjectClasses import BaseObj
 from easyscience.Objects.ObjectClasses import Parameter
 
-from easydiffraction.elements.Backgrounds.Background import BackgroundContainer
+from easydiffraction.job.experiment.backgrounds.background import BackgroundContainer
 
 
 class Pattern1D(BaseObj):

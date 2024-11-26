@@ -22,8 +22,8 @@ from scipy.signal import find_peaks
 from easydiffraction import Phase
 from easydiffraction import Phases
 from easydiffraction.calculators.wrapper_factory import WrapperFactory
-from easydiffraction.elements.Backgrounds.Point import BackgroundPoint
-from easydiffraction.elements.Backgrounds.Point import PointBackground
+from easydiffraction.job.experiment.backgrounds.point import BackgroundPoint
+from easydiffraction.job.experiment.backgrounds.point import PointBackground
 from easydiffraction.Profiles.Analysis import Analysis
 from easydiffraction.Profiles.Container import DataContainer
 from easydiffraction.Profiles.Experiment import Experiment

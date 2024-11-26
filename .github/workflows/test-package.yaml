@@ -117,10 +117,10 @@ jobs:
           pip config --user set global.trusted-host easyscience.github.io
 
     - name: Install Python package from previous job with 'dev' extras
+      shell: bash
       run: |
         pip install dist/*.whl --extra-index-url https://easyscience.github.io/pypi/
         pip install easydiffraction[dev]
-
 
     - name: Run Python tests
       run: >

@@ -25,7 +25,7 @@ classifiers = [
 ]
 requires-python = '>=3.9,<3.13'
 dependencies = [
-  'cryspy',              # For calculations of diffraction patterns
+  'cryspy',              # Calculations of diffraction patterns
   'pooch',               # For data fetching
   'easyscience',         # The base library of the EasyScience framework
   'easycrystallography', # Crystallography tools of the EasyScience framework
@@ -48,6 +48,11 @@ charts = [
   'plotly',     # For interactive plots
   'py3Dmol',    # For visualisation of crystal structures
   'pandas',     # For displaying tables in juptyer notebooks
+]
+pdf = [
+  'diffpy.pdffit2',   # Calculations of atomic pair distribution function
+  'diffpy.structure', # Handling of crystal structures for the diffpy libraries
+  'diffpy.utils',     # General purpose shared utilities for the diffpy libraries
 ]
 
 [project.urls]

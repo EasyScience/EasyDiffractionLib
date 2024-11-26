@@ -39,7 +39,7 @@ from easydiffraction.job.model.phase import Phases
 from easydiffraction.job.model.site import Site
 
 if TYPE_CHECKING:
-    from easyscience.Utils.typing import B
+    from easyscience.Objects.Inferface import B
 
 
 class CryspyBase(Neutron_type, metaclass=ABCMeta):

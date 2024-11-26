@@ -19,8 +19,6 @@ from easydiffraction.calculators.cryspy.parser import calcObjAndDictToEdExperime
 from easydiffraction.calculators.cryspy.parser import cifV2ToV1
 from easydiffraction.calculators.cryspy.parser import cifV2ToV1_tof
 
-# from pathos import multiprocessing as mp
-
 warnings.filterwarnings('ignore')
 
 normalization = 0.5

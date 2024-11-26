@@ -13,7 +13,7 @@ from easyscience.Objects.ObjectClasses import BaseObj
 from easyscience.Objects.ObjectClasses import Parameter
 
 if TYPE_CHECKING:
-    from easyscience.Utils.typing import iF
+    from easyscience.Objects.Inferface import iF
 
 
 class PolarizedBeam(BaseObj):

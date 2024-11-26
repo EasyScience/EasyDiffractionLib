@@ -19,7 +19,7 @@ from easyscience.Objects.ObjectClasses import Descriptor
 from easyscience.Objects.ObjectClasses import Parameter
 
 if TYPE_CHECKING:
-    from easyscience.Utils.typing import iF
+    from easyscience.Objects.Inferface import iF
 
 
 class Site(ecSite):

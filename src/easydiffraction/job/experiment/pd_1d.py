@@ -25,7 +25,7 @@ from easydiffraction.job.experiment.polarization import PolarizedBeam
 T = TypeVar('T')
 
 if TYPE_CHECKING:
-    from easyscience.Utils.typing import iF
+    from easyscience.Objects.Inferface import iF
 
 
 class Powder1DSim(_DataClassBase):

@@ -33,7 +33,6 @@ from easydiffraction.job.experiment.pd_1d import Instrument1DTOFParameters
 from easydiffraction.job.experiment.pd_1d import PolPowder1DParameters
 from easydiffraction.job.experiment.pd_1d import Powder1DParameters
 
-# from easydiffraction.Profiles.Sample import Sample
 from easydiffraction.job.old_sample.old_sample import Sample
 
 try:

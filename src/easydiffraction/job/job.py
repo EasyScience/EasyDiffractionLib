@@ -411,6 +411,8 @@ class DiffractionJob(JobBase):
         Add an experiment to the job from a CIF file.
         Just a wrapper around the Experiment class method.
         """
+        # convert to string in case it is a Path object
+        file_url = str(file_url)
         # experiment can be either xye or cif
         # check the extension first and then call the appropriate method
         if file_url.endswith('.xye'):
@@ -447,6 +449,8 @@ class DiffractionJob(JobBase):
         Add a sample to the job from a CIF file.
         Just a wrapper around the Sample class method.
         """
+        # convert to string in case it is a Path object
+        file_url = str(file_url)
         self.sample.add_phase_from_cif(file_url)
         # sample doesn't hold any information about the job type
         # so no call to update_experiment_type

@@ -145,5 +145,5 @@ force-single-line = true
 '*test_*.py' = ['S101']
 
 #[tool.ruff.lint.pycodestyle]
-#max-line-length = 79  # https://peps.python.org/pep-0008/#maximum-line-length
+#max-line-length = 88 # https://peps.python.org/pep-0008/#maximum-line-length
 #max-doc-length = 72  # https://peps.python.org/pep-0008/#maximum-line-length

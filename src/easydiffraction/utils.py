@@ -14,10 +14,11 @@ def download_from_repository(file_name: str, branch: str = 'master', destination
     :param destination: The destination folder to save the file
     :return: None
     """
+    prefix = 'https://raw.githubusercontent.com'
     organisation = 'EasyScience'
     repository = 'EasyDiffractionLib'
     source = 'examples/data'
-    url = f'https://raw.githubusercontent.com/{organisation}/{repository}/refs/heads/{branch}/{source}/{file_name}'
+    url = f'{prefix}/{organisation}/{repository}/refs/heads/{branch}/{source}/{file_name}'
     pooch.retrieve(
         url=url,
         known_hash=None,

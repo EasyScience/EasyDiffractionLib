@@ -1,18 +1,18 @@
-from pathlib import Path
-
 from numpy.testing import assert_almost_equal
 
 import easydiffraction as ed
 
 
-def test_fitting_pd_neut_cwl_LBCO_HRPT(tmp_path: Path) -> None:
+def test_fitting_pd_neut_cwl_LBCO_HRPT() -> None:
+    """
+    Test fitting of La0.5Ba0.5CoO3 from neutron diffraction data
+    in a constant wavelength experiment performed on HRPT@PSI.
+    :return: None
+    """
     job = ed.Job()
 
-    ed.download_from_repository('lbco.cif', destination=tmp_path)
-    job.add_phase_from_file(tmp_path / 'lbco.cif')
-
-    ed.download_from_repository('hrpt.xye', destination=tmp_path)
-    job.add_experiment_from_file(tmp_path / 'hrpt.xye')
+    job.add_phase_from_file('tests/data/lbco.cif')
+    job.add_experiment_from_file('tests/data/hrpt.xye')
 
     job.phases['lbco'].cell.length_a = 3.89
     job.phases['lbco'].scale = 6
@@ -48,18 +48,31 @@ def test_fitting_pd_neut_cwl_LBCO_HRPT(tmp_path: Path) -> None:
     assert_almost_equal(job.fitting_results.reduced_chi, 1.25, decimal=2)
 
 
-def test_fitting_pd_neut_tof_Si_SEPD(tmp_path: Path) -> None:
+def test_fitting_pd_neut_tof_Si_SEPD() -> None:
+    """
+    Test fitting of Si from neutron diffraction data in a time-of-flight
+    experiment performed on SEPD@Argonne.
+    :return: None
+    """
     job = ed.Job(type='tof')
 
     phase = ed.Phase(name='si')
     phase.space_group.name_hm_alt = 'F d -3 m'
     phase.cell.length_a = 5.43146
-    phase.atom_sites.append(label='Si', type_symbol='Si', fract_x=0, fract_y=0, fract_z=0, occupancy=1, b_iso_or_equiv=0.529)
+    phase.atom_sites.append(
+        label='Si',
+        type_symbol='Si',
+        fract_x=0,
+        fract_y=0,
+        fract_z=0,
+        occupancy=1,
+        b_iso_or_equiv=0.529,
+    )
     job.add_phase(phase=phase)
     job.phases['si'].scale = 10
 
-    ed.download_from_repository('sepd.xye', destination=tmp_path)
-    job.add_experiment_from_file(tmp_path / 'sepd.xye')
+    job.add_experiment_from_file('tests/data/sepd.xye')
+
     job.set_background([(x, 200) for x in range(0, 35000, 5000)])
     job.parameters.dtt1 = 7476.91
     job.parameters.dtt2 = -1.54
@@ -87,3 +100,7 @@ def test_fitting_pd_neut_tof_Si_SEPD(tmp_path: Path) -> None:
     assert job.fitting_results.n_pars == 12
     assert job.fitting_results.success
     assert_almost_equal(job.fitting_results.reduced_chi, 5.42, decimal=2)
+
+
+if __name__ == '__main__':
+    test_fitting_pd_neut_cwl_LBCO_HRPT()

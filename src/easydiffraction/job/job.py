@@ -618,8 +618,9 @@ class DiffractionJob(JobBase):
         Update the interface based on the current job.
         """
         if hasattr(self.interface._InterfaceFactoryTemplate__interface_obj, 'set_experiment_type'):
-            self.interface._InterfaceFactoryTemplate__interface_obj.set_experiment_type(tof=self.type.is_tof,
-                                                                                        pol=self.type.is_pol)
+            self.interface._InterfaceFactoryTemplate__interface_obj.set_experiment_type(
+                tof=self.type.is_tof, pol=self.type.is_pol
+            )
         self.interface.generate_bindings(self)
         self.generate_bindings()
 

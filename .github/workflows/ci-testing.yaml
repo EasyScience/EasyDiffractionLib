@@ -2,19 +2,19 @@
 # It is divided into three jobs:
 # 1. Code-quality:
 #    - Check the validity of pyproject.toml
-#    - Lint the code base
-#    - Lint the Jupyter notebooks
-#    - Check formatting of markdown, YAML, TOML files
-# 2. Test-code-and-notebooks:
+#    - Check code linting
+#    - Check code formatting
+#    - Check Jupyter notebooks formatting
+#    - Check formatting of Markdown, YAML, TOML, etc. files
+# 2. Test-code:
 #    - Test the code base and upload coverage to Codecov
-#    - Test the Jupyter notebooks
 #    - Create the Python package
 #    - Upload the Python package for the next job
 # 3. Test-package:
 #    - Download the Python package from the previous job
 #    - Install the downloaded Python package
 #    - Test the code base
-#    - Test the Jupyter notebooks
+#    - Check if Jupiter Notebooks run without errors
 
 name: Test code, notebooks and package
 
@@ -69,7 +69,7 @@ jobs:
         run: pip install 'validate-pyproject[all]' ruff nbqa
 
       - name: Install npm dependencies
-        # Install 'prettier' for code formatting of Markdown, YAML files
+        # Install 'prettier' for code formatting of Markdown, YAML, etc. files
         # Install 'prettier-plugin-toml' plugin for code formatting of TOML files
         run: npm install prettier prettier-plugin-toml --save-dev --save-exact
 
@@ -87,7 +87,9 @@ jobs:
 
       - name: Suggestion to fix code linting issues (for *.py files)
         if: steps.check_code_linting.outcome == 'failure'
-        run: echo "In project root run 'ruff check . --fix' and commit changes to fix issues."
+        run:
+          echo "In project root run 'ruff check . --fix' and commit changes to
+          fix issues."
 
       # Check code formatting with Ruff in the project root
       - name: Check code formatting
@@ -97,27 +99,33 @@ jobs:
 
       - name: Suggestion to fix code formatting issues (for *.py files)
         if: steps.check_code_formatting.outcome == 'failure'
-        run: echo "In project root run 'ruff format .' and commit changes to fix issues."
+        run:
+          echo "In project root run 'ruff format .' and commit changes to fix
+          issues."
 
       # Check Jupyter notebooks with nbQA in the sample directory
-      - name: Check Jupyter notebooks
+      - name: Check Jupyter notebooks formatting
         id: check_notebooks
         continue-on-error: true
         run: nbqa ruff examples/
 
       - name: Suggestion to fix notebook formatting issues (for *.ipynb files)
         if: steps.check_notebooks.outcome == 'failure'
-        run: echo "In project root run 'nbqa ruff examples/ --fix' and commit changes to fix issues."
+        run:
+          echo "In project root run 'nbqa ruff examples/ --fix' and commit
+          changes to fix issues."
 
-      # Check formatting of Markdown, YAML, TOML files with Prettier in the project root
-      - name: Check formatting of Markdown, YAML, TOML files
+      # Check formatting of Markdown, YAML, TOML, etc. files with Prettier in the project root
+      - name: Check formatting of Markdown, YAML, TOML, etc. files
         id: check_others_formatting
         continue-on-error: true
         run: npx prettier . --check --config=prettierrc.toml
 
-      - name: Suggestion to fix non-code formatting issues (for *.md, *.yaml, *.toml files)
+      - name: Suggestion to fix non-code formatting issues (for *.md, etc.)
         if: steps.check_others_formatting.outcome == 'failure'
-        run: echo "In project root run 'npx prettier . --write --config=prettierrc.toml' and commit changes to fix issues."
+        run:
+          echo "In project root run 'npx prettier . --write
+          --config=prettierrc.toml' and commit changes to fix issues."
 
       - name: Force fail if any of the previous steps failed
         if: |
@@ -128,7 +136,7 @@ jobs:
           steps.check_others_formatting.outcome == 'failure'
         run: exit 1
 
-  # Job 2: Test code and upload coverage to Codecov. Test Jupyter notebooks.
+  # Job 2: Test code and upload coverage to Codecov.
   test-code:
     needs: code-quality # previous job 'code-quality' need to be finished first
 
@@ -184,13 +192,13 @@ jobs:
       #    OS: ${{ matrix.os }}
       #    PYTHON: ${{ matrix.python-version }}
 
-      - name: Run Jupyter Notebooks as tests
+      - name: Check if Jupiter Notebooks run without errors
         shell: bash
         run: >
           pytest --nbmake examples --ignore-glob='examples/*emcee*'
           --nbmake-timeout=300 --color=yes -n=auto
 
-      - name: Create Python package # dist/*.whl
+      - name: Create Python package
         run: python -m build --wheel --outdir dist
 
       - name:
@@ -249,7 +257,7 @@ jobs:
         run: >
           pytest tests/ --color=yes -n auto
 
-      - name: Run Jupyter Notebooks as tests
+      - name: Check if Jupiter Notebooks run without errors
         shell: bash
         run: >
           pytest --nbmake examples/ --ignore-glob='examples/*emcee*'

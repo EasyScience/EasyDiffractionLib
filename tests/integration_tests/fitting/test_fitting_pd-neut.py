@@ -1,6 +1,8 @@
-import easydiffraction as ed
-from numpy.testing import assert_almost_equal
 from pathlib import Path
+
+from numpy.testing import assert_almost_equal
+
+import easydiffraction as ed
 
 
 def test_fitting_pd_neut_cwl_LBCO_HRPT(tmp_path: Path) -> None:
@@ -42,7 +44,7 @@ def test_fitting_pd_neut_cwl_LBCO_HRPT(tmp_path: Path) -> None:
     assert job.fitting_results.minimizer_engine.package == 'lmfit'
     assert job.fitting_results.x.size == 3098
     assert job.fitting_results.n_pars == 13
-    assert job.fitting_results.success == True
+    assert job.fitting_results.success
     assert_almost_equal(job.fitting_results.reduced_chi, 1.25, decimal=2)
 
 
@@ -52,8 +54,7 @@ def test_fitting_pd_neut_tof_Si_SEPD(tmp_path: Path) -> None:
     phase = ed.Phase(name='si')
     phase.space_group.name_hm_alt = 'F d -3 m'
     phase.cell.length_a = 5.43146
-    phase.atom_sites.append(label='Si', type_symbol='Si', fract_x=0, fract_y=0,
-                            fract_z=0, occupancy=1, b_iso_or_equiv=0.529)
+    phase.atom_sites.append(label='Si', type_symbol='Si', fract_x=0, fract_y=0, fract_z=0, occupancy=1, b_iso_or_equiv=0.529)
     job.add_phase(phase=phase)
     job.phases['si'].scale = 10
 
@@ -84,5 +85,5 @@ def test_fitting_pd_neut_tof_Si_SEPD(tmp_path: Path) -> None:
     assert job.fitting_results.minimizer_engine.package == 'lmfit'
     assert job.fitting_results.x.size == 5600
     assert job.fitting_results.n_pars == 12
-    assert job.fitting_results.success == True
+    assert job.fitting_results.success
     assert_almost_equal(job.fitting_results.reduced_chi, 5.42, decimal=2)

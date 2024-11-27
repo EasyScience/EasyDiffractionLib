@@ -1,11 +1,12 @@
-import easydiffraction as ed
 import numpy as np
 from numpy.testing import assert_array_equal
 
+import easydiffraction as ed
+
 
 def test_read_tof_cif_from_scipp() -> None:
-    job = ed.Job(type="pd-neut-tof")
-    job.add_experiment_from_file("tests/resources/scipp.cif")
+    job = ed.Job(type='pd-neut-tof')
+    job.add_experiment_from_file('tests/resources/scipp.cif')
 
     assert job.experiment.name == 'test_data'
 

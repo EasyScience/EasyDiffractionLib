@@ -1,6 +1,6 @@
 # This is the main workflow for testing the code, notebooks and package.
 # It is divided into three jobs:
-# 1. Code-consistency:
+# 1. Code-quality:
 #    - Check the validity of pyproject.toml
 #    - Lint the code base
 #    - Lint the Jupyter notebooks
@@ -42,8 +42,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Job 1: Check code consistency
-  code-consistency:
+  # Job 1: Check code quality and consistency
+  code-quality:
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -62,50 +62,75 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install Python dependencies
+        # Install 'validate-pyproject' for checking pyproject.toml
+        # Install 'ruff' for code linting and formatting
+        # Install 'nbqa' for quality assurance of Jupyter notebooks
+        run: pip install 'validate-pyproject[all]' ruff nbqa
+
+      - name: Install npm dependencies
+        # Install 'prettier' for code formatting of Markdown, YAML files
+        # Install 'prettier-plugin-toml' plugin for code formatting of TOML files
+        run: npm install prettier prettier-plugin-toml --save-dev --save-exact
+
+      # Check the validity of pyproject.toml
       - name: Check validity of pyproject.toml
-        run: |
-          pip install 'validate-pyproject[all]'
-          validate-pyproject pyproject.toml
+        id: check_pyproject
+        continue-on-error: true
+        run: validate-pyproject pyproject.toml
 
-      # Install Python linter and code formatter and run in the project root
-      - name: Install and run Ruff
-        run: |
-          pip install ruff
-          ruff check .
+      # Check code linting with Ruff in the project root
+      - name: Check code linting
+        id: check_code_linting
+        continue-on-error: true
+        run: ruff check .
 
-      - name: Suggestion to fix linter issues (for *.py files)
-        if: ${{ failure() }}
-        run: |
-          echo "In project root run 'ruff check . --fix' and commit changes to fix issues."
-          exit 1
+      - name: Suggestion to fix code linting issues (for *.py files)
+        if: steps.check_code_linting.outcome == 'failure'
+        run: echo "In project root run 'ruff check . --fix' and commit changes to fix issues."
 
-      # Install quality assurance package for Jupyter notebooks and run in the sample directory
-      - name: Install and run nbQA
-        run: |
-          pip install ruff nbqa
-          nbqa ruff examples/
+      # Check code formatting with Ruff in the project root
+      - name: Check code formatting
+        id: check_code_formatting
+        continue-on-error: true
+        run: ruff format . --check
 
-      - name: Suggestion to fix linter issues (for *.ipynb files)
-        if: ${{ failure() }}
-        run: |
-          echo "In project root run 'nbqa ruff examples/ --fix' and commit changes to fix issues."
-          exit 1
+      - name: Suggestion to fix code formatting issues (for *.py files)
+        if: steps.check_code_formatting.outcome == 'failure'
+        run: echo "In project root run 'ruff format .' and commit changes to fix issues."
 
-      # Install code formatter for markdown, YAML, TOML files and run in the project root
-      - name: Install prettier and run in the project root
-        run: |
-          npm install prettier prettier-plugin-toml --save-dev --save-exact
-          npx prettier . --check --config=prettierrc.toml
+      # Check Jupyter notebooks with nbQA in the sample directory
+      - name: Check Jupyter notebooks
+        id: check_notebooks
+        continue-on-error: true
+        run: nbqa ruff examples/
 
-      - name: Suggestion to fix prettier issues (for *.md, *.yaml, *.toml files)
-        if: ${{ failure() }}
-        run: |
-          echo "In project root run 'npx prettier . --write --config=prettierrc.toml' and commit changes to fix issues."
-          exit 1
+      - name: Suggestion to fix notebook formatting issues (for *.ipynb files)
+        if: steps.check_notebooks.outcome == 'failure'
+        run: echo "In project root run 'nbqa ruff examples/ --fix' and commit changes to fix issues."
+
+      # Check formatting of Markdown, YAML, TOML files with Prettier in the project root
+      - name: Check formatting of Markdown, YAML, TOML files
+        id: check_others_formatting
+        continue-on-error: true
+        run: npx prettier . --check --config=prettierrc.toml
+
+      - name: Suggestion to fix non-code formatting issues (for *.md, *.yaml, *.toml files)
+        if: steps.check_others_formatting.outcome == 'failure'
+        run: echo "In project root run 'npx prettier . --write --config=prettierrc.toml' and commit changes to fix issues."
+
+      - name: Force fail if any of the previous steps failed
+        if: |
+          steps.check_pyproject.outcome == 'failure' ||
+          steps.check_code_linting.outcome == 'failure' ||
+          steps.check_code_formatting.outcome == 'failure' || 
+          steps.check_notebooks.outcome == 'failure' || 
+          steps.check_others_formatting.outcome == 'failure'
+        run: exit 1
 
   # Job 2: Test code and upload coverage to Codecov. Test Jupyter notebooks.
   test-code:
-    needs: code-consistency # previous job 'code-consistency' need to be finished first
+    needs: code-quality # previous job 'code-quality' need to be finished first
 
     # current job matrix. if modified, remember to UPDATE the strategy in the next job
     strategy:

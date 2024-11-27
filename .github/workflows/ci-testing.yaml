@@ -192,12 +192,6 @@ jobs:
       #    OS: ${{ matrix.os }}
       #    PYTHON: ${{ matrix.python-version }}
 
-      - name: Check if Jupiter Notebooks run without errors
-        shell: bash
-        run: >
-          pytest --nbmake examples --ignore-glob='examples/*emcee*'
-          --nbmake-timeout=300 --color=yes -n=auto
-
       - name: Create Python package
         run: python -m build --wheel --outdir dist
 

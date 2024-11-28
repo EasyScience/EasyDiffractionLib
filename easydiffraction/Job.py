@@ -163,6 +163,7 @@ class DiffractionJob(JobBase):
             elif self.type.is_tof:
                 parameters = Instrument1DTOFParameters()
             self._sample = Sample("Sample", parameters=parameters, pattern=pattern)
+            self._kwargs['_parameters'] = self.sample.parameters
 
     @property
     def theoretical_model(self) -> Sample:
@@ -402,17 +403,15 @@ class DiffractionJob(JobBase):
             self.experiment.from_cif_file(file_url)
 
         self.update_job_type()
-        # re-do the sample in case of type change.
-        # if self.sample.parameters.name != self.experiment.parameters.name:
-        #     # Different type read in (likely TOF), so re-create the sample
-        #     parameters = self.experiment.parameters
-        #     pattern = self.experiment.pattern
-        #     phases = self.sample.phases
-        #     name = self.sample.name
-        #     self.sample = Sample(name, parameters=parameters, pattern=pattern, phases=phases)
-        #     self.sample.parameters = self.experiment.parameters
-        #     self.update_job_type()
-        #     self.update_interface()
+
+        parameters = self.experiment.parameters
+        pattern = self.experiment.pattern
+        phases = self.sample.phases
+        name = self.sample.name
+        self.sample = Sample(name, parameters=parameters, pattern=pattern, phases=phases)
+        self.sample.parameters = self.experiment.parameters
+        self._kwargs['_parameters'] = self.sample.parameters
+        self.update_interface()
 
     def add_experiment_from_string(self, cif_string: str) -> None:
         '''

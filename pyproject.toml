@@ -24,7 +24,7 @@ classifiers = [
 requires-python = '>=3.9,<3.13'
 dependencies = [
     'cryspy @ git+https://github.com/ikibalin/cryspy.git@beta',
-    'EasyScience @ git+https://github.com/EasyScience/EasyScience.git@free-params',
+    'EasyScience @ git+https://github.com/EasyScience/EasyScience.git@master',
     'easycrystallography @ git+https://github.com/EasyScience/EasyCrystallography.git@develop',
     'pycifrw>=4.4.1',
     'pooch',

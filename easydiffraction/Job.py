@@ -426,7 +426,7 @@ class DiffractionJob(JobBase):
         # check the extension first and then call the appropriate method
         if file_url.endswith(".xye"):
             self.experiment.from_xye_file(file_url)
-        elif file_url.endswith(".gr"):
+        elif file_url.endswith(".gr") or file_url.endswith(".fgr"):
             # PDF data
             self.experiment.from_gr_file(file_url)
         else:

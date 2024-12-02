@@ -422,18 +422,29 @@ class DiffractionJob(JobBase):
 
         self.update_experiment_type()
         # re-do the sample in case of type change.
-        # if self.sample.parameters.name != self.experiment.parameters.name:
         # Different type read in (likely TOF), so re-create the sample
-        # re-do the sample always, as parameter values can change in the experiment.parameters compared to
-        # the sample.parameters (e.g. dtt1 read from CIF in Scipp format)
-        parameters = self.experiment.parameters
-        pattern = self.experiment.pattern
-        phases = self.sample.phases
-        name = self.sample.name
-        self.sample = Sample(name, parameters=parameters, pattern=pattern, phases=phases)
-        self.sample.parameters = self.experiment.parameters
-        self.update_experiment_type()
-        self.update_interface()
+        if self.sample.parameters.name != self.experiment.parameters.name:
+            parameters = self.experiment.parameters
+            pattern = self.experiment.pattern
+            phases = self.sample.phases
+            name = self.sample.name
+            self.sample = Sample(name, parameters=parameters, pattern=pattern, phases=phases)
+            self.sample.parameters = self.experiment.parameters
+            self.update_experiment_type()
+            self.update_interface()
+        # Temporary fix for dtt1 and dtt2 parameters read from CIF in Scipp format
+        if (
+            hasattr(self.sample.parameters, 'dtt1')
+            and hasattr(self.experiment.parameters, 'dtt1')
+            and self.sample.parameters.dtt1.raw_value != self.experiment.parameters.dtt1.raw_value
+        ):
+            self.sample.parameters.dtt1 = self.experiment.parameters.dtt1
+        if (
+            hasattr(self.sample.parameters, 'dtt2')
+            and hasattr(self.experiment.parameters, 'dtt2')
+            and self.sample.parameters.dtt2.raw_value != self.experiment.parameters.dtt2.raw_value
+        ):
+            self.sample.parameters.dtt2 = self.experiment.parameters.dtt2
 
     def add_experiment_from_string(self, cif_string: str) -> None:
         """

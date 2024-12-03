@@ -1,5 +1,4 @@
-![EasyDiffraction Logo Light Mode](https://raw.githubusercontent.com/EasyScience/EasyDiffraction/master/resources/images/EasyDiffractionLib-logo_lightmode.svg#gh-light-mode-only)
-![EasyDiffraction Logo Dark Mode](https://raw.githubusercontent.com/EasyScience/EasyDiffraction/master/resources/images/EasyDiffractionLib-logo_darkmode.svg#gh-dark-mode-only)
+![EasyDiffraction Logo Light Mode]![EasyDiffraction Logo Dark Mode]
 
 **EasyDiffraction** is a Python library for calculating powder diffraction
 patterns based on structural models and refining their parameters against
@@ -41,6 +40,8 @@ requests.
 [BSD 3-Clause License]: https://github.com/EasyScience/EasyDiffractionLib/blob/master/LICENSE
 [Contributing Guidelines]: https://github.com/EasyScience/EasyDiffractionLib/blob/master/CONTRIBUTING.md
 [EasyDiffraction Application]: https://github.com/EasyScience/EasyDiffractionApp
+[EasyDiffraction Logo Light Mode]: https://raw.githubusercontent.com/EasyScience/EasyDiffraction/master/resources/images/EasyDiffractionLib-logo_lightmode.svg#gh-light-mode-only
+[EasyDiffraction Logo Dark Mode]: https://raw.githubusercontent.com/EasyScience/EasyDiffraction/master/resources/images/EasyDiffractionLib-logo_darkmode.svg#gh-dark-mode-only
 [EasyScience]: https://easyscience.software
 [European Spallation Source (ESS)]: https://ess.eu
 [Main Website]: https://easydiffraction.org

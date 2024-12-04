@@ -1,4 +1,13 @@
-![EasyDiffraction Logo Light Mode]![EasyDiffraction Logo Dark Mode]
+<p align='left'>
+  <picture>
+    <!-- light mode logo -->
+    <source media='(prefers-color-scheme: light)' srcset='https://raw.githubusercontent.com/EasyScience/EasyDiffraction/master/resources/logo/EasyDiffractionLib-logo_lightmode.svg'>
+    <!-- dark mode logo -->
+    <source media='(prefers-color-scheme: dark)' srcset='https://raw.githubusercontent.com/EasyScience/EasyDiffraction/master/resources/logo/EasyDiffractionLib-logo_darkmode.svg'>
+    <!-- default logo == light mode logo -->
+    <img src='https://raw.githubusercontent.com/EasyScience/EasyDiffraction/master/resources/logo/EasyDiffractionLib-logo_lightmode.svg' alt='EasyCrystallography'>
+  </picture>
+</p>
 
 **EasyDiffraction** is a Python library for calculating powder diffraction
 patterns based on structural models and refining their parameters against
@@ -40,8 +49,6 @@ requests.
 [BSD 3-Clause License]: https://github.com/EasyScience/EasyDiffractionLib/blob/master/LICENSE
 [Contributing Guidelines]: https://github.com/EasyScience/EasyDiffractionLib/blob/master/CONTRIBUTING.md
 [EasyDiffraction Application]: https://github.com/EasyScience/EasyDiffractionApp
-[EasyDiffraction Logo Light Mode]: https://raw.githubusercontent.com/EasyScience/EasyDiffraction/master/resources/logo/EasyDiffractionLib-logo_lightmode.svg#gh-light-mode-only
-[EasyDiffraction Logo Dark Mode]: https://raw.githubusercontent.com/EasyScience/EasyDiffraction/master/resources/logo/EasyDiffractionLib-logo_darkmode.svg#gh-dark-mode-only
 [EasyScience]: https://easyscience.software
 [European Spallation Source (ESS)]: https://ess.eu
 [Main Website]: https://easydiffraction.org

@@ -4,17 +4,17 @@
 name-template: 'EasyDiffraction $RESOLVED_VERSION'
 tag-template: 'v$RESOLVED_VERSION'
 categories:
-- title: 'Added'
-  labels:  # Labels to use to categorize a pull request as a feature
-    - 'enhancement'
-- title: 'Fixed'
-  labels:  # Labels to use to categorize a pull request as a bug fix
-    - 'bug'
-- title: 'Changed'
-  labels:  # Labels to use to categorize a pull request as a maintenance task
-    - 'chore'
-    - 'documentation'
-    - 'refactor'
+  - title: 'Added'
+    labels: # Labels to use to categorize a pull request as a feature
+      - 'enhancement'
+  - title: 'Fixed'
+    labels: # Labels to use to categorize a pull request as a bug fix
+      - 'bug'
+  - title: 'Changed'
+    labels: # Labels to use to categorize a pull request as a maintenance task
+      - 'chore'
+      - 'documentation'
+      - 'refactor'
 change-template: '- $TITLE (#$NUMBER)'
 change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
 version-resolver:

@@ -2,63 +2,73 @@
 
 This is an example of a workflow that describes the development process.
 
-* Clone EasyDiffractionLib repository
+- Clone EasyDiffractionLib repository
   ```console
   git clone https://github.com/EasyScience/EasyDiffractionLib
   ```
-* Go to the cloned directory
+- Go to the cloned directory
   ```console
   cd EasyDiffractionLib
   ```
-* Checkout/switch to the `develop` branch
+- Checkout/switch to the `develop` branch
   ```console
   git checkout develop
   ```
-* Create a new branch from the current one
+- Create a new branch from the current one
   ```console
   git checkout -b new-feature
   ```
-* Create Python environment and activate it
+- Create Python environment and activate it
   ```console
   python3 -m venv .venv
   source .venv/bin/activate
-  ```  
-* Upgrade PIP - package installer for Python
+  ```
+- Upgrade PIP - package installer for Python
   ```console
   python -m pip install --upgrade pip
   ```
-* Install easydiffraction from root with `dev` extras for development
+- Install easydiffraction from root with `dev` extras for development
   ```console
   pip install '.[dev]'
   ```
-* Make changes in the code
-* Run Ruff - Python linter and code formatter (configuration is in pyproject.toml)
+- Make changes in the code
+- Run Ruff - Python linter and code formatter (configuration is in
+  pyproject.toml) Linting (overwriting files)
   ```console
-  ruff check --fix  # Linting (overwriting files)
-  ruff format       # Formatting (overwriting files)
+  ruff check . --fix
   ```
-* Run python tests
+  Formatting (overwriting files)
+  ```console
+  ruff format .
+  ```
+- Install and run Prettier - code formatter for markdown, YAML, TOML files
+  Formatting (overwriting files)
+  ```console
+  npm install prettier prettier-plugin-toml --save-dev --save-exact
+  npx prettier . --write --config=prettierrc.toml
+  ```
+- Run python tests
   ```console
   pytest tests/ --color=yes -n auto
   ```
-* Clear all Jupyter notebooks output
+- Clear all Jupyter notebooks output
   ```console
   jupyter nbconvert --clear-output --inplace examples/*.ipynb
   ```
-* Run nbQA - Jupyter notebooks quality assurance package
+- Run nbQA - Jupyter notebooks quality assurance package
   ```console
   nbqa ruff examples/ --fix
-  ```  
-* Run Jupyter notebooks as tests
+  ```
+- Run Jupyter notebooks as tests
   ```console
   pytest --nbmake examples/*ipynb --nbmake-timeout=300 --color=yes -n=auto
   ```
-* Commit changes
+- Commit changes
   ```console
   git add .
   git commit -m "Add new feature"
   ```
-* Push the new branch to a remote repository
+- Push the new branch to a remote repository
   ```console
   git push -u origin new-feature
   ```

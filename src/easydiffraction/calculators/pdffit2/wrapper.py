@@ -7,17 +7,17 @@ from typing import List
 
 import numpy as np
 from diffpy.utils.parsers.loaddata import loadData
+from easycrystallography.Components.Lattice import Lattice
+from easycrystallography.Components.SpaceGroup import SpaceGroup
 from easyscience import global_object as borg
 from easyscience.Objects.Inferface import ItemContainer
 
-from easydiffraction import Lattice
-from easydiffraction import Phases
-from easydiffraction import Site
-from easydiffraction import SpaceGroup
 from easydiffraction.calculators.pdffit2.calculator import Pdffit2 as Pdffit2_calc
 from easydiffraction.calculators.wrapper_base import WrapperBase
-from easydiffraction.Profiles.P1D import PDFParameters
-from easydiffraction.Profiles.P1D import Powder1DParameters
+from easydiffraction.job.experiment.pd_1d import PDFParameters
+from easydiffraction.job.experiment.pd_1d import Powder1DParameters
+from easydiffraction.job.model.phase import Phases
+from easydiffraction.job.model.site import Site
 
 if TYPE_CHECKING:
     pass
@@ -109,7 +109,7 @@ class Pdffit2Wrapper(WrapperBase):
         :param model: Object to be created
         :return: Item containers of the objects
         """
-        from easydiffraction.sample import Sample
+        from easydiffraction.job.old_sample.old_sample import Sample
 
         r_list = []
         t_ = type(model)

@@ -1,0 +1,11 @@
+endOfLine = 'lf'     # change line endings to LF
+printWidth = 80      # wrap Markdown files at 80 characters
+proseWrap = 'always' # change wrapping in Markdown files
+semi = false         # remove semicolons
+singleQuote = true   # use single quotes instead of double quotes
+tabWidth = 2         # change tab width to 2 spaces
+useTabs = false      # use spaces instead of tabs
+
+plugins = [
+  'prettier-plugin-toml', # use the TOML plugin
+]

@@ -1,24 +1,59 @@
-<img src="https://raw.githubusercontent.com/EasyScience/EasyDiffractionApp/master/resources/images/ed_logo.svg" height="65">
+<p align='left'>
+  <picture>
+    <!-- light mode logo -->
+    <source media='(prefers-color-scheme: light)' srcset='https://raw.githubusercontent.com/EasyScience/EasyDiffraction/master/resources/logo/EasyDiffractionLib-logo_lightmode.svg'>
+    <!-- dark mode logo -->
+    <source media='(prefers-color-scheme: dark)' srcset='https://raw.githubusercontent.com/EasyScience/EasyDiffraction/master/resources/logo/EasyDiffractionLib-logo_darkmode.svg'>
+    <!-- default logo == light mode logo -->
+    <img src='https://raw.githubusercontent.com/EasyScience/EasyDiffraction/master/resources/logo/EasyDiffractionLib-logo_lightmode.svg' alt='EasyCrystallography'>
+  </picture>
+</p>
 
-EasyDiffraction is a Python library for calculating neutron powder diffraction pattern based on a structural model and refining its parameters against experimental data.
+**EasyDiffraction** is a Python library for calculating powder diffraction
+patterns based on structural models and refining their parameters against
+experimental data.
 
-Easydiffraction library is the foundation of the [EasyDiffraction application](https://github.com/EasyScience/EasyDiffractionApp), an intuitive graphical user interface that aims to simplify and speed up the analysis of diffraction experiments.
+This library serves as the foundation of the [EasyDiffraction Application], a
+user-friendly graphical interface that streamlines and accelerates the analysis
+of diffraction experiments.
 
-* Website: https://easydiffraction.org
-* Documentation: https://docs.easydiffraction.org/lib/
-* Source code: https://github.com/EasyScience/EasyDiffractionLib
-* Bug reports: https://github.com/EasyScience/EasyDiffractionLib/issues
+**EasyDiffraction** is built upon the [EasyScience] framework, which provides
+essential tools for developing scientific libraries and applications.
+
+## Useful Links
+
+- [Main Website] - Learn more about EasyDiffraction.
+- [Documentation] - Access the full documentation.
+- [Discussions] - Ask questions or share ideas.
+- [Issue Tracker] - Report bugs or request new features.
+- [Source Code] - Explore the source code repository.
 
 ## Contributing
 
-We absolutely welcome contributions, and our goal is for EasyDiffraction to be a community-driven open source project developed by a diverse group of contributors.
+We welcome contributions! Our vision is for **EasyDiffraction** to be a
+community-driven, open-source project supported by a diverse group of
+contributors.
 
-EasyDiffraction is currently maintained by [European Spallation Source ERIC](https://ess.eu), Sweden.
+The project is currently maintained by the [European Spallation Source (ESS)] in
+Sweden.
 
-If you are interested in contributing directly to the code, please see [CONTRIBUTING.md](https://raw.githubusercontent.com/EasyScience/EasyDiffractionLib/master/CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+If you'd like to contribute, please refer to our [Contributing Guidelines] for
+information about our code of conduct and instructions on submitting pull
+requests.
 
 ## License
 
-EasyDiffraction is licensed under the [BSD 3-Clause License](https://raw.githubusercontent.com/EasyScience/EasyDiffractionLib/master/LICENSE).
+**EasyDiffraction** is licensed under the [BSD 3-Clause License].
 
-[DFO_LS](https://github.com/numericalalgorithmsgroup/dfols) is subject to the GPL license.
+<!-- prettier-ignore-start -->
+[BSD 3-Clause License]: https://github.com/EasyScience/EasyDiffractionLib/blob/master/LICENSE
+[Contributing Guidelines]: https://github.com/EasyScience/EasyDiffractionLib/blob/master/CONTRIBUTING.md
+[EasyDiffraction Application]: https://github.com/EasyScience/EasyDiffractionApp
+[EasyScience]: https://easyscience.software
+[European Spallation Source (ESS)]: https://ess.eu
+[Main Website]: https://easydiffraction.org
+[Documentation]: https://docs.easydiffraction.org/lib
+[Discussions]: https://github.com/EasyScience/EasyDiffractionLib/discussions
+[Issue Tracker]: https://github.com/EasyScience/EasyDiffractionLib/issues
+[Source Code]: https://github.com/EasyScience/EasyDiffraction
+<!-- prettier-ignore-end -->

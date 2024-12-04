@@ -19,8 +19,6 @@ from easydiffraction.calculators.cryspy.parser import calcObjAndDictToEdExperime
 from easydiffraction.calculators.cryspy.parser import cifV2ToV1
 from easydiffraction.calculators.cryspy.parser import cifV2ToV1_tof
 
-# from pathos import multiprocessing as mp
-
 warnings.filterwarnings('ignore')
 
 normalization = 0.5
@@ -387,7 +385,7 @@ class Cryspy:
         for r_key in kwargs.keys():
             setattr(reflex_asymmetry, r_key, kwargs[key])
 
-    def set_job_type(self, tof=False, pol=False):
+    def set_experiment_type(self, tof=False, pol=False):
         self.type = 'powder1DCW'
         self.polarized = False
         if tof:

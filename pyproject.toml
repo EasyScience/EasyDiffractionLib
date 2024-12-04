@@ -126,15 +126,15 @@ quote-style = 'single'       # But double quotes in docstrings (PEP 8, PEP 257)
 
 [tool.ruff.lint]
 select = [
-  'E9',
-  'F63',
-  'F7',
-  'F82', # flake8 settings from existing CI setup
-  'E',
-  'W',   # pycodestyle
-  'F',   # Pyflakes
-  'I',   # isort
-  'S',   # flake8-bandit
+  'E',   # General PEP 8 style errors
+  'E9',  # Runtime errors (e.g., syntax errors, undefined names)
+  'F',   # Pyflakes-specific checks (e.g., unused variables, imports)
+  'F63', # Issues related to invalid escape sequences in strings
+  'F7',  # Type-related errors (e.g., mismatched argument types, unsupported operations)
+  'F82', # Import-related errors (e.g., unresolved imports, reimported modules)
+  'I',   # Import sorting issues (e.g., unsorted imports)
+  'S',   # Security-related issues (e.g., use of insecure functions or libraries)
+  'W',   # General PEP 8 warnings (e.g., lines too long, trailing whitespace)
 ]
 
 [tool.ruff.lint.isort]

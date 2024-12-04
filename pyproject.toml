@@ -4,50 +4,55 @@
 
 [project]
 name = 'easydiffraction'
-dynamic = ['version']  # Use versioningit to manage the version
+dynamic = ['version'] # Use versioningit to manage the version
 description = 'Making diffraction data analysis and modelling easy'
 authors = [
-    { name = 'EasyDiffraction contributors', email = 'support@easydiffraction.org' }
+  { name = 'EasyDiffraction contributors', email = 'support@easydiffraction.org' },
 ]
 readme = 'README.md'
 license = { file = 'LICENSE' }
 classifiers = [
-    'Topic :: Scientific/Engineering',
-    'Development Status :: 4 - Beta',
-    'License :: OSI Approved :: BSD License',
-    'Operating System :: OS Independent',
-    'Programming Language :: Python :: 3 :: Only',
-    'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.9',
-    'Programming Language :: Python :: 3.10',
-    'Programming Language :: Python :: 3.11',
-    'Programming Language :: Python :: 3.12'
+  'Topic :: Scientific/Engineering',
+  'Development Status :: 4 - Beta',
+  'License :: OSI Approved :: BSD License',
+  'Operating System :: OS Independent',
+  'Programming Language :: Python :: 3 :: Only',
+  'Programming Language :: Python :: 3',
+  'Programming Language :: Python :: 3.9',
+  'Programming Language :: Python :: 3.10',
+  'Programming Language :: Python :: 3.11',
+  'Programming Language :: Python :: 3.12',
 ]
 requires-python = '>=3.9,<3.13'
 dependencies = [
-    'cryspy',  # For calculations of diffraction patterns
-    'pooch',  # For data fetching
-    'easyscience',  # The base library of the EasyScience framework
-    'easycrystallography',  # Crystallography tools of the EasyScience framework
+  'cryspy',              # Calculations of diffraction patterns
+  'easycrystallography', # Crystallography tools of the EasyScience framework
+  'easyscience',         # The base library of the EasyScience framework
+  'pooch',               # For data fetching
 ]
 
 [project.optional-dependencies]
 dev = [
-    'build',  # For building the package
-    'pytest',  # For testing
-    'pytest-xdist',  # For parallel testing
-    'pytest-cov',  # For coverage
-    'ruff',  # For linting
-    'nbmake',  # For building notebooks
-    'nbqa',  # For linting notebooks
-    'jinja2',  # For templating
-    'versioningit',  # For versioning
+  'build',        # Building the package
+  'jinja2',       # Templating for the documentation
+  'nbmake',       # Building notebooks
+  'nbqa',         # Linting and formatting notebooks
+  'pytest',       # Testing
+  'pytest-cov',   # Coverage
+  'pytest-xdist', # Enable parallel testing
+  'ruff',         # Linting and formatting code
+  'versioningit', # Versioning
 ]
 charts = [
-    'darkdetect',  # For dark mode detection
-    'plotly',  # For interactive plots
-    'py3Dmol',  # For visualisation of crystal structures
-    'pandas',  # For displaying tables in juptyer notebooks
+  'darkdetect', # Detecting dark mode
+  'pandas',     # Displaying tables in juptyer notebooks
+  'plotly',     # Interactive plots
+  'py3Dmol',    # Visualisation of crystal structures
+]
+pdf = [
+  'diffpy.pdffit2',   # Calculations of atomic pair distribution function
+  'diffpy.structure', # Handling of crystal structures for the diffpy libraries
+  'diffpy.utils',     # General purpose shared utilities for the diffpy libraries
 ]
 
 [project.urls]
@@ -68,10 +73,7 @@ tracker = 'https://github.com/EasyScience/EasyDiffractionLib/issues'
 
 [build-system]
 build-backend = 'hatchling.build'
-requires = [
-  'hatchling',
-  'versioningit'
-]
+requires = ['hatchling', 'versioningit']
 
 #############################
 # Configuration for hatchling
@@ -84,7 +86,7 @@ packages = ['src/easydiffraction']
 allow-direct-references = true
 
 [tool.hatch.version]
-source = 'versioningit'  # Use versioningit to manage the version
+source = 'versioningit' # Use versioningit to manage the version
 
 ################################
 # Configuration for versioningit
@@ -95,9 +97,9 @@ source = 'versioningit'  # Use versioningit to manage the version
 # source code.
 
 [tool.versioningit.format]
-distance = '{base_version}.post{distance}'  # example: 1.2.3.post42
-dirty = '{base_version}'  # example: 1.2.3
-distance-dirty = '{base_version}.post{distance}'  # example: 1.2.3.post42
+distance = '{base_version}.post{distance}'       # example: 1.2.3.post42
+dirty = '{base_version}'                         # example: 1.2.3
+distance-dirty = '{base_version}.post{distance}' # example: 1.2.3.post42
 
 [tool.versioningit.vcs]
 method = 'git'
@@ -112,27 +114,27 @@ default-tag = 'v999.0.0'
 # https://docs.astral.sh/ruff/rules/
 
 [tool.ruff]
-exclude = [
-  'examples',
-  'examples_old',
-  'tests'
-]
+exclude = ['examples', 'examples_old', 'tests_old']
 indent-width = 4
 line-length = 127
 
 [tool.ruff.format]
-docstring-code-format = true  # Whether to format code snippets in docstrings
-indent-style = 'space'  # PEP 8 recommends using spaces over tabs
-line-ending = 'lf'  # Line endings will be converted to \n
-quote-style = 'single'  # But double quotes in docstrings (PEP 8, PEP 257)
+docstring-code-format = true # Whether to format code snippets in docstrings
+indent-style = 'space'       # PEP 8 recommends using spaces over tabs
+line-ending = 'lf'           # Line endings will be converted to \n
+quote-style = 'single'       # But double quotes in docstrings (PEP 8, PEP 257)
 
 [tool.ruff.lint]
 select = [
-    'E9', 'F63', 'F7', 'F82',  # flake8 settings from existing CI setup
-    'E', 'W',  # pycodestyle
-    'F',  # Pyflakes
-    'I',  # isort
-    'S',  # flake8-bandit
+  'E',   # General PEP 8 style errors
+  'E9',  # Runtime errors (e.g., syntax errors, undefined names)
+  'F',   # Pyflakes-specific checks (e.g., unused variables, imports)
+  'F63', # Issues related to invalid escape sequences in strings
+  'F7',  # Type-related errors (e.g., mismatched argument types, unsupported operations)
+  'F82', # Import-related errors (e.g., unresolved imports, reimported modules)
+  'I',   # Import sorting issues (e.g., unsorted imports)
+  'S',   # Security-related issues (e.g., use of insecure functions or libraries)
+  'W',   # General PEP 8 warnings (e.g., lines too long, trailing whitespace)
 ]
 
 [tool.ruff.lint.isort]
@@ -143,5 +145,5 @@ force-single-line = true
 '*test_*.py' = ['S101']
 
 #[tool.ruff.lint.pycodestyle]
-#max-line-length = 79  # https://peps.python.org/pep-0008/#maximum-line-length
+#max-line-length = 88 # https://peps.python.org/pep-0008/#maximum-line-length
 #max-doc-length = 72  # https://peps.python.org/pep-0008/#maximum-line-length

@@ -14,8 +14,8 @@ from typing import TypeVar
 from typing import Union
 
 if TYPE_CHECKING:
+    from easyscience.Objects.Inferface import B
     from easyscience.Objects.Inferface import ItemContainer
-    from easyscience.Utils.typing import B
 
 
 class _Type:

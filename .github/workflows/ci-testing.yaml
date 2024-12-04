@@ -1,0 +1,258 @@
+# This is the main workflow for testing the code, notebooks and package.
+# It is divided into three jobs:
+# 1. Code-quality:
+#    - Check the validity of pyproject.toml
+#    - Check code linting
+#    - Check code formatting
+#    - Check Jupyter notebooks formatting
+#    - Check formatting of Markdown, YAML, TOML, etc. files
+# 2. Test-code:
+#    - Test the code base and upload coverage to Codecov
+#    - Create the Python package
+#    - Upload the Python package for the next job
+# 3. Test-package:
+#    - Download the Python package from the previous job
+#    - Install the downloaded Python package
+#    - Test the code base
+#    - Check if Jupiter Notebooks run without errors
+
+name: Test code, notebooks and package
+
+on:
+  # Trigger the workflow on push
+  push:
+    # Every branch
+    branches:
+      - '**'
+    # But do not run this workflow on creating a new tag starting with 'v', e.g. 'v1.0.3' (see pypi-publish.yml)
+    tags-ignore:
+      - 'v*'
+  # Trigger the workflow on pull request
+  pull_request:
+    branches:
+      - '**'
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Allow only one concurrent workflow, skipping runs queued between the run in-progress and latest queued.
+# And cancel in-progress runs.
+concurrency:
+  group:
+    ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Job 1: Check code quality and consistency
+  code-quality:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ['3.12']
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: '0' # full history with tags to get the version number by versioningit
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Python dependencies
+        # Install 'validate-pyproject' for checking pyproject.toml
+        # Install 'ruff' for code linting and formatting
+        # Install 'nbqa' for quality assurance of Jupyter notebooks
+        run: pip install 'validate-pyproject[all]' ruff nbqa
+
+      - name: Install npm dependencies
+        # Install 'prettier' for code formatting of Markdown, YAML, etc. files
+        # Install 'prettier-plugin-toml' plugin for code formatting of TOML files
+        run: npm install prettier prettier-plugin-toml --save-dev --save-exact
+
+      # Check the validity of pyproject.toml
+      - name: Check validity of pyproject.toml
+        id: check_pyproject
+        continue-on-error: true
+        run: validate-pyproject pyproject.toml
+
+      # Check code linting with Ruff in the project root
+      - name: Check code linting
+        id: check_code_linting
+        continue-on-error: true
+        run: ruff check .
+
+      - name: Suggestion to fix code linting issues (for *.py files)
+        if: steps.check_code_linting.outcome == 'failure'
+        run:
+          echo "In project root run 'ruff check . --fix' and commit changes to
+          fix issues."
+
+      # Check code formatting with Ruff in the project root
+      - name: Check code formatting
+        id: check_code_formatting
+        continue-on-error: true
+        run: ruff format . --check
+
+      - name: Suggestion to fix code formatting issues (for *.py files)
+        if: steps.check_code_formatting.outcome == 'failure'
+        run:
+          echo "In project root run 'ruff format .' and commit changes to fix
+          issues."
+
+      # Check Jupyter notebooks with nbQA in the sample directory
+      - name: Check Jupyter notebooks formatting
+        id: check_notebooks
+        continue-on-error: true
+        run: nbqa ruff examples/
+
+      - name: Suggestion to fix notebook formatting issues (for *.ipynb files)
+        if: steps.check_notebooks.outcome == 'failure'
+        run:
+          echo "In project root run 'nbqa ruff examples/ --fix' and commit
+          changes to fix issues."
+
+      # Check formatting of Markdown, YAML, TOML, etc. files with Prettier in the project root
+      - name: Check formatting of Markdown, YAML, TOML, etc. files
+        id: check_others_formatting
+        continue-on-error: true
+        run: npx prettier . --check --config=prettierrc.toml
+
+      - name: Suggestion to fix non-code formatting issues (for *.md, etc.)
+        if: steps.check_others_formatting.outcome == 'failure'
+        run:
+          echo "In project root run 'npx prettier . --write
+          --config=prettierrc.toml' and commit changes to fix issues."
+
+      - name: Force fail if any of the previous steps failed
+        if: |
+          steps.check_pyproject.outcome == 'failure' ||
+          steps.check_code_linting.outcome == 'failure' ||
+          steps.check_code_formatting.outcome == 'failure' || 
+          steps.check_notebooks.outcome == 'failure' || 
+          steps.check_others_formatting.outcome == 'failure'
+        run: exit 1
+
+  # Job 2: Test code and upload coverage to Codecov.
+  test-code:
+    needs: code-quality # previous job 'code-quality' need to be finished first
+
+    # current job matrix. if modified, remember to UPDATE the strategy in the next job
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022, macos-13, macos-14]
+        python-version: ['3.10', '3.11', '3.12']
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: '0' # full history with tags to get the version number by versioningit
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Upgrade package installer for Python
+        run: python -m pip install --upgrade pip
+
+      - name: Install Python dependencies
+        run: pip install '.[dev,charts]'
+
+      - name: Run Python tests and create coverage report
+        run: >
+          pytest tests/ --cov=./ --cov-report=xml:coverage/coverage.xml
+          --junitxml=./coverage/junit.xml --color=yes -n auto
+
+      #- name: Upload test results to Codecov
+      #  if: ${{ !cancelled() }}
+      #  uses: codecov/test-results-action@v1
+      #  with:
+      #    files: ./coverage/junit.xml
+      #    fail_ci_if_error: true  # optional (default = false)
+      #    name: Pytest results
+      #    token: ${{ secrets.CODECOV_TOKEN }}
+
+      #- name: Upload coverage report to Codecov
+      #  uses: codecov/codecov-action@v4
+      #  with:
+      #    files: ./coverage/coverage.xml
+      #    env_vars: OS,PYTHON
+      #    fail_ci_if_error: true  # optional (default = false)
+      #    name: Pytest coverage
+      #    token: ${{ secrets.CODECOV_TOKEN }}
+      #  env:
+      #    OS: ${{ matrix.os }}
+      #    PYTHON: ${{ matrix.python-version }}
+
+      - name: Create Python package
+        run: python -m build --wheel --outdir dist
+
+      - name:
+          Upload zipped Python package (with tests and examples) for next job
+        uses: actions/upload-artifact@v4
+        with:
+          name:
+            EasyDiffractionLib_py${{ matrix.python-version }}_${{ matrix.os
+            }}_${{ runner.arch }}
+          path: |
+            dist/*.whl
+            tests/
+            examples/
+          if-no-files-found: 'error'
+          compression-level: 0
+
+  # Job 3: Test the package
+  test-package:
+    needs: test-code # the previous job needs to be finished first
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022, macos-13, macos-14]
+        python-version: ['3.10', '3.11', '3.12']
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Upgrade package installer for Python
+        run: python -m pip install --upgrade pip
+
+      - name:
+          Download zipped Python package (with tests and examples) from previous
+          job
+        uses: actions/download-artifact@v4
+        with: # name or path are taken from the upload step of the previous job
+          name:
+            EasyDiffractionLib_py${{ matrix.python-version }}_${{ matrix.os
+            }}_${{ runner.arch }}
+          path: . # directory to extract downloaded zipped artifacts
+
+      # The local version must be higher than the PyPI version for pip to
+      # prefer the local version. So, after a new release and a new tag,
+      # remember to merge the master branch with the develop branch,
+      # and then create a new feature branch from the develop branch.
+      - name: Install Python package from previous job with 'dev' extras
+        run: pip install 'easydiffraction[dev]' --find-links=dist
+
+      - name: Run Python tests
+        run: >
+          pytest tests/ --color=yes -n auto
+
+      - name: Check if Jupiter Notebooks run without errors
+        shell: bash
+        run: >
+          pytest --nbmake examples/ --ignore-glob='examples/*emcee*'
+          --nbmake-timeout=300 --color=yes -n=auto

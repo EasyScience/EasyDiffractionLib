@@ -10,7 +10,6 @@ on:
 
 jobs:
   update-release-draft:
-
     runs-on: ubuntu-latest
 
     steps:

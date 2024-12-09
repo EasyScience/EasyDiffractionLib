@@ -23,7 +23,7 @@ requires-python = '>=3.9,<3.13'
 dependencies = [
     'cryspy',
     'easyscience',
-    'easycrystallography @ git+https://github.com/easyscience/EasyCrystallography.git@it_system_fix',
+    'easycrystallography @ git+https://github.com/easyscience/EasyCrystallography.git@develop',
 ]
 
 [project.optional-dependencies]

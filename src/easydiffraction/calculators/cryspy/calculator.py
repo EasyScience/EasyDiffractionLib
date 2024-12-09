@@ -12,8 +12,10 @@ from typing import Tuple
 
 import cryspy
 import numpy as np
+from cryspy.A_functions_base.function_2_space_group import get_default_it_coordinate_system_code_by_it_number
 from cryspy.procedure_rhochi.rhochi_by_dictionary import rhochi_calc_chi_sq_by_dictionary
 from easyscience import global_object as borg
+from gemmi import find_spacegroup_by_name
 
 from easydiffraction.calculators.cryspy.parser import calcObjAndDictToEdExperiments
 from easydiffraction.calculators.cryspy.parser import cifV2ToV1
@@ -114,6 +116,8 @@ class Cryspy:
         self._first_experiment_name = ''
         self.exp_obj = None
         self.chisq = None
+        self.name_hm_alt = ''
+        self.it_code = ''
         self.excluded_points = []
         self._cryspyData = Data()  # {phase_name: CryspyPhase, exp_name: CryspyExperiment}
         self._cryspyObject = self._cryspyData._cryspyObj
@@ -215,7 +219,18 @@ class Cryspy:
         cell = self.storage[cell_name]
         crystal.cell = cell
 
-    def createSpaceGroup(self, key: str = 'spacegroup', name_hm_alt: str = 'P 1') -> str:
+    def createSpaceGroup(self, key: str = 'spacegroup', name_hm_alt: str = '', it_code: Optional[str] = '') -> str:
+        self.name_hm_alt = name_hm_alt or self.name_hm_alt or 'P 1'
+        name_hm_alt = self.name_hm_alt
+
+        if not it_code:
+            sg = find_spacegroup_by_name(name_hm_alt)
+            self.it_code = get_default_it_coordinate_system_code_by_it_number(sg.number)
+        it_code = it_code or self.it_code
+
+        if it_code:
+            name_hm_alt += ':' + it_code
+
         sg_split = name_hm_alt.split(':')
         opts = {'name_hm_alt': sg_split[0]}
         if len(sg_split) > 1:
@@ -258,6 +273,13 @@ class Cryspy:
                     break
         sg_key = self.createSpaceGroup(key=sg_key, **kwargs)
         self.assignSpaceGroup_toCrystal(sg_key, previous_key)
+        # here, the CIF has the new group, so reload
+        if not self.current_crystal:
+            return
+        if 'it_code' in kwargs:
+            cif = self.cif_str
+            self.updateModelCif(cif)
+        pass
 
     def createAtom(self, atom_name: str, **kwargs) -> str:
         atom = cryspy.AtomSite(**kwargs)

@@ -362,15 +362,17 @@ class DiffractionJob(JobBase):
             pattern = PolPowder1DParameters()
         else:
             pattern = Powder1DParameters()
-        if type(self.experiment.pattern) is type(pattern):
+        # if pattern type is not the same as job, re-create the job.patter
+        if self.experiment.pattern is not None and self.experiment.pattern.name != pattern.name:
             self.experiment.pattern = pattern
             self._kwargs['_pattern'] = self.experiment.pattern
+
         if self.type.is_cwl:
             parameters = Instrument1DCWParameters()
         elif self.type.is_tof:
             parameters = Instrument1DTOFParameters()
         # self._sample = Sample('Sample', parameters=parameters, pattern=pattern)
-        if type(self.experiment.parameters) is type(parameters):
+        if self.experiment.parameters.name != parameters.name:
             self.experiment.parameters = parameters
             self._kwargs['_parameters'] = self.experiment.parameters
 

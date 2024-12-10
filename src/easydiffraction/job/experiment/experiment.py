@@ -103,6 +103,7 @@ class Experiment(coreExperiment):
         if hasattr(self._datastore, '_simulations'):
             self.pattern = self._datastore._simulations.pattern
             self.parameters = self._datastore._simulations.parameters
+
     @property
     def datastore(self):
         return self._datastore
@@ -404,7 +405,7 @@ class Experiment(coreExperiment):
         self.from_cif_block(block, experiment_name=experiment_name)
         phase_names = [phase.name for phase in self._datastore._simulations._phases]
         self.interface.updateExpCif(cif_string, phase_names)
-        self.generate_bindings() # ???? NEEDED???
+        self.generate_bindings()  # ???? NEEDED???
 
     def from_cif_block(self, block, experiment_name=None):
         """
@@ -426,7 +427,7 @@ class Experiment(coreExperiment):
         self.parameters_from_cif_block(block)
         self.phase_parameters_from_cif_block(block)
         self.data_from_cif_block(block, experiment_name)
-        #self.datastore._simulations.pattern = self.pattern # FAILS!! TODO: FIX
+        # self.datastore._simulations.pattern = self.pattern # FAILS!! TODO: FIX
         self.datastore._simulations.parameters = self.parameters
 
     @property

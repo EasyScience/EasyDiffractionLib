@@ -94,7 +94,7 @@ class DiffractionJob(JobBase):
         # Generate the datastore for this job
         __dataset = datastore if datastore is not None else xr.Dataset()
         self.add_datastore(__dataset)
-        self._name = name if name is not None else "sim_"
+        self._name = name if name is not None else 'sim_'
 
         self.cif_string = ''
         # Dataset specific attributes
@@ -150,7 +150,7 @@ class DiffractionJob(JobBase):
         self._kwargs = {}
         self._kwargs['_phases'] = self.sample.phases
         self._kwargs['_parameters'] = self.sample.parameters
-        #self._kwargs['_pattern'] = self.sample.pattern
+        # self._kwargs['_pattern'] = self.sample.pattern
         self._kwargs['_pattern'] = self.experiment.pattern
 
     @property
@@ -369,7 +369,7 @@ class DiffractionJob(JobBase):
             parameters = Instrument1DCWParameters()
         elif self.type.is_tof:
             parameters = Instrument1DTOFParameters()
-        #self._sample = Sample('Sample', parameters=parameters, pattern=pattern)
+        # self._sample = Sample('Sample', parameters=parameters, pattern=pattern)
         if type(self.experiment.parameters) is type(parameters):
             self.experiment.parameters = parameters
             self._kwargs['_parameters'] = self.experiment.parameters

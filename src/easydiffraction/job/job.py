@@ -362,7 +362,7 @@ class DiffractionJob(JobBase):
             pattern = PolPowder1DParameters()
         else:
             pattern = Powder1DParameters()
-        if type(self.experiment.pattern) != type(pattern):
+        if type(self.experiment.pattern) is type(pattern):
             self.experiment.pattern = pattern
             self._kwargs['_pattern'] = self.experiment.pattern
         if self.type.is_cwl:
@@ -370,7 +370,7 @@ class DiffractionJob(JobBase):
         elif self.type.is_tof:
             parameters = Instrument1DTOFParameters()
         #self._sample = Sample('Sample', parameters=parameters, pattern=pattern)
-        if type(self.experiment.parameters) != type(parameters):
+        if type(self.experiment.parameters) is type(parameters):
             self.experiment.parameters = parameters
             self._kwargs['_parameters'] = self.experiment.parameters
 
@@ -444,6 +444,9 @@ class DiffractionJob(JobBase):
             self.experiment.from_cif_file(file_url)
 
         self.update_experiment_type()
+        # update the kwargs with new pointers
+        self._kwargs['_parameters'] = self.experiment.parameters
+
         # re-do the sample in case of type change.
         # Different type read in (likely TOF), so re-create the sample
         if self.sample.parameters.name != self.experiment.parameters.name:

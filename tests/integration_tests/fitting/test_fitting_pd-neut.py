@@ -34,15 +34,19 @@ def test_fitting_pd_neut_cwl_LBCO_HRPT() -> None:
     job.pattern.zero_shift.free = True
     job.pattern.backgrounds[0][0].y.free = True
     job.pattern.backgrounds[0][1].y.free = True
-    job.instrument.resolution_u.free = True
-    job.instrument.resolution_v.free = True
-    job.instrument.resolution_w.free = True
-    job.instrument.resolution_y.free = True
-
+    # job.instrument.resolution_u.free = True
+    # job.instrument.resolution_v.free = True
+    # job.instrument.resolution_w.free = True
+    # job.instrument.resolution_y.free = True
+    job.sample.parameters.resolution_u.free = True
+    job.sample.parameters.resolution_v.free = True
+    job.sample.parameters.resolution_w.free = True
+    job.sample.parameters.resolution_y.free = True
     job.fit()
 
     assert job.fitting_results.minimizer_engine.package == 'lmfit'
     assert job.fitting_results.x.size == 3098
+    assert len(job.get_fit_parameters()) == 9
     assert job.fitting_results.n_pars == 13
     assert job.fitting_results.success
     assert_almost_equal(job.fitting_results.reduced_chi, 1.25, decimal=2)

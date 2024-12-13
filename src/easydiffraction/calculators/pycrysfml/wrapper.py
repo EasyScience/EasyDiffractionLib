@@ -196,6 +196,12 @@ class PycrysfmlWrapper(WrapperBase):
             except OSError:
                 pass
 
+    def updateModelCif(self, cif_string: str) -> None:
+        self.calculator.updateModelCif(cif_string)
+
+    def updateExpCif(self, edCif, modelNames):
+        self.calculator.updateExpCif(edCif, modelNames)
+
     def __createModel(self, model):
         self._filename = model.filename
         self.calculator.filename = model.filename

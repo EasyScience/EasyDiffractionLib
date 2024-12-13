@@ -8,10 +8,10 @@ except ImportError:
     print('Warning: CrysPy is not installed')
 
 # Temporarily disabling the PyCrysFML interface
-# try:
-#     from easydiffraction.calculators.pycrysfml.wrapper import PycrysfmlWrapper  # noqa: F401
-# except ImportError:
-#     print('Warning: CrysFML is not installed')
+try:
+    from easydiffraction.calculators.pycrysfml.wrapper import PycrysfmlWrapper  # noqa: F401
+except ImportError:
+    print('Warning: CrysFML is not installed')
 
 try:
     from easydiffraction.calculators.pdffit2.wrapper import Pdffit2Wrapper  # noqa: F401

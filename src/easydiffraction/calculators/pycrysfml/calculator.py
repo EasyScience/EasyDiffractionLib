@@ -4,12 +4,183 @@
 
 import os
 import re
+import gemmi
+import json
 from typing import Tuple
 
-import CFML_api
+import pycrysfml as CFML_api
+from pycrysfml import cfml_utilities
 import numpy as np
 from easyscience import global_object as borg
 
+DEFAULT_EXPERIMENT_PHASES = [
+      {
+         "pbso4":{
+            "_space_group_name_H-M_alt":"P n m a",
+            "_cell_length_a":8.47793,
+            "_cell_length_b":5.39682,
+            "_cell_length_c":6.9581,
+            "_cell_angle_alpha":90.0,
+            "_cell_angle_beta":90.0,
+            "_cell_angle_gamma":90.0,
+            "_atom_site":[
+               {
+                  "_label":"Pb",
+                  "_type_symbol":"Pb",
+                  "_fract_x":0.18724,
+                  "_fract_y":0.25,
+                  "_fract_z":0.16615,
+                  "_occupancy":1.0,
+                  "_adp_type":"Biso",
+                  "_B_iso_or_equiv":0.5
+               },
+               {
+                  "_label":"S",
+                  "_type_symbol":"S",
+                  "_fract_x":0.06434,
+                  "_fract_y":0.25,
+                  "_fract_z":0.68261,
+                  "_occupancy":1.0,
+                  "_adp_type":"Biso",
+                  "_B_iso_or_equiv":0.5
+               },
+               {
+                  "_label":"O1",
+                  "_type_symbol":"O",
+                  "_fract_x":0.9079,
+                  "_fract_y":0.25,
+                  "_fract_z":0.59598,
+                  "_occupancy":1.0,
+                  "_adp_type":"Biso",
+                  "_B_iso_or_equiv":0.5
+               },
+               {
+                  "_label":"O2",
+                  "_type_symbol":"O",
+                  "_fract_x":0.1926,
+                  "_fract_y":0.25,
+                  "_fract_z":0.54171,
+                  "_occupancy":1.0,
+                  "_adp_type":"Biso",
+                  "_B_iso_or_equiv":0.5
+               },
+               {
+                  "_label":"O3",
+                  "_type_symbol":"O",
+                  "_fract_x":0.08043,
+                  "_fract_y":0.02893,
+                  "_fract_z":0.80734,
+                  "_occupancy":1.0,
+                  "_adp_type":"Biso",
+                  "_B_iso_or_equiv":0.5
+               }
+            ]
+         }
+      }
+   ]
+
+DEFAULT_EXPERIMENT_JSON = [
+      {
+         "pd":{
+            "_diffrn_radiation_probe":"neutron",
+            "_diffrn_radiation_wavelength":1.912,
+            "_pd_instr_resolution_u":0.12205,
+            "_pd_instr_resolution_v":-0.33588,
+            "_pd_instr_resolution_w":0.2838,
+            "_pd_instr_resolution_x":0.14871,
+            "_pd_instr_resolution_y":0.0,
+            "_pd_meas_2theta_range_min":10.0,
+            "_pd_meas_2theta_range_max":140.00,
+            "_pd_meas_2theta_range_inc":0.05,
+            "_pd_meas_2theta_offset":-0.138,
+         }
+      }
+   ]
+
+EXAMPLE = {
+   "phases":[
+      {
+         "pbso4":{
+            "_space_group_name_H-M_alt":"P n m a",
+            "_cell_length_a":8.47793,
+            "_cell_length_b":5.39682,
+            "_cell_length_c":6.9581,
+            "_cell_angle_alpha":90.0,
+            "_cell_angle_beta":90.0,
+            "_cell_angle_gamma":90.0,
+            "_atom_site":[
+               {
+                  "_label":"Pb",
+                  "_type_symbol":"Pb",
+                  "_fract_x":0.18724,
+                  "_fract_y":0.25,
+                  "_fract_z":0.16615,
+                  "_occupancy":1.0,
+                  "_adp_type":"Biso",
+                  "_B_iso_or_equiv":0.5
+               },
+               {
+                  "_label":"S",
+                  "_type_symbol":"S",
+                  "_fract_x":0.06434,
+                  "_fract_y":0.25,
+                  "_fract_z":0.68261,
+                  "_occupancy":1.0,
+                  "_adp_type":"Biso",
+                  "_B_iso_or_equiv":0.5
+               },
+               {
+                  "_label":"O1",
+                  "_type_symbol":"O",
+                  "_fract_x":0.9079,
+                  "_fract_y":0.25,
+                  "_fract_z":0.59598,
+                  "_occupancy":1.0,
+                  "_adp_type":"Biso",
+                  "_B_iso_or_equiv":0.5
+               },
+               {
+                  "_label":"O2",
+                  "_type_symbol":"O",
+                  "_fract_x":0.1926,
+                  "_fract_y":0.25,
+                  "_fract_z":0.54171,
+                  "_occupancy":1.0,
+                  "_adp_type":"Biso",
+                  "_B_iso_or_equiv":0.5
+               },
+               {
+                  "_label":"O3",
+                  "_type_symbol":"O",
+                  "_fract_x":0.08043,
+                  "_fract_y":0.02893,
+                  "_fract_z":0.80734,
+                  "_occupancy":1.0,
+                  "_adp_type":"Biso",
+                  "_B_iso_or_equiv":0.5
+               }
+            ]
+         }
+      }
+   ],
+   "experiments":[
+      {
+         "pd":{
+            "_diffrn_radiation_probe":"neutron",
+            "_diffrn_radiation_wavelength":1.912,
+            "_pd_instr_resolution_u":0.12205,
+            "_pd_instr_resolution_v":-0.33588,
+            "_pd_instr_resolution_w":0.2838,
+            "_pd_instr_resolution_x":0.14871,
+            "_pd_instr_resolution_y":0.0,
+            "_pd_meas_2theta_range_min":10.0,
+            "_pd_meas_2theta_range_max":140.00,
+            "_pd_meas_2theta_range_inc":0.05,
+            "_pd_meas_2theta_offset":-0.138,
+         }
+      }
+   ]
+}
 
 class Pycrysfml:
     def __init__(self, filename: str = None):
@@ -17,6 +188,8 @@ class Pycrysfml:
         self.conditions = None
         self.background = None
         self.pattern = None
+        self.model_cif = None
+        self.experiment_cif = None
         self.known_phases = {}
         self.additional_data = {'phases': {}}
         self.storage = {}
@@ -39,6 +212,15 @@ class Pycrysfml:
     def conditionsReturn(self, _, name):
         return self.conditions.get(name)
 
+    # def calculate(self, x_array: nd.ndarray) -> np.ndarray:
+    #     """
+    #     For a given x calculate the corresponding y
+    #     :param x_array: array of data points to be calculated
+    #     :type x_array: np.ndarray
+    #     :return: points calculated at `x`
+    #     :rtype: np.ndarray
+    #     """
+
     def calculate(self, x_array: np.ndarray) -> np.ndarray:
         """
         For a given x calculate the corresponding y
@@ -47,8 +229,8 @@ class Pycrysfml:
         :return: points calculated at `x`
         :rtype: np.ndarray
         """
-        if self.filename is None:
-            raise AttributeError
+        # if self.filename is None:
+        #     raise AttributeError
 
         if self.pattern is None:
             scale = 1.0
@@ -70,51 +252,9 @@ class Pycrysfml:
 
         dependents = []
 
-        # Sample parameters
-        # We assume that the phases items has the same indexing as the knownphases item
-        cifs = self.grab_cifs()
-        if len(cifs) == 0:
-            raise ValueError('No phases found for calculation')
+        x, y = cfml_utilities.powder_pattern_from_json(self.model_json)
+        return y
 
-        for idx, file in enumerate(cifs):
-            cif_file = CFML_api.CIFFile(file)
-            cell = cif_file.cell
-            space_group = cif_file.space_group
-            atom_list = cif_file.atom_list
-            job_info = cif_file.job_info
-
-            job_info.range_2theta = (x_min, x_max)
-            job_info.theta_step = x_step
-            job_info.u_resolution = self.conditions['u_resolution']
-            job_info.v_resolution = self.conditions['v_resolution']
-            job_info.w_resolution = self.conditions['w_resolution']
-            job_info.x_resolution = self.conditions['x_resolution']
-            job_info.y_resolution = self.conditions['y_resolution']
-            job_info.lambdas = (self.conditions['lamb'], self.conditions['lamb'])
-            job_info.bkg = 0.0
-            # Calculations
-            try:
-                reflection_list = CFML_api.ReflectionList(cell, space_group, True, job_info)
-                reflection_list.compute_structure_factors(space_group, atom_list, job_info)
-                diffraction_pattern = CFML_api.DiffractionPattern(job_info, reflection_list, cell.reciprocal_cell_vol)
-            except Exception:
-                for cif in cifs:
-                    os.remove(cif)
-                raise ArithmeticError
-
-            item = list(self.known_phases.items())[idx]
-            key = list(self.known_phases.keys())[idx]
-            phase_scale = self.getPhaseScale(key)
-
-            dependent, additional_data = self.nonPolarized_update(
-                item, diffraction_pattern, reflection_list, job_info, scales=phase_scale
-            )
-            dependents.append(dependent)
-            self.additional_data['phases'].update(additional_data)
-        # This causes issues on windows, so commenting out.
-        # Macos/Linux don't seem to need it as well, but leaving just in case.
-        # for cif in cifs:
-        #     os.remove(cif)
         self.additional_data['global_scale'] = scale
         self.additional_data['background'] = bg
         self.additional_data['ivar_run'] = this_x_array
@@ -158,6 +298,23 @@ class Pycrysfml:
                 'l': np.array([]),
             },
         )
+
+    def updateModelCif(self, cif_string: str):
+        # Update the model with the cif string
+        self.model_cif = cif_string
+
+        doc = gemmi.cif.read_string(cif_string)
+        j = doc.as_json()
+        j_dict = json.loads(j)
+        cfml_dict = self.convert_atom_site_dict_to_crysfml(j_dict)
+        self.model_json = {}
+        self.model_json['phases'] = [cfml_dict]
+        self.model_json['experiments'] = DEFAULT_EXPERIMENT_JSON
+
+    def updateExperimentCif(self, cif_string: str, modelNames: list):
+        # Update the experiment with the cif string
+        self.experiment_cif = cif_string
+        pass
 
     @staticmethod
     def nonPolarized_update(crystal_name, diffraction_pattern, reflection_list, job_info, scales=1):
@@ -246,3 +403,48 @@ class Pycrysfml:
         file = file[:-4]
         files = [base + os.path.sep + f for f in os.listdir(base) if re.match(rf'{file}_[0-9]+.*\.{ext}', f)]
         return files
+
+    @staticmethod
+    def convert_atom_site_dict_to_crysfml(gemmi_dict):
+        # Initialize cfml_dict
+        phase_name = list(gemmi_dict.keys())[0]
+        cfml_dict = {phase_name: {"_atom_site": []}}
+
+
+        # Extract the key from gemmi_dict
+        for key, atom_data in gemmi_dict.items():
+            cfml_dict[key] = {"_atom_site": []}  # Initialize the _atom_site key
+
+            # Get the list of all atom site keys
+            # atom_keys = [k for k in atom_data.keys() if k.startswith("_atom_site_") or k.startswith("_atom_site.")]
+            atom_keys = [k for k in atom_data.keys() if k.startswith("_atom_site")]
+
+            # Number of atoms (length of any value list under "_atom_site_XXX")
+            num_atoms = 0
+            if '_atom_site_label' in atom_data:
+                num_atoms = len(atom_data["_atom_site_label"])
+            elif '_atom_site.label' in atom_data:
+                num_atoms = len(atom_data["_atom_site.label"])
+
+            # Create a list of dictionaries for each atom
+            for i in range(num_atoms):
+                atom_entry = {}
+                for atom_key in atom_keys:
+                    new_key = atom_key.replace(".", "_")  # convert potential CIF1 keys
+                    new_key = new_key.replace("_atom_site_", "_")  # Transform key
+                    if 'b_iso_or_equiv' in new_key: # case conversion
+                        new_key = '_B_iso_or_equiv'
+                    atom_entry[new_key] = atom_data[atom_key][i]   # Assign corresponding value
+                cfml_dict[key]["_atom_site"].append(atom_entry)
+
+        # iterate over cif_dict and just copy the key-value pairs for
+        # entries which do not contain "_atom_site" in the key
+        cif_dict = gemmi_dict[phase_name]
+        for key, value in cif_dict.items():
+            if "_atom_site" not in key:
+                key_2 = key.replace(".", "_") # convert potential CIF1 keys
+                if 'space_group_name' in key_2: # case conversion
+                    key_2 = '_space_group_name_H-M_alt'
+                cfml_dict[phase_name][key_2] = value
+
+        return cfml_dict

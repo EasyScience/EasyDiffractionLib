@@ -2,16 +2,15 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # © 2021-2024 Contributors to the EasyDiffraction project <https://github.com/EasyScience/EasyDiffraction>
 
+import json
 import os
 import re
-import gemmi
-import json
 from typing import Tuple
 
-import pycrysfml as CFML_api
-from pycrysfml import cfml_utilities
+import gemmi
 import numpy as np
 from easyscience import global_object as borg
+from pycrysfml import cfml_utilities
 
 DEFAULT_EXPERIMENT_PHASES = [
       {
@@ -242,10 +241,10 @@ class Pycrysfml:
         this_x_array = x_array + offset
 
         # Experiment/Instrument/Simulation parameters
-        x_min = this_x_array[0]
-        x_max = this_x_array[-1]
-        num_points = np.prod(x_array.shape)
-        x_step = (x_max - x_min) / (num_points - 1)
+        #x_min = this_x_array[0]
+        #x_max = this_x_array[-1]
+        #num_points = np.prod(x_array.shape)
+        # x_step = (x_max - x_min) / (num_points - 1)
         bg = np.zeros_like(this_x_array)
         if self.pattern is not None and len(self.pattern.backgrounds) > 0:
             bg = self.pattern.backgrounds[0].calculate(this_x_array)

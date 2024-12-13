@@ -13,173 +13,174 @@ from easyscience import global_object as borg
 from pycrysfml import cfml_utilities
 
 DEFAULT_EXPERIMENT_PHASES = [
-      {
-         "pbso4":{
-            "_space_group_name_H-M_alt":"P n m a",
-            "_cell_length_a":8.47793,
-            "_cell_length_b":5.39682,
-            "_cell_length_c":6.9581,
-            "_cell_angle_alpha":90.0,
-            "_cell_angle_beta":90.0,
-            "_cell_angle_gamma":90.0,
-            "_atom_site":[
-               {
-                  "_label":"Pb",
-                  "_type_symbol":"Pb",
-                  "_fract_x":0.18724,
-                  "_fract_y":0.25,
-                  "_fract_z":0.16615,
-                  "_occupancy":1.0,
-                  "_adp_type":"Biso",
-                  "_B_iso_or_equiv":0.5
-               },
-               {
-                  "_label":"S",
-                  "_type_symbol":"S",
-                  "_fract_x":0.06434,
-                  "_fract_y":0.25,
-                  "_fract_z":0.68261,
-                  "_occupancy":1.0,
-                  "_adp_type":"Biso",
-                  "_B_iso_or_equiv":0.5
-               },
-               {
-                  "_label":"O1",
-                  "_type_symbol":"O",
-                  "_fract_x":0.9079,
-                  "_fract_y":0.25,
-                  "_fract_z":0.59598,
-                  "_occupancy":1.0,
-                  "_adp_type":"Biso",
-                  "_B_iso_or_equiv":0.5
-               },
-               {
-                  "_label":"O2",
-                  "_type_symbol":"O",
-                  "_fract_x":0.1926,
-                  "_fract_y":0.25,
-                  "_fract_z":0.54171,
-                  "_occupancy":1.0,
-                  "_adp_type":"Biso",
-                  "_B_iso_or_equiv":0.5
-               },
-               {
-                  "_label":"O3",
-                  "_type_symbol":"O",
-                  "_fract_x":0.08043,
-                  "_fract_y":0.02893,
-                  "_fract_z":0.80734,
-                  "_occupancy":1.0,
-                  "_adp_type":"Biso",
-                  "_B_iso_or_equiv":0.5
-               }
-            ]
-         }
-      }
-   ]
+    {
+        'pbso4': {
+            '_space_group_name_H-M_alt': 'P n m a',
+            '_cell_length_a': 8.47793,
+            '_cell_length_b': 5.39682,
+            '_cell_length_c': 6.9581,
+            '_cell_angle_alpha': 90.0,
+            '_cell_angle_beta': 90.0,
+            '_cell_angle_gamma': 90.0,
+            '_atom_site': [
+                {
+                    '_label': 'Pb',
+                    '_type_symbol': 'Pb',
+                    '_fract_x': 0.18724,
+                    '_fract_y': 0.25,
+                    '_fract_z': 0.16615,
+                    '_occupancy': 1.0,
+                    '_adp_type': 'Biso',
+                    '_B_iso_or_equiv': 0.5,
+                },
+                {
+                    '_label': 'S',
+                    '_type_symbol': 'S',
+                    '_fract_x': 0.06434,
+                    '_fract_y': 0.25,
+                    '_fract_z': 0.68261,
+                    '_occupancy': 1.0,
+                    '_adp_type': 'Biso',
+                    '_B_iso_or_equiv': 0.5,
+                },
+                {
+                    '_label': 'O1',
+                    '_type_symbol': 'O',
+                    '_fract_x': 0.9079,
+                    '_fract_y': 0.25,
+                    '_fract_z': 0.59598,
+                    '_occupancy': 1.0,
+                    '_adp_type': 'Biso',
+                    '_B_iso_or_equiv': 0.5,
+                },
+                {
+                    '_label': 'O2',
+                    '_type_symbol': 'O',
+                    '_fract_x': 0.1926,
+                    '_fract_y': 0.25,
+                    '_fract_z': 0.54171,
+                    '_occupancy': 1.0,
+                    '_adp_type': 'Biso',
+                    '_B_iso_or_equiv': 0.5,
+                },
+                {
+                    '_label': 'O3',
+                    '_type_symbol': 'O',
+                    '_fract_x': 0.08043,
+                    '_fract_y': 0.02893,
+                    '_fract_z': 0.80734,
+                    '_occupancy': 1.0,
+                    '_adp_type': 'Biso',
+                    '_B_iso_or_equiv': 0.5,
+                },
+            ],
+        }
+    }
+]
 
 DEFAULT_EXPERIMENT_JSON = [
-      {
-         "pd":{
-            "_diffrn_radiation_probe":"neutron",
-            "_diffrn_radiation_wavelength":1.912,
-            "_pd_instr_resolution_u":0.12205,
-            "_pd_instr_resolution_v":-0.33588,
-            "_pd_instr_resolution_w":0.2838,
-            "_pd_instr_resolution_x":0.14871,
-            "_pd_instr_resolution_y":0.0,
-            "_pd_meas_2theta_range_min":10.0,
-            "_pd_meas_2theta_range_max":140.00,
-            "_pd_meas_2theta_range_inc":0.05,
-            "_pd_meas_2theta_offset":-0.138,
-         }
-      }
-   ]
+    {
+        'pd': {
+            '_diffrn_radiation_probe': 'neutron',
+            '_diffrn_radiation_wavelength': 1.912,
+            '_pd_instr_resolution_u': 0.12205,
+            '_pd_instr_resolution_v': -0.33588,
+            '_pd_instr_resolution_w': 0.2838,
+            '_pd_instr_resolution_x': 0.14871,
+            '_pd_instr_resolution_y': 0.0,
+            '_pd_meas_2theta_range_min': 10.0,
+            '_pd_meas_2theta_range_max': 140.00,
+            '_pd_meas_2theta_range_inc': 0.05,
+            '_pd_meas_2theta_offset': -0.138,
+        }
+    }
+]
 
 EXAMPLE = {
-   "phases":[
-      {
-         "pbso4":{
-            "_space_group_name_H-M_alt":"P n m a",
-            "_cell_length_a":8.47793,
-            "_cell_length_b":5.39682,
-            "_cell_length_c":6.9581,
-            "_cell_angle_alpha":90.0,
-            "_cell_angle_beta":90.0,
-            "_cell_angle_gamma":90.0,
-            "_atom_site":[
-               {
-                  "_label":"Pb",
-                  "_type_symbol":"Pb",
-                  "_fract_x":0.18724,
-                  "_fract_y":0.25,
-                  "_fract_z":0.16615,
-                  "_occupancy":1.0,
-                  "_adp_type":"Biso",
-                  "_B_iso_or_equiv":0.5
-               },
-               {
-                  "_label":"S",
-                  "_type_symbol":"S",
-                  "_fract_x":0.06434,
-                  "_fract_y":0.25,
-                  "_fract_z":0.68261,
-                  "_occupancy":1.0,
-                  "_adp_type":"Biso",
-                  "_B_iso_or_equiv":0.5
-               },
-               {
-                  "_label":"O1",
-                  "_type_symbol":"O",
-                  "_fract_x":0.9079,
-                  "_fract_y":0.25,
-                  "_fract_z":0.59598,
-                  "_occupancy":1.0,
-                  "_adp_type":"Biso",
-                  "_B_iso_or_equiv":0.5
-               },
-               {
-                  "_label":"O2",
-                  "_type_symbol":"O",
-                  "_fract_x":0.1926,
-                  "_fract_y":0.25,
-                  "_fract_z":0.54171,
-                  "_occupancy":1.0,
-                  "_adp_type":"Biso",
-                  "_B_iso_or_equiv":0.5
-               },
-               {
-                  "_label":"O3",
-                  "_type_symbol":"O",
-                  "_fract_x":0.08043,
-                  "_fract_y":0.02893,
-                  "_fract_z":0.80734,
-                  "_occupancy":1.0,
-                  "_adp_type":"Biso",
-                  "_B_iso_or_equiv":0.5
-               }
-            ]
-         }
-      }
-   ],
-   "experiments":[
-      {
-         "pd":{
-            "_diffrn_radiation_probe":"neutron",
-            "_diffrn_radiation_wavelength":1.912,
-            "_pd_instr_resolution_u":0.12205,
-            "_pd_instr_resolution_v":-0.33588,
-            "_pd_instr_resolution_w":0.2838,
-            "_pd_instr_resolution_x":0.14871,
-            "_pd_instr_resolution_y":0.0,
-            "_pd_meas_2theta_range_min":10.0,
-            "_pd_meas_2theta_range_max":140.00,
-            "_pd_meas_2theta_range_inc":0.05,
-            "_pd_meas_2theta_offset":-0.138,
-         }
-      }
-   ]
+    'phases': [
+        {
+            'pbso4': {
+                '_space_group_name_H-M_alt': 'P n m a',
+                '_cell_length_a': 8.47793,
+                '_cell_length_b': 5.39682,
+                '_cell_length_c': 6.9581,
+                '_cell_angle_alpha': 90.0,
+                '_cell_angle_beta': 90.0,
+                '_cell_angle_gamma': 90.0,
+                '_atom_site': [
+                    {
+                        '_label': 'Pb',
+                        '_type_symbol': 'Pb',
+                        '_fract_x': 0.18724,
+                        '_fract_y': 0.25,
+                        '_fract_z': 0.16615,
+                        '_occupancy': 1.0,
+                        '_adp_type': 'Biso',
+                        '_B_iso_or_equiv': 0.5,
+                    },
+                    {
+                        '_label': 'S',
+                        '_type_symbol': 'S',
+                        '_fract_x': 0.06434,
+                        '_fract_y': 0.25,
+                        '_fract_z': 0.68261,
+                        '_occupancy': 1.0,
+                        '_adp_type': 'Biso',
+                        '_B_iso_or_equiv': 0.5,
+                    },
+                    {
+                        '_label': 'O1',
+                        '_type_symbol': 'O',
+                        '_fract_x': 0.9079,
+                        '_fract_y': 0.25,
+                        '_fract_z': 0.59598,
+                        '_occupancy': 1.0,
+                        '_adp_type': 'Biso',
+                        '_B_iso_or_equiv': 0.5,
+                    },
+                    {
+                        '_label': 'O2',
+                        '_type_symbol': 'O',
+                        '_fract_x': 0.1926,
+                        '_fract_y': 0.25,
+                        '_fract_z': 0.54171,
+                        '_occupancy': 1.0,
+                        '_adp_type': 'Biso',
+                        '_B_iso_or_equiv': 0.5,
+                    },
+                    {
+                        '_label': 'O3',
+                        '_type_symbol': 'O',
+                        '_fract_x': 0.08043,
+                        '_fract_y': 0.02893,
+                        '_fract_z': 0.80734,
+                        '_occupancy': 1.0,
+                        '_adp_type': 'Biso',
+                        '_B_iso_or_equiv': 0.5,
+                    },
+                ],
+            }
+        }
+    ],
+    'experiments': [
+        {
+            'pd': {
+                '_diffrn_radiation_probe': 'neutron',
+                '_diffrn_radiation_wavelength': 1.912,
+                '_pd_instr_resolution_u': 0.12205,
+                '_pd_instr_resolution_v': -0.33588,
+                '_pd_instr_resolution_w': 0.2838,
+                '_pd_instr_resolution_x': 0.14871,
+                '_pd_instr_resolution_y': 0.0,
+                '_pd_meas_2theta_range_min': 10.0,
+                '_pd_meas_2theta_range_max': 140.00,
+                '_pd_meas_2theta_range_inc': 0.05,
+                '_pd_meas_2theta_offset': -0.138,
+            }
+        }
+    ],
 }
+
 
 class Pycrysfml:
     def __init__(self, filename: str = None):
@@ -241,9 +242,9 @@ class Pycrysfml:
         this_x_array = x_array + offset
 
         # Experiment/Instrument/Simulation parameters
-        #x_min = this_x_array[0]
-        #x_max = this_x_array[-1]
-        #num_points = np.prod(x_array.shape)
+        # x_min = this_x_array[0]
+        # x_max = this_x_array[-1]
+        # num_points = np.prod(x_array.shape)
         # x_step = (x_max - x_min) / (num_points - 1)
         bg = np.zeros_like(this_x_array)
         if self.pattern is not None and len(self.pattern.backgrounds) > 0:
@@ -407,42 +408,41 @@ class Pycrysfml:
     def convert_atom_site_dict_to_crysfml(gemmi_dict):
         # Initialize cfml_dict
         phase_name = list(gemmi_dict.keys())[0]
-        cfml_dict = {phase_name: {"_atom_site": []}}
-
+        cfml_dict = {phase_name: {'_atom_site': []}}
 
         # Extract the key from gemmi_dict
         for key, atom_data in gemmi_dict.items():
-            cfml_dict[key] = {"_atom_site": []}  # Initialize the _atom_site key
+            cfml_dict[key] = {'_atom_site': []}  # Initialize the _atom_site key
 
             # Get the list of all atom site keys
             # atom_keys = [k for k in atom_data.keys() if k.startswith("_atom_site_") or k.startswith("_atom_site.")]
-            atom_keys = [k for k in atom_data.keys() if k.startswith("_atom_site")]
+            atom_keys = [k for k in atom_data.keys() if k.startswith('_atom_site')]
 
             # Number of atoms (length of any value list under "_atom_site_XXX")
             num_atoms = 0
             if '_atom_site_label' in atom_data:
-                num_atoms = len(atom_data["_atom_site_label"])
+                num_atoms = len(atom_data['_atom_site_label'])
             elif '_atom_site.label' in atom_data:
-                num_atoms = len(atom_data["_atom_site.label"])
+                num_atoms = len(atom_data['_atom_site.label'])
 
             # Create a list of dictionaries for each atom
             for i in range(num_atoms):
                 atom_entry = {}
                 for atom_key in atom_keys:
-                    new_key = atom_key.replace(".", "_")  # convert potential CIF1 keys
-                    new_key = new_key.replace("_atom_site_", "_")  # Transform key
-                    if 'b_iso_or_equiv' in new_key: # case conversion
+                    new_key = atom_key.replace('.', '_')  # convert potential CIF1 keys
+                    new_key = new_key.replace('_atom_site_', '_')  # Transform key
+                    if 'b_iso_or_equiv' in new_key:  # case conversion
                         new_key = '_B_iso_or_equiv'
-                    atom_entry[new_key] = atom_data[atom_key][i]   # Assign corresponding value
-                cfml_dict[key]["_atom_site"].append(atom_entry)
+                    atom_entry[new_key] = atom_data[atom_key][i]  # Assign corresponding value
+                cfml_dict[key]['_atom_site'].append(atom_entry)
 
         # iterate over cif_dict and just copy the key-value pairs for
         # entries which do not contain "_atom_site" in the key
         cif_dict = gemmi_dict[phase_name]
         for key, value in cif_dict.items():
-            if "_atom_site" not in key:
-                key_2 = key.replace(".", "_") # convert potential CIF1 keys
-                if 'space_group_name' in key_2: # case conversion
+            if '_atom_site' not in key:
+                key_2 = key.replace('.', '_')  # convert potential CIF1 keys
+                if 'space_group_name' in key_2:  # case conversion
                     key_2 = '_space_group_name_H-M_alt'
                 cfml_dict[phase_name][key_2] = value
 

@@ -1,7 +1,7 @@
 data_d1a
 
 _diffrn_radiation.probe neutron
-_diffrn_radiation_wavelength.wavelength 1.91
+_diffrn_radiation.wavelength 1.91
 
 _pd_calib.2theta_offset -0.1406(1)
 

@@ -12,7 +12,7 @@ import numpy as np
 from easyscience import global_object as borg
 from pycrysfml import cfml_utilities
 
-DEFAULT_EXPERIMENT_PHASES = [
+DEFAULT_PHASES_JSON = [
     {
         'pbso4': {
             '_space_group_name_H-M_alt': 'P n m a',
@@ -193,6 +193,10 @@ class Pycrysfml:
         self.known_phases = {}
         self.additional_data = {'phases': {}}
         self.storage = {}
+        self.model_json = {}
+        self.model_json['phases'] = DEFAULT_PHASES_JSON
+        self.model_json['experiments'] = DEFAULT_EXPERIMENT_JSON
+        self.x_coord = None
 
     def createConditions(self, job_type='N'):
         self.conditions = {
@@ -229,9 +233,6 @@ class Pycrysfml:
         :return: points calculated at `x`
         :rtype: np.ndarray
         """
-        # if self.filename is None:
-        #     raise AttributeError
-
         if self.pattern is None:
             scale = 1.0
             offset = 0
@@ -239,7 +240,10 @@ class Pycrysfml:
             scale = self.pattern.scale.raw_value
             offset = self.pattern.zero_shift.raw_value
 
-        this_x_array = x_array + offset
+        if self.x_coord is not None:
+            this_x_array = self.x_coord
+        else:
+            this_x_array = x_array + offset
 
         # Experiment/Instrument/Simulation parameters
         # x_min = this_x_array[0]
@@ -307,14 +311,64 @@ class Pycrysfml:
         j = doc.as_json()
         j_dict = json.loads(j)
         cfml_dict = self.convert_atom_site_dict_to_crysfml(j_dict)
-        self.model_json = {}
         self.model_json['phases'] = [cfml_dict]
-        self.model_json['experiments'] = DEFAULT_EXPERIMENT_JSON
 
-    def updateExperimentCif(self, cif_string: str, modelNames: list):
+    def updateExpCif(self, cif_string: str, modelNames: list):
         # Update the experiment with the cif string
         self.experiment_cif = cif_string
+        doc = gemmi.cif.read_string(cif_string)
+        j = doc.as_json()
+        j_dict = json.loads(j)
+        exp_name = list(j_dict.keys())[0]
+        # add non-loop keys
+        j_dict_no_loops = self.exp_non_loops_from_dict(j_dict)
+
+        # add 2theta range_min, range_max, range_inc, offset
+        range_dict = self.exp_add_ranges_from_dict(j_dict[exp_name])
+        j_dict_no_loops[exp_name].update(range_dict)
+
+        self.model_json['experiments'] = [j_dict_no_loops]
         pass
+
+    def exp_add_ranges_from_dict(self, j_dict):
+        """"
+        Extract the 2theta range from a CIF dictionary
+        and updates the x_coord attribute
+        """
+        range_dict = {}
+        if '_pd_meas.2theta_scan' in j_dict:
+            # this conditional will need to be updated for TOF
+            query = '_pd_meas.2theta_scan'
+        else:
+            query = '_pd_meas_2theta_scan'
+
+        x0 = j_dict[query][0]
+        x1 = j_dict[query][-1]
+        x_incr = (x1 - x0)/(len(j_dict[query]) - 1)
+        self.x_coord = j_dict[query]
+        range_dict['_pd_meas_2theta_range_min'] = x0
+        range_dict['_pd_meas_2theta_range_max'] = x1
+        range_dict['_pd_meas_2theta_range_inc'] = x_incr
+        return range_dict
+
+    @staticmethod
+    def exp_non_loops_from_dict(j_dict: dict) -> dict:
+        """
+        Extract the non-loop keys from a CIF dictionary
+        :param j_dict: CIF dictionary
+        :type j_dict: dict
+        :return: dictionary of non-loop keys
+        :rtype: dict
+        """
+        exp_name = list(j_dict.keys())[0]
+        j_dict_no_loops = {exp_name: {}}
+        for key, value in j_dict[exp_name].items():
+            if not isinstance(value, list):
+                s_key = key.replace('.', '_')
+                if 'calib' in s_key:
+                    s_key = s_key.replace('calib', 'meas')
+                j_dict_no_loops[exp_name][s_key] = value
+        return j_dict_no_loops
 
     @staticmethod
     def nonPolarized_update(crystal_name, diffraction_pattern, reflection_list, job_info, scales=1):
@@ -396,13 +450,6 @@ class Pycrysfml:
 
     def getPhaseScale(self, model_name, *args, **kwargs):
         return self.storage.get(str(model_name) + '_scale', 1)
-
-    def grab_cifs(self):
-        base, file = os.path.split(self.filename)
-        ext = file[-3:]
-        file = file[:-4]
-        files = [base + os.path.sep + f for f in os.listdir(base) if re.match(rf'{file}_[0-9]+.*\.{ext}', f)]
-        return files
 
     @staticmethod
     def convert_atom_site_dict_to_crysfml(gemmi_dict):

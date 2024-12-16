@@ -331,7 +331,7 @@ class Pycrysfml:
         pass
 
     def exp_add_ranges_from_dict(self, j_dict):
-        """"
+        """ "
         Extract the 2theta range from a CIF dictionary
         and updates the x_coord attribute
         """
@@ -344,7 +344,7 @@ class Pycrysfml:
 
         x0 = j_dict[query][0]
         x1 = j_dict[query][-1]
-        x_incr = (x1 - x0)/(len(j_dict[query]) - 1)
+        x_incr = (x1 - x0) / (len(j_dict[query]) - 1)
         self.x_coord = j_dict[query]
         range_dict['_pd_meas_2theta_range_min'] = x0
         range_dict['_pd_meas_2theta_range_max'] = x1

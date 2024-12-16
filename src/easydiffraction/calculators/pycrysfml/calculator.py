@@ -3,8 +3,6 @@
 # © 2021-2024 Contributors to the EasyDiffraction project <https://github.com/EasyScience/EasyDiffraction>
 
 import json
-import os
-import re
 from typing import Tuple
 
 import gemmi

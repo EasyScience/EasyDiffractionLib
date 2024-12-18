@@ -7,7 +7,7 @@ from typing import Tuple
 
 import gemmi
 import numpy as np
-from easyscience import global_object as borg
+# from easyscience import global_object as borg
 from pycrysfml import cfml_utilities
 
 DEFAULT_PHASES_JSON = [
@@ -80,104 +80,19 @@ DEFAULT_EXPERIMENT_JSON = [
     {
         'pd': {
             '_diffrn_radiation_probe': 'neutron',
-            '_diffrn_radiation_wavelength': 1.912,
-            '_pd_instr_resolution_u': 0.12205,
-            '_pd_instr_resolution_v': -0.33588,
-            '_pd_instr_resolution_w': 0.2838,
-            '_pd_instr_resolution_x': 0.14871,
+            '_diffrn_radiation_wavelength': 1.54056,
+            '_pd_instr_resolution_u': 0.0002,
+            '_pd_instr_resolution_v': -0.0002,
+            '_pd_instr_resolution_w': 0.012,
+            '_pd_instr_resolution_x': 0.0,
             '_pd_instr_resolution_y': 0.0,
             '_pd_meas_2theta_range_min': 10.0,
-            '_pd_meas_2theta_range_max': 140.00,
+            '_pd_meas_2theta_range_max': 120.00,
             '_pd_meas_2theta_range_inc': 0.05,
-            '_pd_meas_2theta_offset': -0.138,
+            '_pd_meas_2theta_offset': 0.0,
         }
     }
 ]
-
-EXAMPLE = {
-    'phases': [
-        {
-            'pbso4': {
-                '_space_group_name_H-M_alt': 'P n m a',
-                '_cell_length_a': 8.47793,
-                '_cell_length_b': 5.39682,
-                '_cell_length_c': 6.9581,
-                '_cell_angle_alpha': 90.0,
-                '_cell_angle_beta': 90.0,
-                '_cell_angle_gamma': 90.0,
-                '_atom_site': [
-                    {
-                        '_label': 'Pb',
-                        '_type_symbol': 'Pb',
-                        '_fract_x': 0.18724,
-                        '_fract_y': 0.25,
-                        '_fract_z': 0.16615,
-                        '_occupancy': 1.0,
-                        '_adp_type': 'Biso',
-                        '_B_iso_or_equiv': 0.5,
-                    },
-                    {
-                        '_label': 'S',
-                        '_type_symbol': 'S',
-                        '_fract_x': 0.06434,
-                        '_fract_y': 0.25,
-                        '_fract_z': 0.68261,
-                        '_occupancy': 1.0,
-                        '_adp_type': 'Biso',
-                        '_B_iso_or_equiv': 0.5,
-                    },
-                    {
-                        '_label': 'O1',
-                        '_type_symbol': 'O',
-                        '_fract_x': 0.9079,
-                        '_fract_y': 0.25,
-                        '_fract_z': 0.59598,
-                        '_occupancy': 1.0,
-                        '_adp_type': 'Biso',
-                        '_B_iso_or_equiv': 0.5,
-                    },
-                    {
-                        '_label': 'O2',
-                        '_type_symbol': 'O',
-                        '_fract_x': 0.1926,
-                        '_fract_y': 0.25,
-                        '_fract_z': 0.54171,
-                        '_occupancy': 1.0,
-                        '_adp_type': 'Biso',
-                        '_B_iso_or_equiv': 0.5,
-                    },
-                    {
-                        '_label': 'O3',
-                        '_type_symbol': 'O',
-                        '_fract_x': 0.08043,
-                        '_fract_y': 0.02893,
-                        '_fract_z': 0.80734,
-                        '_occupancy': 1.0,
-                        '_adp_type': 'Biso',
-                        '_B_iso_or_equiv': 0.5,
-                    },
-                ],
-            }
-        }
-    ],
-    'experiments': [
-        {
-            'pd': {
-                '_diffrn_radiation_probe': 'neutron',
-                '_diffrn_radiation_wavelength': 1.912,
-                '_pd_instr_resolution_u': 0.12205,
-                '_pd_instr_resolution_v': -0.33588,
-                '_pd_instr_resolution_w': 0.2838,
-                '_pd_instr_resolution_x': 0.14871,
-                '_pd_instr_resolution_y': 0.0,
-                '_pd_meas_2theta_range_min': 10.0,
-                '_pd_meas_2theta_range_max': 140.00,
-                '_pd_meas_2theta_range_inc': 0.05,
-                '_pd_meas_2theta_offset': -0.138,
-            }
-        }
-    ],
-}
 
 
 class Pycrysfml:
@@ -198,30 +113,32 @@ class Pycrysfml:
 
     def createConditions(self, job_type='N'):
         self.conditions = {
-            'lamb': 1.54,
-            'u_resolution': 0.01,
-            'v_resolution': 0.0,
-            'w_resolution': 0.0,
-            'x_resolution': 0.0,
-            'y_resolution': 0.0,
-            'z_resolution': 0.0,
+            '_diffrn_radiation_wavelength': 1.54,
+            '_pd_instr_resolution_u': 0.01,
+            '_pd_instr_resolution_v': 0.0,
+            '_pd_instr_resolution_w': 0.0,
+            '_pd_instr_resolution_x': 0.0,
+            '_pd_instr_resolution_y': 0.0,
         }
 
     def conditionsUpdate(self, _, **kwargs):
         for key, value in kwargs.items():
             self.conditions[key] = value
+            exp_name = list(self.model_json['experiments'][0].keys())[0]
+            if self.model_json['experiments'] is not None:
+                self.model_json['experiments'][0][exp_name][key] = value
+
+    def setPhaseValue(self, phase_name, *args, **kwargs):
+        if phase_name is None:
+            phase_name = list(self.model_json['phases'][0].keys())[0]
+        else:
+            # cast phase_name to lower case
+            phase_name = phase_name.lower()
+        for key, value in kwargs.items():
+            self.model_json['phases'][0][phase_name][key] = value
 
     def conditionsReturn(self, _, name):
         return self.conditions.get(name)
-
-    # def calculate(self, x_array: nd.ndarray) -> np.ndarray:
-    #     """
-    #     For a given x calculate the corresponding y
-    #     :param x_array: array of data points to be calculated
-    #     :type x_array: np.ndarray
-    #     :return: points calculated at `x`
-    #     :rtype: np.ndarray
-    #     """
 
     def calculate(self, x_array: np.ndarray) -> np.ndarray:
         """
@@ -233,46 +150,48 @@ class Pycrysfml:
         """
         if self.pattern is None:
             scale = 1.0
-            offset = 0
+            # offset = 0
         else:
             scale = self.pattern.scale.raw_value
-            offset = self.pattern.zero_shift.raw_value
+            # offset = self.pattern.zero_shift.raw_value
 
-        if self.x_coord is not None:
-            this_x_array = self.x_coord
-        else:
-            this_x_array = x_array + offset
+        # if self.x_coord is not None:
+        #     this_x_array = self.x_coord
+        # else:
+        #     this_x_array = x_array + offset
 
         # Experiment/Instrument/Simulation parameters
         # x_min = this_x_array[0]
         # x_max = this_x_array[-1]
         # num_points = np.prod(x_array.shape)
         # x_step = (x_max - x_min) / (num_points - 1)
-        bg = np.zeros_like(this_x_array)
-        if self.pattern is not None and len(self.pattern.backgrounds) > 0:
-            bg = self.pattern.backgrounds[0].calculate(this_x_array)
+        # bg = np.zeros_like(this_x_array)
+        # if self.pattern is not None and len(self.pattern.backgrounds) > 0:
+        #     bg = self.pattern.backgrounds[0].calculate(this_x_array)
 
-        dependents = []
+        # dependents = []
 
-        x, y = cfml_utilities.powder_pattern_from_json(self.model_json)
-        return y
+        _, y = cfml_utilities.powder_pattern_from_json(self.model_json)
+        return y*scale
 
-        self.additional_data['global_scale'] = scale
-        self.additional_data['background'] = bg
-        self.additional_data['ivar_run'] = this_x_array
-        self.additional_data['ivar'] = x_array
-        self.additional_data['components'] = [scale * dep + bg for dep in dependents]
-        self.additional_data['phase_names'] = list(self.known_phases.items())
-        self.additional_data['type'] = 'powder1DCW'
+        ### potentially useful code, not deleting yet
+        ###
+        # self.additional_data['global_scale'] = scale
+        # self.additional_data['background'] = bg
+        # self.additional_data['ivar_run'] = this_x_array
+        # self.additional_data['ivar'] = x_array
+        # self.additional_data['components'] = [scale * dep + bg for dep in dependents]
+        # self.additional_data['phase_names'] = list(self.known_phases.items())
+        # self.additional_data['type'] = 'powder1DCW'
 
-        dependent_output = scale * np.sum(dependents, axis=0) + bg
+        # dependent_output = scale * np.sum(dependents, axis=0) + bg
 
-        if borg.debug:
-            print(f'y_calc: {dependent_output}')
-        return (
-            np.sum([s['profile'] for s in self.additional_data['phases'].values()], axis=0)
-            + self.additional_data['background']
-        )
+        # if borg.debug:
+        #     print(f'y_calc: {dependent_output}')
+        # return (
+        #     np.sum([s['profile'] for s in self.additional_data['phases'].values()], axis=0)
+        #     + self.additional_data['background']
+        # )
 
     def get_hkl(self, x_array: np.ndarray = None, idx=0, phase_name=None, encoded_name=False) -> dict:
         # Do we need to re-run a calculation to get the HKL's
@@ -302,6 +221,8 @@ class Pycrysfml:
         )
 
     def updateModelCif(self, cif_string: str):
+        if cif_string is None or not cif_string:
+            return
         # Update the model with the cif string
         self.model_cif = cif_string
 
@@ -311,7 +232,10 @@ class Pycrysfml:
         cfml_dict = self.convert_atom_site_dict_to_crysfml(j_dict)
         self.model_json['phases'] = [cfml_dict]
 
+
     def updateExpCif(self, cif_string: str, modelNames: list):
+        if cif_string is None or not cif_string:
+            return
         # Update the experiment with the cif string
         self.experiment_cif = cif_string
         doc = gemmi.cif.read_string(cif_string)
@@ -326,6 +250,7 @@ class Pycrysfml:
         j_dict_no_loops[exp_name].update(range_dict)
 
         self.model_json['experiments'] = [j_dict_no_loops]
+
         pass
 
     def exp_add_ranges_from_dict(self, j_dict):
@@ -362,9 +287,16 @@ class Pycrysfml:
         j_dict_no_loops = {exp_name: {}}
         for key, value in j_dict[exp_name].items():
             if not isinstance(value, list):
+                # CIF1 -> CIF2
                 s_key = key.replace('.', '_')
+                # Special keywords
                 if 'calib' in s_key:
                     s_key = s_key.replace('calib', 'meas')
+                if 'wavelength_wavelength' in s_key:
+                    s_key = s_key.replace('wavelength_wavelength', 'wavelength')
+                if 'reflex_asymmetry' in s_key:
+                    continue
+                # Add to dictionary
                 j_dict_no_loops[exp_name][s_key] = value
         return j_dict_no_loops
 
@@ -398,16 +330,13 @@ class Pycrysfml:
         }
         return dependent, output
 
-    def add_phase(self, phase_id, phase_name):
-        self.known_phases[phase_id] = phase_name
+    def add_phase(self, phase_id, phase_cif):
+        self.updateModelCif(phase_cif)
+        self.known_phases[phase_id] = phase_cif
 
     def remove_phase(self, phases_id):
         if phases_id in self.known_phases:
-            name = self.known_phases.pop(phases_id)
-            if name in self.additional_data['phase_names']:
-                del self.additional_data['phase_names'][name]
-            if name in self.additional_data['phases'].keys():
-                del self.additional_data['phases'][name]
+            _ = self.known_phases.pop(phases_id)
 
     def get_component(self, component_name=None):
         data = None
@@ -445,6 +374,8 @@ class Pycrysfml:
 
     def setPhaseScale(self, model_name, scale=1):
         self.storage[str(model_name) + '_scale'] = scale
+        # modify the exp cif, when the proper keyword is known
+        pass
 
     def getPhaseScale(self, model_name, *args, **kwargs):
         return self.storage.get(str(model_name) + '_scale', 1)

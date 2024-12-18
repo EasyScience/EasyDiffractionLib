@@ -545,7 +545,7 @@ class DiffractionJob(JobBase):
         """
         Set the calculator on the interface.
         """
-        self.analysis.calculator = value
+        self.switch_interface(value)
 
     def calculate_theory(self, x: Union[xr.DataArray, np.ndarray], simulation_name: str = '', **kwargs) -> np.ndarray:
         """

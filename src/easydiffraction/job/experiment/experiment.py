@@ -34,11 +34,6 @@ _pd_instr.resolution_w 0.386
 _pd_instr.resolution_x 0
 _pd_instr.resolution_y 0.0878
 
-_pd_instr.reflex_asymmetry_p1 0
-_pd_instr.reflex_asymmetry_p2 0
-_pd_instr.reflex_asymmetry_p3 0
-_pd_instr.reflex_asymmetry_p4 0
-
 loop_
 _pd_meas.2theta_scan
 _pd_meas.intensity_total
@@ -98,6 +93,7 @@ class Experiment(coreExperiment):
         self._y_axis_prefix = 'Intensity_'
         self.job_number = 0
         self.cif_string = ''
+        self.exp_cif = ''
         self.name = job_name
         # local references to pattern and parameters
         if hasattr(self._datastore, '_simulations'):
@@ -375,6 +371,7 @@ class Experiment(coreExperiment):
             string = _DEFAULT_DATA_BLOCK_NO_MEAS_PD_TOF + '\n' + data
         else:
             string = _DEFAULT_DATA_BLOCK_NO_MEAS_PD_CWL + '\n' + data
+        self.cif_string = string
         self.from_cif_string(string)
 
     def from_cif_file(self, file_url, experiment_name=None):

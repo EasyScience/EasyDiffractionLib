@@ -10,9 +10,11 @@ from easycrystallography.Components.Lattice import Lattice
 from easycrystallography.Components.SpaceGroup import SpaceGroup
 from easyscience import global_object as borg
 from easyscience.Objects.Inferface import ItemContainer
+from easycrystallography.Components.Site import Site as Site_base
 
 from easydiffraction.calculators.pycrysfml.calculator import Pycrysfml
 from easydiffraction.calculators.wrapper_base import WrapperBase
+from easydiffraction.job.experiment.experiment import Experiment
 from easydiffraction.job.experiment.pd_1d import Instrument1DCWParameters
 from easydiffraction.job.experiment.pd_1d import Powder1DParameters
 from easydiffraction.job.model.phase import Phase
@@ -37,12 +39,12 @@ class PycrysfmlWrapper(WrapperBase):
     }
 
     _instrument_link = {
-        'resolution_u': 'u_resolution',
-        'resolution_v': 'v_resolution',
-        'resolution_w': 'w_resolution',
-        'resolution_x': 'x_resolution',
-        'resolution_y': 'y_resolution',
-        'wavelength': 'lamb',
+        'resolution_u': '_pd_instr_resolution_u',
+        'resolution_v': '_pd_instr_resolution_v',
+        'resolution_w': '_pd_instr_resolution_w',
+        'resolution_x': '_pd_instr_resolution_x',
+        'resolution_y': '_pd_instr_resolution_y',
+        'wavelength': '_diffrn_radiation_wavelength',
     }
 
     _atom_link = {
@@ -109,13 +111,13 @@ class PycrysfmlWrapper(WrapperBase):
             self.calculator.pattern = model
         elif issubclass(t_, Lattice):
             keys = self._crystal_link.copy()
-            r_list.append(ItemContainer(model_key, keys, self.get_value, self.dump_cif))
+            r_list.append(ItemContainer(model_key, keys, self.get_value, self.set_phase_value))
         elif issubclass(t_, SpaceGroup):
             keys = {'_space_group_HM_name': '_space_group_HM_name'}
-            r_list.append(ItemContainer(model_key, keys, self.get_value, self.dump_cif))
-        elif issubclass(t_, Site):
+            r_list.append(ItemContainer(model_key, keys, self.get_value, self.set_phase_value))
+        elif issubclass(t_, Site) or issubclass(t_, Site_base):
             keys = self._atom_link.copy()
-            r_list.append(ItemContainer(model_key, keys, self.get_value, self.dump_cif))
+            r_list.append(ItemContainer(model_key, keys, self.get_value, self.set_phase_value))
         elif issubclass(t_, Phases):
             self._phase = model
         elif issubclass(t_, Phase):
@@ -127,11 +129,15 @@ class PycrysfmlWrapper(WrapperBase):
                     self.calculator.setPhaseScale,
                 )
             )
-            self.calculator.add_phase(str(model_key), model.name)
-        elif issubclass(t_, Sample):
-            self.__createModel(model)
+            self.calculator.add_phase(str(model_key), model.cif)
+        elif issubclass(t_, Experiment):
+            self.__createExpModel(model)
+        #elif issubclass(t_, Sample):
+        #    self.__createSampleModel(model)
         elif t_.__name__ in ['Powder1DCW', 'powder1DCW', 'Npowder1DCW', 'Npowder1DCWunp']:
             self.__createModel(model)
+        # need to add handling for Background
+        # need to add handling for ...
         return r_list
 
     def link_atom(self, crystal_obj, atom):
@@ -142,7 +148,7 @@ class PycrysfmlWrapper(WrapperBase):
 
     def add_phase(self, phases_obj, phase_obj):
         ident = str(self.__identify(phase_obj))
-        self.calculator.add_phase(ident, phase_obj.name)
+        self.calculator.add_phase(ident, phase_obj.cif)
 
     def remove_phase(self, phases_obj, phase_obj):
         ident = str(self.__identify(phase_obj))
@@ -160,6 +166,13 @@ class PycrysfmlWrapper(WrapperBase):
 
     def get_hkl(self, x_array: np.ndarray = None, idx=None, phase_name=None, encoded_name=False) -> dict:
         return self.calculator.get_hkl(x_array)
+
+    def set_phase_value(self, *args, **kwargs):
+        if self._phase is None:
+            phase_name = None
+        else:
+            phase_name = self._phase[0].name
+        self.calculator.setPhaseValue(phase_name, *args, **kwargs)
 
     def dump_cif(self, *args, **kwargs):
         if self._filename is None:
@@ -202,10 +215,11 @@ class PycrysfmlWrapper(WrapperBase):
     def updateExpCif(self, edCif, modelNames):
         self.calculator.updateExpCif(edCif, modelNames)
 
-    def __createModel(self, model):
-        self._filename = model.filename
-        self.calculator.filename = model.filename
-        self.dump_cif()
+    def __createSampleModel(self, model):
+        self.updateModelCif(model.cif)
+
+    def __createExpModel(self, model):
+        self.updateExpCif(model.cif_string, [model.name])
 
     def get_value(self, key, item_key):
         item = borg.map.get_item_by_key(key)

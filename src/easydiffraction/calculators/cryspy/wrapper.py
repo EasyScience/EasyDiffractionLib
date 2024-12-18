@@ -37,6 +37,7 @@ from easydiffraction.job.experiment.polarization import PolarizedBeam
 from easydiffraction.job.model.phase import Phase
 from easydiffraction.job.model.phase import Phases
 from easydiffraction.job.model.site import Site
+# from easydiffraction.job.job import DiffractionJob as Job
 
 if TYPE_CHECKING:
     from easyscience.Objects.Inferface import B
@@ -112,6 +113,14 @@ class CryspyBase(Neutron_type, metaclass=ABCMeta):
         t_ = type(model)
         model_key = self._identify(model)
 
+        # Simple interfcace with Experiment, through Job
+        # if issubclass(t_, Job):
+        if hasattr(model, 'experiment'):
+            exp_str = model.experiment.cif_string
+            if exp_str:
+                model_names = [model.experiment.name]
+                self.calculator.updateExpCif(exp_str, model_names)
+
         # Interface with lattice
         if issubclass(t_, Lattice):
             l_key = self.calculator.createCell(model_key)
@@ -179,6 +188,8 @@ class CryspyBase(Neutron_type, metaclass=ABCMeta):
             )
             for atom in model.atoms:
                 self.calculator.assignAtom_toCrystal(self._identify(atom), model_key)
+            # update the _cryspyDict in the calculator
+            self.calculator.updateModelCif(model.cif)
         # Interface with the Phases object
         elif issubclass(t_, Phases) and len(model) > 0:
             for phase in model:

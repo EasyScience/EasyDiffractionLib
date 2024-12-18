@@ -37,6 +37,7 @@ from easydiffraction.job.experiment.polarization import PolarizedBeam
 from easydiffraction.job.model.phase import Phase
 from easydiffraction.job.model.phase import Phases
 from easydiffraction.job.model.site import Site
+
 # from easydiffraction.job.job import DiffractionJob as Job
 
 if TYPE_CHECKING:

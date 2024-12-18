@@ -7,10 +7,10 @@ import os
 
 import numpy as np
 from easycrystallography.Components.Lattice import Lattice
+from easycrystallography.Components.Site import Site as Site_base
 from easycrystallography.Components.SpaceGroup import SpaceGroup
 from easyscience import global_object as borg
 from easyscience.Objects.Inferface import ItemContainer
-from easycrystallography.Components.Site import Site as Site_base
 
 from easydiffraction.calculators.pycrysfml.calculator import Pycrysfml
 from easydiffraction.calculators.wrapper_base import WrapperBase
@@ -89,7 +89,6 @@ class PycrysfmlWrapper(WrapperBase):
         )
 
     def create(self, model):
-        from easydiffraction.job.old_sample.old_sample import Sample
 
         r_list = []
         t_ = type(model)

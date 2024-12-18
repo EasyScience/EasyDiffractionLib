@@ -88,10 +88,10 @@ class Analysis(coreAnalysis):
     @calculator.setter
     def calculator(self, calculator):
         self.switch_interface(calculator)
-        #self.interface.calculator = calculator
+        # self.interface.calculator = calculator
         # super(Analysis, self).calculator = calculator
-        #self.interface._InterfaceFactoryTemplate__interface_obj.calculator = calculator
-        #self.interface.generate_bindings(self)
+        # self.interface._InterfaceFactoryTemplate__interface_obj.calculator = calculator
+        # self.interface.generate_bindings(self)
 
     @property
     def available_minimizers(self) -> list:

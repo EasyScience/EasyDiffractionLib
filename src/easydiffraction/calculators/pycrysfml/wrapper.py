@@ -132,7 +132,7 @@ class PycrysfmlWrapper(WrapperBase):
             self.calculator.add_phase(str(model_key), model.cif)
         elif issubclass(t_, Experiment):
             self.__createExpModel(model)
-        #elif issubclass(t_, Sample):
+        # elif issubclass(t_, Sample):
         #    self.__createSampleModel(model)
         elif t_.__name__ in ['Powder1DCW', 'powder1DCW', 'Npowder1DCW', 'Npowder1DCWunp']:
             self.__createModel(model)

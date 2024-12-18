@@ -7,6 +7,7 @@ from typing import Tuple
 
 import gemmi
 import numpy as np
+
 # from easyscience import global_object as borg
 from pycrysfml import cfml_utilities
 
@@ -172,7 +173,7 @@ class Pycrysfml:
         # dependents = []
 
         _, y = cfml_utilities.powder_pattern_from_json(self.model_json)
-        return y*scale
+        return y * scale
 
         ### potentially useful code, not deleting yet
         ###
@@ -231,7 +232,6 @@ class Pycrysfml:
         j_dict = json.loads(j)
         cfml_dict = self.convert_atom_site_dict_to_crysfml(j_dict)
         self.model_json['phases'] = [cfml_dict]
-
 
     def updateExpCif(self, cif_string: str, modelNames: list):
         if cif_string is None or not cif_string:

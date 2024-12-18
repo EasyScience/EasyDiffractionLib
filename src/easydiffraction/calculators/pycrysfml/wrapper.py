@@ -89,7 +89,6 @@ class PycrysfmlWrapper(WrapperBase):
         )
 
     def create(self, model):
-
         r_list = []
         t_ = type(model)
         model_key = self.__identify(model)

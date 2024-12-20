@@ -18,7 +18,7 @@ from easydiffraction.job.old_sample.old_sample import Sample
 
 def test_job_init():
     j = Job()
-    assert j.name == 'Job'
+    assert j.name == 'sim_'
     assert isinstance(j.interface, WrapperFactory)
     assert isinstance(j.sample, Sample)
     assert isinstance(j.experiment, Experiment)
@@ -33,7 +33,7 @@ def test_job_with_name():
 
 def test_job_direct_import():
     j = ed.Job()
-    assert j.name == 'Job'
+    assert j.name == 'sim_'
 
 
 def test_powder1dcw():
@@ -67,7 +67,7 @@ def test_job_tof():
     assert not j.type.is_cwl
     assert j.type.is_pol
     assert isinstance(j.parameters, Instrument1DTOFParameters)
-    assert isinstance(j.sample.pattern, PolPowder1DParameters)
+    assert isinstance(j.experiment.pattern, PolPowder1DParameters)
 
 
 def test_get_job_from_file():

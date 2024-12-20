@@ -7,6 +7,7 @@ import tempfile
 from typing import ClassVar
 from typing import Union
 
+from cryspy.A_functions_base.function_2_space_group import get_default_it_coordinate_system_code_by_it_number
 from easycrystallography.Structures.Phase import Phases as ecPhases
 from easyscience.Datasets.xarray import xr
 from easyscience.global_object.undo_redo import property_stack_deco
@@ -111,8 +112,14 @@ class Sample(BaseObj):
 
     def add_phase_from_string(self, cif_string):
         phase = Phase.from_cif_string(cif_string)
+        # update the settings
+        if phase[0].space_group.setting is None:
+            group_number = phase[0].space_group.int_number
+            default_setting = get_default_it_coordinate_system_code_by_it_number(group_number)
+            phase[0].space_group.setting = default_setting
+        fixed_cif = phase.cif
         if self._interface is not None:
-            self._interface.updateModelCif(cif_string)
+            self._interface.updateModelCif(fixed_cif)
         for p in phase:
             self.phases.append(p)
 

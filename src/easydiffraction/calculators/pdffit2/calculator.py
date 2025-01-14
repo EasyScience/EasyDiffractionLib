@@ -52,17 +52,17 @@ class Pdffit2:
         P.add_structure(structure)
 
         # extract conditions from the model
-        qmax = self.model.qmax.raw_value
-        qdamp = self.model.qdamp.raw_value
-        delta1 = self.model.delta1.raw_value
-        delta2 = self.model.delta2.raw_value
-        qbroad = self.model.qbroad.raw_value
-        spdiameter = self.model.spdiameter.raw_value
+        qmax = self.model.qmax.value
+        qdamp = self.model.qdamp.value
+        delta1 = self.model.delta1.value
+        delta2 = self.model.delta2.value
+        qbroad = self.model.qbroad.value
+        spdiameter = self.model.spdiameter.value
 
         stype = self.type
 
         # scale
-        scale = self.phases[0].scale.raw_value
+        scale = self.phases[0].scale.value
         P.setvar('pscale', scale)
         P.setvar('delta1', delta1)
         P.setvar('delta2', delta2)
@@ -72,7 +72,7 @@ class Pdffit2:
         for i_atom, atom in enumerate(self.phases[0].atoms):
             if not hasattr(atom, 'adp'):
                 continue
-            Uiso = atom.adp.Uiso.raw_value
+            Uiso = atom.adp.Uiso.value
             for i in range(1, 4):
                 u_str = 'u{}{}({})'.format(i, i, i_atom + 1)
                 P.setvar(u_str, Uiso)

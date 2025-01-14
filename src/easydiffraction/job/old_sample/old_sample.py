@@ -132,7 +132,7 @@ class Sample(BaseObj):
         cif_phase += '_phase_scale\n'
         cif_phase += '_phase_igsize\n'
         for phase in self.phases:
-            cif_phase += phase.name + ' ' + str(phase.scale.raw_value) + ' 0.0\n'
+            cif_phase += phase.name + ' ' + str(phase.scale.value) + ' 0.0\n'
         return cif_phase
 
     @property
@@ -164,8 +164,8 @@ class Sample(BaseObj):
         self._pattern.backgrounds.append(background)
 
     def remove_background(self, background):
-        if background.linked_experiment.raw_value in self._pattern.backgrounds.linked_experiments:
-            del self._pattern.backgrounds[background.linked_experiment.raw_value]
+        if background.linked_experiment.value in self._pattern.backgrounds.linked_experiments:
+            del self._pattern.backgrounds[background.linked_experiment.value]
         else:
             raise ValueError
 

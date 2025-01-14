@@ -81,7 +81,7 @@ class Background(BaseCollection):
 
     def _modify_dict(self, skip: list = None) -> dict:
         d = {}
-        d['linked_experiment'] = self._linked_experiment.raw_value
+        d['linked_experiment'] = self._linked_experiment.value
         return d
 
 
@@ -111,7 +111,7 @@ class BackgroundContainer(BaseCollection):
         :return:
         :rtype:
         """
-        return [item.linked_experiment.raw_value for item in self]
+        return [item.linked_experiment.value for item in self]
 
     def __repr__(self) -> str:
         """

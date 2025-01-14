@@ -126,7 +126,7 @@ class CryspyBase(Neutron_type, metaclass=ABCMeta):
             )
         # Interface with Spacegroup
         elif issubclass(t_, SpaceGroup):
-            name = model.name_hm_alt.raw_value
+            name = model.name_hm_alt.value
             s_key = self.calculator.createSpaceGroup(key=model_key, name_hm_alt=name)
             keys = {'hermann_mauguin': 'name_hm_alt', 'coordinate-code': 'it_code'}
             r_list.append(
@@ -152,7 +152,7 @@ class CryspyBase(Neutron_type, metaclass=ABCMeta):
         # Now do anisotropic ADP
         elif issubclass(t_, Anisotropic_base):
             pars = model.get_parameters()
-            adp_pars = {par.name: par.raw_value for par in pars}
+            adp_pars = {par.name: par.value for par in pars}
             ref_name = self.calculator.attachADP(model_key, adp_pars)
             r_list.append(
                 ItemContainer(
@@ -169,7 +169,7 @@ class CryspyBase(Neutron_type, metaclass=ABCMeta):
             _ = self.calculator.createEmptyCrystal(model.name, key=model_key)
             self.calculator.assignCell_toCrystal(self._identify(model.cell), model_key)
             self.calculator.assignSpaceGroup_toCrystal(self._identify(model._spacegroup), model_key)
-            self.calculator.setPhaseScale(str(model_key), scale=model.scale.raw_value)
+            self.calculator.setPhaseScale(str(model_key), scale=model.scale.value)
             r_list.append(
                 ItemContainer(
                     model_key,
@@ -208,7 +208,7 @@ class CryspyBase(Neutron_type, metaclass=ABCMeta):
         """
         ident = self._identify(phase_obj, as_str=True) + '_phase'
         self.calculator.assignPhase(self._identify(phases_obj), ident)
-        self.calculator.setPhaseScale(self._identify(phase_obj), scale=phase_obj.scale.raw_value)
+        self.calculator.setPhaseScale(self._identify(phase_obj), scale=phase_obj.scale.value)
 
     def remove_phase(self, phases_obj: Phases, phase_obj: Phase) -> None:
         """
@@ -450,9 +450,9 @@ class POL(Pol_type):
         elif issubclass(t_, Site) or issubclass(t_, Site_base):
             if not hasattr(model, 'msp'):
                 return r_list
-            msp_type = model.msp.msp_type.raw_value
+            msp_type = model.msp.msp_type.value
             pars = model.msp.get_parameters()
-            msp_pars = {par.name: par.raw_value for par in pars}
+            msp_pars = {par.name: par.value for par in pars}
             ref_name = self.calculator.attachMSP(model_key, msp_type, msp_pars)
             r_list.append(
                 ItemContainer(

@@ -28,7 +28,7 @@ class BackgroundFactor(BaseObj):
         :param amp: Amplitude for which x will be multiplied by
         :type amp: Parameter
         """
-        name = f'Amplitude_{power.raw_value}'
+        name = f'Amplitude_{power.value}'
         super(BackgroundFactor, self).__init__(name, power=power, amp=amp)
 
     @classmethod
@@ -181,8 +181,8 @@ class FactorialBackground(Background):
         """
         if not isinstance(item, BackgroundFactor):
             raise TypeError('Item must be a BackgroundFactor')
-        if item.power.raw_value in self.sorted_powers:
-            raise AttributeError(f'A BackgroundFactor with power {item.power.raw_value} already exists.')
+        if item.power.value in self.sorted_powers:
+            raise AttributeError(f'A BackgroundFactor with power {item.power.value} already exists.')
         super(FactorialBackground, self).append(item)
         self.__index_contents()
 
@@ -191,14 +191,14 @@ class FactorialBackground(Background):
         Redefine get_parameters so that the returned values are in the correct order
         """
         list_pars = np.array(super(FactorialBackground, self).get_parameters())
-        idx = np.array([item.power.raw_value for item in self]).argsort()
+        idx = np.array([item.power.value for item in self]).argsort()
         return list_pars[idx].tolist()
 
     def __index_contents(self):
         """
         Index the contents
         """
-        x = np.array([item.power.raw_value for item in self])
+        x = np.array([item.power.value for item in self])
         idx = x.argsort()
-        y = np.array([item.amp.raw_value for item in self])
+        y = np.array([item.amp.value for item in self])
         self._sorted_self = {'idx': idx, 'power': x[idx], 'amp': y[idx]}

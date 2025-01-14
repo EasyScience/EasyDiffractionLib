@@ -9,7 +9,7 @@ import numpy as np
 from easyscience.Objects.Groups import BaseCollection
 from easyscience.Objects.ObjectClasses import BaseObj
 from easyscience.Objects.ObjectClasses import Descriptor
-from easyscience.Objects.ObjectClasses import Parameter
+from easyscience.Objects.new_variable import Parameter
 
 from .background import Background
 
@@ -36,7 +36,7 @@ class BackgroundPoint(BaseObj):
         if not isinstance(y, Parameter):
             y = Parameter('intensity', y, fixed=True)
         if name is None:
-            name = '{:.1f}_deg'.format(x.raw_value).replace('.', ',')
+            name = '{:.1f}_deg'.format(x.value).replace('.', ',')
         x._callback = property(fget=None, fset=lambda x_value: self._modify_x_label(x_value), fdel=None)
         super(BackgroundPoint, self).__init__(name, x=x, y=y)
 
@@ -157,7 +157,7 @@ class PointBackground(Background):
         :return: Sorted x-values
         :rtype: np.ndarray
         """
-        x = np.array([item.x.raw_value for item in self])
+        x = np.array([item.x.value for item in self])
         x.sort()
         return x
 
@@ -169,8 +169,8 @@ class PointBackground(Background):
         :return: Sorted y-values
         :rtype: np.ndarray
         """
-        idx = np.array([item.x.raw_value for item in self]).argsort()
-        y = np.array([item.y.raw_value for item in self])
+        idx = np.array([item.x.value for item in self]).argsort()
+        y = np.array([item.y.value for item in self])
         return y[idx]
 
     @property
@@ -192,8 +192,8 @@ class PointBackground(Background):
         """
         if not isinstance(item, BackgroundPoint):
             raise TypeError('Item must be a BackgroundPoint')
-        if item.x.raw_value in self.x_sorted_points:
-            raise AttributeError(f'An BackgroundPoint at {item.x.raw_value} already exists.')
+        if item.x.value in self.x_sorted_points:
+            raise AttributeError(f'An BackgroundPoint at {item.x.value} already exists.')
         super(PointBackground, self).append(item)
 
     def get_parameters(self) -> List[Parameter]:
@@ -201,5 +201,5 @@ class PointBackground(Background):
         Redefine get_parameters so that the returned values are in the correct order
         """
         list_pars = np.array(super(PointBackground, self).get_parameters())
-        idx = np.array([item.x.raw_value for item in self]).argsort()
+        idx = np.array([item.x.value for item in self]).argsort()
         return list_pars[idx].tolist()

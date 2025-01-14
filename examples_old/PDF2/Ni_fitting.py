@@ -66,7 +66,7 @@ print("The gooodness of fit (chi2) is: {}".format(result.reduced_chi))
 
 print("The optimized parameters are:")
 for param in fit_parameters:
-    print("{}: {}".format(param.name, param.raw_value))
+    print("{}: {}".format(param.name, param.value))
 
 y_data = calculator.fit_func(x_data)
 

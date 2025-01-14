@@ -6,7 +6,7 @@ import numpy as np
 from easyscience.Datasets.xarray import xr
 from easyscience.Objects.job.experiment import ExperimentBase as coreExperiment
 from easyscience.Objects.ObjectClasses import Descriptor
-from easyscience.Objects.ObjectClasses import Parameter
+from easyscience.Objects.new_variable import Parameter
 from gemmi import cif
 
 from easydiffraction.io.cif_reader import background_from_cif_block as background_from_cif
@@ -346,7 +346,7 @@ class Experiment(coreExperiment):
             error = background_intensities[y]['error']
             fixed = error is None
             error = 0.0 if error is None else error
-            bg_y = Parameter('intensity', intensity, error=error, fixed=fixed)
+            bg_y = Parameter('intensity', intensity, variance=error, fixed=fixed)
             bkg.append(BackgroundPoint(x=bg_x, y=bg_y))
         return bkg
 
@@ -566,19 +566,19 @@ class Experiment(coreExperiment):
         Returns a CIF representation of the CW instrument parameters
         """
         cif_ipar_data = ''
-        cif_ipar_data += '\n_setup_wavelength ' + str(parameters.wavelength.raw_value)
-        cif_ipar_data += '\n_setup_offset_2theta  ' + str(pattern.zero_shift.raw_value)
+        cif_ipar_data += '\n_setup_wavelength ' + str(parameters.wavelength.value)
+        cif_ipar_data += '\n_setup_offset_2theta  ' + str(pattern.zero_shift.value)
         cif_ipar_data += '\n'
-        cif_ipar_data += '\n_pd_instr_resolution_u ' + str(parameters.resolution_u.raw_value)
-        cif_ipar_data += '\n_pd_instr_resolution_v ' + str(parameters.resolution_v.raw_value)
-        cif_ipar_data += '\n_pd_instr_resolution_w ' + str(parameters.resolution_w.raw_value)
-        cif_ipar_data += '\n_pd_instr_resolution_x ' + str(parameters.resolution_x.raw_value)
-        cif_ipar_data += '\n_pd_instr_resolution_y ' + str(parameters.resolution_y.raw_value)
+        cif_ipar_data += '\n_pd_instr_resolution_u ' + str(parameters.resolution_u.value)
+        cif_ipar_data += '\n_pd_instr_resolution_v ' + str(parameters.resolution_v.value)
+        cif_ipar_data += '\n_pd_instr_resolution_w ' + str(parameters.resolution_w.value)
+        cif_ipar_data += '\n_pd_instr_resolution_x ' + str(parameters.resolution_x.value)
+        cif_ipar_data += '\n_pd_instr_resolution_y ' + str(parameters.resolution_y.value)
         cif_ipar_data += '\n'
-        cif_ipar_data += '\n_pd_instr_reflex_asymmetry_p1 ' + str(parameters.reflex_asymmetry_p1.raw_value)
-        cif_ipar_data += '\n_pd_instr_reflex_asymmetry_p2 ' + str(parameters.reflex_asymmetry_p2.raw_value)
-        cif_ipar_data += '\n_pd_instr_reflex_asymmetry_p3 ' + str(parameters.reflex_asymmetry_p3.raw_value)
-        cif_ipar_data += '\n_pd_instr_reflex_asymmetry_p4 ' + str(parameters.reflex_asymmetry_p4.raw_value)
+        cif_ipar_data += '\n_pd_instr_reflex_asymmetry_p1 ' + str(parameters.reflex_asymmetry_p1.value)
+        cif_ipar_data += '\n_pd_instr_reflex_asymmetry_p2 ' + str(parameters.reflex_asymmetry_p2.value)
+        cif_ipar_data += '\n_pd_instr_reflex_asymmetry_p3 ' + str(parameters.reflex_asymmetry_p3.value)
+        cif_ipar_data += '\n_pd_instr_reflex_asymmetry_p4 ' + str(parameters.reflex_asymmetry_p4.value)
         return cif_ipar_data
 
     @staticmethod
@@ -587,28 +587,28 @@ class Experiment(coreExperiment):
         Returns a CIF representation of the TOF instrument parameters
         """
         cif_tof_data = ''
-        cif_tof_data += '\n_tof_parameters_zero ' + str(pattern.zero_shift.raw_value)
-        cif_tof_data += '\n_tof_parameters_dtt1 ' + str(parameters.dtt1.raw_value)
-        cif_tof_data += '\n_tof_parameters_dtt2 ' + str(parameters.dtt2.raw_value)
-        cif_tof_data += '\n_tof_parameters_2theta_bank ' + str(parameters.ttheta_bank.raw_value)
-        cif_tof_data += '\n_tof_profile_sigma0 ' + str(parameters.sigma0.raw_value)
-        cif_tof_data += '\n_tof_profile_sigma1 ' + str(parameters.sigma1.raw_value)
-        cif_tof_data += '\n_tof_profile_sigma2 ' + str(parameters.sigma2.raw_value)
-        cif_tof_data += '\n_tof_profile_gamma0 ' + str(parameters.gamma0.raw_value)
-        cif_tof_data += '\n_tof_profile_gamma1 ' + str(parameters.gamma1.raw_value)
-        cif_tof_data += '\n_tof_profile_gamma2 ' + str(parameters.gamma2.raw_value)
-        cif_tof_data += '\n_tof_profile_alpha0 ' + str(parameters.alpha0.raw_value)
-        cif_tof_data += '\n_tof_profile_alpha1 ' + str(parameters.alpha1.raw_value)
-        cif_tof_data += '\n_tof_profile_beta0 ' + str(parameters.beta0.raw_value)
-        cif_tof_data += '\n_tof_profile_beta1 ' + str(parameters.beta1.raw_value)
+        cif_tof_data += '\n_tof_parameters_zero ' + str(pattern.zero_shift.value)
+        cif_tof_data += '\n_tof_parameters_dtt1 ' + str(parameters.dtt1.value)
+        cif_tof_data += '\n_tof_parameters_dtt2 ' + str(parameters.dtt2.value)
+        cif_tof_data += '\n_tof_parameters_2theta_bank ' + str(parameters.ttheta_bank.value)
+        cif_tof_data += '\n_tof_profile_sigma0 ' + str(parameters.sigma0.value)
+        cif_tof_data += '\n_tof_profile_sigma1 ' + str(parameters.sigma1.value)
+        cif_tof_data += '\n_tof_profile_sigma2 ' + str(parameters.sigma2.value)
+        cif_tof_data += '\n_tof_profile_gamma0 ' + str(parameters.gamma0.value)
+        cif_tof_data += '\n_tof_profile_gamma1 ' + str(parameters.gamma1.value)
+        cif_tof_data += '\n_tof_profile_gamma2 ' + str(parameters.gamma2.value)
+        cif_tof_data += '\n_tof_profile_alpha0 ' + str(parameters.alpha0.value)
+        cif_tof_data += '\n_tof_profile_alpha1 ' + str(parameters.alpha1.value)
+        cif_tof_data += '\n_tof_profile_beta0 ' + str(parameters.beta0.value)
+        cif_tof_data += '\n_tof_profile_beta1 ' + str(parameters.beta1.value)
         return cif_tof_data
 
     @staticmethod
     def polar_param_as_cif(pattern=None):
         cif_pat_data = ''
-        cif_pat_data += '\n_diffrn_radiation_polarization ' + str(pattern.beam.polarization.raw_value)
-        cif_pat_data += '\n_diffrn_radiation_efficiency ' + str(pattern.efficiency.raw_value)
-        cif_pat_data += '\n_setup_field ' + str(pattern.field.raw_value)
+        cif_pat_data += '\n_diffrn_radiation_polarization ' + str(pattern.beam.polarization.value)
+        cif_pat_data += '\n_diffrn_radiation_efficiency ' + str(pattern.efficiency.value)
+        cif_pat_data += '\n_setup_field ' + str(pattern.field.value)
         # cif_pat_data += "\n_chi2_sum " + str(self._refine_sum)
         # cif_pat_data += "\n_chi2_diff " + str(self._refine_diff)
         # cif_pat_data += "\n_chi2_up " + str(self._refine_up)
@@ -630,7 +630,7 @@ class Experiment(coreExperiment):
             cif_background += '\nloop_ \n_pd_background_2theta\n_pd_background_intensity'
         # background = self.parent.l_background._background_as_obj
         for i in range(len(background.data)):
-            cif_background += '\n' + str(background.data[i].x.raw_value) + ' ' + str(background.data[i].y.raw_value)
+            cif_background += '\n' + str(background.data[i].x.value) + ' ' + str(background.data[i].y.value)
         return cif_background
 
     # required dunder methods

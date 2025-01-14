@@ -10,7 +10,7 @@ from typing import Optional
 from typing import Union
 
 from easyscience.Objects.ObjectClasses import BaseObj
-from easyscience.Objects.ObjectClasses import Parameter
+from easyscience.Objects.new_variable import Parameter
 
 if TYPE_CHECKING:
     from easyscience.Objects.Inferface import iF

@@ -15,7 +15,7 @@ from typing import Union
 from easyscience.Datasets.xarray import xr
 from easyscience.Objects.ObjectClasses import BaseObj
 from easyscience.Objects.ObjectClasses import Descriptor
-from easyscience.Objects.ObjectClasses import Parameter
+from easyscience.Objects.new_variable import Parameter
 
 from easydiffraction.job.experiment.backgrounds.background import BackgroundContainer
 from easydiffraction.job.experiment.common import JobSetup
@@ -76,7 +76,7 @@ class Powder1DParameters(BaseObj):
         'zero_shift': {
             'name': 'zero_shift',
             'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
-            'units': 'degree',
+            'unit': 'degree',
             'value': 0.0,
             'fixed': True,
         },
@@ -130,7 +130,7 @@ class PolPowder1DParameters(Powder1DParameters):
     beam: ClassVar[PolarizedBeam]
 
     _defaults = {
-        'field': {'name': 'magnetic_field', 'value': 1.0, 'units': 'T', 'fixed': True},
+        'field': {'name': 'magnetic_field', 'value': 1.0, 'unit': 'T', 'fixed': True},
     }
     _defaults.update(Powder1DParameters._defaults)
 
@@ -189,7 +189,7 @@ class Instrument1DCWParameters(BaseObj):
         'wavelength': {
             'name': 'wavelength',
             'url': 'https://docs.easydiffraction.org/lib/dictionaries/_diffrn_radiation_wavelength/',
-            'units': 'angstrom',
+            'unit': 'angstrom',
             'value': 1.54056,
             'fixed': True,
         },
@@ -377,42 +377,42 @@ class Instrument1DTOFParameters(BaseObj):
         'ttheta_bank': {
             'name': 'ttheta_bank',
             'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
-            'units': 'deg',
+            'unit': 'deg',
             'value': 145.00,
             'fixed': True,
         },
         'dtt1': {
             'name': 'dtt1',
             'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
-            'units': 'microsec/angstrom',
+            'unit': 'microsec/angstrom',
             'value': 6167.24700,
             'fixed': True,
         },
         'dtt2': {
             'name': 'dtt2',
             'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
-            'units': 'microsec/angstrom**2',
+            'unit': 'microsec/angstrom**2',
             'value': -2.28000,
             'fixed': True,
         },
         'sigma0': {
             'name': 'sigma0',
             'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
-            'units': 'microsec**2',
+            'unit': 'microsec**2',
             'value': 0.409,
             'fixed': True,
         },
         'sigma1': {
             'name': 'sigma1',
             'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
-            'units': 'microsec**2/angstrom**2',
+            'unit': 'microsec**2/angstrom**2',
             'value': 8.118,
             'fixed': True,
         },
         'sigma2': {
             'name': 'sigma2',
             'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
-            'units': 'microsec**2/angstrom**4',
+            'unit': 'microsec**2/angstrom**4',
             'value': 0.0,
             'fixed': True,
         },
@@ -550,13 +550,13 @@ class PDFParameters(Instrument1DCWParameters):
     _defaults = {
         'qmax': {
             'name': 'Q_max',
-            'units': '1/angstrom',
+            'unit': '1/angstrom',
             'value': 30.0,
             'fixed': True,
         },
         'qdamp': {
             'name': 'Q_damp',
-            'units': '1/angstrom',
+            'unit': '1/angstrom',
             'value': 0.01,
             'fixed': True,
         },
@@ -567,19 +567,19 @@ class PDFParameters(Instrument1DCWParameters):
         },
         'delta1': {
             'name': 'delta1',
-            'units': 'angstrom',
+            'unit': 'angstrom',
             'value': 0.0,
             'fixed': True,
         },
         'delta2': {
             'name': 'delta2',
-            'units': 'angstrom**2',
+            'unit': 'angstrom**2',
             'value': 0.0,
             'fixed': True,
         },
         'spdiameter': {
             'name': 'spdiameter',
-            'units': 'angstrom',
+            'unit': 'angstrom',
             'min': 0.0,
             'value': 0.0,
             'fixed': True,

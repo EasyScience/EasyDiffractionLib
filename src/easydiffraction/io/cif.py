@@ -242,9 +242,9 @@ class CifParser:
         # check for implicit hydrogens, warn if any present
         if 'atom_site_attached_hydrogens' in data.labels:
             attached_hydrogens = [
-                x._kwargs['atom_site_attached_hydrogens'].raw_value
+                x._kwargs['atom_site_attached_hydrogens'].value
                 for x in data.data
-                if x._kwargs['atom_site_attached_hydrogens'].raw_value != 0
+                if x._kwargs['atom_site_attached_hydrogens'].value != 0
             ]
             if len(attached_hydrogens) > 0:
                 self.warnings.append(
@@ -275,12 +275,12 @@ class CifParser:
                 # Below, we split the strings on ' + ' to
                 # check if the length (or number of elements) in the label and
                 # symbol are equal.
-                if len(this_data._kwargs['atom_site_type_symbol'].raw_value.split(' + ')) > len(
-                    this_data._kwargs['atom_site_label'].raw_value.split(' + ')
+                if len(this_data._kwargs['atom_site_type_symbol'].value.split(' + ')) > len(
+                    this_data._kwargs['atom_site_label'].value.split(' + ')
                 ):
                     # parse symbol to get element names and occupancy and store
                     # in "els_occu"
-                    symbol_str = this_data._kwargs['atom_site_type_symbol'].raw_value
+                    symbol_str = this_data._kwargs['atom_site_type_symbol'].value
                     symbol_str_lst = symbol_str.split(' + ')
                     for elocc_idx, sym in enumerate(symbol_str_lst):
                         # Remove any bracketed items in the string
@@ -290,14 +290,14 @@ class CifParser:
                         # string, and store it as a
                         # key-value pair in "els_occ".
                         new_item: FakeCore = deepcopy(this_data)
-                        new_item._kwargs['atom_site_type_symbol'].raw_value = str(
+                        new_item._kwargs['atom_site_type_symbol'].value = str(
                             re.findall(r'\D+', symbol_str_lst[elocc_idx].strip())[1]
                         ).replace('<sup>', '')
-                        new_item._kwargs['atom_site_label'].raw_value = (
-                            new_item._kwargs['atom_site_type_symbol'].raw_value + '_fix'
+                        new_item._kwargs['atom_site_label'].value = (
+                            new_item._kwargs['atom_site_type_symbol'].value + '_fix'
                         )
                         if 'atom_site_occupancy' in new_item._kwargs.keys():
-                            new_item._kwargs['atom_site_label'].raw_value = float(
+                            new_item._kwargs['atom_site_label'].value = float(
                                 '0' + re.findall(r'\.?\d+', symbol_str_lst[elocc_idx].strip())[1]
                             )
                         new_atoms.append(new_item)
@@ -341,10 +341,10 @@ class CifParser:
                     'atom_site_fract_z',
                 ):
                     if label in this_data._kwargs.keys():
-                        frac = this_data._kwargs[label].raw_value
+                        frac = this_data._kwargs[label].value
                         for comparison_frac in important_fracs:
                             if abs(1 - frac / comparison_frac) < 1e-4:
-                                this_data._kwargs[label].raw_value = comparison_frac
+                                this_data._kwargs[label].value = comparison_frac
                                 fracs_changed = True
         if fracs_changed:
             self.warnings.append(
@@ -540,11 +540,11 @@ class CifParser:
                         if set(loop.labels).issuperset(set(needed_labels)):
                             data_dict = {}
                             for idx2, key in enumerate(needed_labels[1:]):
-                                temp_value = section.data[0]._kwargs[key].raw_value
+                                temp_value = section.data[0]._kwargs[key].value
                                 if not isinstance(temp_value, Number):
                                     temp_value = 0
                                     self.append = self.warnings.append(
-                                        f'Atom {section.data[0]._kwargs[needed_labels[0]].raw_value} has non-numeric '
+                                        f'Atom {section.data[0]._kwargs[needed_labels[0]].value} has non-numeric '
                                         f'{key}. Setting to 0'
                                     )
                                 data_dict[adp_types[adp_type][idx2]] = temp_value
@@ -569,7 +569,7 @@ class CifParser:
                                 ):
                                     obj.error = section.data[0]._kwargs[needed_labels[1 + idx2]].error
 
-                            current_atom_label = section.data[0]._kwargs[needed_labels[0]].raw_value
+                            current_atom_label = section.data[0]._kwargs[needed_labels[0]].value
                             # Add to an atom
                             if current_atom_label in atoms.atom_labels:
                                 idx2 = atoms.atom_labels.index(current_atom_label)
@@ -601,7 +601,7 @@ class CifParser:
                     for idx, section in enumerate(these_sections):
                         if set(loop.labels).issuperset(set(needed_labels)):
                             data_dict = {}
-                            msp_type_ext = section.data[0]._kwargs['atom_site_susceptibility_chi_type'].raw_value
+                            msp_type_ext = section.data[0]._kwargs['atom_site_susceptibility_chi_type'].value
                             msp_type = 'Ciso'
                             if 'ani' in msp_type_ext.lower():
                                 msp_type = 'Cani'
@@ -615,11 +615,11 @@ class CifParser:
                                     'atom_site_susceptibility_chi_23',
                                 ]
                             for idx2, key in enumerate(needed_labels[1:]):
-                                temp_value = section.data[0]._kwargs[key].raw_value
+                                temp_value = section.data[0]._kwargs[key].value
                                 if not isinstance(temp_value, Number):
                                     temp_value = 0
                                     self.append = self.warnings.append(
-                                        f'Atom {section.data[0]._kwargs[needed_labels[0]].raw_value} has non-numeric '
+                                        f'Atom {section.data[0]._kwargs[needed_labels[0]].value} has non-numeric '
                                         f'{key}. Setting to 0'
                                     )
                                 data_dict[msp_types[msp_type][idx2]] = temp_value
@@ -644,7 +644,7 @@ class CifParser:
                                 ):
                                     obj.error = section.data[0]._kwargs[needed_labels[1 + idx2]].error
 
-                            current_atom_label = section.data[0]._kwargs[needed_labels[0]].raw_value
+                            current_atom_label = section.data[0]._kwargs[needed_labels[0]].value
                             # Add to an atom
                             if current_atom_label in atoms.atom_labels:
                                 idx2 = atoms.atom_labels.index(current_atom_label)

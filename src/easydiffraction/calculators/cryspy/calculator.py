@@ -446,8 +446,8 @@ class Cryspy:
             scale = 1.0
             offset = 0
         else:
-            scale = self.pattern.scale.raw_value / norm
-            offset = self.pattern.zero_shift.raw_value
+            scale = self.pattern.scale.value / norm
+            offset = self.pattern.zero_shift.value
 
         this_x_array = x_array - offset
 
@@ -489,8 +489,8 @@ class Cryspy:
             scale = 1.0
             offset = 0
         else:
-            scale = self.pattern.scale.raw_value / normalization
-            offset = self.pattern.zero_shift.raw_value
+            scale = self.pattern.scale.value / normalization
+            offset = self.pattern.zero_shift.value
         self.model['tof_parameters'].zero = offset
 
         this_x_array = x_array - offset

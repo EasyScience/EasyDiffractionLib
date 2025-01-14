@@ -54,8 +54,8 @@ class Pycrysfml:
             scale = 1.0
             offset = 0
         else:
-            scale = self.pattern.scale.raw_value
-            offset = self.pattern.zero_shift.raw_value
+            scale = self.pattern.scale.value
+            offset = self.pattern.zero_shift.value
 
         this_x_array = x_array + offset
 

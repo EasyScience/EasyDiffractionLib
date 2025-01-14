@@ -293,9 +293,7 @@ class CifParser:
                         new_item._kwargs['atom_site_type_symbol'].value = str(
                             re.findall(r'\D+', symbol_str_lst[elocc_idx].strip())[1]
                         ).replace('<sup>', '')
-                        new_item._kwargs['atom_site_label'].value = (
-                            new_item._kwargs['atom_site_type_symbol'].value + '_fix'
-                        )
+                        new_item._kwargs['atom_site_label'].value = new_item._kwargs['atom_site_type_symbol'].value + '_fix'
                         if 'atom_site_occupancy' in new_item._kwargs.keys():
                             new_item._kwargs['atom_site_label'].value = float(
                                 '0' + re.findall(r'\.?\d+', symbol_str_lst[elocc_idx].strip())[1]

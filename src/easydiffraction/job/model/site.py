@@ -15,7 +15,7 @@ from easycrystallography.Components.Site import Site as ecSite
 from easycrystallography.Components.Specie import Specie
 from easycrystallography.Components.Susceptibility import MagneticSusceptibility
 from easycrystallography.io.star_base import StarLoop
-from easyscience.Objects.ObjectClasses import Descriptor
+from easyscience.Objects.new_variable import DescriptorStr as Descriptor
 from easyscience.Objects.new_variable import Parameter
 
 if TYPE_CHECKING:

@@ -7,9 +7,9 @@ from typing import Union
 
 import numpy as np
 from easyscience.Objects.Groups import BaseCollection
-from easyscience.Objects.ObjectClasses import BaseObj
-from easyscience.Objects.ObjectClasses import Descriptor
+from easyscience.Objects.new_variable import DescriptorNumber as Descriptor
 from easyscience.Objects.new_variable import Parameter
+from easyscience.Objects.ObjectClasses import BaseObj
 
 from .background import Background
 

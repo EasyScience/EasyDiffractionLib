@@ -5,7 +5,7 @@
 import numpy as np
 from easyscience.Datasets.xarray import xr
 from easyscience.Objects.job.experiment import ExperimentBase as coreExperiment
-from easyscience.Objects.ObjectClasses import Descriptor
+from easyscience.Objects.new_variable import DescriptorNumber as Descriptor
 from easyscience.Objects.new_variable import Parameter
 from gemmi import cif
 

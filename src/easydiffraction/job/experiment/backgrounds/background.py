@@ -8,7 +8,7 @@ from typing import Union
 
 import numpy as np
 from easyscience.Objects.Groups import BaseCollection
-from easyscience.Objects.Variable import Descriptor
+from easyscience.Objects.new_variable import DescriptorStr as Descriptor
 
 
 class Background(BaseCollection):

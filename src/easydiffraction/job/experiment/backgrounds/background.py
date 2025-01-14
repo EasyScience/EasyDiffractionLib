@@ -31,7 +31,7 @@ class Background(BaseCollection):
         #  Convert `linked_experiment` to a Descriptor
         if linked_experiment is None:
             raise AttributeError(
-                'Backgrounds need to be associated with an experiment. ' 'Use the `linked_experiment` key word argument.'
+                'Backgrounds need to be associated with an experiment. Use the `linked_experiment` key word argument.'
             )
         elif isinstance(linked_experiment, str):
             linked_experiment = Descriptor('linked_experiment', linked_experiment)

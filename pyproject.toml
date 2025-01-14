@@ -25,10 +25,10 @@ classifiers = [
 ]
 requires-python = '>=3.9,<3.13'
 dependencies = [
-  'cryspy',              # Calculations of diffraction patterns
-  'easycrystallography', # Crystallography tools of the EasyScience framework
-  'easyscience',         # The base library of the EasyScience framework
-  'pooch',               # For data fetching
+  'cryspy',                                                                                     # Calculations of diffraction patterns
+  'easycrystallography @ git+https://github.com/EasyScience/EasyCrystallography.git@new_param', # Crystallography tools of the EasyScience framework
+  'easyscience',                                                                                # The base library of the EasyScience framework
+  'pooch',                                                                                      # For data fetching
 ]
 
 [project.optional-dependencies]

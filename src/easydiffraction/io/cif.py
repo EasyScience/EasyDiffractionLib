@@ -347,9 +347,7 @@ class CifParser:
                                 this_data._kwargs[label].raw_value = comparison_frac
                                 fracs_changed = True
         if fracs_changed:
-            self.warnings.append(
-                'Some fractional co-ordinates rounded to ideal values to ' 'avoid issues with finite precision.'
-            )
+            self.warnings.append('Some fractional co-ordinates rounded to ideal values to avoid issues with finite precision.')
         return data
 
     def _sanitize_data(self, data: StarEntry) -> StarEntry:
@@ -1058,7 +1056,7 @@ def str2float(text):
 def dataBlockToCif(block, includeBlockName=True):
     cif = ''
     if includeBlockName:
-        cif += f"data_{block['name']['value']}"
+        cif += f'data_{block["name"]["value"]}'
         cif += '\n\n'
     if 'params' in block:
         for category in block['params'].values():

@@ -59,7 +59,7 @@ def test_add_experiment(setup_experiment):
     npt.assert_array_equal(add_coordinate_call[0][1], data[:, 0])
 
     for j in range(1, len(data), 2):
-        var_name = f'test_job_exp2_I{j//2}'
+        var_name = f'test_job_exp2_I{j // 2}'
         add_variable_call = mock_datastore.store.easyscience.add_variable.call_args_list[j // 2]
         assert add_variable_call[0][0] == var_name
         assert add_variable_call[0][1] == [coord_name]

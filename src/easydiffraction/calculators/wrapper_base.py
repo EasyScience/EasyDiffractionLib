@@ -161,6 +161,10 @@ class WrapperBase(ComponentSerializer, metaclass=ABCMeta):
     def get_total_y_for_phases(self) -> list:
         pass
 
+    @abstractmethod
+    def is_tof(self) -> bool:
+        pass
+
     @staticmethod
     def _get_constructor(known_components, sample_object):
         all_bases = set([base for base in sample_object.__class__.__bases__ if hasattr(base, '_internal_type')])

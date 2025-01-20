@@ -248,6 +248,9 @@ class CryspyBase(Neutron_type, metaclass=ABCMeta):
     def get_total_y_for_phases(self) -> tuple[ndarray, ndarray]:
         return self.calculator.get_total_y_for_phases()
 
+    def is_tof(self) -> bool:
+        return self.calculator.is_tof()
+
     @staticmethod
     def _identify(obj: B, as_str: bool = False) -> Union[int, str]:
         """
@@ -778,6 +781,10 @@ class CryspyWrapper(WrapperBase):
         if self._internal is not None:
             data = self._internal.get_phase_components(phase_name)
             return data
+
+    def is_tof(self) -> bool:
+        if self._internal is not None:
+            return self._internal.is_tof()
 
     def updateModelCif(self, cif_string: str) -> None:
         self.calculator.updateModelCif(cif_string)

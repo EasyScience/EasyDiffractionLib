@@ -136,9 +136,12 @@ class DiffractionJob(JobBase):
             # update experiment with right type
             self.update_exp_type()
 
+        # initialize the sample, based on job type
+        self.sample = sample
         # assign Job components
-        self._sample = self.datastore._simulations
         self._sample.parameters = self.datastore._experiments.parameters
+        self.datastore._simulations = self.sample
+
         self.interface = self.sample._interface
         self.analysis = analysis
         self.update_experiment_type()
@@ -446,15 +449,14 @@ class DiffractionJob(JobBase):
 
         # re-do the sample in case of type change.
         # Different type read in (likely TOF), so re-create the sample
-        if self.sample.parameters.name != self.experiment.parameters.name:
+        if self.interface.is_tof() != self.type.is_tof:
             parameters = self.experiment.parameters
             pattern = self.experiment.pattern
             phases = self.sample.phases
             name = self.sample.name
             self.sample = Sample(name, parameters=parameters, pattern=pattern, phases=phases)
-            self.sample.parameters = self.experiment.parameters
-            self.update_experiment_type()
-            self.update_interface()
+            # self.update_experiment_type()
+            # self.update_interface()
         # Temporary fix for dtt1 and dtt2 parameters read from CIF in Scipp format
         if (
             hasattr(self.sample.parameters, 'dtt1')

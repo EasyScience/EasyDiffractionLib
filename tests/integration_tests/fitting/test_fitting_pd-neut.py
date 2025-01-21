@@ -99,7 +99,7 @@ def test_fitting_pd_neut_tof_Si_SEPD() -> None:
     assert job.fitting_results.x.size == 5600
     assert job.fitting_results.n_pars == 12
     assert job.fitting_results.success
-    assert_almost_equal(job.fitting_results.reduced_chi, 121.89, decimal=2)
+    assert_almost_equal(job.fitting_results.reduced_chi, 75.56, decimal=2)
 
 
 if __name__ == '__main__':

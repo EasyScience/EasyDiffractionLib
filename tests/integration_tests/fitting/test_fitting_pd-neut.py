@@ -87,8 +87,8 @@ def test_fitting_pd_neut_tof_Si_SEPD() -> None:
 
     phase.scale.free = True
     job.pattern.zero_shift.free = True
-    # for background_point in job.pattern.backgrounds[0]:
-    #     background_point.y.free = True
+    for background_point in job.pattern.backgrounds[0]:
+        background_point.y.free = True
     job.parameters.sigma0.free = True
     job.parameters.sigma1.free = True
     job.parameters.sigma2.free = True

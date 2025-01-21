@@ -97,7 +97,7 @@ def test_fitting_pd_neut_tof_Si_SEPD() -> None:
 
     assert job.fitting_results.minimizer_engine.package == 'lmfit'
     assert job.fitting_results.x.size == 5600
-    assert job.fitting_results.n_pars == 5
+    assert job.fitting_results.n_pars == 12
     assert job.fitting_results.success
     assert_almost_equal(job.fitting_results.reduced_chi, 121.89, decimal=2)
 

@@ -14,7 +14,7 @@
 #    - Download the Python package from the previous job
 #    - Install the downloaded Python package
 #    - Test the code base
-#    - Check if Jupiter Notebooks run without errors
+#    - Check if Jupyter Notebooks run without errors
 
 name: Test code, notebooks and package
 
@@ -251,7 +251,7 @@ jobs:
         run: >
           pytest tests/ --color=yes -n auto
 
-      - name: Check if Jupiter Notebooks run without errors
+      - name: Check if Jupyter Notebooks run without errors
         shell: bash
         run: >
           pytest --nbmake examples/ --ignore-glob='examples/*emcee*'

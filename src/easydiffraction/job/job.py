@@ -94,7 +94,7 @@ class DiffractionJob(JobBase):
         # Generate the datastore for this job
         __dataset = datastore if datastore is not None else xr.Dataset()
         self.add_datastore(__dataset)
-        self._name = name if name is not None else 'Job'
+        self._name = name if name is not None else 'sim_'
 
         self.cif_string = ''
         # Dataset specific attributes
@@ -110,7 +110,8 @@ class DiffractionJob(JobBase):
             raise ValueError('Job type and experiment cannot be passed together.')
 
         # assign Experiment, so potential type assignment can be done
-        self.experiment = experiment
+        self._experiment = self.datastore._experiments
+        self._experiment.datastore = self.datastore
 
         self._summary = None  # TODO: implement
         self._info = None  # TODO: implement
@@ -135,17 +136,20 @@ class DiffractionJob(JobBase):
             # update experiment with right type
             self.update_exp_type()
 
+        # initialize the sample, based on job type
+        self.sample = sample
         # assign Job components
-        self.sample = sample  # container for phases
+        self._sample.parameters = self.datastore._experiments.parameters
+        self.datastore._simulations = self.sample
+
         self.interface = self.sample._interface
         self.analysis = analysis
         self.update_experiment_type()
-        # necessary for the fitter
-        # TODO: remove the dependency on kwargs
+
         self._kwargs = {}
         self._kwargs['_phases'] = self.sample.phases
         self._kwargs['_parameters'] = self.sample.parameters
-        self._kwargs['_pattern'] = self.sample.pattern
+        self._kwargs['_pattern'] = self.experiment.pattern
 
     @property
     def sample(self) -> Sample:
@@ -168,6 +172,7 @@ class DiffractionJob(JobBase):
             elif self.type.is_tof:
                 parameters = Instrument1DTOFParameters()
             self._sample = Sample('Sample', parameters=parameters, pattern=pattern)
+            self._kwargs['_parameters'] = self.sample.parameters
 
     @property
     def theoretical_model(self) -> Sample:
@@ -326,30 +331,48 @@ class DiffractionJob(JobBase):
         self.type.is_sc = self.experiment.is_single_crystal
         self.type.is_2d = self.experiment.is_2d
         # radiation
-        if hasattr(self.sample, 'pattern') and self.sample.pattern is not None:
+        if hasattr(self.experiment, 'pattern') and self.experiment.pattern is not None:
             if self.type.is_xray:
-                self.sample.pattern.radiation = 'x-ray'
+                self.experiment.pattern.radiation = 'x-ray'
             elif self.type.is_neut:
-                self.sample.pattern.radiation = 'neutron'
+                self.experiment.pattern.radiation = 'neutron'
 
         # axis
         if self.type.is_tof:
             self._x_axis_name = 'time'
-            if self.pattern is not None:
-                self.pattern.zero_shift.unit = 'μs'
+            if self.experiment.pattern is not None:
+                self.experiment.pattern.zero_shift.unit = 'μs'
         else:
             self._x_axis_name = 'tth'
-            if self.pattern is not None:
-                self.pattern.zero_shift.unit = 'degree'
+            if self.experiment.pattern is not None:
+                self.experiment.pattern.zero_shift.unit = 'degree'
 
     def update_exp_type(self) -> None:
         """
         Update the experiment type based on the job.
         """
+
         self.experiment.is_polarized = self.type.is_pol
         self.experiment.is_tof = self.type.is_tof
         self.experiment.is_single_crystal = self.type.is_sc
         self.experiment.is_2d = self.type.is_2d
+        if self.type.is_pol:
+            pattern = PolPowder1DParameters()
+        else:
+            pattern = Powder1DParameters()
+        # if pattern type is not the same as job, re-create the job.patter
+        if self.experiment.pattern is not None and self.experiment.pattern.name != pattern.name:
+            self.experiment.pattern = pattern
+            self._kwargs['_pattern'] = self.experiment.pattern
+
+        if self.type.is_cwl:
+            parameters = Instrument1DCWParameters()
+        elif self.type.is_tof:
+            parameters = Instrument1DTOFParameters()
+        # self._sample = Sample('Sample', parameters=parameters, pattern=pattern)
+        if self.experiment.parameters.name != parameters.name:
+            self.experiment.parameters = parameters
+            self._kwargs['_parameters'] = self.experiment.parameters
 
     def update_phase_scale(self) -> None:
         """
@@ -421,17 +444,19 @@ class DiffractionJob(JobBase):
             self.experiment.from_cif_file(file_url)
 
         self.update_experiment_type()
+        # update the kwargs with new pointers
+        self._kwargs['_parameters'] = self.experiment.parameters
+
         # re-do the sample in case of type change.
         # Different type read in (likely TOF), so re-create the sample
-        if self.sample.parameters.name != self.experiment.parameters.name:
+        if self.interface.is_tof() != self.type.is_tof:
             parameters = self.experiment.parameters
             pattern = self.experiment.pattern
             phases = self.sample.phases
             name = self.sample.name
             self.sample = Sample(name, parameters=parameters, pattern=pattern, phases=phases)
-            self.sample.parameters = self.experiment.parameters
-            self.update_experiment_type()
-            self.update_interface()
+            # self.update_experiment_type()
+            # self.update_interface()
         # Temporary fix for dtt1 and dtt2 parameters read from CIF in Scipp format
         if (
             hasattr(self.sample.parameters, 'dtt1')

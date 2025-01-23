@@ -28,6 +28,9 @@ class WrapperFactory(InterfaceFactoryTemplate):
     def get_component(self, component_name):
         return self().get_component(component_name)
 
+    def is_tof(self) -> bool:
+        return self().is_tof()
+
     def updateModelCif(self, cif_string):
         return self().updateModelCif(cif_string)
 

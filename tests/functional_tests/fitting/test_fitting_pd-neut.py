@@ -62,9 +62,9 @@ def test_fitting_pd_neut_tof_Si_SEPD() -> None:
     phase.atom_sites.append(
         label='Si',
         type_symbol='Si',
-        fract_x=0,
-        fract_y=0,
-        fract_z=0,
+        fract_x=0.125,
+        fract_y=0.125,
+        fract_z=0.125,
         occupancy=1,
         b_iso_or_equiv=0.529,
     )
@@ -87,19 +87,21 @@ def test_fitting_pd_neut_tof_Si_SEPD() -> None:
 
     phase.scale.free = True
     job.pattern.zero_shift.free = True
-    # for background_point in job.pattern.backgrounds[0]:
-    #     background_point.y.free = True
+    for background_point in job.pattern.backgrounds[0]:
+        background_point.y.free = True
     job.parameters.sigma0.free = True
     job.parameters.sigma1.free = True
     job.parameters.sigma2.free = True
 
     job.fit()
 
+    assert phase.space_group.name_hm_alt.raw_value == 'F d -3 m'
+    assert phase.space_group.it_coordinate_system_code.raw_value == '2'
     assert job.fitting_results.minimizer_engine.package == 'lmfit'
     assert job.fitting_results.x.size == 5600
-    assert job.fitting_results.n_pars == 5
+    assert job.fitting_results.n_pars == 12
     assert job.fitting_results.success
-    assert_almost_equal(job.fitting_results.reduced_chi, 121.89, decimal=2)
+    assert_almost_equal(job.fitting_results.reduced_chi, 5.42, decimal=2)
 
 
 if __name__ == '__main__':

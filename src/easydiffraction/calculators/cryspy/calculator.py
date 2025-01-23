@@ -155,6 +155,9 @@ class Cryspy:
         self.type = model_type
         self.model = cls(**model)
 
+    def is_tof(self) -> bool:
+        return self.model.PREFIX.lower() == 'tof'
+
     def createPhase(self, crystal_name: str, key: str = 'phase') -> str:
         phase = cryspy.Phase(label=crystal_name, scale=1, igsize=0)
         self.storage[key] = phase

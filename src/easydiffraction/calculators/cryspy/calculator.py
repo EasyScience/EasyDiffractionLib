@@ -559,7 +559,7 @@ class Cryspy:
             idx = [idx for idx, item in enumerate(self.phases.items) if item.label == crystal.data_name][0]
             phasesL.items.append(self.phases.items[idx])
             phase_lists.append(phasesL)
-            profile, peak = self._do_run(self.model, self.polarized, this_x_array, crystal, phasesL, bg)
+            profile, peak = self._do_run(self.model, self.polarized, this_x_array, crystal, phasesL, bg, phase_scales)
             profiles.append(profile)
             peak_dat.append(peak)
         # pool = mp.ProcessPool(num_crys)
@@ -768,12 +768,13 @@ class Cryspy:
         calcExperimentsDict = calcExperimentsObj.get_dictionary()
 
         calcDictBlockName = f'pd_{currentExperimentName}'
+        calcDictName = f'data_{currentExperimentName}'
 
         _, edExperimentsNoMeas = calcObjAndDictToEdExperiments(calcExperimentsObj, calcExperimentsDict)
 
         # self._cryspyData._cryspyObj.items[calcObjBlockIdx] = calcExperimentsObj.items[0]
         self._cryspyData._cryspyObj.items[0] = calcExperimentsObj.items[0]
-        self._cryspyData._cryspyDict[calcDictBlockName] = calcExperimentsDict[calcDictBlockName]
+        self._cryspyData._cryspyDict[calcDictBlockName] = calcExperimentsDict[calcDictName]
         sdataBlocksNoMeas = edExperimentsNoMeas[0]
 
         return sdataBlocksNoMeas
@@ -885,12 +886,11 @@ class Cryspy:
 
         return dependent, output
 
-    def _do_run(self, model, polarized, x_array, crystals, phase_list, bg):
+    def _do_run(self, model, polarized, x_array, crystals, phase_list, bg, phase_scales):
         idx = [idx for idx, item in enumerate(model.items) if isinstance(item, cryspy.PhaseL)][0]
         model.items[idx] = phase_list
 
         data_name = crystals.data_name
-        setattr(self.model, 'data_name', data_name)
 
         is_tof = False
         if self.model.PREFIX.lower() == 'tof':
@@ -901,15 +901,30 @@ class Cryspy:
         else:
             ttheta = np.radians(x_array)  # needs recasting into radians for CW
 
-        # model -> dict
-        experiment_dict_model = self.model.get_dictionary()
-        exp_name_model = experiment_dict_model['type_name']
-
         if not self._cryspyData._cryspyDict:
             return None
 
+        crystal_entry = 'crystal_' + data_name
+        new_exp_key = ''
+        for key in self._cryspyData._cryspyDict.keys():
+            if crystal_entry in key:
+                continue
+            new_exp_key = key
+            break
+        if new_exp_key:
+            exp_name_model_split = new_exp_key.split("_", 1)[1]
+            exp_name_model = new_exp_key
+
+        # model -> dict
+        setattr(self.model, 'data_name', exp_name_model_split)
+        experiment_dict_model = self.model.get_dictionary()
+
+        # update scale in experimental_dict_model
+        experiment_dict_model['phase_scale'] = np.array(phase_scales)
         self._cryspyDict = self._cryspyData._cryspyDict
+
         self._cryspyDict[exp_name_model] = experiment_dict_model
+
 
         self.excluded_points = np.full(len(ttheta), False)
         if hasattr(self.model, 'excluded_points'):

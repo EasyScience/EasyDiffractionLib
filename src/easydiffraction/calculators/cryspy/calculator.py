@@ -912,7 +912,7 @@ class Cryspy:
             new_exp_key = key
             break
         if new_exp_key:
-            exp_name_model_split = new_exp_key.split("_", 1)[1]
+            exp_name_model_split = new_exp_key.split('_', 1)[1]
             exp_name_model = new_exp_key
 
         # model -> dict
@@ -924,7 +924,6 @@ class Cryspy:
         self._cryspyDict = self._cryspyData._cryspyDict
 
         self._cryspyDict[exp_name_model] = experiment_dict_model
-
 
         self.excluded_points = np.full(len(ttheta), False)
         if hasattr(self.model, 'excluded_points'):

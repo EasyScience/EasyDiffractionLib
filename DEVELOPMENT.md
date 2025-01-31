@@ -27,9 +27,11 @@ This is an example of a workflow that describes the development process.
   ```console
   python -m pip install --upgrade pip
   ```
-- Install easydiffraction from root with `dev` extras for development
+- Install easydiffraction from root with `dev` extras for development, 
+  `charts` extras for Jupyter notebooks and `docs` extras for building
+  documentation
   ```console
-  pip install '.[dev]'
+  pip install '.[dev,charts,docs]'
   ```
 - Make changes in the code
 - Run Ruff - Python linter and code formatter (configuration is in

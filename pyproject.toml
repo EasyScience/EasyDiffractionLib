@@ -44,10 +44,19 @@ dev = [
   'versioningit', # Versioning
 ]
 charts = [
-  'darkdetect', # Detecting dark mode
-  'pandas',     # Displaying tables in juptyer notebooks
-  'plotly',     # Interactive plots
-  'py3Dmol',    # Visualisation of crystal structures
+  'darkdetect',   # Detecting dark mode
+  'pandas',       # Displaying tables in juptyer notebooks
+  'plotly<6.0.0', # Interactive plots. 0.6.0 => Empty charts in Jupyter notebooks ...
+  'py3Dmol',      # Visualisation of crystal structures
+]
+docs = [
+  'mkdocs',                          # Static site generator
+  'mkdocs-material',                 # Documentation framework on top of MkDocs
+  'mkdocs-autorefs<1.3.0',           # 1.3.0 => DeprecationWarning: Setting a fallback anchor function is deprecated and ...
+  'mkdocs-jupyter',
+  'mkdocs-plugin-inline-svg',
+  'mkdocs-markdownextradata-plugin',
+  'mkdocstrings',
 ]
 pdf = [
   'diffpy.pdffit2',   # Calculations of atomic pair distribution function

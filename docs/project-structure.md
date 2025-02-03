@@ -2,7 +2,10 @@
 
 ## CIF-based project files
 
-Example project structure for the constant wavelength powder neutron diffraction measurement is given below:
+Example project structure for the constant wavelength powder neutron diffraction
+measurement is given below:
+
+<!-- prettier-ignore-start -->
 
 <div class="cif">
 <pre>
@@ -19,9 +22,13 @@ Example project structure for the constant wavelength powder neutron diffraction
 </pre>
 </div>
 
+<!-- prettier-ignore-end -->
+
 Here is the content of the project files:
 
 ### <span class="orange">project.cif</span>
+
+<!-- prettier-ignore-start -->
 
 <div class="cif">
 <pre>
@@ -39,7 +46,11 @@ hrpt.cif
 </pre>
 </div>
 
+<!-- prettier-ignore-end -->
+
 ### models / <span class="orange">lbco.cif</span>
+
+<!-- prettier-ignore-start -->
 
 <div class="cif">
 <pre>
@@ -71,7 +82,11 @@ O  O    0   0.5 0.5   1    Biso 1.4041
 </pre>
 </div>
 
+<!-- prettier-ignore-end -->
+
 ### experiments / <span class="orange">hrpt.cif</span>
+
+<!-- prettier-ignore-start -->
 
 <div class="cif">
 <pre>
@@ -132,3 +147,5 @@ loop_
 164.85  109  41.2
 </pre>
 </div>
+
+<!-- prettier-ignore-end -->

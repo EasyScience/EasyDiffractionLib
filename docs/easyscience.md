@@ -1,13 +1,19 @@
 # The EasyScience framework
 
-EasyScience is a framework of software tools that can be used to build experimental data analysis packages.
-For example, it has already been used in the development of [EasyDiffraction] and [EasyReflectometry]. Two more packages are about to be started: EasyImaging (Bragg edge imaging) and EasyDynamics (Quasielastic neutron scattering, QENS).
+EasyScience is a framework of software tools that can be used to build
+experimental data analysis packages. For example, it has already been used in
+the development of [EasyDiffraction] and [EasyReflectometry]. Two more packages
+are about to be started: EasyImaging (Bragg edge imaging) and EasyDynamics
+(Quasielastic neutron scattering, QENS).
 
-The framework consists of both front- and back-end elements, known as [EasyApp] and [EasyScience], respectively.
-The front-end provides a shared library of graphical interface elements that can be used to build a graphical user interface.
-The back-end offers a toolset to perform model-dependent analysis, including the ability to plug-in existing calculation engines.
+The framework consists of both front- and back-end elements, known as [EasyApp]
+and [EasyScience], respectively. The front-end provides a shared library of
+graphical interface elements that can be used to build a graphical user
+interface. The back-end offers a toolset to perform model-dependent analysis,
+including the ability to plug-in existing calculation engines.
 
-Below is a diagram illustrating the relationship between the modules of the EasyScience framework:
+Below is a diagram illustrating the relationship between the modules of the
+EasyScience framework:
 
 <?xml version="1.0" encoding="utf-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 500" xmlns:bx="https://boxy-svg.com">
@@ -88,8 +94,9 @@ Below is a diagram illustrating the relationship between the modules of the Easy
   </g>
 </svg>
 
-<!--- biblio --->
+<!-- prettier-ignore-start -->
 [EasyDiffraction]: https://easydiffraction.org
 [EasyReflectometry]: https://easyreflectometry.org
 [EasyApp]: https://github.com/easyscience/easyapp
 [EasyScience]: https://github.com/easyscience/easyscience
+<!-- prettier-ignore-end -->

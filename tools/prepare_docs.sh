@@ -5,6 +5,8 @@ cp -R ../assets-docs/overrides/ overrides/
 
 echo "\033[0;33m:::::: Add the extra files from the ../assets-branding\033[0m"
 mkdir -p docs/assets/images/
+cp ../assets-branding/EasyDiffraction/logos/ed-logo_dark.svg docs/assets/images/
+cp ../assets-branding/EasyDiffraction/logos/ed-logo_light.svg docs/assets/images/
 cp ../assets-branding/EasyDiffraction/logos/edl-logo_dark.svg docs/assets/images/logo_dark.svg
 cp ../assets-branding/EasyDiffraction/logos/edl-logo_light.svg docs/assets/images/logo_light.svg
 cp ../assets-branding/EasyDiffraction/icons/ed-icon_256x256.png docs/assets/images/favicon.png

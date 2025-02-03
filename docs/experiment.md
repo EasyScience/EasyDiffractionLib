@@ -1,15 +1,16 @@
-[3]: glossary.md
-
 # Experiment
 
-This section describes different types of experimental data which EasyDiffraction can handle. 
+This section describes different types of experimental data which
+EasyDiffraction can handle.
 
 ## CIF-based description
 
-The following examples show the CIF data blocks for different types of diffraction experiments supported in EasyDiffraction.
+The following examples show the CIF data blocks for different types of
+diffraction experiments supported in EasyDiffraction.
 
 ### [pd-neut-cwl][3]{:.label-experiment}
 
+<!-- prettier-ignore-start -->
 <div class="cif">
 <pre>
 data_<span class="red"><b>hrpt</b></span>
@@ -69,9 +70,11 @@ loop_
 164.85  109  41.2
 </pre>
 </div>
+<!-- prettier-ignore-end -->
 
 ### [pd-neut-tof][3]{:.label-experiment}
 
+<!-- prettier-ignore-start -->
 <div class="cif">
 <pre>
 data_<span class="red"><b>wish</b></span>
@@ -136,9 +139,11 @@ loop_
 103417.6  277.666   73.837
 </pre>
 </div>
+<!-- prettier-ignore-end -->
 
 ### [sc-neut-cwl][3]{:.label-experiment}
 
+<!-- prettier-ignore-start -->
 <div class="cif">
 <pre>
 data_<span class="red"><b>heidi</b></span>
@@ -183,6 +188,7 @@ loop_
 12 12 10    14.4074   11.3800
 </pre>
 </div>
+<!-- prettier-ignore-end -->
 
 ## Other supported data files
 
@@ -206,6 +212,7 @@ Here are some examples:
 
 ### example1.xye
 
+<!-- prettier-ignore-start -->
 <div class="cif">
 <pre>
 <span class="grey"># 2theta  intensity    su</span>
@@ -222,9 +229,11 @@ Here are some examples:
   164.85     109      41.2
 </pre>
 </div>
+<!-- prettier-ignore-end -->
 
 ### example2.xy
 
+<!-- prettier-ignore-start -->
 <div class="cif">
 <pre>
 <span class="grey"># 2theta  intensity</span>
@@ -241,9 +250,11 @@ Here are some examples:
   164.85     109  
 </pre>
 </div>
+<!-- prettier-ignore-end -->
 
 ### example3.xy
 
+<!-- prettier-ignore-start -->
 <div class="cif">
 <pre>
 10  167.3    
@@ -259,3 +270,8 @@ Here are some examples:
 164.85  109     
 </pre>
 </div>
+<!-- prettier-ignore-end -->
+
+<!-- prettier-ignore-start -->
+[3]: glossary.md
+<!-- prettier-ignore-end -->

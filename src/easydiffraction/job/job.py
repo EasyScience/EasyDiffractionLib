@@ -335,7 +335,7 @@ class DiffractionJob(JobBase):
         # axis
         if self.type.is_tof:
             self._x_axis_name = 'time'
-            #if self.pattern is not None:
+            # if self.pattern is not None:
             #    self.pattern.zero_shift.convert_unit('μs')
         else:
             self._x_axis_name = 'tth'

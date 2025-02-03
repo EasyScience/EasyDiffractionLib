@@ -34,8 +34,12 @@ This is an example of a workflow that describes the development process.
   pip install '.[dev,charts,docs]'
   ```
 - Make changes in the code
+  ```console
+  ...
+  ```
 - Run Ruff - Python linter and code formatter (configuration is in
-  pyproject.toml) Linting (overwriting files)
+  pyproject.toml)<br/>
+  Linting (overwriting files)
   ```console
   ruff check . --fix
   ```
@@ -43,7 +47,8 @@ This is an example of a workflow that describes the development process.
   ```console
   ruff format .
   ```
-- Install and run Prettier - code formatter for markdown, YAML, TOML files
+- Install and run Prettier - code formatter for Markdown, YAML, TOML, 
+  etc. files (configuration in prettierrc.toml)<br/>
   Formatting (overwriting files)
   ```console
   npm install prettier prettier-plugin-toml --save-dev --save-exact
@@ -53,7 +58,9 @@ This is an example of a workflow that describes the development process.
   ```console
   pytest tests/ --color=yes -n auto
   ```
-- Clear all Jupyter notebooks output
+- Clear all Jupyter notebooks output (Only those that were changed!). 
+  Replace `examples/*.ipynb` with the path to the notebook(s) you want 
+  to clear
   ```console
   jupyter nbconvert --clear-output --inplace examples/*.ipynb
   ```
@@ -63,7 +70,47 @@ This is an example of a workflow that describes the development process.
   ```
 - Run Jupyter notebooks as tests
   ```console
-  pytest --nbmake examples/*ipynb --nbmake-timeout=300 --color=yes -n=auto
+  pytest --nbmake examples/ --ignore-glob='examples/*emcee*' --nbmake-timeout=300 --color=yes -n=auto
+  ```
+- Add extra files to build documentation (from `../assets-docs/` and 
+  `../assets-branding/` directories)
+  ```console
+  cp -R ../assets-docs/docs/assets/ docs/assets/
+  cp -R ../assets-docs/includes/ includes/
+  cp -R ../assets-docs/overrides/ overrides/ 
+  mkdir -p docs/assets/images/
+  cp ../assets-branding/EasyDiffraction/logos/edl-logo_dark.svg docs/assets/images/logo_dark.svg
+  cp ../assets-branding/EasyDiffraction/logos/edl-logo_light.svg docs/assets/images/logo_light.svg
+  cp ../assets-branding/EasyDiffraction/icons/ed-icon_256x256.png docs/assets/images/favicon.png
+  mkdir -p overrides/.icons/
+  cp ../assets-branding/EasyDiffraction/icons/ed-icon_bw.svg overrides/.icons/easydiffraction.svg
+  cp ../assets-branding/EasyScience/icons/es-icon_bw.svg overrides/.icons/easyscience.svg
+  cp -R examples/ docs/examples/
+  cp ../assets-docs/mkdocs.yml mkdocs.yml
+  echo "" >> mkdocs.yml
+  cat docs/mkdocs.yml >> mkdocs.yml
+  ```  
+- Build documentation with MkDocs - static site generator
+  ```console
+  export JUPYTER_PLATFORM_DIRS=1
+  mkdocs serve
+  ```
+- Test the documentation locally (built in the `site/` directory). E.g.,
+  on macOS, open the site in the default browser via the terminal 
+  ```console
+  open http://127.0.0.1:8000
+  ```
+- Clean up after building documentation
+  ```console
+  rm -rf site/
+  rm -rf docs/assets/
+  rm -rf includes/
+  rm -rf overrides/
+  rm -rf docs/examples/
+  rm -rf node_modules/
+  rm mkdocs.yml
+  rm package-lock.json
+  rm package.json
   ```
 - Commit changes
   ```console

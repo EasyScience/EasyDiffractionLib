@@ -112,7 +112,7 @@ jobs:
       - name: Pre-build site step
         run: python -c "import easydiffraction"
 
-      # Create the mkdocs.yml file
+      # Create the mkdocs.yml configuration file
       # The file is created by merging two files:
       # - assets-docs/mkdocs.yml - the common configuration (theme, plugins, etc.)
       # - docs/mkdocs.yml - the project-specific configuration (project name, TOC, etc.)

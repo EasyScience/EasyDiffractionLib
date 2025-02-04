@@ -12,12 +12,10 @@ cp ../assets-branding/EasyDiffraction/logos/edl-logo_light.svg docs/assets/image
 cp ../assets-branding/EasyDiffraction/icons/ed-icon_256x256.png docs/assets/images/favicon.png
 mkdir -p overrides/.icons/
 cp ../assets-branding/EasyDiffraction/icons/ed-icon_bw.svg overrides/.icons/easydiffraction.svg
-cp ../assets-branding/EasyScience/icons/es-icon_bw.svg overrides/.icons/easyscience.svg
+cp ../assets-branding/EasyScienceOrg/icons/eso-icon_bw.svg overrides/.icons/easyscience.svg
 
 echo "\033[0;33m:::::: Add Jupyter notebooks from the project to the docs/\033[0m"
 cp -R examples/ docs/examples/
 
 echo "\033[0;33m:::::: Create the mkdocs.yml configuration file\033[0m"
-cp ../assets-docs/mkdocs.yml mkdocs.yml
-echo "" >> mkdocs.yml
-cat docs/mkdocs.yml >> mkdocs.yml
+cat ../assets-docs/mkdocs.yml docs/mkdocs.yml > mkdocs.yml

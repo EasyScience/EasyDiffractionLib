@@ -86,11 +86,9 @@ This is an example of a workflow that describes the development process.
   cp ../assets-branding/EasyDiffraction/icons/ed-icon_256x256.png docs/assets/images/favicon.png
   mkdir -p overrides/.icons/
   cp ../assets-branding/EasyDiffraction/icons/ed-icon_bw.svg overrides/.icons/easydiffraction.svg
-  cp ../assets-branding/EasyScience/icons/es-icon_bw.svg overrides/.icons/easyscience.svg
+  cp ../assets-branding/EasyScienceOrg/icons/eso-icon_bw.svg overrides/.icons/easyscience.svg
   cp -R examples/ docs/examples/
-  cp ../assets-docs/mkdocs.yml mkdocs.yml
-  echo "" >> mkdocs.yml
-  cat docs/mkdocs.yml >> mkdocs.yml
+  cat ../assets-docs/mkdocs.yml docs/mkdocs.yml > mkdocs.yml
   ```
 - Build documentation with MkDocs - static site generator
   ```console

@@ -3,9 +3,9 @@ name: Build and deploy docs
 on:
   # Trigger the workflow on push
   push:
-    # Every branch
-    branches:
-      - '**'
+    # To the develop and master branches
+    branches: [develop, master]
+
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -71,7 +71,7 @@ jobs:
       # https://www.mkdocs.org
       - name: Install MkDocs and its dependencies
         run: >
-          pip install mkdocs mkdocs-material 'mkdocs-autorefs<1.3.0'  
+          pip install mkdocs mkdocs-material 'mkdocs-autorefs<1.3.0'
           mkdocs-jupyter mkdocs-plugin-inline-svg
           mkdocs-markdownextradata-plugin mkdocstrings-python
 
@@ -100,7 +100,7 @@ jobs:
           cp assets-branding/EasyDiffraction/icons/ed-icon_256x256.png docs/assets/images/favicon.png
           mkdir -p overrides/.icons/
           cp assets-branding/EasyDiffraction/icons/ed-icon_bw.svg overrides/.icons/easydiffraction.svg
-          cp assets-branding/EasyScience/icons/es-icon_bw.svg overrides/.icons/easyscience.svg
+          cp assets-branding/EasyScienceOrg/icons/eso-icon_bw.svg overrides/.icons/easyscience.svg
 
       # Copy Jupyter notebooks from the project to the docs folder
       # The notebooks are used to generate the documentation
@@ -119,10 +119,7 @@ jobs:
       # - assets-docs/mkdocs.yml - the common configuration (theme, plugins, etc.)
       # - docs/mkdocs.yml - the project-specific configuration (project name, TOC, etc.)
       - name: Create mkdocs.yml file
-        run: |
-          cp assets-docs/mkdocs.yml mkdocs.yml
-          echo "" >> mkdocs.yml
-          cat docs/mkdocs.yml >> mkdocs.yml
+        run: cat ../assets-docs/mkdocs.yml docs/mkdocs.yml > mkdocs.yml
 
       # Build the static files
       # Input: docs/ directory containing the Markdown files

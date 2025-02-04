@@ -87,7 +87,7 @@ class Experiment(coreExperiment):
     def __init__(self, job_name: str, datastore: xr.Dataset = None, *args, **kwargs):
         super(Experiment, self).__init__(job_name, *args, **kwargs)
         self.job_name = job_name
-
+        self.interface = None
         self.is_tof = False
         self.is_polarized = False
         self.is_single_crystal = False

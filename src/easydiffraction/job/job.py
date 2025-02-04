@@ -138,6 +138,7 @@ class DiffractionJob(JobBase):
         # assign Job components
         self.sample = sample  # container for phases
         self.interface = self.sample._interface
+        self.experiment.interface = self.interface
         self.analysis = analysis
         self.update_experiment_type()
         # necessary for the fitter

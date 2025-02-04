@@ -1,0 +1,39 @@
+# Project information
+site_name: EasyDiffraction Library
+site_url: https://easyscience.github.io/diffraction-lib
+
+# Repository
+repo_url: https://github.com/easyscience/diffraction-lib
+edit_uri: edit/develop/docs/
+
+# Copyright
+copyright: © 2025 EasyDiffraction
+
+# Format and layout of the global navigation for the site
+not_in_nav: |
+  dictionaries
+nav:
+  - Introduction: index.md
+  - EasyScience: easyscience.md
+  - Getting started: getting-started.md
+  - Glossary: glossary.md
+  - Dictionaries: dictionaries.md
+  - Project structure: project-structure.md
+  - Model: model.md
+  - Experiment: experiment.md
+  - Analysis: analysis.md
+  - How to use:
+      - how-to-use/index.md
+      - Basic:
+          - Define model: examples/Define-model.ipynb
+          - Define experiment: examples/Define-experiment.ipynb
+      - Simulation:
+          - pd-xray NaCl: examples/Simulation_pd-xray_NaCl.ipynb
+      - Fitting:
+          - pd-neut-cwl LBCO-HRPT: examples/Fitting_pd-neut-cwl_LBCO-HRPT.ipynb
+          - pd-neut-tof Si-SEPD: examples/Fitting_pd-neut-tof_Si-SEPD.ipynb
+          - pd-neut-tof NCAF-WISH: examples/Fitting_pd-neut-tof_NCAF-WISH.ipynb
+      - Advanced fitting:
+          - MCMC pd-neut-tof NCAF-WISH: examples/Fitting-emcee_pd-neut-cwl_LBCO-HRPT.ipynb
+      - Extra:
+          - Change minimizer: examples/Change-minimizer.ipynb

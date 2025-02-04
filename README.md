@@ -1,11 +1,11 @@
-<p align='left'>
+<p>
   <picture>
     <!-- light mode logo -->
-    <source media='(prefers-color-scheme: light)' srcset='https://raw.githubusercontent.com/EasyScience/BrandingResources/refs/heads/master/EasyDiffraction/logos/ed-logo_light.svg'>
+    <source media='(prefers-color-scheme: light)' srcset='https://raw.githubusercontent.com/easyscience/assets-branding/refs/heads/master/EasyDiffraction/logos/ed-logo_light.svg'>
     <!-- dark mode logo -->
-    <source media='(prefers-color-scheme: dark)' srcset='https://raw.githubusercontent.com/EasyScience/BrandingResources/refs/heads/master/EasyDiffraction/logos/ed-logo_dark.svg'>
+    <source media='(prefers-color-scheme: dark)' srcset='https://raw.githubusercontent.com/easyscience/assets-branding/refs/heads/master/EasyDiffraction/logos/ed-logo_dark.svg'>
     <!-- default logo == light mode logo -->
-    <img src='https://raw.githubusercontent.com/EasyScience/BrandingResources/refs/heads/master/EasyDiffraction/logos/ed-logo_light.svg' alt='EasyDiffraction'>
+    <img src='https://raw.githubusercontent.com/easyscience/assets-branding/refs/heads/master/EasyDiffraction/logos/ed-logo_light.svg' alt='EasyDiffraction'>
   </picture>
 </p>
 
@@ -34,8 +34,7 @@ We welcome contributions! Our vision is for **EasyDiffraction** to be a
 community-driven, open-source project supported by a diverse group of
 contributors.
 
-The project is currently maintained by the [European Spallation Source (ESS)] in
-Sweden.
+The project is currently maintained by the [European Spallation Source (ESS)].
 
 If you'd like to contribute, please refer to our [Contributing Guidelines] for
 information about our code of conduct and instructions on submitting pull

@@ -119,7 +119,7 @@ jobs:
       # - assets-docs/mkdocs.yml - the common configuration (theme, plugins, etc.)
       # - docs/mkdocs.yml - the project-specific configuration (project name, TOC, etc.)
       - name: Create mkdocs.yml file
-        run: cat ../assets-docs/mkdocs.yml docs/mkdocs.yml > mkdocs.yml
+        run: cat assets-docs/mkdocs.yml docs/mkdocs.yml > mkdocs.yml
 
       # Build the static files
       # Input: docs/ directory containing the Markdown files

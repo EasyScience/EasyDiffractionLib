@@ -53,7 +53,7 @@ charts = [
 docs = [
   'mkdocs',                          # Static site generator
   'mkdocs-material',                 # Documentation framework on top of MkDocs
-  'mkdocs-autorefs<1.3.0',           # MkDocs: Auto-references support. 1.3.0 => DeprecationWarning: Setting a fallback anchor function is deprecated and ...
+  'mkdocs-autorefs<1.4.0',           # MkDocs: Auto-references support. 1.3.0 => DeprecationWarning: Setting a fallback anchor function is deprecated and ...
   'mkdocs-jupyter',                  # MkDocs: Jupyter notebook support
   'mkdocs-plugin-inline-svg',        # MkDocs: Inline SVG support
   'mkdocs-markdownextradata-plugin', # MkDocs: Markdown extra data support, such as global variables

@@ -47,7 +47,7 @@ dev = [
 charts = [
   'darkdetect',   # Detecting dark mode
   'pandas',       # Displaying tables in juptyer notebooks
-  'plotly<6.0.0', # Interactive plots. 0.6.0 => Empty charts in Jupyter notebooks ...
+  'plotly<7.0.0', # Interactive plots. 0.6.0 => Empty charts in Jupyter notebooks ...
   'py3Dmol',      # Visualisation of crystal structures
 ]
 docs = [

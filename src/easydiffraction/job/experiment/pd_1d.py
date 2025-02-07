@@ -461,6 +461,12 @@ class Instrument1DTOFParameters(BaseObj):
             'value': 0.00224,
             'fixed': True,
         },
+        'zero': {
+            'name': 'zero',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
+            'value': 0.0,
+            'fixed': True,
+        },
     }
 
     ttheta_bank: ClassVar[Parameter]
@@ -476,6 +482,7 @@ class Instrument1DTOFParameters(BaseObj):
     alpha1: ClassVar[Parameter]
     beta0: ClassVar[Parameter]
     beta1: ClassVar[Parameter]
+    zero: ClassVar[Parameter]
 
     def __init__(
         self,
@@ -492,6 +499,7 @@ class Instrument1DTOFParameters(BaseObj):
         alpha1: Optional[Union[Parameter, float]] = None,
         beta0: Optional[Union[Parameter, float]] = None,
         beta1: Optional[Union[Parameter, float]] = None,
+        zero: Optional[Union[Parameter, float]] = None,
         interface: Optional[iF] = None,
     ):
         super().__init__(
@@ -525,6 +533,8 @@ class Instrument1DTOFParameters(BaseObj):
             self.beta0 = beta0
         if beta1 is not None:
             self.beta1 = beta1
+        if zero is not None:
+            self.zero = zero
 
         self.name = self._name
         self.interface = interface

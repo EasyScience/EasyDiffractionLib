@@ -420,7 +420,11 @@ class DiffractionJob(JobBase):
             self.experiment.from_xye_file(file_url)
         else:
             self.experiment.from_cif_file(file_url)
+        self.update_after_new_experiment()
 
+    def update_after_new_experiment(self) -> None:
+        """
+        """
         self.update_experiment_type()
         # re-do the sample in case of type change.
         # Different type read in (likely TOF), so re-create the sample
@@ -453,7 +457,7 @@ class DiffractionJob(JobBase):
         Just a wrapper around the Experiment class method.
         """
         self.experiment.from_cif_string(cif_string)
-        self.update_experiment_type()
+        self.update_after_new_experiment()
 
     def add_sample_from_file(self, file_url: str) -> None:
         """

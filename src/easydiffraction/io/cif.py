@@ -15,6 +15,7 @@ from typing import List
 from typing import Tuple
 from typing import Union
 
+import numpy as np
 from easycrystallography.Components.AtomicDisplacement import AtomicDisplacement
 from easycrystallography.Components.Lattice import Lattice
 from easycrystallography.Components.SpaceGroup import SpaceGroup
@@ -1050,8 +1051,50 @@ def str2float(text):
             return 0
         raise ex
 
-
 def dataBlockToCif(block, includeBlockName=True):
+    cif = ''
+
+    if includeBlockName:
+        cif += f"data_{block['name']['value']}"
+        cif += '\n\n'
+
+    if 'params' in block:
+        for category in block['params'].values():
+            for param in category.values():
+                # if param["optional"]:
+                #     continue
+
+                value = param["value"]
+                if value is None:
+                    continue
+
+                if isinstance(value, (float, int)):  # If parameter is of float type
+                    value = np.float32(value)  # Simplifies output
+                    if param["fit"]:
+                        error = param["error"]
+                        #error = np.float32(error)  # Simplifies output
+                        if error == 0:
+                            paramStr = f'{value}()' # Adds empty brackets for standard uncertainty for free params
+                        else:
+                            _, _, paramStr = IO.toStdDevSmalestPrecision(value, error) # Adds brackets with standard uncertainty for free params
+                    else:
+                        paramStr = str(value)  # Keeps 32bit presicion format in contrast to f'{...}'
+                elif isinstance(value, str):  # If parameter is of string type
+                    if ' ' in value:  # Adds quotes to text with spaces, e.g. P n m a -> "P n m a"
+                        paramStr = f'"{value}"'
+                    else:
+                        paramStr = f'{value}'
+                else:
+                    console.error(f'Unsupported parameter type {type(value)} for {value}')
+                    continue
+
+                cif += f'{param["category"]}.{param["name"]} {paramStr}'
+                cif += '\n'
+            cif += '\n'
+    return cif
+
+
+def dataBlockToCif_old(block, includeBlockName=True):
     cif = ''
     if includeBlockName:
         cif += f'data_{block["name"]["value"]}'

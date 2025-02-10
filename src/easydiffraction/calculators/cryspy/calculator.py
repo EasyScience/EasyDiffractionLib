@@ -556,7 +556,7 @@ class Cryspy:
                     delattr(crystal, 'atom_site_susceptibility')
                 if hasattr(crystal, 'atom_site_scat'):
                     delattr(crystal, 'atom_site_scat')
-            idx = [idx for idx, item in enumerate(self.phases.items) if item.label == crystal.data_name][0]
+            idx = [idx for idx, item in enumerate(self.phases.items) if crystal.data_name in item.label][0]
             phasesL.items.append(self.phases.items[idx])
             phase_lists.append(phasesL)
             profile, peak = self._do_run(self.model, self.polarized, this_x_array, crystal, phasesL, bg, phase_scales)
@@ -606,7 +606,6 @@ class Cryspy:
         self.additional_data['components'] = scaled_dependents
 
         total_profile = np.sum([s['profile'] for s in self.additional_data['phases'].values()], axis=0) + new_bg
-
         return total_profile, self.additional_data
 
     def calculate(self, x_array: np.ndarray, **kwargs) -> np.ndarray:
@@ -904,10 +903,11 @@ class Cryspy:
         if not self._cryspyData._cryspyDict:
             return None
 
-        crystal_entry = 'crystal_' + data_name
         new_exp_key = ''
+
         for key in self._cryspyData._cryspyDict.keys():
-            if crystal_entry in key:
+            # skip phases
+            if 'crystal_' in key:
                 continue
             new_exp_key = key
             break
@@ -917,14 +917,18 @@ class Cryspy:
 
         # model -> dict
         setattr(self.model, 'data_name', exp_name_model_split)
+
+        # get cryspy experiment dict from the model
         experiment_dict_model = self.model.get_dictionary()
 
         # update scale in experimental_dict_model
         experiment_dict_model['phase_scale'] = np.array(phase_scales)
-        self._cryspyDict = self._cryspyData._cryspyDict
 
+        self._cryspyDict = self._cryspyData._cryspyDict
+        # update _cryspyDict with the experiment
         self._cryspyDict[exp_name_model] = experiment_dict_model
 
+        # add extra fluff
         self.excluded_points = np.full(len(ttheta), False)
         if hasattr(self.model, 'excluded_points'):
             self.excluded_points = self.model.excluded_points
@@ -951,6 +955,9 @@ class Cryspy:
         # interestingly, experimental signal is required, although not used for simple profile calc
         self._cryspyDict[exp_name_model]['signal_exp'] = np.array([np.zeros(len(ttheta)), np.zeros(len(ttheta))])
 
+        # calculate profile
+        #
+        # _inOutDict contains the calculated profile
         res = rhochi_calc_chi_sq_by_dictionary(
             self._cryspyDict,
             dict_in_out=self._cryspyData._inOutDict,

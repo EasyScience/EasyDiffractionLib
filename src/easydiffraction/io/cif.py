@@ -1061,8 +1061,8 @@ def dataBlockToCif(block, includeBlockName=True):
             # for param in category.values():
             for param in category.values():
                 # `param` is an easyCore Parameter object
-                # if param["optional"]:
-                #    continue
+                if 'optional' in param and param['optional']:
+                    continue
                 value = param['value']
                 if value is None:
                     continue

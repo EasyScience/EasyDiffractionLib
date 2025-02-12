@@ -444,12 +444,13 @@ class Cryspy:
 
         if self.pattern is None:
             scale = 1.0
-            offset = 0
+            # offset = 0
         else:
             scale = self.pattern.scale.value / norm
-            offset = self.pattern.zero_shift.value
+            # offset = self.pattern.zero_shift.value
 
-        this_x_array = x_array - offset
+        # this_x_array = x_array - offset
+        this_x_array = x_array
 
         if 'excluded_points' in kwargs:
             setattr(self.model, 'excluded_points', kwargs['excluded_points'])
@@ -796,17 +797,19 @@ class Cryspy:
             cryspy_key = CRYSPY_MODEL_PHASE_KEYS[key]
             loc = cryspy_dict[cryspy_key]
             # find the text in `item` after the last underscore
+            # will fail if new phase added
             atom_index = int(item[item.rfind('_') + 1 :])
-            # is this a fractional coordinate?
-            if 'fract' in key:
-                coord_index = CRYSPY_MODEL_COORD_INDEX[key]
-                loc[coord_index][atom_index] = value
-            elif 'length' in key:
-                coord_index = CRYSPY_MODEL_COORD_INDEX[key]
-                loc[coord_index] = value
-            else:
-                loc[atom_index] = value
-            return
+            if atom_index < len(loc):
+                # is this a fractional coordinate?
+                if 'fract' in key:
+                    coord_index = CRYSPY_MODEL_COORD_INDEX[key]
+                    loc[coord_index][atom_index] = value
+                elif 'length' in key:
+                    coord_index = CRYSPY_MODEL_COORD_INDEX[key]
+                    loc[coord_index] = value
+                else:
+                    loc[atom_index] = value
+                return
         elif key in CRYSPY_MODEL_INSTR_KEYS:
             # instrument param
             exp_name = list(self._cryspyData._cryspyDict.keys())[1]
@@ -888,7 +891,6 @@ class Cryspy:
     def _do_run(self, model, polarized, x_array, crystals, phase_list, bg, phase_scales):
         idx = [idx for idx, item in enumerate(model.items) if isinstance(item, cryspy.PhaseL)][0]
         model.items[idx] = phase_list
-
         data_name = crystals.data_name
 
         is_tof = False
@@ -903,32 +905,33 @@ class Cryspy:
         if not self._cryspyData._cryspyDict:
             return None
 
-        new_exp_key = ''
-
+        phase_name = ''
+        exp_name_model = ''
+        # Find the name of the experiment in the model
         for key in self._cryspyData._cryspyDict.keys():
             # skip phases
             if 'crystal_' in key:
+                # remove 'crytal_' from the key
+                phase_name = key.split('_', 1)[1]
                 continue
-            new_exp_key = key
+            exp_name_model = key
             break
-        if new_exp_key:
-            exp_name_model_split = new_exp_key.split('_', 1)[1]
-            exp_name_model = new_exp_key
 
-        # model -> dict
-        setattr(self.model, 'data_name', exp_name_model_split)
-
-        # get cryspy experiment dict from the model
-        experiment_dict_model = self.model.get_dictionary()
-
-        # update scale in experimental_dict_model
-        experiment_dict_model['phase_scale'] = np.array(phase_scales)
+        if not exp_name_model:
+            # no exp defined, default
+            # exp_name_model_split = self.model.PREFIX
+            exp_name_model = self.model.PREFIX + '_' + phase_name
+            # get cryspy experiment dict from the model: expensive!
+            # model -> dict
+            setattr(self.model, 'data_name', phase_name)
+            experiment_dict_model = self.model.get_dictionary()
+            self._cryspyData._cryspyDict[exp_name_model] = experiment_dict_model
 
         self._cryspyDict = self._cryspyData._cryspyDict
-        # update _cryspyDict with the experiment
-        self._cryspyDict[exp_name_model] = experiment_dict_model
 
         # add extra fluff
+        self._cryspyDict[exp_name_model]['phase_scale'] = np.array(phase_scales)
+
         self.excluded_points = np.full(len(ttheta), False)
         if hasattr(self.model, 'excluded_points'):
             self.excluded_points = self.model.excluded_points

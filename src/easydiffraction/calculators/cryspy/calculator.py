@@ -444,13 +444,12 @@ class Cryspy:
 
         if self.pattern is None:
             scale = 1.0
-            # offset = 0
+            offset = 0
         else:
             scale = self.pattern.scale.value / norm
-            # offset = self.pattern.zero_shift.value
+            offset = self.pattern.zero_shift.value
+        this_x_array = x_array - offset
 
-        # this_x_array = x_array - offset
-        this_x_array = x_array
 
         if 'excluded_points' in kwargs:
             setattr(self.model, 'excluded_points', kwargs['excluded_points'])

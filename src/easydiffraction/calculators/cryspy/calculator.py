@@ -450,7 +450,6 @@ class Cryspy:
             offset = self.pattern.zero_shift.value
         this_x_array = x_array - offset
 
-
         if 'excluded_points' in kwargs:
             setattr(self.model, 'excluded_points', kwargs['excluded_points'])
 

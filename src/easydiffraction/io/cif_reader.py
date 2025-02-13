@@ -314,9 +314,19 @@ def parse_with_error(value: str) -> tuple:
     if '(' in value:
         value, error = value.split('(')
         error = error.strip(')')
-        if not error:
-            return float(value), 0.0  # 1.23()
+        if '.' in value:
+            # float
+            if not error:
+                return float(value), 0.0  # 1.23()
+            else:
+                err = (10 ** -(len(f'{value}'.split('.')[1]) - 1)) * int(error)
+                return float(value), err
         else:
-            err = (10 ** -(len(f'{value}'.split('.')[1]) - 1)) * int(error)
-            return float(value), err
+            # int
+            if not error:
+                return int(value), 0
+            else:
+                err = 10 ** (len(str(error)) - 1)
+                return int(value), err
+
     return float(value), None  # 1.23

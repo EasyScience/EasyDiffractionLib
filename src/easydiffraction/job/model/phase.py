@@ -15,6 +15,10 @@ class Phase(ecPhase):
 
     def __init__(self, name, spacegroup=None, cell=None, atoms=None, scale=None, interface=None, enforce_sym=True, **kwargs):
         super(Phase, self).__init__(name, spacegroup, cell, atoms, scale, enforce_sym=enforce_sym)
+        # we need to overwrite cell and atoms, since ecPhase constructor doesn't append the error info
+        self.cell = cell
+        self.atoms = atoms
+        # spacegroup is not being overwritten, since no error info is being appended
         self.interface = interface
 
     def add_atom(self, *args, **kwargs):

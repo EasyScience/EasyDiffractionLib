@@ -13,9 +13,9 @@ from typing import TypeVar
 from typing import Union
 
 from easyscience.Datasets.xarray import xr
-from easyscience.Objects.new_variable import DescriptorStr as Descriptor
-from easyscience.Objects.new_variable import Parameter
 from easyscience.Objects.ObjectClasses import BaseObj
+from easyscience.Objects.variable import DescriptorStr as Descriptor
+from easyscience.Objects.variable import Parameter
 
 from easydiffraction.job.experiment.backgrounds.background import BackgroundContainer
 from easydiffraction.job.experiment.common import JobSetup

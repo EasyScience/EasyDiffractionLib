@@ -153,6 +153,12 @@ def parameters_from_cif_block(block) -> dict:
     if value is not None:
         parameters['2theta_bank'] = {}
         parameters['2theta_bank']['value'], parameters['2theta_bank']['error'] = parse_with_error(value)
+
+    value = block.find_value('_pd_instr.zero') or block.find_value('_pd_instr_zero')
+    if value is not None:
+        parameters['zero'] = {}
+        parameters['zero']['value'], parameters['zero']['error'] = parse_with_error(value)
+
     value = block.find_value('_pd_instr_peak_shape') or block.find_value('_pd_instr.peak_shape')
     if value is not None:
         parameters['peak_shape'] = value

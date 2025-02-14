@@ -965,6 +965,9 @@ class Cryspy:
             flag_use_precalculated_data=False,
             flag_calc_analytical_derivatives=False,
         )
+        if not res:
+            raise RuntimeError('No result from calculation')
+
         chi2 = res[0]
         point_count = res[1]
         free_param_count = len(res[4])

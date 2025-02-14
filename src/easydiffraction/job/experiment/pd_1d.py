@@ -461,6 +461,12 @@ class Instrument1DTOFParameters(BaseObj):
             'value': 0.00224,
             'fixed': True,
         },
+        'zero': {
+            'name': 'zero',
+            'url': 'https://docs.easydiffraction.org/lib/dictionaries/_pd_instr/',
+            'value': 0.0,
+            'fixed': True,
+        },
     }
 
     ttheta_bank: ClassVar[Parameter]

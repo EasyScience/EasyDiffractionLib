@@ -249,6 +249,11 @@ class Experiment(coreExperiment):
             if p['2theta_bank'].get('error') is not None:
                 parameters.ttheta_bank.error = p['2theta_bank'].get('error')
                 parameters.ttheta_bank.fixed = False
+        if 'zero' in p:
+            parameters.zero = p['zero'].get('value', 0.0)
+            if p['zero'].get('error') is not None:
+                parameters.zero.error = p['zero'].get('error')
+                parameters.zero.fixed = False
         if 'alpha0' in p:
             parameters.alpha0 = p['alpha0'].get('value', 0.0)
             if p['alpha0'].get('error') is not None:

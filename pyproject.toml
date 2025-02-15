@@ -27,7 +27,7 @@ requires-python = '>=3.9,<3.13'
 dependencies = [
   'cryspy',                                                                                     # Calculations of diffraction patterns
   'easycrystallography @ git+https://github.com/EasyScience/EasyCrystallography.git@new_param', # Crystallography tools of the EasyScience framework
-  'easyscience @ git+https://github.com/EasyScience/EasyScience.git@new_param_fix',             # The base library of the EasyScience framework
+  'easyscience @ git+https://github.com/EasyScience/EasyScience.git@new_params_fix',            # The base library of the EasyScience framework
   'pooch',                                                                                      # For data fetching
 ]
 
